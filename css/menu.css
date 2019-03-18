@@ -1,0 +1,107 @@
+.menu {
+    position: relative;
+    transition-duration: .5s;
+    transition-property: width;
+    transition-timing-function: ease;
+    width: 0;
+}
+
+.menu.active {
+    width: 300px;
+}
+
+.menu .toggle-container {
+    cursor: pointer;
+    height: 40px;
+    position: absolute;
+    right: -80px;
+    top: 30px;
+    width: 50px;
+    z-index: 10;
+}
+
+.menu .toggle-container .toggle {
+    border: none;
+    cursor: pointer;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.menu .toggle-container .toggle,
+.menu .toggle-container .toggle:before,
+.menu .toggle-container .toggle:after {
+    background: #000;
+    border-radius: 4px;
+    position: absolute;
+    height: 4px;
+    transition-duration: .5s;
+    transition-property: transform;
+    transition-timing-function: ease;
+    width: 40px;
+}
+
+.menu .toggle-container .toggle:before,
+.menu .toggle-container .toggle:after {
+    display: block;
+    content: "";
+}
+
+.menu .toggle-container .toggle:before {
+    top: -10px;
+}
+
+.menu .toggle-container .toggle:after {
+    bottom: -10px;
+}
+
+.menu.active .toggle-container .toggle:before {
+    transform: translate3d(-8px,0,0) rotate(-45deg) scaleX(.7);
+}
+
+.menu.active .toggle-container .toggle:after {
+    transform: translate3d(-8px, 0, 0) rotate(45deg) scaleX(.7);
+}
+
+.menu .menu-list {
+    min-width: 300px;
+    z-index: 1;
+}
+
+.menu .menu-list .title {
+    text-align: center;
+}
+
+.menu .menu-list .settings {
+    border-top: 1px solid #eeeeee;
+}
+
+.menu .menu-list .settings ul {
+    list-style: none;
+}
+
+.menu .menu-list .contact-us {
+    border-top: 1px solid #eeeeee;
+}
+
+.menu .menu-list .title,
+.menu .menu-list .settings,
+.menu .menu-list .contact-us {
+    padding: 20px;
+}
+
+
+@media (max-width: 640px) {
+    .menu.active .toggle-container {
+        height: 100%;
+        left: 100%;
+        top: 0;
+        width: 100%;
+    }
+
+    .menu.active .toggle-container .toggle {
+        left: 30px;
+        top: 50px;
+        transform: none;
+    }
+}

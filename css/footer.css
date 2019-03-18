@@ -1,0 +1,19 @@
+html, body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+.page-wrapper {
+    flex: 1 0 auto;
+}
+
+footer {
+    background: #ffffc2;
+    flex-shrink: 0;
+    text-align: center;
+    padding: 10px 0;
+}

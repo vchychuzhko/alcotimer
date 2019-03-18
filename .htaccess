@@ -1,0 +1,8 @@
+ErrorDocument 403 /pages/403.html
+ErrorDocument 404 /pages/404.html
+
+# Deny access to filenames starting with dot(.)
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
