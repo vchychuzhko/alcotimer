@@ -11,6 +11,7 @@
     <script src="js/lib/jquery-ui.min.js"></script>
     <script src="js/menu.js"></script>
     <script src="js/range-slider.js"></script>
+    <script src="js/settings.js"></script>
 </head>
 <body class="homepage">
     <main class="page-wrapper">
@@ -43,6 +44,10 @@
                             </div>
                         </li>
                     </ul>
+                    <div class="settings-buttons-container">
+                        <button class="reset-button" type="button" name="settings-reset" value="Reset  settings">Reset</button>
+                        <button class="save-button" type="button" name="settings-save" value="Save Settings">Save</button>
+                    </div>
                 </div>
                 <div class="contact-us">
                     <p>Face any bug or have new ideas?</p>
@@ -52,6 +57,28 @@
         </div>
         <div class="content">
             <div class="mobile-overlay"></div>
+            <div class="timer-container">
+                <div class="timer-wrapper">
+                    <div class="timer-button-container">
+                        <button class="timer-button" type="button" name="start-stop" value="Start/Stop"></button>
+                    </div>
+                    <div class="radial-slider"></div>
+                    <div class="loader">
+                        <svg id="wrap" width="300" height="300">
+                            <svg>
+                                <circle cx="150" cy="150" r="130" style="stroke: #2c3e50; stroke-width:18; fill:transparent"></circle>
+
+                                <path style="stroke: #add8e6; stroke-dasharray:820; stroke-dashoffset:-820; stroke-width:18; fill:transparent" d="M150,150 m0,-130 a 130,130 0 0,1 0,260 a 130,130 0 0,1 0,-260">
+                                    <animate attributeName="stroke-dashoffset" dur="10s" to="0" repeatCount="indefinite"></animate>
+                                </path>
+                            </svg>
+                        </svg>
+                    </div>
+                </div>
+                <div class="random-button-container">
+                    <button class="random-button" type="button" name="random-button" value="Set random time"></button>
+                </div>
+            </div>
         </div>
     </main>
     <footer>
@@ -60,9 +87,8 @@
     <script type="application/javascript">
         jQuery(function () {
             $('.menu').menu({});
-        });
-        jQuery(function () {
             $('.random-time.range-slider').rangeSlider({});
+            $('.settings').settings({});
         });
     </script>
 </body>

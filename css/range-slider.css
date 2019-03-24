@@ -19,7 +19,7 @@
     padding: 0 2px;
     pointer-events: none;
     position: absolute;
-    width: 250px;
+    width: 100%;
 }
 
 input[type="range"]::-webkit-slider-thumb {
