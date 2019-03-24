@@ -1,5 +1,6 @@
 @import 'footer.css';
 @import 'menu.css';
+@import 'range-slider.css';
 
 * {
     margin: 0;
@@ -26,7 +27,7 @@ body {
 }
 
 .page-wrapper .content {
-    background: white;
+    background: #7DD0B6;
     flex-grow: 100;
     position: relative;
     z-index: 5;

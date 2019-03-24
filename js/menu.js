@@ -12,9 +12,11 @@
          * Init event listeners
          */
         initBindings: function () {
-            $(this.element).find('.toggle-container').on('click', function () {
+            let $toggleContainer = $(this.element).find('.toggle-container');
+
+            $toggleContainer.on('click', function () {
                 $(this.element).toggleClass('active');
-            }.bind(this))
+            }.bind(this));
         }
     });
 })(jQuery);
