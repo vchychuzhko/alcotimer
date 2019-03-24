@@ -74,15 +74,36 @@
 }
 
 .menu .menu-list .settings {
-    border-top: 1px solid #eeeeee;
+    border-top: 2px solid #fff;
 }
 
 .menu .menu-list .settings ul {
     list-style: none;
 }
 
+.menu .menu-list .settings .random-time .range-inputs {
+    align-items: center;
+    display: flex;
+    justify-content: space-around;
+    width: 250px;
+}
+
+.menu .menu-list .settings .random-time .range-inputs .time {
+    border: 1px solid;
+    border-radius: 5px;
+    display: inline-block;
+    font-size: 24px;
+    padding: 3px 0;
+    text-align: center;
+    width: 25%;
+}
+
+.menu .menu-list .settings .random-time .range-inputs .input-separator {
+    font-size: 24px;
+}
+
 .menu .menu-list .contact-us {
-    border-top: 1px solid #eeeeee;
+    border-top: 2px solid #fff;
 }
 
 .menu .menu-list .title,
