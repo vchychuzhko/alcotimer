@@ -21,19 +21,15 @@ body {
 }
 
 .page-wrapper {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
+    position: relative;
 }
 
 .page-wrapper .content {
     background: #7DD0B6;
-    flex-grow: 100;
-    position: relative;
     z-index: 5;
 }
 
-.page-wrapper .content .mobile-overlay {
+.page-wrapper .mobile-overlay {
     display: none;
     position: absolute;
     top: 0;
@@ -46,11 +42,11 @@ body {
 }
 
 @media (max-width: 640px) {
-    .page-wrapper .content {
-        min-width: 240px;
+    .page-wrapper {
+        min-width: 340px;
     }
 
-    .page-wrapper .menu.active + .content .mobile-overlay {
+    .menu.active + .page-wrapper .mobile-overlay {
         display: block;
     }
 }
