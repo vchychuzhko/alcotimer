@@ -131,6 +131,10 @@
     position: relative;
 }
 
+.menu .menu-list .settings .checkbox h3 {
+    margin-bottom: 10px;
+}
+
 .menu .menu-list .settings .checkbox input {
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -199,6 +203,10 @@
     border-top: 2px solid #fff;
 }
 
+.menu .menu-list .contact-us .mail-address {
+    word-wrap: break-word;
+}
+
 .menu .menu-list .title,
 .menu .menu-list .settings,
 .menu .menu-list .contact-us {
@@ -218,6 +226,12 @@
         top: 50px;
         transform: none;
     }
+
+    .menu.active .toggle-container .toggle,
+    .menu.active .toggle-container .toggle:before,
+    .menu.active .toggle-container .toggle:after {
+        background: #fff;
+    }
 }
 
 @media (max-width: 375px) {
@@ -232,12 +246,6 @@
 
     .menu.active + .page-wrapper {
         margin-left: 80%;
-    }
-
-    .menu.active .toggle-container .toggle,
-    .menu.active .toggle-container .toggle:before,
-    .menu.active .toggle-container .toggle:after {
-        background: #fff;
     }
 
     .menu .menu-list {

@@ -1,5 +1,5 @@
 ;(function ($) {
-    $.widget('vlad.rangeSlider', {
+    $.widget('ava.rangeSlider', {
         options: {
             difference: 2
         },

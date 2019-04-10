@@ -24,11 +24,6 @@ body {
     position: relative;
 }
 
-.page-wrapper .content {
-    background: #7DD0B6;
-    z-index: 5;
-}
-
 .page-wrapper .mobile-overlay {
     display: none;
     position: absolute;
@@ -37,13 +32,28 @@ body {
     width: 100%;
     height: 100%;
     background: #000;
-    opacity: .5;
+    opacity: .6;
     z-index: 9;
+}
+
+.page-wrapper .content {
+    background: #7DD0B6;
+    z-index: 5;
+}
+
+.page-wrapper .content .timer-container {
+    background: white;
+    left: 50%;
+    max-width: 350px;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
 }
 
 @media (max-width: 640px) {
     .page-wrapper {
-        min-width: 340px;
+        min-width: 100%;
     }
 
     .menu.active + .page-wrapper .mobile-overlay {

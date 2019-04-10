@@ -1,5 +1,5 @@
 ;(function ($) {
-    $.widget('vlad.menu', {
+    $.widget('ava.menu', {
         /**
          * Constructor
          * @private
