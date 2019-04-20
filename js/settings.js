@@ -38,7 +38,8 @@
                 $minTimeRange = $(this.element).find('.min-range.time'),
                 $maxTimeInput = $(this.element).find('.max-value.time'),
                 $maxTimeRange = $(this.element).find('.max-range.time'),
-                $showLoaderInput = $(this.element).find('.show-loader');
+                $showLoaderInput = $(this.element).find('.show-loader'),
+                $showRandomTime = $(this.element).find('.show-random-time');
 
             if (settings !== null) {
                 $minTimeInput.val(settings.minTime);
@@ -46,6 +47,7 @@
                 $maxTimeInput.val(settings.maxTime);
                 $maxTimeRange.val(settings.maxTime);
                 $showLoaderInput.prop('checked' , settings.showLoader);
+                $showRandomTime.prop('checked' , settings.showRandomTime);
             } else if (showError) {
                 this.showMessage('Settings were not found. Please, save new configurations.', 5000, true);
             }
@@ -58,10 +60,12 @@
             let $minTimeInput = $(this.element).find('.min-value.time'),
                 $maxTimeInput = $(this.element).find('.max-value.time'),
                 $showLoaderInput = $(this.element).find('.show-loader'),
+                $showRandomTime = $(this.element).find('.show-random-time'),
                 settings = {
                     'minTime': $minTimeInput.val(),
                     'maxTime': $maxTimeInput.val(),
-                    'showLoader': $showLoaderInput.prop('checked')
+                    'showLoader': $showLoaderInput.prop('checked'),
+                    'showRandomTime': $showRandomTime.prop('checked')
                 };
 
             localStorage.settings = JSON.stringify(settings);

@@ -121,8 +121,8 @@
     font-size: 24px;
 }
 
-.menu .menu-list .settings .loader-settings .show-loader,
-.menu .menu-list .settings .loader-settings label {
+.menu .menu-list .settings .checkbox .show-loader,
+.menu .menu-list .settings .checkbox label {
     cursor: pointer;
     font-size: 18px;
 }
@@ -154,7 +154,7 @@
     height: 25px;
     left: 0;
     position: absolute;
-    top: 30px;
+    top: -3px;
     width: 25px;
 }
 
@@ -168,7 +168,7 @@
     height: 15px;
     left: 5px;
     position: absolute;
-    top: 35px;
+    top: 2px;
     transition: all .5s ease;
     width: 15px;
     z-index: 1;
