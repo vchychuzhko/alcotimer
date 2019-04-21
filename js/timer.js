@@ -1,5 +1,5 @@
 ;(function ($) {
-    $.widget('ava.menu', {
+    $.widget('ava.timer', {
         /**
          * Constructor
          * @private
@@ -12,9 +12,14 @@
          * Init event listeners
          */
         initBindings: function () {
-            $(this.element).on('click', '.toggle-container', function () {
-                $(this.element).toggleClass('active');
-            }.bind(this));
-        }
+            $(this.element).on('click', '.timer-button', this.toggleTimer.bind(this));
+        },
+
+        /**
+         * Start/stop the timer
+         */
+        toggleTimer: function () {
+            console.log('click');
+        },
     });
 })(jQuery);

@@ -21,7 +21,7 @@
                 $minInput = $(this.element).find('.min-value'),
                 $maxInput = $(this.element).find('.max-value');
 
-            $minRange.on('input', function () {
+            $minRange.on('input', function (event) {
                 let minValue = $(event.target).val(),
                     maxValue = $maxRange.val();
 
@@ -36,7 +36,7 @@
                 $maxInput.val($maxRange.val());
             }.bind(this));
 
-            $maxRange.on('input', function () {
+            $maxRange.on('input', function (event) {
                 let maxValue = $(event.target).val(),
                     minValue = $minRange.val();
 
@@ -51,11 +51,11 @@
                 $maxInput.val($maxRange.val());
             }.bind(this));
 
-            $minInput.on('change', function () {
+            $minInput.on('change', function (event) {
                 $minRange.val($(event.target).val());
             });
 
-            $maxInput.on('change', function () {
+            $maxInput.on('change', function (event) {
                 $maxRange.val($(event.target).val());
             });
         }

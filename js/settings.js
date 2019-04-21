@@ -13,11 +13,9 @@
          * Init event listeners
          */
         initBindings: function () {
-            let $saveButton = $(this.element).find('.save-button'),
-                $resetButton = $(this.element).find('.reset-button'),
-                $toggleContainer = $(this.element).closest('.menu').find('.toggle-container');
+            let $toggleContainer = $(this.element).closest('.menu').find('.toggle-container');
 
-            $saveButton.on('click', function () {
+            $(this.element).on('click', '.save-button', function () {
                 this.saveSettings();
                 this.showMessage('Saved!', 1000);
                 setTimeout(function () {
@@ -25,7 +23,7 @@
                 }, 1000);
             }.bind(this));
 
-            $resetButton.on('click', this.applySettings.bind(this));
+            $(this.element).on('click', '.reset-button', this.applySettings.bind(this));
         },
 
         /**

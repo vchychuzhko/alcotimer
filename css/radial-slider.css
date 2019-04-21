@@ -1,0 +1,52 @@
+.radial-slider {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: 300px;
+    width: 300px;
+}
+
+.radial-slider .circle {
+    background-color: #9b59b6;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    height: 100%;
+    position: absolute;
+    width: 100%;
+}
+
+.radial-slider .circle:before {
+    background-color: #ecf0f1;
+    border-radius: 50%;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+    content: "";
+    height: 90%;
+    left: 5%;
+    position: absolute;
+    top: 5%;
+    width: 90%;
+}
+
+.radial-slider .circle .dot {
+    height: 50%;
+    left: 47.5%;
+    position: absolute;
+    top: 0;
+    transform: rotate(0deg);
+    transform-origin: center bottom;
+    width: 5%;
+}
+
+.radial-slider .circle .dot:before {
+    background-color: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #000;
+    content: "";
+    cursor: pointer;
+    height: 0;
+    padding-bottom: 200%;
+    position: absolute;
+    transform: translate3d(-25%, -25%, 0);
+    width: 200%;
+}

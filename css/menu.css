@@ -131,10 +131,6 @@
     position: relative;
 }
 
-.menu .menu-list .settings .checkbox h3 {
-    margin-bottom: 10px;
-}
-
 .menu .menu-list .settings .checkbox input {
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -252,16 +248,16 @@
         min-width: unset;
     }
 
+    .menu .menu-list .title, .menu .menu-list .settings, .menu .menu-list .contact-us {
+        padding: 10px;
+    }
+
     .menu .menu-list .settings h3 {
         font-size: 16px;
     }
 
-    .menu .menu-list .settings .loader-settings label {
-        font-size: 14px;
-    }
-
-    .menu .menu-list .settings .checkbox h3 {
-        margin-bottom: 15px;
+    .menu .menu-list .settings .checkbox label {
+        font-size: 13px;
     }
 
     .menu .menu-list .settings .settings-buttons-container button {
