@@ -6,14 +6,15 @@
          */
         _create: function () {
             this.initBindings();
-            this.applySettings(false);
+            this.loadSettings();
         },
 
         /**
          * Init event listeners
          */
         initBindings: function () {
-            let $toggleContainer = $(this.element).closest('.menu').find('.toggle-container');
+            let $toggleContainer = $(this.element).closest('.menu').find('.toggle-container'),
+                $contactUsLink = $(this.element).closest('.menu-list').find('.contact-us .mail-address');
 
             $(this.element).on('click', '.save-button', function () {
                 this.saveSettings();
@@ -23,32 +24,53 @@
                 }, 1000);
             }.bind(this));
 
-            $(this.element).on('click', '.reset-button', this.applySettings.bind(this));
+            $(this.element).on('click', '.reset-button', this.resetSettings.bind(this));
+
+            $contactUsLink.on('click', this.copeText.bind(this));
         },
 
         /**
          * Apply settings from the local storage
-         * @param showError
          */
-        applySettings: function (showError = true) {
-            let settings = JSON.parse(localStorage.getItem('settings')),
-                $minTimeInput = $(this.element).find('.min-value.time'),
-                $minTimeRange = $(this.element).find('.min-range.time'),
-                $maxTimeInput = $(this.element).find('.max-value.time'),
-                $maxTimeRange = $(this.element).find('.max-range.time'),
-                $showLoaderInput = $(this.element).find('.show-loader'),
-                $showRandomTime = $(this.element).find('.show-random-time');
+        loadSettings: function () {
+            let settings = JSON.parse(localStorage.getItem('settings'));
 
             if (settings !== null) {
+                let $minTimeInput = $(this.element).find('.min-value.time'),
+                    $minTimeRange = $(this.element).find('.min-range.time'),
+                    $maxTimeInput = $(this.element).find('.max-value.time'),
+                    $maxTimeRange = $(this.element).find('.max-range.time'),
+                    $showRandomTime = $(this.element).find('.show-random-time'),
+                    $showLoaderInput = $(this.element).find('.show-loader');
+
                 $minTimeInput.val(settings.minTime);
                 $minTimeRange.val(settings.minTime);
                 $maxTimeInput.val(settings.maxTime);
                 $maxTimeRange.val(settings.maxTime);
-                $showLoaderInput.prop('checked' , settings.showLoader);
                 $showRandomTime.prop('checked' , settings.showRandomTime);
-            } else if (showError) {
-                this.showMessage('Settings were not found. Please, save new configurations.', 5000, true);
+                $showLoaderInput.prop('checked' , settings.showLoader);
             }
+        },
+
+        /**
+         * Reset settings to default values
+         */
+        resetSettings: function () {
+            let $minTimeInput = $(this.element).find('.min-value.time'),
+                $minTimeRange = $(this.element).find('.min-range.time'),
+                $maxTimeInput = $(this.element).find('.max-value.time'),
+                $maxTimeRange = $(this.element).find('.max-range.time'),
+                $showRandomTime = $(this.element).find('.show-random-time'),
+                $showLoaderInput = $(this.element).find('.show-loader');
+
+            $minTimeInput.val(5);
+            $minTimeRange.val(5);
+            $maxTimeInput.val(20);
+            $maxTimeRange.val(20);
+            $showRandomTime.prop('checked' , false);
+            $showLoaderInput.prop('checked' , true);
+
+            this.showMessage('Setting were reset to default ones', 5000, true);
         },
 
         /**
@@ -57,13 +79,13 @@
         saveSettings: function () {
             let $minTimeInput = $(this.element).find('.min-value.time'),
                 $maxTimeInput = $(this.element).find('.max-value.time'),
-                $showLoaderInput = $(this.element).find('.show-loader'),
                 $showRandomTime = $(this.element).find('.show-random-time'),
+                $showLoaderInput = $(this.element).find('.show-loader'),
                 settings = {
                     'minTime': $minTimeInput.val(),
                     'maxTime': $maxTimeInput.val(),
-                    'showLoader': $showLoaderInput.prop('checked'),
-                    'showRandomTime': $showRandomTime.prop('checked')
+                    'showRandomTime': $showRandomTime.prop('checked'),
+                    'showLoader': $showLoaderInput.prop('checked')
                 };
 
             localStorage.settings = JSON.stringify(settings);
@@ -84,6 +106,19 @@
             setTimeout(function () {
                 $message.remove();
             }.bind(this), duration);
+        },
+
+        /**
+         * Copy mail address to the clipboard
+         */
+        copeText: function (event) {
+            event.preventDefault();
+            let $temp = $("<input>");
+
+            $('body').append($temp);
+            $temp.val($(event.target).text()).select();
+            document.execCommand('copy');
+            $temp.remove();
         }
     });
 })(jQuery);
