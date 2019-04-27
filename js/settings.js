@@ -18,10 +18,11 @@
 
             $(this.element).on('click', '.save-button', function () {
                 this.saveSettings();
-                this.showMessage('Saved!', 1000);
+                window.showMessage('Setting were saved!', 3000);
+
                 setTimeout(function () {
                     $toggleContainer.trigger('click');
-                }, 1000);
+                }, 200);
             }.bind(this));
 
             $(this.element).on('click', '.reset-button', this.resetSettings.bind(this));
@@ -70,7 +71,7 @@
             $showRandomTime.prop('checked' , false);
             $showLoaderInput.prop('checked' , true);
 
-            this.showMessage('Setting were reset to default ones', 5000, true);
+            window.showMessage('Setting were reset to default ones.', 3000);
         },
 
         /**
@@ -89,23 +90,6 @@
                 };
 
             localStorage.settings = JSON.stringify(settings);
-        },
-
-        /**
-         * Show message in the bottom of settings
-         * @param message
-         * @param duration
-         * @param isError
-         */
-        showMessage: function (message, duration = 5000, isError = false) {
-            let styles = 'font-size: 20px; margin-top: 20px;' + (isError ? ' color: #f00;' : ''),
-                $message = $('<p style="' + styles + '">' + message + '</p>');
-
-            $(this.element).append($message);
-
-            setTimeout(function () {
-                $message.remove();
-            }.bind(this), duration);
         },
 
         /**

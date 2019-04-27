@@ -2,6 +2,7 @@
 @import 'menu.css';
 @import 'range-slider.css';
 @import 'radial-slider.css';
+@import 'message.css';
 
 * {
     margin: 0;
@@ -38,7 +39,8 @@ body {
 }
 
 .page-wrapper .content {
-    background: #7DD0B6;
+    /*background: #7DD0B6;*/
+    background: url('/images/back.jpg');
     z-index: 5;
 }
 

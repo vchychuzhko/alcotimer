@@ -1,0 +1,26 @@
+.message-container {
+    background-color: #ff0;
+    border: 1px solid #000;
+    -webkit-box-shadow: 0 0 5px 0 rgba(0,0,0,0.75);
+    -moz-box-shadow: 0 0 5px 0 rgba(0,0,0,0.75);
+    box-shadow: 0 0 5px 0 rgba(0,0,0,0.75);
+    cursor: pointer;
+    left: 50%;
+    padding: 5px 50px;
+    position: fixed;
+    top: -100%;
+    transform: translateX(-50%);
+    transition-duration: .5s;
+    transition-property: top;
+    transition-timing-function: ease;
+    z-index: 100;
+}
+
+.message-container.error {
+    background-color: #f70;
+}
+
+.message-container .message {
+    font-size: 20px;
+    font-weight: 600;
+}
