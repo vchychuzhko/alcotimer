@@ -28,8 +28,8 @@
     cursor: pointer;
     height: 40px;
     position: absolute;
-    right: -80px;
-    top: 30px;
+    right: -60px;
+    top: 5px;
     width: 50px;
     z-index: 10;
 }
@@ -218,15 +218,9 @@
     }
 
     .menu.active .toggle-container .toggle {
-        left: 30px;
-        top: 50px;
+        left: 10px;
+        top: 25px;
         transform: none;
-    }
-
-    .menu.active .toggle-container .toggle,
-    .menu.active .toggle-container .toggle:before,
-    .menu.active .toggle-container .toggle:after {
-        background: #fff;
     }
 }
 
