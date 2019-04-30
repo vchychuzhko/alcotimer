@@ -6,9 +6,9 @@
 
             $('body').append($container);
 
-            $container.animate({'top': '10px'}, 200);
+            $container.animate({'top': '60px'}, 200);
 
-            let removeMessage = setTimeout(function () {
+            let removeMessageTimeout = setTimeout(function () {
                 $container.off();
                 $container.fadeOut(200, 'linear', function () {
                     $container.remove();
@@ -16,7 +16,7 @@
             }.bind(this), duration);
 
             $container.on('click', function () {
-                clearTimeout(removeMessage);
+                clearTimeout(removeMessageTimeout);
                 $container.off();
                 $container.remove();
             }.bind(this));

@@ -1,15 +1,15 @@
 .message-container {
-    background-color: #ff0;
-    border: 1px solid #000;
+    background-color: #f9edbe;
+    border: 1px solid #f0c36d;
     -webkit-box-shadow: 0 0 5px 0 rgba(0,0,0,0.75);
     -moz-box-shadow: 0 0 5px 0 rgba(0,0,0,0.75);
     box-shadow: 0 0 5px 0 rgba(0,0,0,0.75);
     cursor: pointer;
-    left: 50%;
     padding: 5px 50px;
     position: fixed;
+    right: 5px;
     top: -100%;
-    transform: translateX(-50%);
+    text-align: center;
     transition-duration: .5s;
     transition-property: top;
     transition-timing-function: ease;
@@ -17,10 +17,19 @@
 }
 
 .message-container.error {
-    background-color: #f70;
+    background-color: #ff7a7f;
+    border: 1px solid #ff6b45;
 }
 
 .message-container .message {
     font-size: 20px;
     font-weight: 600;
+}
+
+@media (max-width: 375px) {
+    .message-container {
+        max-width: 230px;
+        padding: 5px 0;
+        width: 100%;
+    }
 }

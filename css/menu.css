@@ -39,6 +39,8 @@
     cursor: pointer;
     left: 50%;
     top: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
 }
 
@@ -70,10 +72,14 @@
 }
 
 .menu.active .toggle-container .toggle:before {
+    -webkit-transform: translate3d(-8px,0,0) rotate(-45deg) scaleX(.7);
+    -ms-transform: translate3d(-8px,0,0) rotate(-45deg) scaleX(.7);
     transform: translate3d(-8px,0,0) rotate(-45deg) scaleX(.7);
 }
 
 .menu.active .toggle-container .toggle:after {
+    -webkit-transform: translate3d(-8px, 0, 0) rotate(45deg) scaleX(.7);
+    -ms-transform: translate3d(-8px, 0, 0) rotate(45deg) scaleX(.7);
     transform: translate3d(-8px, 0, 0) rotate(45deg) scaleX(.7);
 }
 
@@ -103,6 +109,7 @@
 
 .menu .menu-list .settings .random-time .range-inputs {
     align-items: center;
+    display: -webkit-flex;
     display: flex;
     justify-content: space-around;
 }
@@ -175,6 +182,7 @@
 }
 
 .menu .menu-list .settings .settings-buttons-container {
+    display: -webkit-flex;
     display: flex;
     justify-content: flex-end;
     padding: 15px 0 0;
@@ -220,6 +228,8 @@
     .menu.active .toggle-container .toggle {
         left: 10px;
         top: 25px;
+        -webkit-transform: none;
+        -ms-transform: none;
         transform: none;
     }
 }
@@ -230,8 +240,28 @@
         max-width: unset;
     }
 
+    .menu .toggle-container {
+        right: -50px;
+        width: 40px;
+    }
+
     .menu.active .toggle-container .toggle {
         left: 5%;
+    }
+
+    .menu .toggle-container .toggle,
+    .menu .toggle-container .toggle:before,
+    .menu .toggle-container .toggle:after {
+        height: 3px;
+        width: 30px;
+    }
+
+    .menu .toggle-container .toggle:before {
+        top: -7px;
+    }
+
+    .menu .toggle-container .toggle:after {
+        bottom: -7px;
     }
 
     .menu.active + .page-wrapper {
