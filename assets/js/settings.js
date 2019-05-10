@@ -27,7 +27,7 @@
 
             $(this.element).on('click', '.reset-button', this.resetSettings.bind(this));
 
-            $contactUsLink.on('click', this.copeText.bind(this));
+            $contactUsLink.on('click', this.copyText.bind(this));
         },
 
         /**
@@ -95,7 +95,7 @@
         /**
          * Copy mail address to the clipboard
          */
-        copeText: function (event) {
+        copyText: function (event) {
             event.preventDefault();
             let $temp = $("<input>");
 
@@ -103,6 +103,8 @@
             $temp.val($(event.target).text()).select();
             document.execCommand('copy');
             $temp.remove();
+
+            window.showMessage('Copied to the clipboard!', 3000);
         }
     });
 })(jQuery);

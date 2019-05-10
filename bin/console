@@ -1,0 +1,14 @@
+#!/usr/bin/env php
+<?php
+
+if (PHP_SAPI !== 'cli') {
+    echo 'bin/console must be run as a CLI application';
+    exit(1);
+}
+
+try {
+    echo 'will be filled soon';
+} catch (\Exception $e) {
+    echo 'Error occurred: ' . $e->getMessage();
+    exit(1);
+}

@@ -1,5 +1,5 @@
-ErrorDocument 403 /pages/403.html
-ErrorDocument 404 /pages/404.html
+ErrorDocument 403 /pub/errors/403.html
+ErrorDocument 404 /pub/errors/404.html
 
 # Deny access to filenames starting with dot(.)
 <FilesMatch "^\.">

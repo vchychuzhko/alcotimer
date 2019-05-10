@@ -55,4 +55,5 @@
     -ms-transform: translate3d(-25%, -25%, 0);
     transform: translate3d(-25%, -25%, 0);
     width: 200%;
+    z-index: 3;
 }
