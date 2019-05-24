@@ -6,9 +6,14 @@ if (PHP_SAPI !== 'cli') {
     exit(1);
 }
 
+define('DS', DIRECTORY_SEPARATOR);
+define('BP', dirname(dirname(__FILE__)));
+require_once(BP . DS . 'app' . DS . 'autoload.php');
+
 try {
-    echo 'will be filled soon';
-} catch (\Exception $e) {
-    echo 'Error occurred: ' . $e->getMessage();
+    $console = new \Ava\Console\Console();
+    echo $console->run();
+} catch (\Throwable $t) {
+    echo 'Error occurred: ' . $t->getMessage();
     exit(1);
 }
