@@ -4,6 +4,8 @@ namespace Ava\Console\Command;
 
 class Maintenance extends \Ava\Console\AbstractCommand
 {
+    public const MAINTENANCE_FILE = 'maintenance.flag';
+
     /**
      * Enable maintenance mode.
      * @param array $args
@@ -11,9 +13,9 @@ class Maintenance extends \Ava\Console\AbstractCommand
      */
     public function enable($args = [])
     {
-        if ($args) {
-            $allowedIPs = $this->parseArguments($args)['ip'] ?? [];
-        }
+        $allowedIPs = $args ? ($this->parseArguments($args)['ip'] ?? []) : [];
+
+        file_put_contents(BP . DS . self::MAINTENANCE_FILE, implode(',', $allowedIPs));
 
         return 'Maintenance mode was enabled.';
     }
@@ -24,6 +26,7 @@ class Maintenance extends \Ava\Console\AbstractCommand
      */
     public function disable()
     {
+        @unlink(BP . DS . self::MAINTENANCE_FILE);
         return 'Maintenance mode was disabled.';
     }
 
@@ -33,6 +36,14 @@ class Maintenance extends \Ava\Console\AbstractCommand
      */
     public function status()
     {
-        return 'status.';
+        $status = 'Maintenance mode is disabled.';
+
+        if (($allowedIPs = @file_get_contents(BP . DS . self::MAINTENANCE_FILE)) !== false) {
+            $allowedIPs = str_replace(',', ', ', $allowedIPs);
+            $status = 'Maintenance mode is enabled.'
+                . ($allowedIPs ? ("\n" . 'List of allowed ip addresses: ' . $allowedIPs) : '');
+        };
+
+        return $status;
     }
 }

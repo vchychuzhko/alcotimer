@@ -46,20 +46,22 @@ class App
                 $uri = strtok(trim($_SERVER['REQUEST_URI'], '/'), '?');
             }
 
-            $template = BP . DS . self::TEMPLATES_DIR . DS .($this->routes[(string) $uri] ?? $this->routes['404']);
+            $template = $this->routes[(string) $uri] ?? $this->routes['404'];
         } else {
             $template = $this->routes['maintenance'];
         }
 
+        $template = BP . DS . self::TEMPLATES_DIR . DS . $template;
+
         try {
             if (@file_get_contents($template) === false) {
-                $this->logWriter->write('No such file' . $template);
+                $this->logWriter->write('No such file: ' . $template);
                 throw new \Exception('No such file');
             }
 
             include $template;
         } catch (\Exception $e) {
-            include BP . DS . $this->routes['404'];
+            include BP . DS . self::TEMPLATES_DIR . DS . $this->routes['404'];
         }
 
         $response = ob_get_clean();
@@ -67,11 +69,20 @@ class App
     }
 
     /**
-     * Check if maintenance mode is enabled.
+     * Check if maintenance mode is enabled for this IP.
      * @return bool
      */
     private function isMaintenance() {
-        return false;
+        $enabled = false;
+
+        if (($allowedIPs = @file_get_contents(BP . DS . \Ava\Console\Command\Maintenance::MAINTENANCE_FILE)) !== false) {
+            $allowedIPs = explode(',', $allowedIPs);
+            $ip = $_SERVER['REMOTE_ADDR'];
+
+            $enabled = !in_array($ip, $allowedIPs);
+        };
+
+        return $enabled;
     }
 
     /**

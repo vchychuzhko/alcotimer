@@ -12,6 +12,10 @@ class LogWriter
      */
     public function write($string)
     {
-        $foo = $string;
+        $content = (string) @file_get_contents(BP . DS . self::EXCEPTION_LOG_FILE);
+        file_put_contents(
+            BP . DS . self::EXCEPTION_LOG_FILE,
+            ($content ? "$content\n" : '') . date('m/d/Y h:i:s a', time()) . ' - ' . $string
+        );
     }
 }
