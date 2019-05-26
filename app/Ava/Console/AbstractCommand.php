@@ -5,10 +5,18 @@ namespace Ava\Console;
 class AbstractCommand
 {
     /**
-     * @param $methodName string
-     * @return string
+     * Parse input arguments.
+     * @param array $args
+     * @return array
      */
-    public function getMethodName($methodName) {
-        return $this->methodMap[$methodName] ?? '';
+    protected function parseArguments($args) {
+        $arguments = [];
+
+        foreach ($args as $arg) {
+            list($argument, $value) = explode('=', str_replace('--', '', $arg));
+            $arguments[$argument][] = $value;
+        }
+
+        return $arguments;
     }
 }

@@ -1,13 +1,13 @@
 <?php
 /**
  * Function to load classes.
- * @param $classNamespace string
+ * @param string $classNamespace
  */
 function __autoload($classNamespace) {
-    $path = 'app';
+    $path = '';
 
     foreach (explode('\\', $classNamespace) as $pathItem) {
         $path .= DS . $pathItem;
     }
-    require_once(BP . DS . $path . '.php');
+    require_once(APP_DIR . $path . '.php');
 }
