@@ -15,14 +15,14 @@ $supportEmailAddress = $this->getSupportEmailAddress();
         <div class="content">
             <h1>Service is temporary unavailable</h1>
             <p>Site is down due to some service works and it will return to work soon.</p>
-            <p>If you have any questions, please, contact our support:
+            <p>If you have any questions or see this message for too long, please, contact our support:
                 <a href="mailto:<?= $supportEmailAddress; ?>?subject = AlcoTimer" class="mail-address">
                     <?= $supportEmailAddress; ?>
                 </a>
             </p>
         </div>
         <footer>
-            <p>&copy; 2019 AlcoTimer. All rights reserved</p>
+            <?php include('template/footer.html'); ?>
         </footer>
     </main>
 </body>

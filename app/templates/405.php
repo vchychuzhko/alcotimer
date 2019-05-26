@@ -17,7 +17,7 @@ $deployedVersion = $this->getDeployedVersion();
             <p>Please re-start your journey from the <a href="/">Homepage</a></p>
         </div>
         <footer>
-            <p>&copy; 2019 AlcoTimer. All rights reserved</p>
+            <?php include('template/footer.html'); ?>
         </footer>
     </main>
 </body>

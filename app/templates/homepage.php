@@ -121,7 +121,7 @@ $supportEmailAddress = $this->getSupportEmailAddress();
             </div>
         </div>
         <footer>
-            <p>&copy; 2019 AlcoTimer. All rights reserved</p>
+            <?php include('template/footer.html'); ?>
         </footer>
     </main>
     <script type="application/javascript">

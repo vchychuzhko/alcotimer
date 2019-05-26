@@ -13,11 +13,11 @@ $deployedVersion = $this->getDeployedVersion();
     <main class="page-wrapper">
         <div class="content">
             <h1>403 error: Forbidden</h1>
-            <p>The page you are trying to access is not allowed.</p>
+            <p>The page you are trying to access is not accessible.</p>
             <p>Please start your journey from the <a href="/">Homepage</a></p>
         </div>
         <footer>
-            <p>&copy; 2019 AlcoTimer. All rights reserved</p>
+            <?php include('template/footer.html'); ?>
         </footer>
     </main>
 </body>
