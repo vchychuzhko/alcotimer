@@ -16,7 +16,7 @@
          * Init event listeners
          */
         initBindings: function () {
-            $(this.element).on('mousedown touchstart', '.circle', function () {
+            $(this.element).on('mousedown touchstart', '.circle .dot', function () {
                 this.options.isDragging = true;
             }.bind(this));
 
@@ -41,7 +41,7 @@
                             angle += 360;
                         }
                         angle = Math.round(angle);
-                        $(this.element).find('.dot').css('transform', 'rotate(' + angle + 'deg)');
+                        $(this.element).find('.dot-container').css('transform', 'rotate(' + angle + 'deg)');
                         this.displayTime(angle);
                     }
                 } catch (e) {

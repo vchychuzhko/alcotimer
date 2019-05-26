@@ -23,7 +23,6 @@ class Console
 
     /**
      * Execute the command.
-     * @return string
      */
     public function run()
     {
@@ -47,7 +46,7 @@ class Console
             $output = $this->showInfo();
         }
 
-        return $output . "\n";
+        echo $output . "\n";
     }
 
     /**

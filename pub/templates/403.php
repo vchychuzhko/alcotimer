@@ -1,10 +1,13 @@
+<?php /** @var \Ava\Base\App $this */
+$deployedVersion = $this->getDeployedVersion();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Forbidden</title>
     <link rel="shortcut icon" type="image/png" href="/pub/media/images/favicon.png"/>
-    <link rel="stylesheet" type="text/css" href="/assets/css/403-404.css"/>
+    <link rel="stylesheet" type="text/css" href="/assets/css/errors.css"/>
 </head>
 <body class="forbidden-page">
     <main class="page-wrapper">

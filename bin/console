@@ -13,7 +13,7 @@ require_once(APP_DIR . DS . 'autoload.php');
 
 try {
     $console = new \Ava\Console\Console();
-    echo $console->run();
+    $console->run();
 } catch (\Throwable $t) {
     echo 'Error occurred: ' . $t->getMessage();
     exit(1);

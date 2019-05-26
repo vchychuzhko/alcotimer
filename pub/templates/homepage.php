@@ -1,3 +1,7 @@
+<?php /** @var \Ava\Base\App $this */
+$deployedVersion = $this->getDeployedVersion();
+$supportEmailAddress = $this->getSupportEmailAddress();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -65,7 +69,11 @@
             </div>
             <div class="contact-us">
                 <p>Face any bug or have new ideas?</p>
-                <p>Send us an email: <a href="mailto:vlad.chichuzhko@gmail.com?subject = AlcoTimer" class="mail-address">vlad.chichuzhko@gmail.com</a></p>
+                <p>Send us an email:
+                    <a href="mailto:<?= $supportEmailAddress; ?>?subject = AlcoTimer" class="mail-address">
+                        <?= $supportEmailAddress; ?>
+                    </a>
+                </p>
             </div>
         </div>
     </div>
@@ -80,14 +88,16 @@
             <div class="timer-container">
                 <div class="timer-wrapper">
                     <div class="radial-slider">
+                        <div class="timer-button-container">
+                            <button class="timer-button" type="button" name="start-stop" value="Start/Stop">
+                                <span class="time-value">15:30</span>
+                                <span class="timer-button-title">Start</span>
+                            </button>
+                        </div>
                         <div class="circle">
-                            <div class="timer-button-container">
-                                <button class="timer-button" type="button" name="start-stop" value="Start/Stop">
-                                    <span class="time-value">15:30</span>
-                                    <span class="timer-button-title">Start</span>
-                                </button>
+                            <div class="dot-container">
+                                <div class="dot"></div>
                             </div>
-                            <div class="dot"></div>
                         </div>
                     </div>
                     <div class="loader">

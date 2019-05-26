@@ -1,0 +1,10 @@
+@import 'footer.css';
+@import 'styles.css';
+
+.page-wrapper h1 {
+    padding: 20px;
+}
+
+.page-wrapper p {
+    padding: 5px 20px;
+}
