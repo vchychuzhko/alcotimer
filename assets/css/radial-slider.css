@@ -1,15 +1,4 @@
-.radial-slider {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    -webkit-transform: translate(-50%, -50%);
-    -ms-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
-    height: 300px;
-    width: 300px;
-}
-
-.radial-slider .circle {
+.radial-container .radial-slider {
     background-color: #9b59b6;
     border-radius: 50%;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
@@ -18,7 +7,7 @@
     width: 100%;
 }
 
-.radial-slider .circle:before {
+.radial-container .radial-slider:before {
     background-color: #ecf0f1;
     border-radius: 50%;
     box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
@@ -30,7 +19,7 @@
     width: 90%;
 }
 
-.radial-slider .circle .dot-container {
+.radial-container .radial-slider .dot-container {
     height: 50%;
     left: 47.5%;
     position: absolute;
@@ -44,7 +33,7 @@
     z-index: 1;
 }
 
-.radial-slider .circle .dot-container .dot {
+.radial-container .radial-slider .dot-container .dot {
     background-color: #fff;
     border-radius: 50%;
     box-shadow: 0 0 10px #000;

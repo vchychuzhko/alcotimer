@@ -86,30 +86,20 @@ $supportEmailAddress = $this->getSupportEmailAddress();
                 </div>
             </header>
             <div class="timer-container">
-                <div class="timer-wrapper">
+                <div class="timer-wrapper radial-container">
+                    <div class="timer-button-container">
+                        <button class="timer-button" type="button" name="start-stop" value="Start/Stop">
+                            <span class="time-value">15:30</span>
+                            <span class="timer-button-title">Start</span>
+                        </button>
+                    </div>
                     <div class="radial-slider">
-                        <div class="timer-button-container">
-                            <button class="timer-button" type="button" name="start-stop" value="Start/Stop">
-                                <span class="time-value">15:30</span>
-                                <span class="timer-button-title">Start</span>
-                            </button>
-                        </div>
-                        <div class="circle">
-                            <div class="dot-container">
-                                <div class="dot"></div>
-                            </div>
+                        <div class="dot-container">
+                            <div class="dot"></div>
                         </div>
                     </div>
                     <div class="loader">
-<!--                        <svg id="wrap" width="300" height="300">-->
-<!--                            <svg>-->
-<!--                                <circle cx="150" cy="150" r="130" style="stroke: #2c3e50; stroke-width:18; fill:transparent"></circle>-->
-
-<!--                                <path style="stroke: #add8e6; stroke-dasharray:820; stroke-dashoffset:-820; stroke-width:18; fill:transparent" d="M150,150 m0,-130 a 130,130 0 0,1 0,260 a 130,130 0 0,1 0,-260">-->
-<!--                                    <animate attributeName="stroke-dashoffset" dur="10s" to="0" repeatCount="indefinite"></animate>-->
-<!--                                </path>-->
-<!--                            </svg>-->
-<!--                        </svg>-->
+                        <div class="vjs-loading-spinner"></div>
                     </div>
                 </div>
                 <div class="random-button-container">
@@ -130,7 +120,7 @@ $supportEmailAddress = $this->getSupportEmailAddress();
             $('.random-time.range-slider').rangeSlider({});
             $('.settings').settings({});
             $('.timer-container').timer({});
-            $('.radial-slider').radialSlider({});
+            $('.radial-container').radialSlider({});
         });
     </script>
 </body>

@@ -16,7 +16,7 @@
          * Init event listeners
          */
         initBindings: function () {
-            $(this.element).on('mousedown touchstart', '.circle .dot', function () {
+            $(this.element).on('mousedown touchstart', '.radial-slider .dot', function () {
                 this.options.isDragging = true;
             }.bind(this));
 
@@ -27,7 +27,7 @@
             $(window).on('mousemove touchmove', function (event) {
                 try {
                     if (this.options.isDragging) {
-                        let $circle = $(this.element).find('.circle').eq(0),
+                        let $circle = $(this.element).find('.radial-slider').eq(0),
                             touch = event.originalEvent.touches ? event.originalEvent.touches[0] : undefined,
                             center_x = $circle.outerWidth() / 2 + $circle.offset().left,
                             center_y = $circle.outerHeight() / 2 + $circle.offset().top,
@@ -55,11 +55,11 @@
          * @param {number} angle
          */
         displayTime: function (angle) {
-            let min = $('.settings').find('.min-value.time').val(),
-                max = $('.settings').find('.max-value.time').val(),
-                percentage = angle / 360,
-                time = percentage;
-            $(this.element).closest('.timer-wrapper').find('.timer-button-container .time-value').html(angle + 'deg');
+            // let min = $('.settings').find('.min-value.time').val(),
+            //     max = $('.settings').find('.max-value.time').val(),
+            //     percentage = angle / 360,
+            //     time = percentage;
+            // $(this.element).closest('.timer-wrapper').find('.timer-button-container .time-value').html(angle + 'deg');
 
 
             // clearTimeout(saveCurrentTimeTimeout);
