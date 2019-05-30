@@ -5,9 +5,8 @@ namespace Ava\Base;
 class App
 {
     public const CONFIG_FILE = 'app' . DS . 'config.php';
-    private const TEMPLATES_DIR = 'app' . DS . 'templates';
-    private const MAINTENANCE_DEFAULT_ROUTE = 'maintenance.php';
-    private const MAINTENANCE_DEFAULT_EMAIL = 'vlad.chichuzhko@gmail.com';
+    private const TEMPLATES_DIR = BP . DS . 'app' . DS . 'templates';
+    private const MAINTENANCE_DEFAULT_TEMPLATE = 'maintenance.php';
 
     /**
      * @var \Ava\Logger\LogWriter
@@ -34,6 +33,7 @@ class App
     public function run()
     {
         ob_start();
+        $template = self::TEMPLATES_DIR . DS . self::MAINTENANCE_DEFAULT_TEMPLATE;
 
         if (!$this->isMaintenance() && $this->config) {
             $routes = $this->config['routes'];
@@ -41,20 +41,19 @@ class App
             $redirectStatus = (string) ($_SERVER['REDIRECT_STATUS'] ?? '');
 
             if ($redirectStatus === '403' || $redirectStatus === '405') {
-                $template = $systemRoutes[$redirectStatus];
+                $templateName = $systemRoutes[$redirectStatus];
             } else {
                 $uri = (string) strtok(trim($_SERVER['REQUEST_URI'], '/'), '?');
-                $template = $routes[$uri] ?? $systemRoutes['404'];
+                $templateName = $routes[$uri] ?? $systemRoutes['404'];
             }
 
-            $template = BP . DS . self::TEMPLATES_DIR . DS . $template;
+            $templateFile = self::TEMPLATES_DIR . DS . $templateName;
 
-            if (!file_exists($template)) {
-                $this->logWriter->write('No such file: ' . $template);
-                $template = BP . DS . self::TEMPLATES_DIR . DS . self::MAINTENANCE_DEFAULT_ROUTE;
+            if (file_exists($templateFile)) {
+                $template = $templateFile;
+            } else {
+                $this->logWriter->write('No such file: ' . $templateFile);
             }
-        } else {
-            $template = BP . DS . self::TEMPLATES_DIR . DS . self::MAINTENANCE_DEFAULT_ROUTE;
         }
 
         include $template;
@@ -102,7 +101,7 @@ class App
      */
     public function getSupportEmailAddress()
     {
-        return $this->config['support_email_address'] ?? self::MAINTENANCE_DEFAULT_EMAIL;
+        return $this->config['support_email_address'] ?? '';
     }
 
     /**
@@ -111,6 +110,8 @@ class App
      */
     public function getDeployedVersion()
     {
-        return '123';
+        $version = @file_get_contents(BP . DS . \Ava\Console\Command\Cache::DEPLOYED_VERSION_FILE);
+
+        return (string) $version;
     }
 }
