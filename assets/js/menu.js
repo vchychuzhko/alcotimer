@@ -1,5 +1,5 @@
 ;(function ($) {
-    $.widget('vlad.menu', {
+    $.widget('ava.menu', {
         /**
          * Constructor
          * @private
@@ -12,9 +12,9 @@
          * Init event listeners
          */
         initBindings: function () {
-            $(this.element).find('.toggle-container').on('click', function () {
+            $(this.element).on('click', '.toggle-container', function () {
                 $(this.element).toggleClass('active');
-            }.bind(this))
+            }.bind(this));
         }
     });
 })(jQuery);

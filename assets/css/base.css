@@ -1,6 +1,4 @@
-@import 'footer.css';
-
-* {
+*{
     margin: 0;
     padding: 0;
 }
@@ -14,10 +12,6 @@ a:hover {
     opacity: 1;
 }
 
-.page-wrapper h1 {
-    padding: 20px;
-}
-
-.page-wrapper p {
-    padding: 5px 20px;
+.mail-address {
+    word-wrap: break-word;
 }

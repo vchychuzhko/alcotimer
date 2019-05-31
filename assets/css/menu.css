@@ -1,0 +1,292 @@
+.menu {
+    background: #eee;
+    height: 100%;
+    max-width: 300px;
+    position: absolute;
+    transition-duration: .5s;
+    transition-property: left;
+    transition-timing-function: ease;
+    width: 80%;
+    left: -300px;
+}
+
+.menu.active {
+     left: 0;
+}
+
+.page-wrapper {
+    transition-duration: .5s;
+    transition-property: margin-left;
+    transition-timing-function: ease;
+}
+
+.menu.active + .page-wrapper {
+    margin-left: 300px;
+}
+
+.menu .toggle-container {
+    cursor: pointer;
+    height: 40px;
+    position: absolute;
+    right: -60px;
+    top: 5px;
+    width: 50px;
+    z-index: 10;
+}
+
+.menu .toggle-container .toggle {
+    border: none;
+    cursor: pointer;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.menu .toggle-container .toggle,
+.menu .toggle-container .toggle:before,
+.menu .toggle-container .toggle:after {
+    background: #000;
+    border-radius: 4px;
+    position: absolute;
+    height: 4px;
+    transition-duration: .5s;
+    transition-property: transform;
+    transition-timing-function: ease;
+    width: 40px;
+}
+
+.menu .toggle-container .toggle:before,
+.menu .toggle-container .toggle:after {
+    display: block;
+    content: "";
+}
+
+.menu .toggle-container .toggle:before {
+    top: -10px;
+}
+
+.menu .toggle-container .toggle:after {
+    bottom: -10px;
+}
+
+.menu.active .toggle-container .toggle:before {
+    -webkit-transform: translate3d(-8px,0,0) rotate(-45deg) scaleX(0.7);
+    -moz-transform: translate3d(-8px,0,0) rotate(-45deg) scaleX(0.7);
+    -o-transform: translate3d(-8px,0,0) rotate(-45deg) scaleX(0.7);
+    -ms-transform: translate3d(-8px,0,0) rotate(-45deg) scaleX(0.7);
+    transform: translate3d(-8px,0,0) rotate(-45deg) scaleX(0.7);
+}
+
+.menu.active .toggle-container .toggle:after {
+    -webkit-transform: translate3d(-8px, 0, 0) rotate(45deg) scaleX(0.7);
+    -moz-transform: translate3d(-8px, 0, 0) rotate(45deg) scaleX(0.7);
+    -o-transform: translate3d(-8px, 0, 0) rotate(45deg) scaleX(0.7);
+    -ms-transform: translate3d(-8px, 0, 0) rotate(45deg) scaleX(0.7);
+    transform: translate3d(-8px, 0, 0) rotate(45deg) scaleX(0.7);
+}
+
+.menu .menu-list {
+    height: 100vh;
+    min-width: 300px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    z-index: 1;
+}
+
+.menu .menu-list .title {
+    text-align: center;
+}
+
+.menu .menu-list .settings {
+    border-top: 2px solid #fff;
+}
+
+.menu .menu-list .settings ul {
+    list-style: none;
+}
+
+.menu .menu-list .settings ul li:not(:first-child) {
+    margin: 20px 0 0;
+}
+
+.menu .menu-list .settings .random-time .range-inputs {
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    justify-content: space-around;
+}
+
+.menu .menu-list .settings .random-time .range-inputs .time {
+    border: 1px solid;
+    border-radius: 5px;
+    display: inline-block;
+    font-size: 24px;
+    padding: 3px 0;
+    text-align: center;
+    width: 25%;
+}
+
+.menu .menu-list .settings .random-time .range-inputs .input-separator {
+    font-size: 24px;
+}
+
+.menu .menu-list .settings .checkbox .show-loader,
+.menu .menu-list .settings .checkbox label {
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.menu .menu-list .settings .checkbox {
+    position: relative;
+}
+
+.menu .menu-list .settings .checkbox input {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.menu .menu-list .settings .checkbox label {
+    margin-left: 30px;
+}
+
+.menu .menu-list .settings .checkbox label:before {
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    content: "";
+    display: block;
+    height: 25px;
+    left: 0;
+    position: absolute;
+    top: -3px;
+    width: 25px;
+}
+
+.menu .menu-list .settings .checkbox label:after {
+    background: transparent;
+    border-radius: 50%;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
+    content: "";
+    cursor: pointer;
+    display: block;
+    height: 15px;
+    left: 5px;
+    position: absolute;
+    top: 2px;
+    transition: all .5s ease;
+    width: 15px;
+    z-index: 1;
+}
+
+.menu .menu-list .settings .checkbox input:checked + label:after {
+    background: #7dd0b6;
+}
+
+.menu .menu-list .settings .settings-buttons-container {
+    display: -webkit-flex;
+    display: flex;
+    justify-content: flex-end;
+    padding: 15px 0 0;
+}
+
+.menu .menu-list .settings .settings-buttons-container button {
+    background: #fff;
+    border: 1px solid;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 24px;
+    margin-left: 10px;
+    padding: 5px 10px;
+}
+
+.menu .menu-list .settings .settings-buttons-container button:hover {
+    background: #fff;
+    box-shadow: 0 1px 4px 1px rgba(0, 0, 0, 0.25);
+}
+
+.menu .menu-list .contact-us {
+    border-top: 2px solid #fff;
+}
+
+.menu .menu-list .title,
+.menu .menu-list .settings,
+.menu .menu-list .contact-us {
+    padding: 20px;
+}
+
+@media (max-width: 640px) {
+    .menu.active .toggle-container {
+        height: 100%;
+        left: 100%;
+        top: 0;
+        width: 120%;
+    }
+
+    .menu.active .toggle-container .toggle {
+        left: 10px;
+        top: 25px;
+        -webkit-transform: none;
+        -moz-transform: none;
+        -ms-transform: none;
+        -o-transform: none;
+        transform: none;
+    }
+}
+
+@media (max-width: 375px) {
+    .menu {
+        left: -80%;
+        max-width: unset;
+    }
+
+    .menu .toggle-container {
+        right: -50px;
+        width: 40px;
+    }
+
+    .menu.active .toggle-container .toggle {
+        left: 5%;
+    }
+
+    .menu .toggle-container .toggle,
+    .menu .toggle-container .toggle:before,
+    .menu .toggle-container .toggle:after {
+        height: 3px;
+        width: 30px;
+    }
+
+    .menu .toggle-container .toggle:before {
+        top: -7px;
+    }
+
+    .menu .toggle-container .toggle:after {
+        bottom: -7px;
+    }
+
+    .menu.active + .page-wrapper {
+        margin-left: 80%;
+    }
+
+    .menu .menu-list {
+        min-width: unset;
+    }
+
+    .menu .menu-list .title, .menu .menu-list .settings, .menu .menu-list .contact-us {
+        padding: 10px;
+    }
+
+    .menu .menu-list .settings h3 {
+        font-size: 16px;
+    }
+
+    .menu .menu-list .settings .checkbox label {
+        font-size: 13px;
+    }
+
+    .menu .menu-list .settings .settings-buttons-container button {
+        font-size: 20px;
+    }
+}

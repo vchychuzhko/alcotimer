@@ -1,0 +1,46 @@
+.radial-container .radial-slider {
+    border: 15px solid #9b59b6;
+    background: transparent;
+    border-radius: 50%;
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    box-sizing: border-box;
+    height: 100%;
+    position: absolute;
+    width: 100%;
+}
+
+.radial-container .radial-slider .dot-container {
+    height: 150px;
+    left: 47.5%;
+    position: absolute;
+    top: -15px;
+    -webkit-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -ms-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+    transform-origin: center bottom;
+    width: 5%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.radial-container .radial-slider .dot-container .dot {
+    background-color: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #000;
+    content: "";
+    cursor: pointer;
+    height: 0;
+    padding-bottom: 200%;
+    position: absolute;
+    -webkit-transform: translate3d(-25%, -25%, 0);
+    -moz-transform: translate3d(-25%, -25%, 0);
+    -ms-transform: translate3d(-25%, -25%, 0);
+    -o-transform: translate3d(-25%, -25%, 0);
+    transform: translate3d(-25%, -25%, 0);
+    width: 200%;
+    pointer-events: all;
+}

@@ -1,3 +1,13 @@
 /.idea
-/var/
+
+/maintenance.flag
+
+/var/*
 !/var/.htaccess
+!/var/log/
+/var/log/*
+!/var/log/.gitkeep
+
+!/pub/static/
+/pub/static/*
+!/pub/static/.htaccess

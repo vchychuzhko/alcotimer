@@ -1,0 +1,20 @@
+#!/usr/bin/env php
+<?php
+
+if (PHP_SAPI !== 'cli') {
+    echo 'bin/console must be run as a CLI application';
+    exit(1);
+}
+
+define('DS', DIRECTORY_SEPARATOR);
+define('BP', dirname(dirname(__FILE__)));
+define('APP_DIR', BP . DS . 'app' . DS . 'code');
+require_once(BP . DS . 'app' . DS . 'autoload.php');
+
+try {
+    $console = new \Ava\Console\Console();
+    $console->run();
+} catch (\Throwable $t) {
+    echo 'Error occurred: ' . $t->getMessage();
+    exit(1);
+}
