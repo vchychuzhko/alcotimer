@@ -90,7 +90,7 @@ $supportEmailAddress = $this->getSupportEmailAddress();
                     <div class="timer-button-container">
                         <button class="timer-button" type="button" name="start-stop" value="Start/Stop">
                             <span class="time-value">15:30</span>
-                            <span class="timer-button-title">Start</span>
+                            <span class="timer-button-title" style="display: block; bottom: 0; position: absolute; left: 50%; transform: translateX(-50%)"></span>
                         </button>
                     </div>
                     <div class="radial-slider">

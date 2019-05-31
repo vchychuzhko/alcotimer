@@ -124,7 +124,7 @@ body {
 }
 
 .page-wrapper .content .timer-container .timer-wrapper .timer-button-container .timer-button span {
-    display: none;
+    display: none; /*@TODO: Temporary solution to hide text on the main button*/
 }
 
 .page-wrapper .content .timer-container .timer-wrapper .timer-button-container .timer-button:hover {

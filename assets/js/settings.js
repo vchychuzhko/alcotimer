@@ -90,6 +90,7 @@
                 };
 
             localStorage.settings = JSON.stringify(settings);
+            $('.timer-container').trigger('updateConfigurations');
         },
 
         /**

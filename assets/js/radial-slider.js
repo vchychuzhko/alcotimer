@@ -55,11 +55,15 @@
          * @param {number} angle
          */
         displayTime: function (angle) {
-            // let min = $('.settings').find('.min-value.time').val(),
-            //     max = $('.settings').find('.max-value.time').val(),
-            //     percentage = angle / 360,
-            //     time = percentage;
-            // $(this.element).closest('.timer-wrapper').find('.timer-button-container .time-value').html(angle + 'deg');
+            let min = parseInt($('.settings').find('.min-value.time').val()),
+                max = parseInt($('.settings').find('.max-value.time').val()),
+                percentage = angle / 360,
+                time = percentage * (max - min) + min,
+                minutes = Math.trunc(time),
+                seconds = Math.round((time - minutes) * 60);
+            $('.timer-button-container .time-value').html(angle);
+
+            $('.timer-button-container .timer-button-title').html(minutes+ ':' + (seconds < 10 ? '0' : '') + seconds);
 
 
             // clearTimeout(saveCurrentTimeTimeout);
