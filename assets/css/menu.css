@@ -72,15 +72,19 @@
 }
 
 .menu.active .toggle-container .toggle:before {
-    -webkit-transform: translate3d(-8px,0,0) rotate(-45deg) scaleX(.7);
-    -ms-transform: translate3d(-8px,0,0) rotate(-45deg) scaleX(.7);
-    transform: translate3d(-8px,0,0) rotate(-45deg) scaleX(.7);
+    -webkit-transform: translate3d(-8px,0,0) rotate(-45deg) scaleX(0.7);
+    -moz-transform: translate3d(-8px,0,0) rotate(-45deg) scaleX(0.7);
+    -o-transform: translate3d(-8px,0,0) rotate(-45deg) scaleX(0.7);
+    -ms-transform: translate3d(-8px,0,0) rotate(-45deg) scaleX(0.7);
+    transform: translate3d(-8px,0,0) rotate(-45deg) scaleX(0.7);
 }
 
 .menu.active .toggle-container .toggle:after {
-    -webkit-transform: translate3d(-8px, 0, 0) rotate(45deg) scaleX(.7);
-    -ms-transform: translate3d(-8px, 0, 0) rotate(45deg) scaleX(.7);
-    transform: translate3d(-8px, 0, 0) rotate(45deg) scaleX(.7);
+    -webkit-transform: translate3d(-8px, 0, 0) rotate(45deg) scaleX(0.7);
+    -moz-transform: translate3d(-8px, 0, 0) rotate(45deg) scaleX(0.7);
+    -o-transform: translate3d(-8px, 0, 0) rotate(45deg) scaleX(0.7);
+    -ms-transform: translate3d(-8px, 0, 0) rotate(45deg) scaleX(0.7);
+    transform: translate3d(-8px, 0, 0) rotate(45deg) scaleX(0.7);
 }
 
 .menu .menu-list {
@@ -225,7 +229,9 @@
         left: 10px;
         top: 25px;
         -webkit-transform: none;
+        -moz-transform: none;
         -ms-transform: none;
+        -o-transform: none;
         transform: none;
     }
 }
