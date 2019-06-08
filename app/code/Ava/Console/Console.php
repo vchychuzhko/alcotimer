@@ -43,7 +43,8 @@ class Console
                     . self::HELP_SUGGESTION;
             }
         } else {
-            $output = $this->showInfo();
+            $help = new \Ava\Console\Command\Help();
+            $output = $help->show();
         }
 
         echo $output . "\n";
@@ -101,30 +102,7 @@ class Console
     {
         $methods = get_class_methods($class);
 
-        if ($matchMethod = $this->findMatch($methodName, $methods)) {
-            $methodName = $matchMethod;
-        } else {
-            $methodName = '';
-        }
-
-        return $methodName;
-    }
-
-    /**
-     * Show info in case when there is no arguments.
-     * @return string
-     */
-    private function showInfo()
-    {
-        return <<<HTML
- --- AlcoTimer CLI ---
-Here is the list of available commands:
-`php bin/console cache:clean` | Clean and regenerate static files, forcing browser to reload JS and CSS.
- 
-`php bin/console maintenance:enable [--ip=<ip address>]` | Enable maintenance mode with list of allowed ids. 
-`php bin/console maintenance:disable` | Disable maintenance mode. 
-`php bin/console maintenance:status` | View current state of maintenance. 
-HTML;
+        return $this->findMatch($methodName, $methods) ?: '';
     }
 
     /**

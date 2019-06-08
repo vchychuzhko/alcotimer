@@ -13,11 +13,10 @@ class Maintenance extends \Ava\Console\AbstractCommand
      */
     public function enable($args = [])
     {
-        $allowedIPs = $args ? ($this->parseArguments($args)['ip'] ?? []) : [];
-
+        $allowedIPs = $this->parseArguments($args)['ip'] ?? [];
         file_put_contents(BP . DS . self::MAINTENANCE_FILE, implode(',', $allowedIPs));
 
-        return 'Maintenance mode was enabled.';
+        return $this->colourText('Maintenance mode was enabled.');
     }
 
     /**
@@ -27,7 +26,8 @@ class Maintenance extends \Ava\Console\AbstractCommand
     public function disable()
     {
         @unlink(BP . DS . self::MAINTENANCE_FILE);
-        return 'Maintenance mode was disabled.';
+
+        return $this->colourText('Maintenance mode was disabled.');
     }
 
     /**
