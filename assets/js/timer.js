@@ -121,11 +121,11 @@
 
         /**
          *
-         * @param {int} input
+         * @param {int} angle
          * @returns {int}
          */
-        angleToSeconds: function(input) {
-            return Math.round((input / 360) * (this.options.maxTime - this.options.minTime)) + this.options.minTime;
+        angleToSeconds: function(angle) {
+            return Math.round((angle / 360) * (this.options.maxTime - this.options.minTime)) + this.options.minTime;
         },
 
         /**

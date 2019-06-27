@@ -70,7 +70,10 @@ $supportEmailAddress = $this->getSupportEmailAddress();
     <script type="application/javascript">
         jQuery(function () {
             $('body').base({});
-            $('.random-time.range-slider').rangeSlider({});
+            $('.random-time.range-slider').rangeSlider({
+                minValue: 1,
+                maxValue: 30
+            });
             $('.settings').settings({});
             $('.timer-container').timer({});
             $('.radial-container').radialSlider({});

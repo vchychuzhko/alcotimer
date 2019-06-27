@@ -1,7 +1,10 @@
 ;(function ($) {
     $.widget('ava.rangeSlider', {
         options: {
-            difference: 2
+            difference: 2,
+            isDragging: false,
+            minValue: 5,
+            maxValue: 20
         },
 
         /**
@@ -9,6 +12,7 @@
          * @private
          */
         _create: function () {
+            this.initValuesRestrictions();
             this.initBindings();
         },
 
@@ -16,48 +20,127 @@
          * Init event listeners
          */
         initBindings: function () {
-            let $minRange = $(this.element).find('.min-range'),
-                $maxRange = $(this.element).find('.max-range'),
+            let $container =  $(this.element).find('.range-controls'),
+                $minRange = $container.find('.min-range'),
+                $maxRange = $container.find('.max-range'),
                 $minInput = $(this.element).find('.min-value'),
-                $maxInput = $(this.element).find('.max-value');
+                $maxInput = $(this.element).find('.max-value'),
+                containerWidth = $container.innerWidth();
 
-            $minRange.on('input', function (event) {
-                let minValue = $(event.target).val(),
-                    maxValue = $maxRange.val();
-
-                if (minValue > maxValue - this.options.difference) {
-                    $maxRange.val(parseInt(minValue) + this.options.difference);
-
-                    if (maxValue === $maxRange.attr('max')) {
-                        $minRange.val($maxRange.attr('max') - this.options.difference);
-                    }
-                }
-                $minInput.val($minRange.val());
-                $maxInput.val($maxRange.val());
+            $(this.element).on('mousedown touchstart', '.range-controls', function () {
+                this.options.isDragging = true;
             }.bind(this));
 
-            $maxRange.on('input', function (event) {
-                let maxValue = $(event.target).val(),
-                    minValue = $minRange.val();
+            $(document).on('mouseup touchend', function () {
+                this.options.isDragging = false;
+            }.bind(this));
 
-                if (maxValue < parseInt(minValue) + this.options.difference) {
-                    $minRange.val(maxValue - this.options.difference);
+            $(this.element).on('mousemove touchmove', function (event) {
+                try {
+                    if (this.options.isDragging) {
+                        let touch = event.originalEvent.touches ? event.originalEvent.touches[0] : undefined,
+                            pos = event.pageX || touch.pageX,
+                            $event = $(event.target),
+                            containerLeft = $container.offset().left,
+                            containerRight = containerLeft + containerWidth,
+                            newPos = (pos - containerLeft) / containerWidth * 100;
 
-                    if (minValue === $minRange.attr('min')) {
-                        $maxRange.val(this.options.difference);
+                        if (pos < containerLeft) {
+                            newPos = 0;
+                        }
+
+                        if (pos > containerRight) {
+                            newPos = 100;
+                        }
+
+                        this.setControllerPosition($event, newPos);
+                    }
+                } catch (e) {
+                    //do nothing, touch error happened
+                }
+            }.bind(this));
+
+            $minRange.on('change', function () {
+                let minValue = this.percentToValue(parseFloat($minRange.css('left')) / containerWidth * 100),
+                    maxValue = this.percentToValue(parseFloat($maxRange.css('left')) / containerWidth * 100);
+
+                if (minValue > maxValue - this.options.difference) {
+                    this.setControllerPosition($maxRange, minValue + this.options.difference);
+
+                    if (maxValue === this.options.maxValue) {
+                        this.setControllerPosition($minRange, this.options.maxValue - this.options.difference);
                     }
                 }
-                $minInput.val($minRange.val());
-                $maxInput.val($maxRange.val());
+                $minInput.val(minValue);
+                $maxInput.val(maxValue);
+            }.bind(this));
+
+            $maxRange.on('change', function () {
+                let minValue = this.percentToValue(parseFloat($minRange.css('left')) / containerWidth * 100),
+                    maxValue = this.percentToValue(parseFloat($maxRange.css('left')) / containerWidth * 100);
+
+                if (maxValue < minValue + this.options.difference) {
+                    this.setControllerPosition($minRange, maxValue - this.options.difference);
+
+                    if ((maxValue - this.options.difference) === this.options.minValue) {
+                        this.setControllerPosition($maxRange, this.options.difference);
+                    }
+                }
+                $minInput.val(minValue);
+                $maxInput.val(maxValue);
             }.bind(this));
 
             $minInput.on('change', function (event) {
-                $minRange.val($(event.target).val());
-            });
+                let newValue = parseInt($(event.target).val());
+
+                if (newValue <= this.options.maxValue) {
+                    this.setControllerPosition($minRange, newValue);
+                }
+            }.bind(this));
 
             $maxInput.on('change', function (event) {
-                $maxRange.val($(event.target).val());
-            });
+                let newValue = parseInt($(event.target).val());
+
+                if (newValue <= this.options.maxValue) {
+                    this.setControllerPosition($maxRange, newValue);
+                }
+            }.bind(this));
+        },
+
+        /**
+         * Retrieve minimal values for slider
+         */
+        initValuesRestrictions: function () {
+            $(this.element).find('.range-inputs .min-value').attr('min', this.options.minValue);
+            $(this.element).find('.range-inputs .max-value').attr('min', this.options.minValue + this.options.difference);
+        },
+
+        /**
+         * Set position of controller
+         * @param $rangeController
+         * @param position
+         */
+        setControllerPosition: function ($rangeController, position) {
+            $rangeController.css({'left': this.valueToPercent(position) + '%'});
+            $rangeController.trigger('change');
+        },
+
+        /**
+         * Convert percent to value
+         * @param percent
+         * @returns {number}
+         */
+        percentToValue: function (percent) {
+            return Math.round(percent / 100 * (this.options.maxValue - this.options.minValue)) + this.options.minValue;
+        },
+
+        /**
+         * Convert value to percent
+         * @param value
+         * @returns {number}
+         */
+        valueToPercent: function (value) {
+            return (value - this.options.minValue) / (this.options.maxValue - this.options.minValue) * 100;
         }
     });
 })(jQuery);

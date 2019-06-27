@@ -36,16 +36,14 @@
 
             if (settings !== null) {
                 let $minTimeInput = $(this.element).find('.min-value.time'),
-                    $minTimeRange = $(this.element).find('.min-range.time'),
                     $maxTimeInput = $(this.element).find('.max-value.time'),
-                    $maxTimeRange = $(this.element).find('.max-range.time'),
                     $showRandomTime = $(this.element).find('.show-random-time'),
                     $showLoaderInput = $(this.element).find('.show-loader');
 
                 $minTimeInput.val(settings.minTime);
-                $minTimeRange.val(settings.minTime);
+                $minTimeInput.trigger('change');
                 $maxTimeInput.val(settings.maxTime);
-                $maxTimeRange.val(settings.maxTime);
+                $maxTimeInput.trigger('change');
                 $showRandomTime.prop('checked' , settings.showRandomTime);
                 $showLoaderInput.prop('checked' , settings.showLoader);
             }
@@ -56,16 +54,14 @@
          */
         resetSettings: function () {
             let $minTimeInput = $(this.element).find('.min-value.time'),
-                $minTimeRange = $(this.element).find('.min-range.time'),
                 $maxTimeInput = $(this.element).find('.max-value.time'),
-                $maxTimeRange = $(this.element).find('.max-range.time'),
                 $showRandomTime = $(this.element).find('.show-random-time'),
                 $showLoaderInput = $(this.element).find('.show-loader');
 
             $minTimeInput.val(5);
-            $minTimeRange.val(5);
+            $minTimeInput.trigger('change');
             $maxTimeInput.val(20);
-            $maxTimeRange.val(20);
+            $maxTimeInput.trigger('change');
             $showRandomTime.prop('checked' , false);
             $showLoaderInput.prop('checked' , true);
         },
