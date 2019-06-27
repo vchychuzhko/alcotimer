@@ -36,7 +36,7 @@ class AbstractCommand
      * @param string $colour
      * @return string
      */
-    protected function colourText($text, $colour = 'light-green') {
+    protected function colourText($text, $colour = 'green') {
         if (!(strncasecmp(PHP_OS, 'WIN', 3) == 0) && isset($this->colours[$colour])) {
             $text = "\033[" . $this->colours[$colour] . "m" . $text . "\033[0m";
         }

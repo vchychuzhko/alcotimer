@@ -1,4 +1,5 @@
 @import 'base.css';
+@import 'header.css';
 @import 'message.css';
 @import 'menu.css';
 @import 'range-slider.css';
@@ -29,30 +30,6 @@ body {
     /*background: #7DD0B6;*/
     background: url('/pub/media/images/back.jpg');
     z-index: 5;
-}
-
-.page-wrapper .content header {
-    background: white;
-    height: 50px;
-    text-align: center;
-    position: relative;
-    width: 100%;
-}
-
-.page-wrapper .content header .logo-container {
-    height: 44px;
-    left: 50%;
-    padding: 3px 0;
-    position: absolute;
-    -webkit-transform: translateX(-50%);
-    -moz-transform: translateX(-50%);
-    -o-transform: translateX(-50%);
-    -ms-transform: translateX(-50%);
-    transform: translateX(-50%);
-}
-
-.page-wrapper .content header .logo-container img {
-    height: 100%;
 }
 
 .page-wrapper .content .timer-container {
@@ -194,7 +171,7 @@ body {
 }
 
 .page-wrapper .content .timer-container button span {
-    color: white;
+    color: #fff;
     display: block;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -369,19 +346,5 @@ body {
 
     .menu.active + .page-wrapper .mobile-overlay {
         display: block;
-    }
-}
-
-@media (max-width: 375px) {
-    .page-wrapper .content header .logo-container {
-        left: unset;
-        height: 32px;
-        padding: 8px 0;
-        right: 5px;
-        -webkit-transform: none;
-        -moz-transform: none;
-        -ms-transform: none;
-        -ms-transform: none;
-        transform: none;
     }
 }

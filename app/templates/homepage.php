@@ -13,12 +13,11 @@ $supportEmailAddress = $this->getSupportEmailAddress();
     <link rel="stylesheet" type="text/css" href="/assets/css/homepage.css"/>
     <script src="/lib/jquery/jquery.min.js"></script>
     <script src="/lib/jquery-ui/jquery-ui.min.js"></script>
-    <script src="/assets/js/menu.js"></script>
+    <script src="/assets/js/base.js"></script>
     <script src="/assets/js/range-slider.js"></script>
     <script src="/assets/js/radial-slider.js"></script>
     <script src="/assets/js/settings.js"></script>
     <script src="/assets/js/timer.js"></script>
-    <script src="/assets/js/message.js"></script>
 </head>
 <body class="homepage">
     <div class="menu">
@@ -26,51 +25,11 @@ $supportEmailAddress = $this->getSupportEmailAddress();
             <button class="toggle" type="button" name="Menu toggler" value="Toggle Menu"></button>
         </div>
         <div class="menu-list">
-            <div class="title">
-                <h2>AlcoMenu</h2>
-            </div>
-            <div class="settings">
-                <ul>
-                    <li>
-                        <div class="random-time range-slider">
-                            <h3>Set time range (mins):</h3>
-                            <div class="range-controls">
-                                <input type="range" min="0" max="60" value="5" class="min-range time" name="min-time" id="min-time">
-                                <input type="range" min="0" max="60" value="20" class="max-range time" name="max-time" id="max-time">
-                                <label for="min-time" style="display: none">Minimal random time value</label>
-                                <label for="max-time" style="display: none">Maximum random time value</label>
-                            </div>
-                            <div class="range-inputs">
-                                <input type="number" value="5" class="min-value time" name="min-time-input" id="min-time-input">
-                                <label for="min-time-input" style="display: none">Minimum random time input value</label>
-                                <span class="input-separator">- to -</span>
-                                <input type="number" value="20" class="max-value time" name="max-time-input" id="max-time-input">
-                                <label for="max-time-input" style="display: none">Maximum random time input value</label>
-                            </div>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="random-time checkbox">
-                            <input type="checkbox" class="show-random-time" name="show-random-time" id="show-random-time">
-                            <label for="show-random-time">Show random time</label>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="loader-settings checkbox">
-                            <input type="checkbox" class="show-loader" name="show-loader" id="show-loader" checked>
-                            <label for="show-loader">Show loader on run</label>
-                        </div>
-                    </li>
-                </ul>
-                <div class="settings-buttons-container">
-                    <button class="reset-button" type="button" name="settings-reset" value="Reset  settings">Reset</button>
-                    <button class="save-button" type="button" name="settings-save" value="Save Settings">Save</button>
-                </div>
-            </div>
+            <?php include('template/settings.html'); ?>
             <div class="contact-us">
                 <p>Face any bug or have new ideas?</p>
                 <p>Send us an email:
-                    <a href="mailto:<?= $supportEmailAddress; ?>?subject = AlcoTimer" class="mail-address">
+                    <a href="mailto:<?= $supportEmailAddress; ?>?subject = AlcoTimer" class="mail-address word-break copy-on-click">
                         <?= $supportEmailAddress; ?>
                     </a>
                 </p>
@@ -80,11 +39,7 @@ $supportEmailAddress = $this->getSupportEmailAddress();
     <main class="page-wrapper">
         <div class="mobile-overlay"></div>
         <div class="content">
-            <header>
-                <div class="logo-container">
-                    <img src="/pub/media/images/logo.png" alt="AlcoTimer logo"/>
-                </div>
-            </header>
+            <?php include('template/header.html'); ?>
             <div class="timer-container">
                 <div class="timer-wrapper radial-container">
                     <div class="timer-button-container">
@@ -110,13 +65,11 @@ $supportEmailAddress = $this->getSupportEmailAddress();
                 </div>
             </div>
         </div>
-        <footer>
-            <?php include('template/footer.html'); ?>
-        </footer>
+        <?php include('template/footer.html'); ?>
     </main>
     <script type="application/javascript">
         jQuery(function () {
-            $('.menu').menu({});
+            $('body').base({});
             $('.random-time.range-slider').rangeSlider({});
             $('.settings').settings({});
             $('.timer-container').timer({});

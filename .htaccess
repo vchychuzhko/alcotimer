@@ -1,6 +1,5 @@
 ErrorDocument 403 /
 ErrorDocument 404 /
-ErrorDocument 405 /
 
 # Deny access to filenames starting with dot(.)
 <FilesMatch "^\.">

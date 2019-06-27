@@ -13,8 +13,7 @@
          * Init event listeners
          */
         initBindings: function () {
-            let $toggleContainer = $(this.element).closest('.menu').find('.toggle-container'),
-                $contactUsLink = $(this.element).closest('.menu-list').find('.contact-us .mail-address');
+            let $toggleContainer = $(this.element).closest('.menu').find('.toggle-container');
 
             $(this.element).on('click', '.save-button', function () {
                 this.saveSettings();
@@ -25,9 +24,10 @@
                 }, 200);
             }.bind(this));
 
-            $(this.element).on('click', '.reset-button', this.resetSettings.bind(this));
-
-            $contactUsLink.on('click', this.copyText.bind(this));
+            $(this.element).on('click', '.reset-button', function () {
+                this.resetSettings();
+                window.showMessage('Setting were reset to default ones.', 3000);
+            }.bind(this));
         },
 
         /**
@@ -70,8 +70,6 @@
             $maxTimeRange.val(20);
             $showRandomTime.prop('checked' , false);
             $showLoaderInput.prop('checked' , true);
-
-            window.showMessage('Setting were reset to default ones.', 3000);
         },
 
         /**
@@ -92,20 +90,5 @@
             localStorage.settings = JSON.stringify(settings);
             $('.timer-container').trigger('updateConfigurations');
         },
-
-        /**
-         * Copy mail address to the clipboard
-         */
-        copyText: function (event) {
-            event.preventDefault();
-            let $temp = $("<input>");
-
-            $('body').append($temp);
-            $temp.val($(event.target).text()).select();
-            document.execCommand('copy');
-            $temp.remove();
-
-            window.showMessage('Copied to the clipboard!', 3000);
-        }
     });
 })(jQuery);

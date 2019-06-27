@@ -40,7 +40,7 @@ class App
             $systemRoutes = $this->config['system_routes'];
             $redirectStatus = (string) ($_SERVER['REDIRECT_STATUS'] ?? '');
 
-            if ($redirectStatus === '403' || $redirectStatus === '405') {
+            if ($redirectStatus === '403') {
                 $templateName = $systemRoutes[$redirectStatus];
             } else {
                 $uri = (string) strtok(trim($_SERVER['REQUEST_URI'], '/'), '?');

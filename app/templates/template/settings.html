@@ -1,0 +1,41 @@
+<div class="title">
+    <h2>AlcoMenu</h2>
+</div>
+<div class="settings">
+    <ul>
+        <li>
+            <div class="random-time range-slider">
+                <h3>Set time range (mins):</h3>
+                <div class="range-controls">
+                    <input type="range" min="0" max="60" value="5" class="min-range time" name="min-time" id="min-time">
+                    <input type="range" min="0" max="60" value="20" class="max-range time" name="max-time" id="max-time">
+                    <label for="min-time" style="display: none">Minimal random time value</label>
+                    <label for="max-time" style="display: none">Maximum random time value</label>
+                </div>
+                <div class="range-inputs">
+                    <input type="number" value="5" class="min-value time" name="min-time-input" id="min-time-input">
+                    <label for="min-time-input" style="display: none">Minimum random time input value</label>
+                    <span class="input-separator">- to -</span>
+                    <input type="number" value="20" class="max-value time" name="max-time-input" id="max-time-input">
+                    <label for="max-time-input" style="display: none">Maximum random time input value</label>
+                </div>
+            </div>
+        </li>
+        <li>
+            <div class="random-time checkbox">
+                <input type="checkbox" class="show-random-time" name="show-random-time" id="show-random-time">
+                <label for="show-random-time">Show random time</label>
+            </div>
+        </li>
+        <li>
+            <div class="loader-settings checkbox">
+                <input type="checkbox" class="show-loader" name="show-loader" id="show-loader" checked>
+                <label for="show-loader">Show loader on run</label>
+            </div>
+        </li>
+    </ul>
+    <div class="settings-buttons-container">
+        <button class="reset-button" type="button" name="settings-reset" value="Reset  settings">Reset</button>
+        <button class="save-button" type="button" name="settings-save" value="Save Settings">Save</button>
+    </div>
+</div>
