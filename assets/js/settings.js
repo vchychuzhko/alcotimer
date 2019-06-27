@@ -13,14 +13,12 @@
          * Init event listeners
          */
         initBindings: function () {
-            let $toggleContainer = $(this.element).closest('.menu').find('.toggle-container');
-
             $(this.element).on('click', '.save-button', function () {
                 this.saveSettings();
                 window.showMessage('Setting were saved!', 3000);
 
                 setTimeout(function () {
-                    $toggleContainer.trigger('click');
+                    $('.menu').trigger('close-menu');
                 }, 200);
             }.bind(this));
 

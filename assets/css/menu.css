@@ -114,6 +114,9 @@
 .menu .menu-list .settings .random-time .range-inputs {
     align-items: center;
     display: -webkit-flex;
+    display: -moz-flex;
+    display: -ms-flexbox;
+    display: -ms-flex;
     display: flex;
     justify-content: space-around;
 }
@@ -187,8 +190,15 @@
 
 .menu .menu-list .settings .settings-buttons-container {
     display: -webkit-flex;
+    display: -moz-flex;
+    display: -ms-flexbox;
+    display: -ms-flex;
     display: flex;
+    -webkit-justify-content: flex-end;
+    -moz-justify-content: flex-end;
+    -ms-justify-content: flex-end;
     justify-content: flex-end;
+    -ms-flex-pack: flex-end;
     padding: 15px 0 0;
 }
 

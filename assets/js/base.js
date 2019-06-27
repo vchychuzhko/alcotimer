@@ -1,5 +1,10 @@
 ;(function ($) {
     $.widget('ava.base', {
+        options: {
+            menuSelector: '.menu',
+            copyTextSelector: '.copy-on-click'
+        },
+
         /**
          * Constructor
          * @private
@@ -13,11 +18,17 @@
          * Init event listeners
          */
         initBindings: function () {
-            $('.menu').on('click', '.toggle-container', function () {
-                $('.menu').toggleClass('active');
+            let $menu = $(this.options.menuSelector);
+
+            $menu.on('click', '.toggle-container', function () {
+                $menu.toggleClass('active');
             }.bind(this));
 
-            $('.copy-on-click').on('click', this.copyText.bind(this));
+            $menu.on('close-menu', function () {
+                $menu.removeClass('active');
+            }.bind(this));
+
+            $(this.options.copyTextSelector).on('click', this.copyText.bind(this));
         },
 
         /**
@@ -25,7 +36,7 @@
          */
         copyText: function (event) {
             event.preventDefault();
-            let $temp = $("<input>");
+            let $temp = $('<input>');
 
             $('body').append($temp);
             $temp.val($(event.target).text()).select();
