@@ -1,5 +1,10 @@
 ;(function ($) {
     $.widget('ava.settings', {
+        options: {
+            minDefaultValue: 5,
+            maxDefaultValue: 20
+        },
+
         /**
          * Constructor
          * @private
@@ -58,9 +63,9 @@
                 $showRandomTime = $(this.element).find('.show-random-time'),
                 $showLoaderInput = $(this.element).find('.show-loader');
 
-            $minTimeInput.val(5);
+            $minTimeInput.val(this.options.minDefaultValue);
             $minTimeInput.trigger('change');
-            $maxTimeInput.val(20);
+            $maxTimeInput.val(this.options.maxDefaultValue);
             $maxTimeInput.trigger('change');
             $showRandomTime.prop('checked' , false);
             $showLoaderInput.prop('checked' , true);

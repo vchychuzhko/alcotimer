@@ -41,7 +41,7 @@
                             angle += 360;
                         }
                         angle = Math.round(angle);
-                        $(this.element).find('.dot-container').css('transform', 'rotate(' + angle + 'deg)');
+                        $(this.element).find('.dot-container').css({'transform': 'rotate(' + angle + 'deg)'});
                         this.displayTime(angle);
                     }
                 } catch (e) {

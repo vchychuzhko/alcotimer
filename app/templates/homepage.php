@@ -1,6 +1,7 @@
 <?php /** @var \Ava\Base\App $this */
 $deployedVersion = $this->getDeployedVersion();
 $supportEmailAddress = $this->getSupportEmailAddress();
+$timerConfigurations = $this->getTimerConfigurations();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -71,10 +72,14 @@ $supportEmailAddress = $this->getSupportEmailAddress();
         jQuery(function () {
             $('body').base({});
             $('.random-time.range-slider').rangeSlider({
-                minValue: 1,
-                maxValue: 30
+                difference: <?= $timerConfigurations['difference']; ?>,
+                minValue: <?= $timerConfigurations['min_value']; ?>,
+                maxValue: <?= $timerConfigurations['max_value']; ?>
             });
-            $('.settings').settings({});
+            $('.settings').settings({
+                minDefaultValue: <?= $timerConfigurations['default_min_value']; ?>,
+                maxDefaultValue: <?= $timerConfigurations['default_max_value']; ?>,
+            });
             $('.timer-container').timer({});
             $('.radial-container').radialSlider({});
         });

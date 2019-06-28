@@ -5,10 +5,10 @@
 .range-slider .range-controls {
     background: #808080;
     height: 4px;
-    margin: 20px 0;
+    margin: 25px auto;
     pointer-events: none;
     position: relative;
-    width: 100%;
+    width: 90%;
 }
 
 .range-slider .range-controls .min-range,

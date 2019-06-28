@@ -105,6 +105,15 @@ class App
     }
 
     /**
+     * Get timer configurations.
+     * @return array
+     */
+    public function getTimerConfigurations()
+    {
+        return $this->config['timer_config'];
+    }
+
+    /**
      * Get current static deployed version.
      * @return string
      */
