@@ -39,8 +39,6 @@
     cursor: pointer;
     left: 50%;
     top: 50%;
-    -webkit-transform: translate(-50%, -50%);
-    -ms-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
 }
 
@@ -72,26 +70,17 @@
 }
 
 .menu.active .toggle-container .toggle:before {
-    -webkit-transform: translate3d(-8px,0,0) rotate(-45deg) scaleX(0.7);
-    -moz-transform: translate3d(-8px,0,0) rotate(-45deg) scaleX(0.7);
-    -o-transform: translate3d(-8px,0,0) rotate(-45deg) scaleX(0.7);
-    -ms-transform: translate3d(-8px,0,0) rotate(-45deg) scaleX(0.7);
     transform: translate3d(-8px,0,0) rotate(-45deg) scaleX(0.7);
 }
 
 .menu.active .toggle-container .toggle:after {
-    -webkit-transform: translate3d(-8px, 0, 0) rotate(45deg) scaleX(0.7);
-    -moz-transform: translate3d(-8px, 0, 0) rotate(45deg) scaleX(0.7);
-    -o-transform: translate3d(-8px, 0, 0) rotate(45deg) scaleX(0.7);
-    -ms-transform: translate3d(-8px, 0, 0) rotate(45deg) scaleX(0.7);
     transform: translate3d(-8px, 0, 0) rotate(45deg) scaleX(0.7);
 }
 
 .menu .menu-list {
     height: 100vh;
     min-width: 300px;
-    overflow-y: scroll;
-    overflow-x: hidden;
+    overflow-y: auto;
     z-index: 1;
 }
 
@@ -113,10 +102,6 @@
 
 .menu .menu-list .settings .random-time .range-inputs {
     align-items: center;
-    display: -webkit-flex;
-    display: -moz-flex;
-    display: -ms-flexbox;
-    display: -ms-flex;
     display: flex;
     justify-content: space-around;
 }
@@ -189,16 +174,8 @@
 }
 
 .menu .menu-list .settings .settings-buttons-container {
-    display: -webkit-flex;
-    display: -moz-flex;
-    display: -ms-flexbox;
-    display: -ms-flex;
     display: flex;
-    -webkit-justify-content: flex-end;
-    -moz-justify-content: flex-end;
-    -ms-justify-content: flex-end;
     justify-content: flex-end;
-    -ms-flex-pack: flex-end;
     padding: 15px 0 0;
 }
 
@@ -228,6 +205,10 @@
 }
 
 @media (max-width: 640px) {
+    body {
+        overflow: hidden;
+    }
+
     .menu.active .toggle-container {
         height: 100%;
         left: 100%;
@@ -238,10 +219,6 @@
     .menu.active .toggle-container .toggle {
         left: 10px;
         top: 25px;
-        -webkit-transform: none;
-        -moz-transform: none;
-        -ms-transform: none;
-        -o-transform: none;
         transform: none;
     }
 }

@@ -28,19 +28,11 @@
     pointer-events: all;
     position: absolute;
     top: -250%;
-    -webkit-transform: translateX(-50%);
-    -moz-transform: translateX(-50%);
-    -o-transform: translateX(-50%);
-    -ms-transform: translateX(-50%);
     transform: translateX(-50%);
     width: 25px;
 }
 
 /*beer glasses*/
 /*.range-slider .range-controls .max-range {*/
-/*    -webkit-transform: scale(-1, 1);*/
-/*    -moz-transform: scale(-1, 1);*/
-/*    -o-transform: scale(-1, 1);*/
-/*    -ms-transform: scale(-1, 1);*/
 /*    transform: scale(-1, 1);*/
 /*}*/
