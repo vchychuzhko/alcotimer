@@ -164,13 +164,18 @@
     left: 5px;
     position: absolute;
     top: 2px;
-    transition: all .5s ease;
+    transition: all 0.5s ease;
     width: 15px;
     z-index: 1;
 }
 
 .menu .menu-list .settings .checkbox input:checked + label:after {
     background: #7dd0b6;
+}
+
+.menu .menu-list .settings .checkbox input[type="checkbox"]:focus + label:before {
+    border: 1px solid #7dadd9;
+    box-sizing: border-box;
 }
 
 .menu .menu-list .settings .settings-buttons-container {
