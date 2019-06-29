@@ -79,6 +79,8 @@ $timerConfigurations = $this->getTimerConfigurations();
             $('.settings').settings({
                 minDefaultValue: <?= $timerConfigurations['default_min_value']; ?>,
                 maxDefaultValue: <?= $timerConfigurations['default_max_value']; ?>,
+                showRandomTime: <?= $timerConfigurations['show_random_time']; ?>,
+                showLoader: <?= $timerConfigurations['show_loader']; ?>
             });
             $('.timer-container').timer({});
             $('.radial-container').radialSlider({});
