@@ -23,9 +23,8 @@
 }
 
 .page-wrapper .content {
-    /*background: #7DD0B6;*/
-    background: url('/pub/media/images/back.jpg');
-    z-index: 5;
+    background-color: #7DD0B6;
+    background-image: url('/pub/media/images/back.jpg');
 }
 
 .page-wrapper .content .timer-container {
@@ -96,7 +95,7 @@
 }
 
 .page-wrapper .content .timer-container .timer-wrapper .timer-button-container .timer-button:before {
-    border: 50px solid transparent;
+    border: solid transparent;
     border-left-color: #fff;
     border-width: 50px 0 50px 100px;
     box-shadow: 0 0 0 0 #fff;
@@ -168,7 +167,6 @@
 .page-wrapper .content .timer-container .timer-wrapper .loader .vjs-loading-spinner:before {
     animation: vjs-spinner-spin 1s cubic-bezier(0.6, 0.2, 0, 0.8) infinite, vjs-spinner-fade 1s linear infinite;
     border: inherit;
-    border-color: transparent;
     border-radius: inherit;
     border-top-color: #fff;
     box-sizing: inherit;
