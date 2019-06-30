@@ -33,8 +33,13 @@
                 this.options.containerWidth = $container.innerWidth();
             }.bind(this));
 
-            $(this.element).on('mousedown touchstart', '.range-controls', function () {
+            $(this.element).on('mousedown touchstart', '.range-controls', function (event) {
                 this.options.isDragging = true;
+
+                $.each([$minRange, $maxRange], function (index, controller) {
+                    $(controller).css({'z-index': 4});
+                });
+                $(event.target).css({'z-index': 5});
             }.bind(this));
 
             $(document).on('mouseup touchend', function () {
