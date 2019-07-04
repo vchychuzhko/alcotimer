@@ -105,14 +105,16 @@
             $minInput.on('change', function (event) {
                 let newValue = parseInt($(event.target).val());
 
-                if (newValue <= this.options.maxValue - this.options.difference) {
-                    this.setControllerPosition($minRange, newValue);
-                } else {
-                    let maxValue = parseInt($maxInput.val());
-                    this.setControllerPosition($minRange, this.options.maxValue - this.options.difference, false, false);
+                if (!isNaN(newValue)) {
+                    if (newValue <= this.options.maxValue - this.options.difference) {
+                        this.setControllerPosition($minRange, newValue);
+                    } else {
+                        let maxValue = parseInt($maxInput.val());
+                        this.setControllerPosition($minRange, this.options.maxValue - this.options.difference, false, false);
 
-                    if (newValue > maxValue - this.options.difference) {
-                        $maxInput.val(newValue + this.options.difference);
+                        if (newValue > maxValue - this.options.difference) {
+                            $maxInput.val(newValue + this.options.difference);
+                        }
                     }
                 }
             }.bind(this));
@@ -120,14 +122,16 @@
             $maxInput.on('change', function (event) {
                 let newValue = parseInt($(event.target).val());
 
-                if (newValue <= this.options.maxValue) {
-                    this.setControllerPosition($maxRange, newValue);
-                } else {
-                    let minValue = parseInt($minInput.val());
-                    this.setControllerPosition($maxRange, this.options.maxValue, false, false);
+                if (!isNaN(newValue)) {
+                    if (newValue <= this.options.maxValue) {
+                        this.setControllerPosition($maxRange, newValue);
+                    } else {
+                        let minValue = parseInt($minInput.val());
+                        this.setControllerPosition($maxRange, this.options.maxValue, false, false);
 
-                    if (newValue < minValue + this.options.difference) {
-                        $minInput.val(newValue - this.options.difference);
+                        if (newValue < minValue + this.options.difference) {
+                            $minInput.val(newValue - this.options.difference);
+                        }
                     }
                 }
             }.bind(this));

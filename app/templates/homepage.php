@@ -45,8 +45,8 @@ $timerConfigurations = $this->getTimerConfigurations();
                 <div class="timer-wrapper radial-container">
                     <div class="timer-button-container">
                         <button class="timer-button" type="button" name="start-stop" value="Start/Stop">
-                            <span class="time-value">15:30</span>
-                            <span class="timer-button-title" style="display: block; bottom: 0; position: absolute; left: 50%; transform: translateX(-50%)"></span>
+                            <span class="time-value no-select">15:30</span>
+                            <span class="timer-button-title no-select" style="display: block; bottom: 0; position: absolute; left: 50%; transform: translateX(-50%)"></span>
                         </button>
                     </div>
                     <div class="radial-slider">

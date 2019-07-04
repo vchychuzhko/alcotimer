@@ -133,9 +133,6 @@
 .page-wrapper .content .timer-container button span {
     color: #fff;
     display: block;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    user-select: none;
 }
 
 .page-wrapper .content .timer-container .timer-wrapper .loader {
