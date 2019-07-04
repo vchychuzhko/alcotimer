@@ -22,10 +22,10 @@
          * Init event listeners
          */
         initBindings: function () {
-            let $minRange = $(this.element).find('.min-controller'),
-                $maxRange = $(this.element).find('.max-controller'),
-                $minInput = $(this.element).find('.min-value'),
-                $maxInput = $(this.element).find('.max-value');
+            let $minRange = $(this.element).find('.range-controls .min-controller'),
+                $maxRange = $(this.element).find('.range-controls .max-controller'),
+                $minInput = $(this.element).find('.range-inputs .min-value'),
+                $maxInput = $(this.element).find('.range-inputs .max-value');
 
             $(window).on('resize', function () {
                 let $container =  $(this.element).find('.range-controls');
@@ -148,9 +148,9 @@
         /**
          * Set position of controller
          * @param $rangeController
-         * @param position
-         * @param isPercentage
-         * @param trigger
+         * @param {number} position
+         * @param {boolean} isPercentage
+         * @param {boolean} trigger
          */
         setControllerPosition: function ($rangeController, position, isPercentage = false, trigger = true) {
             let left = position;
@@ -166,7 +166,7 @@
         },
 
         /**
-         * Set position of controller
+         * Get value by controller position
          * @param $rangeController
          * @returns {number}
          */
@@ -176,7 +176,7 @@
 
         /**
          * Convert percent to value
-         * @param percent
+         * @param {number} percent
          * @returns {number}
          */
         percentToValue: function (percent) {
@@ -185,7 +185,7 @@
 
         /**
          * Convert value to percent
-         * @param value
+         * @param {number} value
          * @returns {number}
          */
         valueToPercent: function (value) {

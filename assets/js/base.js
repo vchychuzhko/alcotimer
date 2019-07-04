@@ -48,9 +48,9 @@
 
         /**
          * Global function to show messages
-         * @param message
-         * @param duration
-         * @param isError
+         * @param {string} message
+         * @param {number} duration
+         * @param {boolean} isError
          */
         showMessage: function (message, duration = 5000, isError = false) {
             let $message = $('<p class="message">' + message + '</p>'),
