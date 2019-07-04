@@ -20,6 +20,7 @@
         _create: function () {
             this.initBindings();
             $(window).trigger('resize');
+            this.updatePercentage();
         },
 
         /**
@@ -42,19 +43,7 @@
                         let touch = event.originalEvent.touches ? event.originalEvent.touches[0] : undefined,
                             targetX = (event.pageX || touch.pageX) - this.options.offsetLeft - this.options.borderWidth / 2,
                             targetY = (event.pageY || touch.pageY) - this.options.offsetTop - this.options.borderWidth / 2,
-                            // sign = (targetY > this.options.centerY) ? 1 : -1,
-                            // temp = (targetX - this.options.centerX) / (targetY - this.options.centerY),
-                            // collisionY = sign * (this.options.radius / (Math.sqrt(temp ** 2 + 1))) + this.options.centerY,
-                            // collisionX = (collisionY - this.options.centerY) * temp + this.options.centerX,
-                            deltaX = targetX - this.options.centerX,
-                            deltaY = targetY - this.options.centerY,
-                            angle;
-
-                        if (deltaX === 0) {
-                            angle = (deltaY > 0) ? 180 : 0;
-                        } else {
-                            angle = Math.atan(deltaY / deltaX) * 180 / Math.PI + (deltaX > 0 ? 90 : 270);
-                        }
+                            angle = this.getAngleByCoordinates(targetX, targetY);
 
                         // if (angle >= 358 || angle <= 2) {
                         //     if (this.options.previousAngle === null) {
@@ -69,6 +58,7 @@
                         // } else {
                         //     this.options.previousAngle = null;
                         // }
+                        //@TODO: implement min/max limitation
 
                         this.setControllerPosition(angle);
                     }
@@ -96,10 +86,14 @@
          * Update percentage value regarding slider position
          * @param {number} angle
          */
-        updatePercentage: function (angle) {
+        updatePercentage: function (angle = -1) {
+            if (angle === -1) {
+                angle = this.getValueFromController();
+            }
+
             let percentage = angle / 360 * 100;
 
-            $('.timer-button-container .timer-button-title').html(Math.round(percentage));
+            $('.timer-button-container .timer-button-title').html(percentage);
             // @TODO: resolve correct place to add and trigger update
         },
 
@@ -121,6 +115,38 @@
             });
 
             this.updatePercentage(angle);
+        },
+
+        /**
+         * Get value by controller position
+         * @return {number}
+         */
+        getValueFromController: function () {
+            let $controller = $(this.element).find('.radial-controller'),
+                currentX = parseInt($controller.css('left')) + this.options.borderWidth / 2,
+                currentY = parseInt($controller.css('top'))+ this.options.borderWidth / 2;
+
+            return this.getAngleByCoordinates(currentX, currentY);
+        },
+
+        /**
+         * Get angle by coordinates
+         * @param {number} x
+         * @param {number} y
+         * @return {number}
+         */
+        getAngleByCoordinates: function (x, y) {
+            let angle,
+                deltaX = x - this.options.centerX,
+                deltaY = y - this.options.centerY;
+
+            if (deltaX === 0) {
+                angle = (deltaY > 0) ? 180 : 0;
+            } else {
+                angle = Math.atan(deltaY / deltaX) * 180 / Math.PI + (deltaX > 0 ? 90 : 270);
+            }
+
+            return angle;
         }
     });
 })(jQuery);
