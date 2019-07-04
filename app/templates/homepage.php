@@ -50,9 +50,7 @@ $timerConfigurations = $this->getTimerConfigurations();
                         </button>
                     </div>
                     <div class="radial-slider">
-                        <div class="dot-container">
-                            <div class="dot"></div>
-                        </div>
+                        <div class="radial-controller"></div>
                     </div>
                     <div class="loader">
                         <div class="vjs-loading-spinner"></div>

@@ -1,7 +1,16 @@
 ;(function ($) {
     $.widget('ava.radialSlider', {
         options: {
-            isDragging: false
+            borderWidth: 0,
+            centerX: 0,
+            centerY: 0,
+            isDragging: false,
+            maxReached: false,
+            minReached: false,
+            offsetLeft: 0,
+            offsetTop: 0,
+            previousAngle: null,
+            radius: 0
         },
 
         /**
@@ -10,13 +19,16 @@
          */
         _create: function () {
             this.initBindings();
+            $(window).trigger('resize');
         },
 
         /**
          * Init event listeners
          */
         initBindings: function () {
-            $(this.element).on('mousedown touchstart', '.radial-slider .dot', function () {
+            $(window).on('resize', this.updateCircleParameters.bind(this));
+
+            $(this.element).on('mousedown touchstart', '.radial-slider', function () {
                 this.options.isDragging = true;
             }.bind(this));
 
@@ -27,22 +39,38 @@
             $(window).on('mousemove touchmove', function (event) {
                 try {
                     if (this.options.isDragging) {
-                        let $circle = $(this.element).find('.radial-slider').eq(0),
-                            touch = event.originalEvent.touches ? event.originalEvent.touches[0] : undefined,
-                            center_x = $circle.outerWidth() / 2 + $circle.offset().left,
-                            center_y = $circle.outerHeight() / 2 + $circle.offset().top,
-                            pos_x = event.pageX || touch.pageX,
-                            pos_y = event.pageY || touch.pageY,
-                            delta_y = center_y - pos_y,
-                            delta_x = center_x - pos_x,
-                            angle = Math.atan2(delta_y, delta_x) * (180 / Math.PI) - 90;
+                        let touch = event.originalEvent.touches ? event.originalEvent.touches[0] : undefined,
+                            targetX = (event.pageX || touch.pageX) - this.options.offsetLeft - this.options.borderWidth / 2,
+                            targetY = (event.pageY || touch.pageY) - this.options.offsetTop - this.options.borderWidth / 2,
+                            // sign = (targetY > this.options.centerY) ? 1 : -1,
+                            // temp = (targetX - this.options.centerX) / (targetY - this.options.centerY),
+                            // collisionY = sign * (this.options.radius / (Math.sqrt(temp ** 2 + 1))) + this.options.centerY,
+                            // collisionX = (collisionY - this.options.centerY) * temp + this.options.centerX,
+                            deltaX = targetX - this.options.centerX,
+                            deltaY = targetY - this.options.centerY,
+                            angle;
 
-                        if (angle < 0) {
-                            angle += 360;
+                        if (deltaX === 0) {
+                            angle = (deltaY > 0) ? 180 : 0;
+                        } else {
+                            angle = Math.atan(deltaY / deltaX) * 180 / Math.PI + (deltaX > 0 ? 90 : 270);
                         }
-                        angle = Math.round(angle);
-                        $(this.element).find('.dot-container').css({'transform': 'rotate(' + angle + 'deg)'});
-                        this.displayTime(angle);
+
+                        // if (angle >= 358 || angle <= 2) {
+                        //     if (this.options.previousAngle === null) {
+                        //         this.options.previousAngle = angle;
+                        //     } else {
+                        //         if (this.options.previousAngle < 0 && angle > 0) {
+                        //             angle = 365;
+                        //         } else if (this.options.previousAngle > 0 && angle < 0) {
+                        //             angle = 0;
+                        //         }
+                        //     }
+                        // } else {
+                        //     this.options.previousAngle = null;
+                        // }
+
+                        this.setControllerPosition(angle);
                     }
                 } catch (e) {
                     //do nothing, touch error happened
@@ -51,46 +79,48 @@
         },
 
         /**
-         * Shows time regarding on slider position and settings interval
-         * @param {number} angle
+         * Calculate and update radial circle parameters
          */
-        displayTime: function (angle) {
-            let min = parseInt($('.settings').find('.min-value.time').val()),
-                max = parseInt($('.settings').find('.max-value.time').val()),
-                percentage = angle / 360,
-                time = percentage * (max - min) + min,
-                minutes = Math.trunc(time),
-                seconds = Math.round((time - minutes) * 60);
-            $('.timer-button-container .time-value').html(angle);
+        updateCircleParameters: function () {
+            let $circle = $(this.element).find('.radial-slider');
 
-            $('.timer-button-container .timer-button-title').html(minutes+ ':' + (seconds < 10 ? '0' : '') + seconds);
-
-
-            // clearTimeout(saveCurrentTimeTimeout);
-            // @TODO: watch how it works on the [CAF] and correct scopes for Interval
-
-            // let saveCurrentTimeTimeout = setTimeout(function () {
-            //     this.saveSelectedTime(time);
-            // }.bind(this), 200);
+            this.options.borderWidth = parseFloat($circle.css('border-width'));
+            this.options.offsetLeft = $circle.offset().left;
+            this.options.offsetTop = $circle.offset().top;
+            this.options.centerX = ($circle.outerWidth() - this.options.borderWidth) / 2;
+            this.options.centerY = ($circle.outerHeight() - this.options.borderWidth) / 2;
+            this.options.radius = ($circle.outerWidth() - this.options.borderWidth) / 2;
         },
 
         /**
-         * Save currently selected time to the local storage
-         * @param {number} time
+         * Update percentage value regarding slider position
+         * @param {number} angle
          */
-        saveSelectedTime: function (time) {
-            let state = JSON.parse(localStorage.getItem('state'));
+        updatePercentage: function (angle) {
+            let percentage = angle / 360 * 100;
 
-            if (state !== null) {
-                state.selectedTime = time;
-            } else {
-                state = {
-                    selectedTime: time
-                }
-            }
+            $('.timer-button-container .timer-button-title').html(Math.round(percentage));
+            // @TODO: resolve correct place to add and trigger update
+        },
 
-            debugger;
-            localStorage.state = JSON.stringify(state);
+        /**
+         * Set controller position according to percentage or angle
+         * @param {number} value
+         * @param {boolean} isPercentage
+         */
+        setControllerPosition: function (value, isPercentage = false) {
+            let angle = isPercentage ? (value / 100 * 360) : value,
+                angleRad = angle * Math.PI / 180;
+
+            let dotX = Math.sin(angleRad) * this.options.radius + this.options.centerY,
+                dotY = -Math.cos(angleRad) * this.options.radius + this.options.centerX;
+
+            $(this.element).find('.radial-controller').css({
+                'left': (dotX - this.options.borderWidth / 2) + 'px',
+                'top': (dotY - this.options.borderWidth / 2) + 'px'
+            });
+
+            this.updatePercentage(angle);
         }
     });
 })(jQuery);
