@@ -9,15 +9,21 @@
 .page-wrapper .content {
     background-color: #7DD0B6;
     background-image: url('/pub/media/images/back.jpg');
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-y: hidden;
 }
 
 .page-wrapper .content .timer-container {
     height: 350px;
-    left: 50%;
+    /*left: 50%;*/
+    margin: 20px 0;
     max-width: 100%;
-    position: absolute;
-    top: 50%;
-    transform: translate(-50%, -50%);
+    position: relative;
+    /*top: 50%;*/
+    /*transform: translate(-50%, -50%);*/
     width: 350px;
 }
 
