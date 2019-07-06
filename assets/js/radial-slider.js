@@ -5,7 +5,9 @@
             centerX: 0,
             centerY: 0,
             isDragging: false,
+            maxAngle: 360,
             maxReached: false,
+            minAngle: 0,
             minReached: false,
             offsetLeft: 0,
             offsetTop: 0,
@@ -29,7 +31,8 @@
         initBindings: function () {
             $(window).on('resize', this.updateCircleParameters.bind(this));
 
-            $(this.element).on('mousedown touchstart', '.radial-slider', function () {
+            $(this.element).on('mousedown touchstart', '.radial-slider .radial-controller', function () {
+                //Use '.radial-slider' as 2nd parameter to have "teleport" effect on moving out of controller dot
                 this.options.isDragging = true;
             }.bind(this));
 
@@ -38,32 +41,52 @@
             }.bind(this));
 
             $(window).on('mousemove touchmove', function (event) {
-                try {
-                    if (this.options.isDragging) {
+                if (this.options.isDragging) {
+                    try {
                         let touch = event.originalEvent.touches ? event.originalEvent.touches[0] : undefined,
                             targetX = (event.pageX || touch.pageX) - this.options.offsetLeft - this.options.borderWidth / 2,
                             targetY = (event.pageY || touch.pageY) - this.options.offsetTop - this.options.borderWidth / 2,
-                            angle = this.getAngleByCoordinates(targetX, targetY);
+                            angle = this.getAngleByCoordinates(targetX, targetY),
+                            stepIndicatorDifference = 10;
 
-                        // if (angle >= 358 || angle <= 2) {
-                        //     if (this.options.previousAngle === null) {
-                        //         this.options.previousAngle = angle;
-                        //     } else {
-                        //         if (this.options.previousAngle < 0 && angle > 0) {
-                        //             angle = 365;
-                        //         } else if (this.options.previousAngle > 0 && angle < 0) {
-                        //             angle = 0;
-                        //         }
-                        //     }
-                        // } else {
-                        //     this.options.previousAngle = null;
-                        // }
-                        //@TODO: implement min/max limitation
+                        if (this.options.minReached) {
+                            if (targetX - this.options.centerX < 0) {
+                                angle = this.options.minAngle;
+                            } else {
+                                this.options.minReached = false;
+                            }
+                        } else if (this.options.maxReached) {
+                            if (targetX - this.options.centerX > 0) {
+                                angle = this.options.maxAngle;
+                            } else {
+                                this.options.maxReached = false;
+                            }
+                        } else if (angle >= this.options.maxAngle - stepIndicatorDifference
+                            || angle <= this.options.minAngle + stepIndicatorDifference
+                        ) {
+                            if (this.options.previousAngle === null) {
+                                this.options.previousAngle = angle;
+                            } else {
+                                if (this.options.previousAngle >= this.options.maxAngle - stepIndicatorDifference
+                                    && angle <= this.options.minAngle + stepIndicatorDifference
+                                ) {
+                                    angle = this.options.maxAngle;
+                                    this.options.maxReached = true;
+                                } else if (this.options.previousAngle <= this.options.minAngle + stepIndicatorDifference
+                                    && angle >= this.options.maxAngle - stepIndicatorDifference
+                                ) {
+                                    angle = this.options.minAngle;
+                                    this.options.minReached = true;
+                                }
+                            }
+                        } else {
+                            this.options.previousAngle = null;
+                        }
 
                         this.setControllerPosition(angle);
+                    } catch (e) {
+                        //do nothing, touch error happened
                     }
-                } catch (e) {
-                    //do nothing, touch error happened
                 }
             }.bind(this));
         },
@@ -74,7 +97,7 @@
         updateCircleParameters: function () {
             let $circle = $(this.element).find('.radial-slider');
 
-            this.options.borderWidth = parseFloat($circle.css('border-width'));
+            this.options.borderWidth = parseFloat($circle.css('border-left-width'));
             this.options.offsetLeft = $circle.offset().left;
             this.options.offsetTop = $circle.offset().top;
             this.options.centerX = ($circle.outerWidth() - this.options.borderWidth) / 2;
@@ -89,9 +112,18 @@
         updatePercentage: function (angle = -1) {
             if (angle === -1) {
                 angle = this.getValueFromController();
+
+                if (angle === this.options.minAngle) {
+                    this.options.minReached = true;
+                }
+
+                if (angle === this.options.maxAngle) {
+                    this.options.maxReached = true;
+                }
+                //@TODO: both above checks should be moved to future updateSlider() function, as should be called when percentage is updated in timer.js
             }
 
-            let percentage = angle / 360 * 100;
+            let percentage = angle / this.options.maxAngle * 100;
 
             $('.timer-button-container .timer-button-title').html(percentage);
             // @TODO: resolve correct place to add and trigger update
@@ -103,7 +135,7 @@
          * @param {boolean} isPercentage
          */
         setControllerPosition: function (value, isPercentage = false) {
-            let angle = isPercentage ? (value / 100 * 360) : value,
+            let angle = isPercentage ? (value / 100 * this.options.maxAngle) : value,
                 angleRad = angle * Math.PI / 180;
 
             let dotX = Math.sin(angleRad) * this.options.radius + this.options.centerY,
