@@ -38,7 +38,7 @@ $timerConfigurations = $this->getTimerConfigurations();
         </div>
     </div>
     <main class="page-wrapper">
-        <div class="mobile-overlay"></div>
+        <div class="menu-mobile-overlay"></div>
         <div class="content">
             <?php include('template/header.html'); ?>
             <div class="timer-container">
@@ -81,7 +81,7 @@ $timerConfigurations = $this->getTimerConfigurations();
                 showLoader: <?= $timerConfigurations['show_loader']; ?>
             });
             $('.timer-container').timer({});
-            $('.radial-container').radialSlider({});
+            $('.timer-wrapper.radial-container').radialSlider({});
         });
     </script>
 </body>
