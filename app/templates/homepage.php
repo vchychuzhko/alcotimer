@@ -38,9 +38,9 @@ $timerConfigurations = $this->getTimerConfigurations();
         </div>
     </div>
     <main class="page-wrapper">
+        <?php include('template/header.html'); ?>
         <div class="menu-mobile-overlay"></div>
         <div class="content">
-            <?php include('template/header.html'); ?>
             <div class="timer-container">
                 <div class="timer-wrapper radial-container">
                     <div class="timer-button-container">
