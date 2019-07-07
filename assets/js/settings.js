@@ -91,7 +91,7 @@
                 };
 
             localStorage.settings = JSON.stringify(settings);
-            $('.timer-container').trigger('updateConfigurations');
+            $('.timer-container').trigger('updateSettings');
         },
     });
 })(jQuery);

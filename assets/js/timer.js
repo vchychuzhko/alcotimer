@@ -1,12 +1,15 @@
 ;(function ($) {
     $.widget('ava.timer', {
         options: {
-            minTime: 300,
-            maxTime: 1200,
-            enteredTime: null,
             currentTime: null,
+            defaultTime: null,
+            enteredTime: null,
+            lastTic: null,
+            maxTime: null,
+            minTime: null,
             randomTime: null,
-            interval: null
+            state: 'stopped',
+            timerInterval: null
         },
 
         /**
@@ -15,7 +18,7 @@
          */
         _create: function () {
             this.initBindings();
-            this.updateConfigs();
+            this.initConfigs();
         },
 
         /**
@@ -24,7 +27,53 @@
         initBindings: function () {
             $(this.element).on('click', '.timer-button', this.toggleTimer.bind(this));
             $(this.element).on('click', '.random-button', this.setRandom.bind(this));
-            $(this.element).on('updateConfigurations', this.updateConfigs.bind(this));
+            $(this.element).on('updateSettings', this.updateSettings.bind(this));
+        },
+
+        /**
+         * Load and set configurations and settings
+         */
+        initConfigs: function () {
+            this.updateSettings();
+            this.loadConfigurations();
+            this.reset();
+        },
+
+        /**
+         * Retrieve and update settings from the menu
+         */
+        updateSettings: function () {
+            this.options.minTime = parseInt($('.settings .min-value.time').val()) * 60;
+            this.options.maxTime = parseInt($('.settings .max-value.time').val()) * 60;
+        },
+
+        /**
+         * Load configurations from the local storage
+         */
+        loadConfigurations: function () {
+            let timerConfig = JSON.parse(localStorage.getItem('timerConfigurations'));
+
+            if (timerConfig !== null) {
+                this.options.state = timerConfig.state;
+                this.options.currentTime = timerConfig.currentTime;
+                this.options.lastTic = timerConfig.lastTic;
+            } else {
+                this.options.currentTime = this.options.enteredTime = this.options.defaultTime * 60;
+                this.saveConfigurations();
+            }
+        },
+
+        /**
+         * Save configurations to the local storage
+         */
+        saveConfigurations: function () {
+            let timerConfig = {
+                'state': this.options.state,
+                'currentTime': this.options.currentTime,
+                'lastTic': this.options.lastTic,
+            };
+
+            localStorage.timerConfigurations = JSON.stringify(timerConfig);
         },
 
         /**
@@ -61,7 +110,7 @@
         },
 
         /**
-         *
+         * Start/resume the timer
          */
         start: function () {
             if (!this.options.randomTime) {
@@ -77,7 +126,7 @@
                 this.options.randomTime = null;
             }
 
-            this.options.interval = setInterval(function () {
+            this.options.timerInterval = setInterval(function () {
                 if (--this.options.currentTime === 0) {
                     this.finish();
                 }
@@ -89,18 +138,18 @@
         },
 
         /**
-         * Stop timer
+         * Stop/pause the timer
          */
         stop: function () {
             if ($(this.element).is('.in-progress')) {
-                clearInterval(this.options.interval);
+                clearInterval(this.options.timerInterval);
                 $(this.element).removeClass('in-progress');
             }
             console.log('stop');
         },
 
         /**
-         *
+         * Stop the timer and reset current time to the last entered
          */
         reset: function () {
             this.stop();
@@ -113,7 +162,7 @@
          */
         finish: function () {
             this.stop();
-            var audioElement = document.createElement('audio');
+            var audioElement = document.createElement('audio'); //@TODO: try 'let' keyword
             audioElement.setAttribute('src', '/pub/media/audio/alert_sound.mp3');
             audioElement.play();
             console.log('finish');

@@ -1,18 +1,18 @@
 ;(function ($) {
     $.widget('ava.radialSlider', {
         options: {
-            borderWidth: 0,
-            centerX: 0,
-            centerY: 0,
+            borderWidth: null,
+            centerX: null,
+            centerY: null,
             isDragging: false,
             maxAngle: 360,
             maxReached: false,
             minAngle: 0,
             minReached: false,
-            offsetLeft: 0,
-            offsetTop: 0,
+            offsetLeft: null,
+            offsetTop: null,
             previousAngle: null,
-            radius: 0
+            radius: null
         },
 
         /**
@@ -123,10 +123,11 @@
                 //@TODO: both above checks should be moved to future updateSlider() function, as should be called when percentage is updated in timer.js
             }
 
-            let percentage = angle / this.options.maxAngle * 100;
+            let percentage = angle / this.options.maxAngle * 100,
+                $valueContainer = $(this.element).find('.radial-percentage-value');
 
-            $('.timer-button-container .timer-button-title').html(percentage);
-            // @TODO: resolve correct place to add and trigger update
+            $valueContainer.text(percentage);
+            $valueContainer.trigger('percentageUpdate');
         },
 
         /**

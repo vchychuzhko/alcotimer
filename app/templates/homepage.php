@@ -49,6 +49,7 @@ $timerConfigurations = $this->getTimerConfigurations();
                             <span class="timer-button-title no-select" style="display: block; bottom: 0; position: absolute; left: 50%; transform: translateX(-50%)"></span>
                         </button>
                     </div>
+                    <div class="radial-percentage-value" style="display: none"></div>
                     <div class="radial-slider">
                         <div class="radial-controller"></div>
                     </div>
@@ -80,7 +81,9 @@ $timerConfigurations = $this->getTimerConfigurations();
                 showRandomTime: <?= $timerConfigurations['show_random_time']; ?>,
                 showLoader: <?= $timerConfigurations['show_loader']; ?>
             });
-            $('.timer-container').timer({});
+            $('.timer-container').timer({
+                defaultTime: <?= $timerConfigurations['default_time']; ?>,
+            });
             $('.timer-wrapper.radial-container').radialSlider({});
         });
     </script>

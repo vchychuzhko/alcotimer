@@ -8,6 +8,7 @@ $config = [
         'difference' => 1,
         'default_min_value' => 5,
         'default_max_value' => 20,
+        'default_time' => 9,
         'min_value' => 1,
         'max_value' => 30,
         'show_loader' => 1,
