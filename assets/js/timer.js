@@ -1,4 +1,7 @@
 ;(function ($) {
+    let RUNNING_STATE = 'running',
+        STOPPED_STATE = 'stopped';
+
     $.widget('ava.timer', {
         options: {
             currentTime: null,
@@ -8,7 +11,7 @@
             maxTime: null,
             minTime: null,
             randomTime: null,
-            state: 'stopped',
+            state: STOPPED_STATE,
             timerInterval: null,
             valueContainer: '.radial-percentage-value'
         },
@@ -19,7 +22,7 @@
          */
         _create: function () {
             this.initBindings();
-            $(document).on('ready', this.initConfigs.bind(this));
+            $(document).on('ready', this.initTimer.bind(this));
         },
 
         /**
@@ -27,7 +30,7 @@
          */
         initBindings: function () {
             $(this.element).on('click', '.timer-button', this.toggleTimer.bind(this));
-            $(this.element).on('click', '.random-button', this.setRandom.bind(this));
+            // $(this.element).on('click', '.random-button', this.setRandom.bind(this));
             $(this.element).on('updateSettings', this.updateSettings.bind(this));
             $(this.element).on('percentageUpdate', this.options.valueContainer, this.updateTimer.bind(this));
         },
@@ -35,11 +38,19 @@
         /**
          * Load and set configurations and settings
          */
-        initConfigs: function () {
+        initTimer: function () {
             this.updateSettings();
             this.loadConfigurations();
-            this.setTime(this.options.currentTime);
-            this.reset();
+
+            if (this.options.state === RUNNING_STATE) {
+                this.options.currentTime -= Math.round(($.now() - this.options.lastTic) / 1000);
+                this.setTime(this.options.currentTime);
+                this.start();
+            } else {
+                this.options.lastTic = null;
+                this.setTime(this.options.enteredTime);
+            }
+            // @TODO: when stopped time is lower than min, on page reload min value is used
         },
 
         /**
@@ -59,9 +70,10 @@
             if (timerConfig !== null) {
                 this.options.state = timerConfig.state;
                 this.options.currentTime = timerConfig.currentTime;
+                this.options.enteredTime = timerConfig.enteredTime;
                 this.options.lastTic = timerConfig.lastTic;
             } else {
-                this.options.currentTime = this.options.enteredTime = this.options.defaultTime * 60;
+                this.options.enteredTime = this.options.defaultTime * 60;
                 this.saveConfigurations();
             }
         },
@@ -73,6 +85,7 @@
             let timerConfig = {
                 'state': this.options.state,
                 'currentTime': this.options.currentTime,
+                'enteredTime': this.options.enteredTime,
                 'lastTic': this.options.lastTic,
             };
 
@@ -84,91 +97,99 @@
          */
         toggleTimer: function () {
             if ($(this.element).is('.in-progress')) {
-                this.stop();
+                this.pause();
             } else {
                 this.start();
             }
+
+            this.saveConfigurations()
         },
 
-        /**
-         * Load and update configurations
-         */
-        updateConfigs: function () {
-            this.options.minTime = parseInt($('.settings .min-value.time').val()) * 60;
-            this.options.maxTime = parseInt($('.settings .max-value.time').val()) * 60;
-            this.reset();
-        },
-
-        /**
-         * Stop current timer and set random time
-         */
-        setRandom: function () {
-            this.stop();
-            this.options.randomTime = Math.floor(
-                Math.random() * (this.options.maxTime - this.options.minTime + 1) + this.options.minTime
-            );
-            this.showTime(this.options.randomTime);
-            console.log(this.options.randomTime);
-            console.log('random');
-        },
+        // /**
+        //  * Stop current timer and set random time
+        //  */
+        // setRandom: function () {
+        //     this.pause();
+        //     this.options.randomTime = Math.floor(
+        //         Math.random() * (this.options.maxTime - this.options.minTime + 1) + this.options.minTime
+        //     );
+        //     this.showTime(this.options.randomTime);
+        //     console.log(this.options.randomTime);
+        //     console.log('random');
+        // },
 
         /**
          * Start/resume the timer
          */
         start: function () {
-            if (!this.options.randomTime) {
-                let newTime = this.angleToSeconds(
-                    parseInt($('.timer-button-container .time-value').html())
-                );
-
-                if (newTime !== this.options.enteredTime) {
-                    this.options.currentTime = this.options.enteredTime = newTime;
-                }
-            } else {
-                this.options.currentTime = this.options.enteredTime = this.options.randomTime;
-                this.options.randomTime = null;
+            // if (!this.options.randomTime) {
+            //     let newTime = this.angleToSeconds(
+            //         parseInt($('.timer-button-container .time-value').text())
+            //     );
+            //
+            //     if (newTime !== this.options.enteredTime) {
+            //         this.options.currentTime = this.options.enteredTime = newTime;
+            //     }
+            // } else {
+            if (!this.options.currentTime) {
+                this.options.currentTime = this.options.enteredTime;
             }
+            //     this.options.randomTime = null;
+            // }
 
-            this.options.timerInterval = setInterval(function () {
-                if (--this.options.currentTime === 0) {
-                    this.finish();
-                }
+            if (this.options.currentTime < 0) {
+                this.finish();
+            } else {
+                this.options.timerInterval = setInterval(function () {
+                    if (--this.options.currentTime <= 0) {
+                        this.finish();
+                    } else {
+                        this.setTime(this.options.currentTime);
+                        console.log(this.options.currentTime);
+                    }
+                }.bind(this), 1000);
 
-                this.setTime(this.options.currentTime);
-                console.log(this.options.currentTime);
-            }.bind(this), 1000);
-            $(this.element).addClass('in-progress');
-            console.log('start');
+                $(this.element).addClass('in-progress');
+                this.options.state = RUNNING_STATE;
+                console.log('start');
+            }
         },
 
         /**
          * Stop/pause the timer
+         * @param {boolean} stop
          */
-        stop: function () {
+        pause: function (stop = false) {
             if ($(this.element).is('.in-progress')) {
                 clearInterval(this.options.timerInterval);
                 $(this.element).removeClass('in-progress');
             }
-            console.log('stop');
-        },
 
-        /**
-         * Stop the timer and reset current time to the last entered
-         */
-        reset: function () {
-            this.stop();
-            this.options.currentTime = this.options.enteredTime;
-            console.log('reset');
+            if (stop) {
+                this.options.currentTime = null;
+                this.saveConfigurations();
+            }
+            this.options.state = STOPPED_STATE;
+            console.log('stop');
         },
 
         /**
          * Is triggered when timer is finished
          */
         finish: function () {
-            this.stop();
-            var audioElement = document.createElement('audio'); //@TODO: try 'let' keyword
+            this.setTime(this.options.currentTime);
+            this.pause(true);
+            let audioElement = document.createElement('audio'); //@TODO: try 'let' keyword. Seems, it works
             audioElement.setAttribute('src', '/pub/media/audio/alert_sound.mp3');
-            audioElement.play();
+            let playPromise = audioElement.play();
+
+            if (playPromise !== undefined) {
+                playPromise.catch(function (error) {
+                    //@TODO: Investigate and handle promise error: play() failed because the user didn't interact with the document first.
+                    // Automatic playback failed.
+                    // Show a UI element to let the user manually start playback.
+                });
+            }
             console.log('finish');
         },
 
@@ -221,9 +242,13 @@
             $('.timer-button-container .timer-button-title').text(time);
             //@TODO: temporary place for displaying the time
 
+            if (this.options.state === RUNNING_STATE) {
+                this.options.lastTic = $.now();
+            }
+
             this.saveConfigurations();
 
-            if (updateSlider) {
+            if (updateSlider && (this.options.currentTime ? (this.options.currentTime >= this.options.minTime) : true)) {
                 this.updateSlider(timeInSeconds);
             }
         },
@@ -236,7 +261,9 @@
             let $valueContainer = $(event.target),
                 timeInSeconds = this.percentageToSeconds(parseFloat($valueContainer.text()));
 
-            this.options.currentTime = this.options.enteredTime = timeInSeconds;
+            this.options.enteredTime = timeInSeconds;
+            this.options.currentTime = null;
+            this.saveConfigurations();
 
             this.setTime(timeInSeconds, false);
         },

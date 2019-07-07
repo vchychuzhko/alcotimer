@@ -102,7 +102,7 @@
                     this.options.maxReached = true;
                 }
 
-                this.setControllerPosition(percentage, true);
+                this.setControllerPosition(percentage, true, false);
             }.bind(this));
         },
 
@@ -136,8 +136,9 @@
          * Set controller position according to percentage or angle
          * @param {number} value
          * @param {boolean} isPercentage
+         * @param {boolean} updatePercentage
          */
-        setControllerPosition: function (value, isPercentage = false) {
+        setControllerPosition: function (value, isPercentage = false, updatePercentage = true) {
             let angle = isPercentage ? (value / 100 * this.options.maxAngle) : value,
                 angleRad = angle * Math.PI / 180;
 
@@ -149,7 +150,9 @@
                 'top': (dotY - this.options.borderWidth / 2) + 'px'
             });
 
-            this.updatePercentage(angle);
+            if (updatePercentage) {
+                this.updatePercentage(angle);
+            }
         },
 
         /**
