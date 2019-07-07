@@ -5,7 +5,7 @@ namespace Ava\Console\Command;
 class Help extends \Ava\Console\AbstractCommand
 {
     /**
-     * Clean static files.
+     * Show help with the list of all available commands.
      * @return string
      */
     public function show()

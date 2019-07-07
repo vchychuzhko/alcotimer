@@ -2,9 +2,10 @@
 
 namespace Ava\Console;
 
-class AbstractCommand
+abstract class AbstractCommand
 {
     /**
+     * More info here: https://joshtronic.com/2013/09/02/how-to-use-colors-in-command-line-output
      * @var array $colours
      */
     private $colours = [

@@ -63,6 +63,7 @@ class App
     }
 
     /**
+     * Include configuration file.
      * @return array
      */
     public function loadConfig()
