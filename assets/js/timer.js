@@ -9,7 +9,8 @@
             minTime: null,
             randomTime: null,
             state: 'stopped',
-            timerInterval: null
+            timerInterval: null,
+            valueContainer: '.radial-percentage-value'
         },
 
         /**
@@ -18,7 +19,7 @@
          */
         _create: function () {
             this.initBindings();
-            this.initConfigs();
+            $(document).on('ready', this.initConfigs.bind(this));
         },
 
         /**
@@ -28,6 +29,7 @@
             $(this.element).on('click', '.timer-button', this.toggleTimer.bind(this));
             $(this.element).on('click', '.random-button', this.setRandom.bind(this));
             $(this.element).on('updateSettings', this.updateSettings.bind(this));
+            $(this.element).on('percentageUpdate', this.options.valueContainer, this.updateTimer.bind(this));
         },
 
         /**
@@ -36,6 +38,7 @@
         initConfigs: function () {
             this.updateSettings();
             this.loadConfigurations();
+            this.setTime(this.options.currentTime);
             this.reset();
         },
 
@@ -130,7 +133,8 @@
                 if (--this.options.currentTime === 0) {
                     this.finish();
                 }
-                this.showTime(this.options.currentTime);
+
+                this.setTime(this.options.currentTime);
                 console.log(this.options.currentTime);
             }.bind(this), 1000);
             $(this.element).addClass('in-progress');
@@ -169,23 +173,83 @@
         },
 
         /**
-         *
-         * @param {int} angle
-         * @returns {int}
+         * Convert percent to seconds
+         * @param {number} percent
+         * @returns {number}
          */
-        angleToSeconds: function(angle) {
-            return Math.round((angle / 360) * (this.options.maxTime - this.options.minTime)) + this.options.minTime;
+        percentageToSeconds: function(percent) {
+            return Math.round(percent / 100 * (this.options.maxTime - this.options.minTime)) + this.options.minTime;
         },
 
         /**
-         *
-         * @param {int} time
+         * Convert seconds to percent
+         * @param {number} seconds
+         * @returns {number}
          */
-        showTime: function(time) {
-            let minutes = Math.trunc(time / 60),
-                seconds = Math.round((time / 60 - minutes) * 60);
+        secondsToPercentage: function(seconds) {
+            if (seconds > this.options.maxTime) {
+                seconds = this.options.maxTime;
+            }
 
-            $('.timer-button-container .timer-button-title').html(minutes+ ':' + (seconds < 10 ? '0' : '') + seconds);
+            if (seconds < this.options.minTime) {
+                seconds = this.options.minTime;
+            }
+
+            return (seconds - this.options.minTime) / (this.options.maxTime - this.options.minTime) * 100;
+        },
+
+        /**
+         * Convert seconds into a readable time string
+         * @param {number} timeInSeconds
+         * @returns {string}
+         */
+        secondsToTime: function(timeInSeconds) {
+            let minutes = Math.trunc(timeInSeconds / 60),
+                seconds = Math.round((timeInSeconds / 60 - minutes) * 60);
+
+            return minutes+ ':' + (seconds < 10 ? '0' : '') + seconds;
+        },
+
+        /**
+         * Update time value for the timer
+         * @param {number} timeInSeconds
+         * @param {boolean} updateSlider
+         */
+        setTime: function(timeInSeconds, updateSlider = true) {
+            let time = this.secondsToTime(timeInSeconds);
+
+            $('.timer-button-container .timer-button-title').text(time);
+            //@TODO: temporary place for displaying the time
+
+            this.saveConfigurations();
+
+            if (updateSlider) {
+                this.updateSlider(timeInSeconds);
+            }
+        },
+
+        /**
+         * Update timer according to slider value
+         * @param {Event} event
+         */
+        updateTimer: function(event) {
+            let $valueContainer = $(event.target),
+                timeInSeconds = this.percentageToSeconds(parseFloat($valueContainer.text()));
+
+            this.options.currentTime = this.options.enteredTime = timeInSeconds;
+
+            this.setTime(timeInSeconds, false);
+        },
+
+        /**
+         * Update radial slider position
+         * @param {number} timeInSeconds
+         */
+        updateSlider: function(timeInSeconds) {
+            let $valueContainer = $(this.element).find(this.options.valueContainer);
+
+            $valueContainer.text(this.secondsToPercentage(timeInSeconds));
+            $valueContainer.trigger('timeUpdate');
         }
     });
 })(jQuery);

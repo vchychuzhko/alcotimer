@@ -12,7 +12,8 @@
             offsetLeft: null,
             offsetTop: null,
             previousAngle: null,
-            radius: null
+            radius: null,
+            valueContainer: '.radial-percentage-value'
         },
 
         /**
@@ -22,7 +23,6 @@
         _create: function () {
             this.initBindings();
             $(window).trigger('resize');
-            this.updatePercentage();
         },
 
         /**
@@ -89,6 +89,21 @@
                     }
                 }
             }.bind(this));
+
+            $(this.element).on('timeUpdate', this.options.valueContainer, function (event) {
+                let $valueContainer = $(event.target),
+                    percentage = parseFloat($valueContainer.text());
+
+                if (percentage === 0) {
+                    this.options.minReached = true;
+                }
+
+                if (percentage === 100) {
+                    this.options.maxReached = true;
+                }
+
+                this.setControllerPosition(percentage, true);
+            }.bind(this));
         },
 
         /**
@@ -109,22 +124,9 @@
          * Update percentage value regarding slider position
          * @param {number} angle
          */
-        updatePercentage: function (angle = -1) {
-            if (angle === -1) {
-                angle = this.getValueFromController();
-
-                if (angle === this.options.minAngle) {
-                    this.options.minReached = true;
-                }
-
-                if (angle === this.options.maxAngle) {
-                    this.options.maxReached = true;
-                }
-                //@TODO: both above checks should be moved to future updateSlider() function, as should be called when percentage is updated in timer.js
-            }
-
+        updatePercentage: function (angle) {
             let percentage = angle / this.options.maxAngle * 100,
-                $valueContainer = $(this.element).find('.radial-percentage-value');
+                $valueContainer = $(this.element).find(this.options.valueContainer);
 
             $valueContainer.text(percentage);
             $valueContainer.trigger('percentageUpdate');
