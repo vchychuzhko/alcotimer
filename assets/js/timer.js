@@ -31,7 +31,10 @@
         initBindings: function () {
             $(this.element).on('click', '.timer-button', this.toggleTimer.bind(this));
             // $(this.element).on('click', '.random-button', this.setRandom.bind(this));
-            $(this.element).on('updateSettings', this.updateSettings.bind(this));
+            $(this.element).on('updateSettings', function () {
+                this.updateSettings();
+                this.updateTimer();
+            }.bind(this));
             $(this.element).on('percentageUpdate', this.options.valueContainer, this.updateTimer.bind(this));
         },
 
@@ -48,9 +51,13 @@
                 this.start();
             } else {
                 this.options.lastTic = null;
-                this.setTime(this.options.enteredTime);
+
+                if (this.options.currentTime) {
+                    this.setTime(this.options.currentTime);
+                } else {
+                    this.setTime(this.options.enteredTime);
+                }
             }
-            // @TODO: when stopped time is lower than min, on page reload min value is used
         },
 
         /**
@@ -160,34 +167,31 @@
          * @param {boolean} stop
          */
         pause: function (stop = false) {
-            if ($(this.element).is('.in-progress')) {
-                clearInterval(this.options.timerInterval);
-                $(this.element).removeClass('in-progress');
-            }
+            clearInterval(this.options.timerInterval);
+            $(this.element).removeClass('in-progress');
+            this.options.state = STOPPED_STATE;
 
             if (stop) {
                 this.options.currentTime = null;
                 this.saveConfigurations();
             }
-            this.options.state = STOPPED_STATE;
             console.log('stop');
         },
 
         /**
-         * Is triggered when timer is finished
+         * Is triggered when timer countdown is finished
          */
         finish: function () {
             this.setTime(this.options.currentTime);
             this.pause(true);
-            let audioElement = document.createElement('audio'); //@TODO: try 'let' keyword. Seems, it works
-            audioElement.setAttribute('src', '/pub/media/audio/alert_sound.mp3');
-            let playPromise = audioElement.play();
+
+            let audio = new Audio('/pub/media/audio/alert_sound.mp3'),
+                playPromise = audio.play();
 
             if (playPromise !== undefined) {
-                playPromise.catch(function (error) {
-                    //@TODO: Investigate and handle promise error: play() failed because the user didn't interact with the document first.
-                    // Automatic playback failed.
-                    // Show a UI element to let the user manually start playback.
+                playPromise.catch(function () {
+                    window.showMessage('Time to drink, dude!');
+                    //@TODO: Play is forbidden by the browser, should be handled in some way. No workaround has an effect.
                 });
             }
             console.log('finish');
@@ -255,10 +259,9 @@
 
         /**
          * Update timer according to slider value
-         * @param {Event} event
          */
-        updateTimer: function(event) {
-            let $valueContainer = $(event.target),
+        updateTimer: function() {
+            let $valueContainer = $(this.element).find(this.options.valueContainer),
                 timeInSeconds = this.percentageToSeconds(parseFloat($valueContainer.text()));
 
             this.options.enteredTime = timeInSeconds;
