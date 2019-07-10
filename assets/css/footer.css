@@ -3,18 +3,21 @@ html, body {
 }
 
 .page-wrapper {
-    display: -webkit-flex;
     display: flex;
     flex-direction: column;
     height: 100%;
 }
 
-.content {
-    -webkit-flex: 1 0 auto;
-    flex: 1 0 auto;
+.page-wrapper header {
+    flex-shrink: 0;
 }
 
-footer {
+.page-wrapper .content {
+    flex-grow: 1;
+    flex-shrink: 0;
+}
+
+.page-wrapper footer {
     background: #ffffc2;
     flex-shrink: 0;
     text-align: center;

@@ -40,7 +40,7 @@ class App
             $systemRoutes = $this->config['system_routes'];
             $redirectStatus = (string) ($_SERVER['REDIRECT_STATUS'] ?? '');
 
-            if ($redirectStatus === '403' || $redirectStatus === '405') {
+            if ($redirectStatus === '403') {
                 $templateName = $systemRoutes[$redirectStatus];
             } else {
                 $uri = (string) strtok(trim($_SERVER['REQUEST_URI'], '/'), '?');
@@ -63,6 +63,7 @@ class App
     }
 
     /**
+     * Include configuration file.
      * @return array
      */
     public function loadConfig()
@@ -102,6 +103,15 @@ class App
     public function getSupportEmailAddress()
     {
         return $this->config['support_email_address'] ?? '';
+    }
+
+    /**
+     * Get timer configurations.
+     * @return array
+     */
+    public function getTimerConfigurations()
+    {
+        return $this->config['timer_config'];
     }
 
     /**
