@@ -30,7 +30,7 @@
          */
         initBindings: function () {
             $(this.element).on('click', '.timer-button', this.toggleTimer.bind(this));
-            // $(this.element).on('click', '.random-button', this.setRandom.bind(this));
+            $(this.element).on('click', '.random-button', this.setRandom.bind(this));
             $(this.element).on('updateSettings', function () {
                 this.updateSettings();
                 this.updateTimer();
@@ -79,6 +79,7 @@
                 this.options.currentTime = timerConfig.currentTime;
                 this.options.enteredTime = timerConfig.enteredTime;
                 this.options.lastTic = timerConfig.lastTic;
+                this.options.randomTime = timerConfig.randomTime;
             } else {
                 this.options.enteredTime = this.options.defaultTime * 60;
                 this.saveConfigurations();
@@ -94,6 +95,7 @@
                 'currentTime': this.options.currentTime,
                 'enteredTime': this.options.enteredTime,
                 'lastTic': this.options.lastTic,
+                'randomTime': this.options.randomTime
             };
 
             localStorage.timerConfigurations = JSON.stringify(timerConfig);
@@ -112,37 +114,24 @@
             this.saveConfigurations()
         },
 
-        // /**
-        //  * Stop current timer and set random time
-        //  */
-        // setRandom: function () {
-        //     this.pause();
-        //     this.options.randomTime = Math.floor(
-        //         Math.random() * (this.options.maxTime - this.options.minTime + 1) + this.options.minTime
-        //     );
-        //     this.showTime(this.options.randomTime);
-        //     console.log(this.options.randomTime);
-        //     console.log('random');
-        // },
+        /**
+         * Stop current timer and set random time
+         */
+        setRandom: function () {
+            this.stop();
+            this.options.randomTime = this.percentageToSeconds(Math.random() * 100);
+            this.setTime(this.options.randomTime);
+            console.log(this.options.randomTime);
+            console.log('random');
+        },
 
         /**
          * Start/resume the timer
          */
         start: function () {
-            // if (!this.options.randomTime) {
-            //     let newTime = this.angleToSeconds(
-            //         parseInt($('.timer-button-container .time-value').text())
-            //     );
-            //
-            //     if (newTime !== this.options.enteredTime) {
-            //         this.options.currentTime = this.options.enteredTime = newTime;
-            //     }
-            // } else {
             if (!this.options.currentTime) {
-                this.options.currentTime = this.options.enteredTime;
+                this.options.currentTime = this.options.randomTime ? this.options.randomTime : this.options.enteredTime;
             }
-            //     this.options.randomTime = null;
-            // }
 
             if (this.options.currentTime < 0) {
                 this.finish();
@@ -163,18 +152,23 @@
         },
 
         /**
-         * Stop/pause the timer
-         * @param {boolean} stop
+         * Pause the timer
          */
-        pause: function (stop = false) {
+        pause: function () {
             clearInterval(this.options.timerInterval);
             $(this.element).removeClass('in-progress');
             this.options.state = STOPPED_STATE;
+            console.log('pause');
+        },
 
-            if (stop) {
-                this.options.currentTime = null;
-                this.saveConfigurations();
-            }
+        /**
+         * Stop the timer and reset its time
+         */
+        stop: function () {
+            this.pause();
+
+            this.options.currentTime = null;
+            this.saveConfigurations();
             console.log('stop');
         },
 
@@ -183,7 +177,7 @@
          */
         finish: function () {
             this.setTime(this.options.currentTime);
-            this.pause(true);
+            this.stop();
 
             let audio = new Audio('/pub/media/audio/alert_sound.mp3'),
                 playPromise = audio.play();
@@ -266,6 +260,7 @@
 
             this.options.enteredTime = timeInSeconds;
             this.options.currentTime = null;
+            this.options.randomTime = null;
             this.saveConfigurations();
 
             this.setTime(timeInSeconds, false);
