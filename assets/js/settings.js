@@ -1,5 +1,5 @@
 ;(function ($) {
-    $.widget('ava.settings', {
+    $.widget('awesome.settings', {
         options: {
             minDefaultValue: 5,
             maxDefaultValue: 20,

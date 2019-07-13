@@ -1,5 +1,5 @@
 ;(function ($) {
-    $.widget('ava.rangeSlider', {
+    $.widget('awesome.rangeSlider', {
         options: {
             containerWidth: 0,
             difference: 2,

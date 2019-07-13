@@ -1,8 +1,8 @@
 <?php
 
-namespace Ava\Console\Command;
+namespace Awesome\Console\Command;
 
-class Help extends \Ava\Console\AbstractCommand
+class Help extends \Awesome\Console\AbstractCommand
 {
     /**
      * Show help with the list of all available commands.

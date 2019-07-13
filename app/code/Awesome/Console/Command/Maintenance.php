@@ -1,8 +1,8 @@
 <?php
 
-namespace Ava\Console\Command;
+namespace Awesome\Console\Command;
 
-class Maintenance extends \Ava\Console\AbstractCommand
+class Maintenance extends \Awesome\Console\AbstractCommand
 {
     public const MAINTENANCE_FILE = 'maintenance.flag';
 

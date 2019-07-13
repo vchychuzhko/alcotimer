@@ -1,5 +1,5 @@
 ;(function ($) {
-    $.widget('ava.base', {
+    $.widget('awesome.base', {
         options: {
             menuSelector: '.menu',
             copyTextSelector: '.copy-on-click'

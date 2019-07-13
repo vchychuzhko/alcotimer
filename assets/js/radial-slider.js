@@ -1,13 +1,14 @@
 ;(function ($) {
-    $.widget('ava.radialSlider', {
+    let MAX_ANGLE = 360,
+        MIN_ANGLE = 0;
+
+    $.widget('awesome.radialSlider', {
         options: {
             borderWidth: null,
             centerX: null,
             centerY: null,
             isDragging: false,
-            maxAngle: 360,
             maxReached: false,
-            minAngle: 0,
             minReached: false,
             offsetLeft: null,
             offsetTop: null,
@@ -51,31 +52,31 @@
 
                         if (this.options.minReached) {
                             if (targetX - this.options.centerX < 0) {
-                                angle = this.options.minAngle;
+                                angle = MIN_ANGLE;
                             } else {
                                 this.options.minReached = false;
                             }
                         } else if (this.options.maxReached) {
                             if (targetX - this.options.centerX > 0) {
-                                angle = this.options.maxAngle;
+                                angle = MAX_ANGLE;
                             } else {
                                 this.options.maxReached = false;
                             }
-                        } else if (angle >= this.options.maxAngle - stepIndicatorDifference
-                            || angle <= this.options.minAngle + stepIndicatorDifference
+                        } else if (angle >= MAX_ANGLE - stepIndicatorDifference
+                            || angle <= MIN_ANGLE + stepIndicatorDifference
                         ) {
                             if (this.options.previousAngle === null) {
                                 this.options.previousAngle = angle;
                             } else {
-                                if (this.options.previousAngle >= this.options.maxAngle - stepIndicatorDifference
-                                    && angle <= this.options.minAngle + stepIndicatorDifference
+                                if (this.options.previousAngle >= MAX_ANGLE - stepIndicatorDifference
+                                    && angle <= MIN_ANGLE + stepIndicatorDifference
                                 ) {
-                                    angle = this.options.maxAngle;
+                                    angle = MAX_ANGLE;
                                     this.options.maxReached = true;
-                                } else if (this.options.previousAngle <= this.options.minAngle + stepIndicatorDifference
-                                    && angle >= this.options.maxAngle - stepIndicatorDifference
+                                } else if (this.options.previousAngle <= MIN_ANGLE + stepIndicatorDifference
+                                    && angle >= MAX_ANGLE - stepIndicatorDifference
                                 ) {
-                                    angle = this.options.minAngle;
+                                    angle = MIN_ANGLE;
                                     this.options.minReached = true;
                                 }
                             }
@@ -125,7 +126,7 @@
          * @param {number} angle
          */
         updatePercentage: function (angle) {
-            let percentage = angle / this.options.maxAngle * 100,
+            let percentage = angle / MAX_ANGLE * 100,
                 $valueContainer = $(this.element).find(this.options.valueContainer);
 
             $valueContainer.text(percentage);
@@ -139,7 +140,7 @@
          * @param {boolean} updatePercentage
          */
         setControllerPosition: function (value, isPercentage = false, updatePercentage = true) {
-            let angle = isPercentage ? (value / 100 * this.options.maxAngle) : value,
+            let angle = isPercentage ? (value / 100 * MAX_ANGLE) : value,
                 angleRad = angle * Math.PI / 180;
 
             let dotX = Math.sin(angleRad) * this.options.radius + this.options.centerY,

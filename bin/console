@@ -12,7 +12,7 @@ define('APP_DIR', BP . DS . 'app' . DS . 'code');
 require_once(BP . DS . 'app' . DS . 'autoload.php');
 
 try {
-    $console = new \Ava\Console\Console();
+    $console = new \Awesome\Console\Console();
     $console->run();
 } catch (\Throwable $t) {
     echo 'Error occurred: ' . $t->getMessage();

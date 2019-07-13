@@ -1,6 +1,6 @@
 <?php
 
-namespace Ava\Base;
+namespace Awesome\Base;
 
 class App
 {
@@ -9,7 +9,7 @@ class App
     private const MAINTENANCE_DEFAULT_TEMPLATE = 'maintenance.php';
 
     /**
-     * @var \Ava\Logger\LogWriter
+     * @var \Awesome\Logger\LogWriter
      */
     private $logWriter;
 
@@ -23,7 +23,7 @@ class App
      */
     public function __construct()
     {
-        $this->logWriter = new \Ava\Logger\LogWriter();
+        $this->logWriter = new \Awesome\Logger\LogWriter();
         $this->config = $this->loadConfig();
     }
 
@@ -86,7 +86,7 @@ class App
     private function isMaintenance() {
         $enabled = false;
 
-        if (($allowedIPs = @file_get_contents(BP . DS . \Ava\Console\Command\Maintenance::MAINTENANCE_FILE)) !== false) {
+        if (($allowedIPs = @file_get_contents(BP . DS . \Awesome\Console\Command\Maintenance::MAINTENANCE_FILE)) !== false) {
             $allowedIPs = explode(',', $allowedIPs);
             $ip = $_SERVER['REMOTE_ADDR'];
 
@@ -120,7 +120,7 @@ class App
      */
     public function getDeployedVersion()
     {
-        $version = @file_get_contents(BP . DS . \Ava\Console\Command\Cache::DEPLOYED_VERSION_FILE);
+        $version = @file_get_contents(BP . DS . \Awesome\Console\Command\Cache::DEPLOYED_VERSION_FILE);
 
         return (string) $version;
     }

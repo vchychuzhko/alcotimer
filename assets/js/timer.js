@@ -2,7 +2,7 @@
     let RUNNING_STATE = 'running',
         STOPPED_STATE = 'stopped';
 
-    $.widget('ava.timer', {
+    $.widget('awesome.timer', {
         options: {
             currentTime: null,
             defaultTime: null,

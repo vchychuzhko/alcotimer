@@ -1,6 +1,6 @@
 <?php
 
-namespace Ava\Console;
+namespace Awesome\Console;
 
 abstract class AbstractCommand
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace Ava\Console;
+namespace Awesome\Console;
 
 class Console
 {
-    private const COMMAND_NAMESPACE = 'Ava\Console\Command';
+    private const COMMAND_NAMESPACE = 'Awesome\Console\Command';
     private const COMMAND_BASE = 'php bin/console';
     private const HELP_SUGGESTION = 'Try run `' . self::COMMAND_BASE . '` to see possible commands.';
 
@@ -43,7 +43,7 @@ class Console
                     . self::HELP_SUGGESTION;
             }
         } else {
-            $help = new \Ava\Console\Command\Help();
+            $help = new \Awesome\Console\Command\Help();
             $output = $help->show();
         }
 
@@ -95,7 +95,7 @@ class Console
     /**
      * Check if called method exists in class and return its name.
      * @param string $methodName
-     * @param \Ava\Console\AbstractCommand $class
+     * @param \Awesome\Console\AbstractCommand $class
      * @return string
      */
     private function mapMethodName($methodName, $class)
