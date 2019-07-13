@@ -22,7 +22,9 @@
         initBindings: function () {
             $(this.element).on('click', '.save-button', function () {
                 this.saveSettings();
-                window.showMessage('Setting were saved!', 3000);
+                $('body').trigger('base.showMessage', {
+                    message: 'Setting were saved!',
+                });
 
                 setTimeout(function () {
                     $('.menu').trigger('close-menu');
@@ -31,7 +33,9 @@
 
             $(this.element).on('click', '.reset-button', function () {
                 this.resetSettings();
-                window.showMessage('Setting were reset to default ones.', 3000);
+                $('body').trigger('base.showMessage', {
+                    message: 'Setting were reset to default ones.',
+                });
             }.bind(this));
         },
 

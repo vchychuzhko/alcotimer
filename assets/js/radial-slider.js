@@ -1,19 +1,10 @@
 ;(function ($) {
     let MAX_ANGLE = 360,
-        MIN_ANGLE = 0;
+        MIN_ANGLE = 0,
+        STEP_INDICATOR_ANGLE = 10;
 
     $.widget('awesome.radialSlider', {
         options: {
-            borderWidth: null,
-            centerX: null,
-            centerY: null,
-            isDragging: false,
-            maxReached: false,
-            minReached: false,
-            offsetLeft: null,
-            offsetTop: null,
-            previousAngle: null,
-            radius: null,
             valueContainer: '.radial-percentage-value'
         },
 
@@ -47,8 +38,7 @@
                         let touch = event.originalEvent.touches ? event.originalEvent.touches[0] : undefined,
                             targetX = (event.pageX || touch.pageX) - this.options.offsetLeft - this.options.borderWidth / 2,
                             targetY = (event.pageY || touch.pageY) - this.options.offsetTop - this.options.borderWidth / 2,
-                            angle = this.getAngleByCoordinates(targetX, targetY),
-                            stepIndicatorDifference = 10;
+                            angle = this.getAngleByCoordinates(targetX, targetY);
 
                         if (this.options.minReached) {
                             if (targetX - this.options.centerX < 0) {
@@ -62,19 +52,19 @@
                             } else {
                                 this.options.maxReached = false;
                             }
-                        } else if (angle >= MAX_ANGLE - stepIndicatorDifference
-                            || angle <= MIN_ANGLE + stepIndicatorDifference
+                        } else if (angle >= MAX_ANGLE - STEP_INDICATOR_ANGLE
+                            || angle <= MIN_ANGLE + STEP_INDICATOR_ANGLE
                         ) {
                             if (this.options.previousAngle === null) {
                                 this.options.previousAngle = angle;
                             } else {
-                                if (this.options.previousAngle >= MAX_ANGLE - stepIndicatorDifference
-                                    && angle <= MIN_ANGLE + stepIndicatorDifference
+                                if (this.options.previousAngle >= MAX_ANGLE - STEP_INDICATOR_ANGLE
+                                    && angle <= MIN_ANGLE + STEP_INDICATOR_ANGLE
                                 ) {
                                     angle = MAX_ANGLE;
                                     this.options.maxReached = true;
-                                } else if (this.options.previousAngle <= MIN_ANGLE + stepIndicatorDifference
-                                    && angle >= MAX_ANGLE - stepIndicatorDifference
+                                } else if (this.options.previousAngle <= MIN_ANGLE + STEP_INDICATOR_ANGLE
+                                    && angle >= MAX_ANGLE - STEP_INDICATOR_ANGLE
                                 ) {
                                     angle = MIN_ANGLE;
                                     this.options.minReached = true;

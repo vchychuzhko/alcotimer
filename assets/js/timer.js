@@ -4,15 +4,6 @@
 
     $.widget('awesome.timer', {
         options: {
-            currentTime: null,
-            defaultTime: null,
-            enteredTime: null,
-            lastTic: null,
-            maxTime: null,
-            minTime: null,
-            randomTime: null,
-            state: STOPPED_STATE,
-            timerInterval: null,
             valueContainer: '.radial-percentage-value'
         },
 
@@ -42,6 +33,7 @@
          * Load and set configurations and settings
          */
         initTimer: function () {
+            this.options.state = STOPPED_STATE;
             this.updateSettings();
             this.loadConfigurations();
 
@@ -184,7 +176,9 @@
 
             if (playPromise !== undefined) {
                 playPromise.catch(function () {
-                    window.showMessage('Time to drink, dude!');
+                    $('body').trigger('base.showMessage', {
+                        message: 'Time to drink, dude!',
+                    });
                     //@TODO: Play is forbidden by the browser, should be handled in some way. No workaround has an effect.
                 });
             }

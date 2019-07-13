@@ -11,7 +11,7 @@
          */
         _create: function () {
             this.initBindings();
-            window.showMessage = this.showMessage.bind(this);
+            $('body').on('base.showMessage', this.showMessage.bind(this));
         },
 
         /**
@@ -33,28 +33,38 @@
 
         /**
          * Copy text to the clipboard
+         * @param {object} event
          */
         copyText: function (event) {
             event.preventDefault();
-            let $temp = $('<input>');
+            let $temp = $('<input>'),
+                $body = $('body');
 
-            $('body').append($temp);
+            $body.append($temp);
             $temp.val($(event.target).text()).select();
             document.execCommand('copy');
             $temp.remove();
 
-            window.showMessage('Copied to the clipboard!', 3000);
+            $body.trigger('base.showMessage', {
+                message: 'Copied to the clipboard!',
+            });
         },
 
         /**
          * Global function to show messages
-         * @param {string} message
-         * @param {number} duration
-         * @param {boolean} isError
+         * @param {object} event
+         * @param {object} data
+         * @property {string} data.message
+         * @property {number} data.duration
+         * @property {boolean} data.isError
          */
-        showMessage: function (message, duration = 5000, isError = false) {
-            let $message = $('<p class="message">' + message + '</p>'),
-                $container =  $('<span class="message-container' + (isError ? ' error' : '') + '"></span>').append($message);
+        showMessage: function (event, data) {
+            let message = data.message,
+                duration = data.duration ? data.duration : 3000,
+                isError = data.isError ? data.isError : false,
+                $message = $('<p class="message">' + message + '</p>'),
+                $container =  $('<span class="message-container' + (isError ? ' error' : '') + '"></span>')
+                    .append($message);
 
             $('body').append($container);
 
