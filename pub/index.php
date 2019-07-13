@@ -1,8 +1,8 @@
 <?php
 
 define('DS', DIRECTORY_SEPARATOR);
-define('BP', __DIR__);
-define('PUB_DIR', 'pub');
+define('BP', dirname(__DIR__));
+define('PUB_DIR', '');
 require_once(BP . DS . 'app' . DS . 'autoload.php');
 
 $app = new \Awesome\Frontend\App();

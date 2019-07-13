@@ -1,4 +1,4 @@
-<?php /** @var \Awesome\Base\App $this */
+<?php /** @var \Awesome\Frontend\App $this */
 $deployedVersion = $this->getDeployedVersion();
 $supportEmailAddress = $this->getSupportEmailAddress() ?: 'vlad.chichuzhko@gmail.com';
 ?>

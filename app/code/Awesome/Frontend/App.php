@@ -1,6 +1,6 @@
 <?php
 
-namespace Awesome\Base;
+namespace Awesome\Frontend;
 
 class App
 {

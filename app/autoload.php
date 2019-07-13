@@ -1,4 +1,7 @@
 <?php
+
+define('APP_DIR', BP . DS . 'app' . DS . 'code');
+
 /**
  * Function to load classes.
  * @param string $classNamespace
