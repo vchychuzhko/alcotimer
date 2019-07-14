@@ -28,11 +28,11 @@
             $(window).on('resize', function () {
                 let $container =  $(this.element).find('.range-controls');
 
-                this.options.containerWidth = $container.innerWidth();
+                this.containerWidth = $container.innerWidth();
             }.bind(this));
 
             $(this.element).on('mousedown touchstart', '.range-controls', function (event) {
-                this.options.isDragging = true;
+                this.isDragging = true;
 
                 $.each([$minRange, $maxRange], function (index, controller) {
                     $(controller).css({'z-index': 4});
@@ -41,19 +41,19 @@
             }.bind(this));
 
             $(document).on('mouseup touchend', function () {
-                this.options.isDragging = false;
+                this.isDragging = false;
             }.bind(this));
 
             $(this.element).on('mousemove touchmove', function (event) {
                 try {
-                    if (this.options.isDragging) {
+                    if (this.isDragging) {
                         let touch = event.originalEvent.touches ? event.originalEvent.touches[0] : undefined,
                             pos = event.pageX || touch.pageX,
                             $event = $(event.target),
                             $container =  $(this.element).find('.range-controls'),
                             containerLeft = $container.offset().left,
-                            containerRight = containerLeft + this.options.containerWidth,
-                            newPos = (pos - containerLeft) / this.options.containerWidth * 100;
+                            containerRight = containerLeft + this.containerWidth,
+                            newPos = (pos - containerLeft) / this.containerWidth * 100;
 
                         if (pos < containerLeft) {
                             newPos = 0;
@@ -169,7 +169,7 @@
          * @returns {number}
          */
         getValueFromController: function ($rangeController) {
-            return this.percentToValue(parseFloat($rangeController.css('left')) / this.options.containerWidth * 100)
+            return this.percentToValue(parseFloat($rangeController.css('left')) / this.containerWidth * 100)
         },
 
         /**

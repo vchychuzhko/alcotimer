@@ -25,53 +25,53 @@
 
             $(this.element).on('mousedown touchstart', '.radial-slider .radial-controller', function () {
                 //Use '.radial-slider' as 2nd parameter to have "teleport" effect on moving out of controller dot
-                this.options.isDragging = true;
+                this.isDragging = true;
             }.bind(this));
 
             $(document).on('mouseup touchend', function () {
-                this.options.isDragging = false;
+                this.isDragging = false;
             }.bind(this));
 
             $(window).on('mousemove touchmove', function (event) {
-                if (this.options.isDragging) {
+                if (this.isDragging) {
                     try {
                         let touch = event.originalEvent.touches ? event.originalEvent.touches[0] : undefined,
-                            targetX = (event.pageX || touch.pageX) - this.options.offsetLeft - this.options.borderWidth / 2,
-                            targetY = (event.pageY || touch.pageY) - this.options.offsetTop - this.options.borderWidth / 2,
+                            targetX = (event.pageX || touch.pageX) - this.offsetLeft - this.borderWidth / 2,
+                            targetY = (event.pageY || touch.pageY) - this.offsetTop - this.borderWidth / 2,
                             angle = this.getAngleByCoordinates(targetX, targetY);
 
-                        if (this.options.minReached) {
-                            if (targetX - this.options.centerX < 0) {
+                        if (this.minReached) {
+                            if (targetX - this.centerX < 0) {
                                 angle = MIN_ANGLE;
                             } else {
-                                this.options.minReached = false;
+                                this.minReached = false;
                             }
-                        } else if (this.options.maxReached) {
-                            if (targetX - this.options.centerX > 0) {
+                        } else if (this.maxReached) {
+                            if (targetX - this.centerX > 0) {
                                 angle = MAX_ANGLE;
                             } else {
-                                this.options.maxReached = false;
+                                this.maxReached = false;
                             }
                         } else if (angle >= MAX_ANGLE - STEP_INDICATOR_ANGLE
                             || angle <= MIN_ANGLE + STEP_INDICATOR_ANGLE
                         ) {
-                            if (this.options.previousAngle === null) {
-                                this.options.previousAngle = angle;
+                            if (this.previousAngle === null) {
+                                this.previousAngle = angle;
                             } else {
-                                if (this.options.previousAngle >= MAX_ANGLE - STEP_INDICATOR_ANGLE
+                                if (this.previousAngle >= MAX_ANGLE - STEP_INDICATOR_ANGLE
                                     && angle <= MIN_ANGLE + STEP_INDICATOR_ANGLE
                                 ) {
                                     angle = MAX_ANGLE;
-                                    this.options.maxReached = true;
-                                } else if (this.options.previousAngle <= MIN_ANGLE + STEP_INDICATOR_ANGLE
+                                    this.maxReached = true;
+                                } else if (this.previousAngle <= MIN_ANGLE + STEP_INDICATOR_ANGLE
                                     && angle >= MAX_ANGLE - STEP_INDICATOR_ANGLE
                                 ) {
                                     angle = MIN_ANGLE;
-                                    this.options.minReached = true;
+                                    this.minReached = true;
                                 }
                             }
                         } else {
-                            this.options.previousAngle = null;
+                            this.previousAngle = null;
                         }
 
                         this.setControllerPosition(angle);
@@ -86,11 +86,11 @@
                     percentage = parseFloat($valueContainer.text());
 
                 if (percentage === 0) {
-                    this.options.minReached = true;
+                    this.minReached = true;
                 }
 
                 if (percentage === 100) {
-                    this.options.maxReached = true;
+                    this.maxReached = true;
                 }
 
                 this.setControllerPosition(percentage, true, false);
@@ -103,12 +103,12 @@
         updateCircleParameters: function () {
             let $circle = $(this.element).find('.radial-slider');
 
-            this.options.borderWidth = parseFloat($circle.css('border-left-width'));
-            this.options.offsetLeft = $circle.offset().left;
-            this.options.offsetTop = $circle.offset().top;
-            this.options.centerX = ($circle.outerWidth() - this.options.borderWidth) / 2;
-            this.options.centerY = ($circle.outerHeight() - this.options.borderWidth) / 2;
-            this.options.radius = ($circle.outerWidth() - this.options.borderWidth) / 2;
+            this.borderWidth = parseFloat($circle.css('border-left-width'));
+            this.offsetLeft = $circle.offset().left;
+            this.offsetTop = $circle.offset().top;
+            this.centerX = ($circle.outerWidth() - this.borderWidth) / 2;
+            this.centerY = ($circle.outerHeight() - this.borderWidth) / 2;
+            this.radius = ($circle.outerWidth() - this.borderWidth) / 2;
         },
 
         /**
@@ -133,12 +133,12 @@
             let angle = isPercentage ? (value / 100 * MAX_ANGLE) : value,
                 angleRad = angle * Math.PI / 180;
 
-            let dotX = Math.sin(angleRad) * this.options.radius + this.options.centerY,
-                dotY = -Math.cos(angleRad) * this.options.radius + this.options.centerX;
+            let dotX = Math.sin(angleRad) * this.radius + this.centerY,
+                dotY = -Math.cos(angleRad) * this.radius + this.centerX;
 
             $(this.element).find('.radial-controller').css({
-                'left': (dotX - this.options.borderWidth / 2) + 'px',
-                'top': (dotY - this.options.borderWidth / 2) + 'px'
+                'left': (dotX - this.borderWidth / 2) + 'px',
+                'top': (dotY - this.borderWidth / 2) + 'px'
             });
 
             if (updatePercentage) {
@@ -152,8 +152,8 @@
          */
         getValueFromController: function () {
             let $controller = $(this.element).find('.radial-controller'),
-                currentX = parseInt($controller.css('left')) + this.options.borderWidth / 2,
-                currentY = parseInt($controller.css('top'))+ this.options.borderWidth / 2;
+                currentX = parseInt($controller.css('left')) + this.borderWidth / 2,
+                currentY = parseInt($controller.css('top'))+ this.borderWidth / 2;
 
             return this.getAngleByCoordinates(currentX, currentY);
         },
@@ -166,8 +166,8 @@
          */
         getAngleByCoordinates: function (x, y) {
             let angle,
-                deltaX = x - this.options.centerX,
-                deltaY = y - this.options.centerY;
+                deltaX = x - this.centerX,
+                deltaY = y - this.centerY;
 
             if (deltaX === 0) {
                 angle = (deltaY > 0) ? 180 : 0;

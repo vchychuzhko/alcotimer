@@ -33,21 +33,21 @@
          * Load and set configurations and settings
          */
         initTimer: function () {
-            this.options.state = STOPPED_STATE;
+            this.state = STOPPED_STATE;
             this.loadSettings();
             this.loadTimerStateData();
 
-            if (this.options.state === RUNNING_STATE) {
-                this.options.currentTime -= Math.round(($.now() - this.options.lastTic) / 1000);
-                this.setTime(this.options.currentTime);
+            if (this.state === RUNNING_STATE) {
+                this.currentTime -= Math.round(($.now() - this.lastTic) / 1000);
+                this.setTime(this.currentTime);
                 this.start();
             } else {
-                this.options.lastTic = null;
+                this.lastTic = null;
 
-                if (this.options.currentTime) {
-                    this.setTime(this.options.currentTime);
+                if (this.currentTime) {
+                    this.setTime(this.currentTime);
                 } else {
-                    this.setTime(this.options.enteredTime);
+                    this.setTime(this.enteredTime);
                 }
             }
         },
@@ -58,10 +58,10 @@
         loadSettings: function () {
             let settings = JSON.parse(localStorage.getItem('settings'));
 
-            this.options.minTime = settings.minTime * 60;
-            this.options.maxTime = settings.maxTime * 60;
-            this.options.showRandomTime = settings.showRandomTime;
-            this.options.showLoader = settings.showLoader;
+            this.minTime = settings.minTime * 60;
+            this.maxTime = settings.maxTime * 60;
+            this.showRandomTime = settings.showRandomTime;
+            this.showLoader = settings.showLoader;
         },
 
         /**
@@ -71,13 +71,13 @@
             let timerConfig = JSON.parse(localStorage.getItem('timerConfigurations'));
 
             if (timerConfig !== null) {
-                this.options.state = timerConfig.state;
-                this.options.currentTime = timerConfig.currentTime;
-                this.options.enteredTime = timerConfig.enteredTime;
-                this.options.lastTic = timerConfig.lastTic;
-                this.options.randomTime = timerConfig.randomTime;
+                this.state = timerConfig.state;
+                this.currentTime = timerConfig.currentTime;
+                this.enteredTime = timerConfig.enteredTime;
+                this.lastTic = timerConfig.lastTic;
+                this.randomTime = timerConfig.randomTime;
             } else {
-                this.options.enteredTime = this.options.defaultTime * 60;
+                this.enteredTime = this.defaultTime * 60;
                 this.saveConfigurations();
             }
         },
@@ -87,11 +87,11 @@
          */
         saveConfigurations: function () {
             let timerConfig = {
-                'state': this.options.state,
-                'currentTime': this.options.currentTime,
-                'enteredTime': this.options.enteredTime,
-                'lastTic': this.options.lastTic,
-                'randomTime': this.options.randomTime
+                'state': this.state,
+                'currentTime': this.currentTime,
+                'enteredTime': this.enteredTime,
+                'lastTic': this.lastTic,
+                'randomTime': this.randomTime
             };
 
             localStorage.timerConfigurations = JSON.stringify(timerConfig);
@@ -115,9 +115,9 @@
          */
         setRandom: function () {
             this.stop();
-            this.options.randomTime = this.percentageToSeconds(Math.random() * 100);
-            this.setTime(this.options.randomTime);
-            console.log(this.options.randomTime);
+            this.randomTime = this.percentageToSeconds(Math.random() * 100);
+            this.setTime(this.randomTime);
+            console.log(this.randomTime);
             console.log('random');
         },
 
@@ -125,24 +125,24 @@
          * Start/resume the timer
          */
         start: function () {
-            if (!this.options.currentTime) {
-                this.options.currentTime = this.options.randomTime ? this.options.randomTime : this.options.enteredTime;
+            if (!this.currentTime) {
+                this.currentTime = this.randomTime ? this.randomTime : this.enteredTime;
             }
 
-            if (this.options.currentTime < 0) {
+            if (this.currentTime < 0) {
                 this.finish();
             } else {
-                this.options.timerInterval = setInterval(function () {
-                    if (--this.options.currentTime <= 0) {
+                this.timerInterval = setInterval(function () {
+                    if (--this.currentTime <= 0) {
                         this.finish();
                     } else {
-                        this.setTime(this.options.currentTime);
-                        console.log(this.options.currentTime);
+                        this.setTime(this.currentTime);
+                        console.log(this.currentTime);
                     }
                 }.bind(this), 1000);
 
                 $(this.element).addClass('in-progress');
-                this.options.state = RUNNING_STATE;
+                this.state = RUNNING_STATE;
                 console.log('start');
             }
         },
@@ -151,9 +151,9 @@
          * Pause the timer
          */
         pause: function () {
-            clearInterval(this.options.timerInterval);
+            clearInterval(this.timerInterval);
             $(this.element).removeClass('in-progress');
-            this.options.state = STOPPED_STATE;
+            this.state = STOPPED_STATE;
             console.log('pause');
         },
 
@@ -163,7 +163,7 @@
         stop: function () {
             this.pause();
 
-            this.options.currentTime = null;
+            this.currentTime = null;
             this.saveConfigurations();
             console.log('stop');
         },
@@ -172,7 +172,7 @@
          * Is triggered when timer countdown is finished
          */
         finish: function () {
-            this.setTime(this.options.currentTime);
+            this.setTime(this.currentTime);
             this.stop();
 
             let audio = new Audio('/pub/media/audio/alert_sound.mp3'),
@@ -214,7 +214,7 @@
          * @returns {number}
          */
         percentageToSeconds: function(percent) {
-            return Math.round(percent / 100 * (this.options.maxTime - this.options.minTime)) + this.options.minTime;
+            return Math.round(percent / 100 * (this.maxTime - this.minTime)) + this.minTime;
         },
 
         /**
@@ -223,15 +223,15 @@
          * @returns {number}
          */
         secondsToPercentage: function(seconds) {
-            if (seconds > this.options.maxTime) {
-                seconds = this.options.maxTime;
+            if (seconds > this.maxTime) {
+                seconds = this.maxTime;
             }
 
-            if (seconds < this.options.minTime) {
-                seconds = this.options.minTime;
+            if (seconds < this.minTime) {
+                seconds = this.minTime;
             }
 
-            return (seconds - this.options.minTime) / (this.options.maxTime - this.options.minTime) * 100;
+            return (seconds - this.minTime) / (this.maxTime - this.minTime) * 100;
         },
 
         /**
@@ -257,13 +257,13 @@
             $('.timer-button-container .timer-button-title').text(time);
             //@TODO: temporary place for displaying the time
 
-            if (this.options.state === RUNNING_STATE) {
-                this.options.lastTic = $.now();
+            if (this.state === RUNNING_STATE) {
+                this.lastTic = $.now();
             }
 
             this.saveConfigurations();
 
-            if (updateSlider && (this.options.currentTime ? (this.options.currentTime >= this.options.minTime) : true)) {
+            if (updateSlider && (this.currentTime ? (this.currentTime >= this.minTime) : true)) {
                 this.updateSlider(timeInSeconds);
             }
         },
@@ -275,9 +275,9 @@
             let $valueContainer = $(this.element).find(this.options.valueContainer),
                 timeInSeconds = this.percentageToSeconds(parseFloat($valueContainer.text()));
 
-            this.options.enteredTime = timeInSeconds;
-            this.options.currentTime = null;
-            this.options.randomTime = null;
+            this.enteredTime = timeInSeconds;
+            this.currentTime = null;
+            this.randomTime = null;
             this.saveConfigurations();
 
             this.setTime(timeInSeconds, false);
