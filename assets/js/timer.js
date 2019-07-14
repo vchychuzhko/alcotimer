@@ -23,7 +23,7 @@
             $(this.element).on('click', '.timer-button', this.toggleTimer.bind(this));
             $(this.element).on('click', '.random-button', this.setRandom.bind(this));
             $(this.element).on('updateSettings', function () {
-                this.updateSettings();
+                this.loadSettings();
                 this.updateTimer();
             }.bind(this));
             $(this.element).on('percentageUpdate', this.options.valueContainer, this.updateTimer.bind(this));
@@ -34,8 +34,8 @@
          */
         initTimer: function () {
             this.options.state = STOPPED_STATE;
-            this.updateSettings();
-            this.loadConfigurations();
+            this.loadSettings();
+            this.loadTimerStateData();
 
             if (this.options.state === RUNNING_STATE) {
                 this.options.currentTime -= Math.round(($.now() - this.options.lastTic) / 1000);
@@ -55,15 +55,19 @@
         /**
          * Retrieve and update settings from the menu
          */
-        updateSettings: function () {
-            this.options.minTime = parseInt($('.settings .min-value.time').val()) * 60;
-            this.options.maxTime = parseInt($('.settings .max-value.time').val()) * 60;
+        loadSettings: function () {
+            let settings = JSON.parse(localStorage.getItem('settings'));
+
+            this.options.minTime = settings.minTime * 60;
+            this.options.maxTime = settings.maxTime * 60;
+            this.options.showRandomTime = settings.showRandomTime;
+            this.options.showLoader = settings.showLoader;
         },
 
         /**
-         * Load configurations from the local storage
+         * Load timer data from the local storage
          */
-        loadConfigurations: function () {
+        loadTimerStateData: function () {
             let timerConfig = JSON.parse(localStorage.getItem('timerConfigurations'));
 
             if (timerConfig !== null) {

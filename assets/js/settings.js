@@ -20,10 +20,10 @@
          * Init event listeners
          */
         initBindings: function () {
-            $(this.element).on('click', '.save-button', function () {
-                this.saveSettings();
+            $(this.element).on('click', '.apply-button', function () {
+                this.applySettings();
                 $('body').trigger('base.showMessage', {
-                    message: 'Setting were saved!'
+                    message: 'Settings were applied!'
                 });
 
                 setTimeout(function () {
@@ -34,7 +34,7 @@
             $(this.element).on('click', '.reset-button', function () {
                 this.resetSettings();
                 $('body').trigger('base.showMessage', {
-                    message: 'Setting were reset to default ones.'
+                    message: 'Settings were reset to default ones.'
                 });
             }.bind(this));
         },
@@ -60,6 +60,8 @@
             } else {
                 this.resetSettings();
             }
+
+            this.applySettings(false);
         },
 
         /**
@@ -68,34 +70,51 @@
         resetSettings: function () {
             let $minTimeInput = $(this.element).find('.min-value.time'),
                 $maxTimeInput = $(this.element).find('.max-value.time'),
-                $showRandomTimeInputInput = $(this.element).find('.show-random-time'),
+                $showRandomTimeInput = $(this.element).find('.show-random-time'),
                 $showLoaderInput = $(this.element).find('.show-loader');
 
             $minTimeInput.val(this.options.minDefaultValue);
             $minTimeInput.trigger('change');
             $maxTimeInput.val(this.options.maxDefaultValue);
             $maxTimeInput.trigger('change');
-            $showRandomTimeInputInput.prop('checked' , this.options.showRandomTime);
+            $showRandomTimeInput.prop('checked' , this.options.showRandomTime);
             $showLoaderInput.prop('checked' , this.options.showLoader);
+
+            this.saveSettings();
+        },
+
+        /**
+         * Apply settings by entered values
+         * @param {boolean} save
+         */
+        applySettings: function (save = true) {
+            let $minTimeInput = $(this.element).find('.min-value.time'),
+                $maxTimeInput = $(this.element).find('.max-value.time'),
+                $showRandomTimeInput = $(this.element).find('.show-random-time'),
+                $showLoaderInput = $(this.element).find('.show-loader');
+
+            this.options.minDefaultValue = parseInt($minTimeInput.val());
+            this.options.maxDefaultValue = parseInt($maxTimeInput.val());
+            this.options.showRandomTime = $showRandomTimeInput.prop('checked');
+            this.options.showLoader = $showLoaderInput.prop('checked');
+
+            if (save) {
+                this.saveSettings();
+            }
+
+            $('.timer-container').trigger('updateSettings');
         },
 
         /**
          * Save settings to the local storage
          */
         saveSettings: function () {
-            let $minTimeInput = $(this.element).find('.min-value.time'),
-                $maxTimeInput = $(this.element).find('.max-value.time'),
-                $showRandomTimeInput = $(this.element).find('.show-random-time'),
-                $showLoaderInput = $(this.element).find('.show-loader'),
-                settings = {
-                    'minTime': $minTimeInput.val(),
-                    'maxTime': $maxTimeInput.val(),
-                    'showRandomTime': $showRandomTimeInput.prop('checked'),
-                    'showLoader': $showLoaderInput.prop('checked')
-                };
-
-            localStorage.settings = JSON.stringify(settings);
-            $('.timer-container').trigger('updateSettings');
-        },
+            localStorage.settings = JSON.stringify({
+                'minTime': this.options.minDefaultValue,
+                'maxTime': this.options.maxDefaultValue,
+                'showRandomTime': this.options.showRandomTime,
+                'showLoader': this.options.showLoader
+            });
+        }
     });
 })(jQuery);

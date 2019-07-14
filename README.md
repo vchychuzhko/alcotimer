@@ -7,8 +7,7 @@ That's the very beginning
 
 <!--
 @TODO: 
-1) Start the readme file
-2) Implement effect of "show-loader" and "show-random-time" settings
-3) Start working on correct logging with stack trace
-4) Implement one basic template with kind of getContent() method for substitution
+- Implement effect of "show-loader" and "show-random-time" settings
+- Work on correct logging with stack trace
+- Implement new module structure for the whole app
 -->
