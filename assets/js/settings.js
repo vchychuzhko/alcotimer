@@ -23,7 +23,7 @@
             $(this.element).on('click', '.save-button', function () {
                 this.saveSettings();
                 $('body').trigger('base.showMessage', {
-                    message: 'Setting were saved!',
+                    message: 'Setting were saved!'
                 });
 
                 setTimeout(function () {
@@ -34,7 +34,7 @@
             $(this.element).on('click', '.reset-button', function () {
                 this.resetSettings();
                 $('body').trigger('base.showMessage', {
-                    message: 'Setting were reset to default ones.',
+                    message: 'Setting were reset to default ones.'
                 });
             }.bind(this));
         },

@@ -11,7 +11,7 @@
     transition-duration: 0.5s;
     transition-property: top;
     transition-timing-function: ease;
-    z-index: 100;
+    z-index: 50;
 }
 
 .message-container.error {

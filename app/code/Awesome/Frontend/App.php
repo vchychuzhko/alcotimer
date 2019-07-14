@@ -6,7 +6,7 @@ class App
 {
     public const CONFIG_FILE = 'app' . DS . 'config.php';
     private const TEMPLATES_DIR = BP . DS . 'app' . DS . 'templates';
-    private const MAINTENANCE_DEFAULT_TEMPLATE = 'maintenance.php';
+    private const MAINTENANCE_PAGE_PATH = BP . DS . 'pub' . DS . 'pages' . DS . 'maintenance.html';
 
     /**
      * @var \Awesome\Logger\LogWriter
@@ -33,7 +33,7 @@ class App
     public function run()
     {
         ob_start();
-        $template = self::TEMPLATES_DIR . DS . self::MAINTENANCE_DEFAULT_TEMPLATE;
+        $template = self::MAINTENANCE_PAGE_PATH;
 
         if (!$this->isMaintenance() && $this->config) {
             $routes = $this->config['routes'];

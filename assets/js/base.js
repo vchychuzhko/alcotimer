@@ -46,7 +46,7 @@
             $temp.remove();
 
             $body.trigger('base.showMessage', {
-                message: 'Copied to the clipboard!',
+                message: 'Copied to the clipboard!'
             });
         },
 
