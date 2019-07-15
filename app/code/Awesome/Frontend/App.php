@@ -1,15 +1,15 @@
 <?php
 
-namespace Ava\Base;
+namespace Awesome\Frontend;
 
 class App
 {
     public const CONFIG_FILE = 'app' . DS . 'config.php';
     private const TEMPLATES_DIR = BP . DS . 'app' . DS . 'templates';
-    private const MAINTENANCE_DEFAULT_TEMPLATE = 'maintenance.php';
+    private const MAINTENANCE_PAGE_PATH = BP . DS . 'pub' . DS . 'pages' . DS . 'maintenance.html';
 
     /**
-     * @var \Ava\Logger\LogWriter
+     * @var \Awesome\Logger\LogWriter
      */
     private $logWriter;
 
@@ -23,7 +23,7 @@ class App
      */
     public function __construct()
     {
-        $this->logWriter = new \Ava\Logger\LogWriter();
+        $this->logWriter = new \Awesome\Logger\LogWriter();
         $this->config = $this->loadConfig();
     }
 
@@ -33,7 +33,7 @@ class App
     public function run()
     {
         ob_start();
-        $template = self::TEMPLATES_DIR . DS . self::MAINTENANCE_DEFAULT_TEMPLATE;
+        $template = self::MAINTENANCE_PAGE_PATH;
 
         if (!$this->isMaintenance() && $this->config) {
             $routes = $this->config['routes'];
@@ -86,7 +86,7 @@ class App
     private function isMaintenance() {
         $enabled = false;
 
-        if (($allowedIPs = @file_get_contents(BP . DS . \Ava\Console\Command\Maintenance::MAINTENANCE_FILE)) !== false) {
+        if (($allowedIPs = @file_get_contents(BP . DS . \Awesome\Console\Command\Maintenance::MAINTENANCE_FILE)) !== false) {
             $allowedIPs = explode(',', $allowedIPs);
             $ip = $_SERVER['REMOTE_ADDR'];
 
@@ -120,7 +120,7 @@ class App
      */
     public function getDeployedVersion()
     {
-        $version = @file_get_contents(BP . DS . \Ava\Console\Command\Cache::DEPLOYED_VERSION_FILE);
+        $version = @file_get_contents(BP . DS . \Awesome\Console\Command\Cache::DEPLOYED_VERSION_FILE);
 
         return (string) $version;
     }

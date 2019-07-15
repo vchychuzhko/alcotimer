@@ -1,8 +1,8 @@
 <?php
 
-namespace Ava\Console\Command;
+namespace Awesome\Console\Command;
 
-class Cache extends \Ava\Console\AbstractCommand
+class Cache extends \Awesome\Console\AbstractCommand
 {
     public const DEPLOYED_VERSION_FILE = 'pub' . DS . 'static' . DS . 'deployed_version.txt';
 

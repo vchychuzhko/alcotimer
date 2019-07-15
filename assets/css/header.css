@@ -1,5 +1,6 @@
 header {
     background: #fff;
+    border-bottom: 1px solid black;
     height: 50px;
     text-align: center;
     position: relative;

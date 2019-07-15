@@ -1,6 +1,6 @@
 <?php
 
-namespace Ava\Logger;
+namespace Awesome\Logger;
 
 class LogWriter
 {
