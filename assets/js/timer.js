@@ -4,6 +4,7 @@
 
     $.widget('awesome.timer', {
         options: {
+            defaultTime: 9,
             valueContainer: '.radial-percentage-value'
         },
 
@@ -23,6 +24,7 @@
             $(this.element).on('click', '.timer-button', this.toggleTimer.bind(this));
             $(this.element).on('click', '.random-button', this.setRandom.bind(this));
             $(this.element).on('timer.updateSettings', function () {
+                this.pause();
                 this.loadSettings();
                 this.updateTimer();
             }.bind(this));
@@ -83,7 +85,7 @@
                 this.lastTic = timerConfig.lastTic;
                 this.randomTime = timerConfig.randomTime;
             } else {
-                this.enteredTime = this.defaultTime * 60;
+                this.enteredTime = this.options.defaultTime * 60;
                 this.saveConfigurations();
             }
         },
@@ -122,9 +124,7 @@
         setRandom: function () {
             this.stop();
             this.randomTime = this.percentageToSeconds(Math.random() * 100);
-            this.setTime(this.randomTime);
-            console.log(this.randomTime);
-            console.log('random');
+            this.setTime(this.randomTime, true);
         },
 
         /**
@@ -143,13 +143,11 @@
                         this.finish();
                     } else {
                         this.setTime(this.currentTime);
-                        console.log(this.currentTime);
                     }
                 }.bind(this), 1000);
 
                 $(this.element).addClass('in-progress');
                 this.state = RUNNING_STATE;
-                console.log('start');
             }
         },
 
@@ -160,7 +158,6 @@
             clearInterval(this.timerInterval);
             $(this.element).removeClass('in-progress');
             this.state = STOPPED_STATE;
-            console.log('pause');
         },
 
         /**
@@ -171,7 +168,6 @@
 
             this.currentTime = null;
             this.saveConfigurations();
-            console.log('stop');
         },
 
         /**
@@ -211,7 +207,6 @@
                     //@TODO: Play is forbidden by the browser, should be handled in some way. No workaround has an effect.
                 });
             }
-            console.log('finish');
         },
 
         /**
@@ -258,9 +253,10 @@
          * @param {boolean} updateSlider
          */
         setTime: function(timeInSeconds, updateSlider = true) {
-            let time = this.secondsToTime(timeInSeconds);
+            let time = this.secondsToTime(timeInSeconds),
+                $timeContainer = $('.timer-button-container .timer-button-title');
 
-            $('.timer-button-container .timer-button-title').text(time);
+            $timeContainer.text(time).toggle(!(this.hideRandomTime && this.randomTime));
             //@TODO: temporary place for displaying the time
 
             if (this.state === RUNNING_STATE) {
