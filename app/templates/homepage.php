@@ -76,9 +76,9 @@ $timerConfigurations = $this->getTimerConfigurations();
                 maxValue: <?= $timerConfigurations['max_value']; ?>
             });
             $('.settings').settings({
+                hideRandomTime: <?= $timerConfigurations['hide_random_time']; ?>,
                 minDefaultValue: <?= $timerConfigurations['default_min_value']; ?>,
                 maxDefaultValue: <?= $timerConfigurations['default_max_value']; ?>,
-                showRandomTime: <?= $timerConfigurations['show_random_time']; ?>,
                 showLoader: <?= $timerConfigurations['show_loader']; ?>
             });
             $('.timer-container').timer({

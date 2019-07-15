@@ -22,11 +22,11 @@
         initBindings: function () {
             $(this.element).on('click', '.timer-button', this.toggleTimer.bind(this));
             $(this.element).on('click', '.random-button', this.setRandom.bind(this));
-            $(this.element).on('updateSettings', function () {
+            $(this.element).on('timer.updateSettings', function () {
                 this.loadSettings();
                 this.updateTimer();
             }.bind(this));
-            $(this.element).on('percentageUpdate', this.options.valueContainer, this.updateTimer.bind(this));
+            $(this.element).on('timer.percentageUpdate', this.options.valueContainer, this.updateTimer.bind(this));
         },
 
         /**
@@ -60,8 +60,14 @@
 
             this.minTime = settings.minTime * 60;
             this.maxTime = settings.maxTime * 60;
-            this.showRandomTime = settings.showRandomTime;
+            this.hideRandomTime = settings.hideRandomTime;
             this.showLoader = settings.showLoader;
+
+            if (!this.showLoader) {
+                $(this.element).addClass('no-loader');
+            } else {
+                $(this.element).removeClass('no-loader');
+            }
         },
 
         /**
@@ -291,7 +297,7 @@
             let $valueContainer = $(this.element).find(this.options.valueContainer);
 
             $valueContainer.text(this.secondsToPercentage(timeInSeconds));
-            $valueContainer.trigger('timeUpdate');
+            $valueContainer.trigger('radial-slider.timeUpdate');
         }
     });
 })(jQuery);

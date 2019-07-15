@@ -81,7 +81,7 @@
                 }
             }.bind(this));
 
-            $(this.element).on('timeUpdate', this.options.valueContainer, function (event) {
+            $(this.element).on('radial-slider.timeUpdate', this.options.valueContainer, function (event) {
                 let $valueContainer = $(event.target),
                     percentage = parseFloat($valueContainer.text());
 
@@ -120,7 +120,7 @@
                 $valueContainer = $(this.element).find(this.options.valueContainer);
 
             $valueContainer.text(percentage);
-            $valueContainer.trigger('percentageUpdate');
+            $valueContainer.trigger('timer.percentageUpdate');
         },
 
         /**

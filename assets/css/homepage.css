@@ -7,32 +7,29 @@
 @import 'footer.css';
 
 .page-wrapper .content {
+    align-items: center;
     background-color: #7DD0B6;
     background-image: url('/pub/media/images/back.jpg');
-    position: relative;
     display: flex;
     justify-content: center;
-    align-items: center;
     overflow-y: hidden;
+    position: relative;
 }
 
 .page-wrapper .content .timer-container {
     height: 350px;
-    /*left: 50%;*/
     margin: 20px 0;
     max-width: 100%;
     position: relative;
-    /*top: 50%;*/
-    /*transform: translate(-50%, -50%);*/
     width: 350px;
 }
 
 .page-wrapper .content .timer-container .timer-wrapper {
+    height: 300px;
+    left: 50%;
     position: absolute;
     top: 50%;
-    left: 50%;
     transform: translate(-50%, -50%);
-    height: 300px;
     width: 300px;
 }
 
@@ -40,7 +37,7 @@
     display: block;
 }
 
-.page-wrapper .content .timer-container.in-progress .timer-wrapper.radial-container .radial-slider {
+.page-wrapper .content .timer-container.in-progress:not(.no-loader) .timer-wrapper.radial-container .radial-slider {
     display: none;
 }
 
@@ -127,7 +124,7 @@
     width: 300px;
 }
 
-.page-wrapper .content .timer-container.in-progress .timer-wrapper .loader {
+.page-wrapper .content .timer-container.in-progress:not(.no-loader) .timer-wrapper .loader {
     display: block;
 }
 
