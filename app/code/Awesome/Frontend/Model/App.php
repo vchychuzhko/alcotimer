@@ -44,7 +44,13 @@ class App
                 $templateName = $systemRoutes[$redirectStatus];
             } else {
                 $uri = (string) strtok(trim($_SERVER['REQUEST_URI'], '/'), '?');
-                $templateName = $routes[$uri] ?? $systemRoutes['404'];
+
+                if (isset($routes[$uri])) {
+                    $templateName = $routes[$uri];
+                } else {
+                    http_response_code(404);
+                    $templateName = $systemRoutes['404'];
+                }
             }
 
             $templateFile = self::TEMPLATES_DIR . DS . $templateName;
@@ -140,6 +146,6 @@ class App
      */
     public function getMediaPath()
     {
-        return PUB_DIR . '/' . 'media';
+        return '/' . PUB_DIR . 'media';
     }
 }
