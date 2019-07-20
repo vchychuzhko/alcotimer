@@ -1,6 +1,6 @@
 <?php
 
-namespace Awesome\Frontend;
+namespace Awesome\Frontend\Model;
 
 class App
 {
@@ -123,5 +123,23 @@ class App
         $version = @file_get_contents(BP . DS . \Awesome\Console\Command\Cache::DEPLOYED_VERSION_FILE);
 
         return (string) $version;
+    }
+
+    /**
+     *
+     * @return string
+     */
+    public function getStaticPath()
+    {
+        return PUB_DIR . '/' . 'static/version' . $this->getDeployedVersion() . '/' . 'frontend';
+    }
+
+    /**
+     *
+     * @return string
+     */
+    public function getMediaPath()
+    {
+        return PUB_DIR . '/' . 'media';
     }
 }

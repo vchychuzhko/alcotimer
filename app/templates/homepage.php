@@ -1,5 +1,6 @@
-<?php /** @var \Awesome\Frontend\App $this */
-$deployedVersion = $this->getDeployedVersion();
+<?php /** @var \Awesome\Frontend\Model\App $this */
+$staticPath = $this->getStaticPath();
+$mediaPath = $this->getMediaPath();
 $supportEmailAddress = $this->getSupportEmailAddress();
 $timerConfigurations = $this->getTimerConfigurations();
 ?>
@@ -10,15 +11,15 @@ $timerConfigurations = $this->getTimerConfigurations();
     <title>AlcoTimer</title>
     <meta name="description" content="Web App for people, who would like to make drinking process become really challenging">
     <meta name="keywords" content="Alcohol,Alco,Timer,AlcoTimer,Web,App,Drink">
-    <link rel="shortcut icon" type="image/png" href="/pub/media/images/favicon.png"/>
-    <link rel="stylesheet" type="text/css" href="/assets/css/homepage.css"/>
-    <script src="/lib/jquery/jquery.min.js"></script>
-    <script src="/lib/jquery-ui/jquery-ui.min.js"></script>
-    <script src="/assets/js/base.js"></script>
-    <script src="/assets/js/range-slider.js"></script>
-    <script src="/assets/js/radial-slider.js"></script>
-    <script src="/assets/js/settings.js"></script>
-    <script src="/assets/js/timer.js"></script>
+    <link rel="shortcut icon" type="image/png" href="<?= $mediaPath; ?>/images/favicon.png"/>
+    <link rel="stylesheet" type="text/css" href="<?= $staticPath; ?>/css/homepage.css"/>
+    <script src="<?= $staticPath; ?>/jquery.min.js"></script>
+    <script src="<?= $staticPath; ?>/jquery-ui.min.js"></script>
+    <script src="<?= $staticPath; ?>/js/base.js"></script>
+    <script src="<?= $staticPath; ?>/js/range-slider.js"></script>
+    <script src="<?= $staticPath; ?>/js/radial-slider.js"></script>
+    <script src="<?= $staticPath; ?>/js/settings.js"></script>
+    <script src="<?= $staticPath; ?>/js/timer.js"></script>
 </head>
 <body class="homepage">
     <div class="menu">
