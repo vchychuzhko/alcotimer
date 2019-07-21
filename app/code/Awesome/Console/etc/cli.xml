@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<commandList namespace="help">
+    <command name="show" class="Awesome\Console\Console\ShowHelp">
+        <description><![CDATA[Show a list of allowed console commands.]]></description>
+    </command>
+</commandList>

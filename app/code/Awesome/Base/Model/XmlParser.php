@@ -29,7 +29,8 @@ class XmlParser
                 foreach ($commandNode->optionList as $option) {
                     $options[(string)$option->option['name']] = [
                         'required' => $this->stringToBoolean((string)$option->option['required']),
-                        'mask' => (string)$option->option->mask
+                        'mask' => (string)$option->option->mask,
+                        'description' => (string)$option->option->description
                     ];
                 }
 

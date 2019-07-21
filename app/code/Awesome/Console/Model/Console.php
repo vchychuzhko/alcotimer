@@ -4,7 +4,7 @@ namespace Awesome\Console\Model;
 
 class Console
 {
-    private const COMMAND_BASE = 'php bin/console';
+    public const COMMAND_BASE = 'php bin/console';
     private const HELP_SUGGESTION = 'Try run `' . self::COMMAND_BASE . '` to see possible commands.';
 
     /**
@@ -43,9 +43,8 @@ class Console
                     . self::HELP_SUGGESTION;
             }
         } else {
-            //@TODO: implement help console command
-            $help = new \Awesome\Console\Command\Help();
-            $output = $help->show();
+            $help = new \Awesome\Console\Console\ShowHelp();
+            $output = $help->execute();
         }
 
         echo $output . "\n";

@@ -4,6 +4,7 @@
         <optionList>
             <option name="allowed_ips" required="false">
                 <mask><![CDATA[[--ip=<ip_address>]]]></mask>
+                <description><![CDATA[Allowed ip for maintenance mode.]]></description>
             </option>
         </optionList>
         <description><![CDATA[Enable maintenance mode with list of allowed ids.]]></description>
