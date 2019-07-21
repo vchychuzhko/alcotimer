@@ -71,25 +71,25 @@ class Console
         if ($namespace && $command) {
             $commandList = [];
 
-            foreach (glob(APP_DIR . self::CLI_XML_PATH_PATTERN) as $cliXml) {
-                $cliData = simplexml_load_file($cliXml);
+            foreach (glob(APP_DIR . self::CLI_XML_PATH_PATTERN) as $cliXmlFile) {
+                $cliData = simplexml_load_file($cliXmlFile);
                 $foundNamespace = (string)$cliData['namespace'];
 
                 if (!isset($commandList[$foundNamespace])) {
                     $commandList[$foundNamespace] = [];
                 }
 
-                foreach ($cliData->command as $foundCommand) {
-                    $commandList[$foundNamespace][(string)$foundCommand['name']] = (string)$foundCommand['class'];
+                foreach ($cliData->command as $commandNode) {
+                    $commandList[$foundNamespace][(string)$commandNode['name']] = (string)$commandNode['class'];
                 }
             }
             //@TODO: implement cache functionality for all cli commands
 
-            $trueNamespace = $this->findMatch($namespace, array_keys($commandList));
-            $trueName = $this->findMatch($command, array_keys($commandList[$trueNamespace]));
+            $namespace = $this->findMatch($namespace, array_keys($commandList));
+            $command = $this->findMatch($command, array_keys($commandList[$namespace]));
 
-            if ($trueName) {
-                $className = $commandList[$trueNamespace][$trueName];
+            if ($command) {
+                $className = $commandList[$namespace][$command];
             }
         }
 
