@@ -4,7 +4,6 @@ namespace Awesome\Console\Model;
 
 class Console
 {
-    private const CLI_XML_PATH_PATTERN = '/*/*/etc/cli.xml';
     private const COMMAND_BASE = 'php bin/console';
     private const HELP_SUGGESTION = 'Try run `' . self::COMMAND_BASE . '` to see possible commands.';
 
@@ -14,11 +13,17 @@ class Console
     private $args;
 
     /**
+     * @var \Awesome\Base\Model\XmlParser $xmlParser
+     */
+    private $xmlParser;
+
+    /**
      * Console constructor.
      */
     public function __construct()
     {
         $this->args = $_SERVER['argv'];
+        $this->xmlParser = new \Awesome\Base\Model\XmlParser();
     }
 
     /**
@@ -69,27 +74,13 @@ class Console
         $className = '';
 
         if ($namespace && $command) {
-            $commandList = [];
-
-            foreach (glob(APP_DIR . self::CLI_XML_PATH_PATTERN) as $cliXmlFile) {
-                $cliData = simplexml_load_file($cliXmlFile);
-                $foundNamespace = (string)$cliData['namespace'];
-
-                if (!isset($commandList[$foundNamespace])) {
-                    $commandList[$foundNamespace] = [];
-                }
-
-                foreach ($cliData->command as $commandNode) {
-                    $commandList[$foundNamespace][(string)$commandNode['name']] = (string)$commandNode['class'];
-                }
-            }
-            //@TODO: implement cache functionality for all cli commands
+            $commandList = $this->xmlParser->retrieveConsoleCommands();
 
             $namespace = $this->findMatch($namespace, array_keys($commandList));
             $command = $this->findMatch($command, array_keys($commandList[$namespace]));
 
             if ($command) {
-                $className = $commandList[$namespace][$command];
+                $className = $commandList[$namespace][$command]['class'];
             }
         }
 

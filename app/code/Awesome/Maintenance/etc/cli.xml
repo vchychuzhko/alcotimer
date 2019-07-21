@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <commandList namespace="maintenance">
     <command name="enable" class="Awesome\Maintenance\Console\Enable">
-        <argumentList>
-            <argument name="allowed_ips" required="false">
+        <optionList>
+            <option name="allowed_ips" required="false">
                 <mask><![CDATA[[--ip=<ip_address>]]]></mask>
-            </argument>
-        </argumentList>
+            </option>
+        </optionList>
         <description><![CDATA[Enable maintenance mode with list of allowed ids.]]></description>
     </command>
     <command name="disable" class="Awesome\Maintenance\Console\Disable">
