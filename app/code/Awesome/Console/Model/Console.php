@@ -4,7 +4,7 @@ namespace Awesome\Console\Model;
 
 class Console
 {
-    private const COMMAND_NAMESPACE = 'Awesome\Console\Command';
+    private const CLI_XML_PATH_PATTERN = '/*/*/etc/cli.xml';
     private const COMMAND_BASE = 'php bin/console';
     private const HELP_SUGGESTION = 'Try run `' . self::COMMAND_BASE . '` to see possible commands.';
 
@@ -26,23 +26,19 @@ class Console
      */
     public function run()
     {
-        if (isset($this->args[1])) {
-            list($classArg, $methodArg, $args) = $this->splitArgs();
+        list($commandName, $commandArgs) = $this->parseInput();
 
-            if ($className = $this->mapClassName($classArg)) {
-                $class = new $className();
-
-                if ($methodName = $this->mapMethodName($methodArg, $class)) {
-                    $output = $class->{$methodName}($args);
-                } else {
-                    $output = 'Method `' . $methodArg . '` is not defined in ' . $className . "\n"
-                        . self::HELP_SUGGESTION;
-                }
+        if ($commandName) {
+            if ($className = $this->mapClassName($commandName)) {
+                /** @var \Awesome\Console\Model\AbstractCommand $consoleClass */
+                $consoleClass = new $className();
+                $output = $consoleClass->execute($commandArgs);
             } else {
-                $output = '`' . $classArg . '` does not exist in ' . self::COMMAND_NAMESPACE . "\n"
+                $output = '`' . $commandName . '` command is not defined in this application' . "\n"
                     . self::HELP_SUGGESTION;
             }
         } else {
+            //@TODO: implement help console command
             $help = new \Awesome\Console\Command\Help();
             $output = $help->show();
         }
@@ -54,55 +50,50 @@ class Console
      * Parse console input into array of arguments.
      * @return array
      */
-    private function splitArgs()
+    private function parseInput()
     {
-        $path = explode(':', $this->args[1]);
-
         return [
-            $path[0], //className
-            $path[1] ?? '', //methodName
-            array_slice($this->args, 2) ?? [] //additional arguments
+            $this->args[1] ?? [], //commandName
+            array_slice($this->args, 2) ?? [] //additionalArgs
         ];
     }
 
     /**
-     * Check if called class exists and return its path.
-     * @param string $className
+     * Get class namespace by called command.
+     * @param string $commandName
      * @return string
      */
-    private function mapClassName($className)
+    private function mapClassName($commandName)
     {
-        $dirPath = APP_DIR . DS . str_replace('\\', DS, self::COMMAND_NAMESPACE);
-        $files = scandir($dirPath);
-        $classes = [];
+        @list($namespace, $command) = explode(':', $commandName);
+        $className = '';
 
-        foreach ($files as $file) {
-            if ($file !== '.' && $file !== '..') {
-                $name = str_replace('.php', '', $file);
-                $classes[] = strtolower($name);
+        if ($namespace && $command) {
+            $commandList = [];
+
+            foreach (glob(APP_DIR . self::CLI_XML_PATH_PATTERN) as $cliXml) {
+                $cliData = simplexml_load_file($cliXml);
+                $foundNamespace = (string)$cliData['namespace'];
+
+                if (!isset($commandList[$foundNamespace])) {
+                    $commandList[$foundNamespace] = [];
+                }
+
+                foreach ($cliData->command as $foundCommand) {
+                    $commandList[$foundNamespace][(string)$foundCommand['name']] = (string)$foundCommand['class'];
+                }
+            }
+            //@TODO: implement cache functionality for all cli commands
+
+            $trueNamespace = $this->findMatch($namespace, array_keys($commandList));
+            $trueName = $this->findMatch($command, array_keys($commandList[$trueNamespace]));
+
+            if ($trueName) {
+                $className = $commandList[$trueNamespace][$trueName];
             }
         }
 
-        if ($matchClass = $this->findMatch($className, $classes)) {
-            $className = '\\' . self::COMMAND_NAMESPACE . '\\' . ucfirst($matchClass);
-        } else {
-            $className = '';
-        }
-
         return $className;
-    }
-
-    /**
-     * Check if called method exists in class and return its name.
-     * @param string $methodName
-     * @param \Awesome\Console\Model\AbstractCommand $class
-     * @return string
-     */
-    private function mapMethodName($methodName, $class)
-    {
-        $methods = get_class_methods($class);
-
-        return $this->findMatch($methodName, $methods) ?: '';
     }
 
     /**
@@ -116,14 +107,16 @@ class Console
         $match = '';
         $possibleMatches = [];
 
-        foreach ($candidates as $candidate) {
-            if (strpos($candidate, $search) === 0) {
-                $possibleMatches[] = $candidate;
+        if ($search) {
+            foreach ($candidates as $candidate) {
+                if (strpos($candidate, $search) === 0) {
+                    $possibleMatches[] = $candidate;
+                }
             }
-        }
 
-        if (count($possibleMatches) === 1) {
-            $match = $possibleMatches[0];
+            if (count($possibleMatches) === 1) {
+                $match = $possibleMatches[0];
+            }
         }
 
         return $match;
