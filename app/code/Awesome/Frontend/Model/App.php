@@ -9,9 +9,14 @@ class App
     private const MAINTENANCE_PAGE_PATH = BP . DS . 'pub' . DS . 'pages' . DS . 'maintenance.html';
 
     /**
-     * @var \Awesome\Logger\LogWriter
+     * @var \Awesome\Logger\Model\LogWriter
      */
     private $logWriter;
+
+    /**
+     * @var \Awesome\Maintenance\Model\Maintenance $maintenance
+     */
+    private $maintenance;
 
     /**
      * @var array $config
@@ -23,7 +28,8 @@ class App
      */
     public function __construct()
     {
-        $this->logWriter = new \Awesome\Logger\LogWriter();
+        $this->logWriter = new \Awesome\Logger\Model\LogWriter();
+        $this->maintenance = new \Awesome\Maintenance\Model\Maintenance();
         $this->config = $this->loadConfig();
     }
 
@@ -86,20 +92,13 @@ class App
     }
 
     /**
-     * Check if maintenance mode is enabled for this IP.
+     * Check if maintenance mode is active.
      * @return bool
      */
     private function isMaintenance() {
-        $enabled = false;
+        $ip = $_SERVER['REMOTE_ADDR'];
 
-        if (($allowedIPs = @file_get_contents(BP . DS . \Awesome\Console\Command\Maintenance::MAINTENANCE_FILE)) !== false) {
-            $allowedIPs = explode(',', $allowedIPs);
-            $ip = $_SERVER['REMOTE_ADDR'];
-
-            $enabled = !in_array($ip, $allowedIPs);
-        };
-
-        return $enabled;
+        return $this->maintenance->isMaintenanceForIp($ip);
     }
 
     /**

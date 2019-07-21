@@ -1,6 +1,6 @@
 <?php
 
-namespace Awesome\Logger;
+namespace Awesome\Logger\Model;
 
 class LogWriter
 {

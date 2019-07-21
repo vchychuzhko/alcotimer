@@ -1,6 +1,6 @@
 <?php
 
-namespace Awesome\Console;
+namespace Awesome\Console\Model;
 
 class Console
 {
@@ -95,7 +95,7 @@ class Console
     /**
      * Check if called method exists in class and return its name.
      * @param string $methodName
-     * @param \Awesome\Console\AbstractCommand $class
+     * @param \Awesome\Console\Model\AbstractCommand $class
      * @return string
      */
     private function mapMethodName($methodName, $class)

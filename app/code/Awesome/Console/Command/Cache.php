@@ -2,7 +2,7 @@
 
 namespace Awesome\Console\Command;
 
-class Cache extends \Awesome\Console\AbstractCommand
+class Cache //extends \Awesome\Console\Model\AbstractCommand
 {
     public const DEPLOYED_VERSION_FILE = 'pub' . DS . 'static' . DS . 'deployed_version.txt';
 
