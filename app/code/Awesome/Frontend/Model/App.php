@@ -2,11 +2,12 @@
 
 namespace Awesome\Frontend\Model;
 
+use \Awesome\Maintenance\Model\Maintenance;
+
 class App
 {
-    public const CONFIG_FILE = 'app' . DS . 'config.php';
-    private const TEMPLATES_DIR = BP . DS . 'app' . DS . 'templates';
-    private const MAINTENANCE_PAGE_PATH = BP . DS . 'pub' . DS . 'pages' . DS . 'maintenance.html';
+    public const CONFIG_FILE = 'app/config.php';
+    private const TEMPLATES_DIR = BP . '/app/templates';
 
     /**
      * @var \Awesome\Logger\Model\LogWriter
@@ -14,7 +15,7 @@ class App
     private $logWriter;
 
     /**
-     * @var \Awesome\Maintenance\Model\Maintenance $maintenance
+     * @var Maintenance $maintenance
      */
     private $maintenance;
 
@@ -29,7 +30,7 @@ class App
     public function __construct()
     {
         $this->logWriter = new \Awesome\Logger\Model\LogWriter();
-        $this->maintenance = new \Awesome\Maintenance\Model\Maintenance();
+        $this->maintenance = new Maintenance();
         $this->config = $this->loadConfig();
     }
 
@@ -39,7 +40,7 @@ class App
     public function run()
     {
         ob_start();
-        $template = self::MAINTENANCE_PAGE_PATH;
+        $template = Maintenance::MAINTENANCE_PAGE_PATH;
 
         if (!$this->isMaintenance() && $this->config) {
             $routes = $this->config['routes'];
@@ -59,7 +60,7 @@ class App
                 }
             }
 
-            $templateFile = self::TEMPLATES_DIR . DS . $templateName;
+            $templateFile = self::TEMPLATES_DIR . '/' . $templateName;
 
             if (file_exists($templateFile)) {
                 $template = $templateFile;
@@ -82,8 +83,8 @@ class App
     {
         $config = [];
 
-        if (file_exists(BP . DS . self::CONFIG_FILE)) {
-            require_once(BP . DS . self::CONFIG_FILE);
+        if (file_exists(BP . '/' . self::CONFIG_FILE)) {
+            require_once(BP . '/' . self::CONFIG_FILE);
         } else {
             $this->logWriter->write('Config file is missing.');
         }
@@ -125,7 +126,7 @@ class App
      */
     public function getDeployedVersion()
     {
-        $version = @file_get_contents(BP . DS . \Awesome\Console\Command\Cache::DEPLOYED_VERSION_FILE);
+        $version = @file_get_contents(BP . '/' . \Awesome\Console\Command\Cache::DEPLOYED_VERSION_FILE);
 
         return (string) $version;
     }
