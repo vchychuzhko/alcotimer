@@ -96,7 +96,8 @@ class App
      * Check if maintenance mode is active.
      * @return bool
      */
-    private function isMaintenance() {
+    private function isMaintenance()
+    {
         $ip = $_SERVER['REMOTE_ADDR'];
 
         return $this->maintenance->isMaintenanceForIp($ip);
@@ -126,7 +127,7 @@ class App
      */
     public function getDeployedVersion()
     {
-        $version = @file_get_contents(BP . '/' . \Awesome\Console\Command\Cache::DEPLOYED_VERSION_FILE);
+        $version = @file_get_contents(BP . '/' . \Awesome\Cache\Model\StaticCache::DEPLOYED_VERSION_FILE);
 
         return (string) $version;
     }

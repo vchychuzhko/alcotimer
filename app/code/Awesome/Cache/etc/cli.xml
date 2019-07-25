@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<commandList namespace="cache">
+    <command name="clean" class="Awesome\Cache\Console\Clean">
+        <description><![CDATA[Flush XML config cache.]]></description>
+    </command>
+</commandList>
