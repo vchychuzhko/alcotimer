@@ -13,7 +13,7 @@ class XmlParser
     private $cache;
 
     /**
-     * Clean constructor.
+     * XmlParser constructor.
      */
     function __construct()
     {
@@ -29,29 +29,9 @@ class XmlParser
         if (!$commandList = $this->cache->get(self::CLI_CACHE_KEY)) {
             foreach (glob(APP_DIR . self::CLI_XML_PATH_PATTERN) as $cliXmlFile) {
                 $cliData = simplexml_load_file($cliXmlFile);
-                $namespace = (string)$cliData['namespace'];
 
-                if (!isset($commandList[$namespace])) {
-                    $commandList[$namespace] = [];
-                }
-
-                foreach ($cliData->command as $commandNode) {
-                    $options = [];
-
-                    foreach ($commandNode->optionList as $option) {
-                        $options[(string)$option->option['name']] = [
-                            'required' => $this->stringToBoolean((string)$option->option['required']),
-                            'mask' => (string)$option->option->mask,
-                            'description' => (string)$option->option->description
-                        ];
-                    }
-
-                    $commandList[$namespace][(string)$commandNode['name']] = [
-                        'class' => (string)$commandNode['class'],
-                        'description' => (string)$commandNode->description,
-                        'options' => $options
-                    ];
-                }
+                $parsedData = $this->parseXmlNode($cliData);
+                $commandList = array_merge_recursive($commandList, $parsedData['config']);
             }
 
             $this->cache->save($commandList, self::CLI_CACHE_KEY);
@@ -61,12 +41,52 @@ class XmlParser
     }
 
     /**
-     * Convert xml true/false value into boolean.
-     * @param string $valueInString
-     * @return boolean
+     * Convert XML node into array
+     * @param \SimpleXMLElement $xmlNode
+     * @return array
      */
-    private function stringToBoolean($valueInString)
+    private function parseXmlNode($xmlNode) {
+        $parsedNode = [];
+        $nodeName = $xmlNode->getName();
+        $attributes = [];
+
+        foreach ($xmlNode->attributes() as $attributeName => $attributeValue) {
+            $attributeValue = (string)$attributeValue;
+
+            if ($attributeName === 'name') {
+                $nodeName = $attributeValue;
+            } else {
+                $attributes[$attributeName] = $this->stringBooleanCheck($attributeValue);
+            }
+        }
+        $parsedNode[$nodeName] = $attributes;
+        $children = $xmlNode->children();
+
+        if ($childrenCount = count($children)) {
+            foreach ($children as $parentName => $child) {
+                $child = $this->parseXmlNode($child);
+                $childName = array_key_first($child);
+
+                $parsedNode[$nodeName][$childName] = $child[$childName];
+            }
+        } else {
+            $parsedNode[$nodeName] = trim((string)$xmlNode);
+        }
+
+        return $parsedNode;
+    }
+
+    /**
+     * Check if string is a boolean and convert it.
+     * @param string $value
+     * @return string|boolean
+     */
+    private function stringBooleanCheck($value)
     {
-        return $valueInString === 'true';
+        if ($value === 'true' || $value === 'false') {
+            $value = $value === 'true';
+        }
+
+        return $value;
     }
 }

@@ -1,18 +1,20 @@
 <?xml version="1.0"?>
-<commandList namespace="maintenance">
-    <command name="enable" class="Awesome\Maintenance\Console\Enable">
-        <optionList>
-            <option name="allowed_ips" required="false">
-                <mask><![CDATA[[--ip=<ip_address>]]]></mask>
-                <description><![CDATA[Allowed ip for maintenance mode.]]></description>
-            </option>
-        </optionList>
-        <description><![CDATA[Enable maintenance mode with list of allowed ids.]]></description>
-    </command>
-    <command name="disable" class="Awesome\Maintenance\Console\Disable">
-        <description><![CDATA[Disable maintenance mode.]]></description>
-    </command>
-    <command name="status" class="Awesome\Maintenance\Console\Status">
-        <description><![CDATA[View current state of maintenance.]]></description>
-    </command>
-</commandList>
+<config>
+    <namespace name="maintenance">
+        <command name="enable" class="Awesome\Maintenance\Console\Enable">
+            <optionList>
+                <option name="allowed_ips" required="false">
+                    <mask><![CDATA[[--ip=<ip_address>]]]></mask>
+                    <description><![CDATA[Allowed ip for maintenance mode.]]></description>
+                </option>
+            </optionList>
+            <description><![CDATA[Enable maintenance mode with list of allowed ids.]]></description>
+        </command>
+        <command name="disable" class="Awesome\Maintenance\Console\Disable">
+            <description><![CDATA[Disable maintenance mode.]]></description>
+        </command>
+        <command name="status" class="Awesome\Maintenance\Console\Status">
+            <description><![CDATA[View current state of maintenance.]]></description>
+        </command>
+    </namespace>
+</config>

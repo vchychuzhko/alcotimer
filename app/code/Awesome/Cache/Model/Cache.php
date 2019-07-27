@@ -66,6 +66,7 @@ class Cache
     public function readCacheFile()
     {
         $cache = @file_get_contents(self::CACHE_DIR . '/' . self::ETC_CACHE_FILE);
+
         return json_decode($cache, true) ?: [];
     }
 

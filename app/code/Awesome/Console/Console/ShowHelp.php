@@ -26,17 +26,19 @@ class ShowHelp extends \Awesome\Console\Model\AbstractCommand
         $output = "---- AlcoTimer CLI ----\n";
 
         if ($commandList = $this->xmlParser->retrieveConsoleCommands()) {
+            //@TODO: update reading functionality
             $output .= 'Here is the list of available commands:';
 
             foreach ($commandList as $namespace => $commands) {
                 foreach ($commands as $name => $command) {
+                    $optionList = $command['optionList'] ?? [];
                     $output .= "\n" . $this->colourText(
                         \Awesome\Console\Model\Console::COMMAND_BASE . ' ' . $namespace . ':' . $name
                         ) . ' | ' . $command['description'];
 
-                    foreach ($command['options'] as $option) {
+                    foreach ($optionList as $option) {
                         $output .= "\n" . $option['mask'] . ' - '
-                            . $option['description']
+                            . $option['description'] ?? ''
                             . ($option['required'] ? '' : ' (optional)');
                     }
                 }
