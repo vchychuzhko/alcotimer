@@ -9,14 +9,16 @@ class StaticContent
     private const ASSET_PUB_REPLACE = '../../../..';
     private const FRONTEND_STATIC_PATH = '/pub/static/frontend';
     private const CSS_PATH_PATTERN = '/assets/css/*.css';
+    private const JS_PATH_PATTERN = '/assets/js/*.js';
 
     /**
      * Deploy static files.
      * @return self
      */
-    function deploy() {
+    function deploy()
+    {
         $this->removeStatic();
-        $this->processCss();
+        $this->generateAssets();
         $this->generateDeployedVersion();
 
         return $this;
@@ -26,7 +28,8 @@ class StaticContent
      * Remove all static files and recreate frontend directory.
      * @return self
      */
-    public function removeStatic() {
+    public function removeStatic()
+    {
         rrmdir(BP . self::FRONTEND_STATIC_PATH);
         mkdir(BP . self::FRONTEND_STATIC_PATH);
 
@@ -34,21 +37,29 @@ class StaticContent
     }
 
     /**
-     * Collect, parse and generate css files.
+     * Collect, parse and generate css/js files.
      * @return self
      */
-    private function processCss() {
-        $cssDir = BP . self::FRONTEND_STATIC_PATH . '/css';
+    private function generateAssets()
+    {
+        $assets = [
+            'css' => BP . self::CSS_PATH_PATTERN,
+            'js' => BP . self::JS_PATH_PATTERN
+        ];
 
-        if (!file_exists($cssDir)) {
-            mkdir($cssDir);
-        }
+        foreach ($assets as $asset => $assetPattern) {
+            $assetFolder = BP . self::FRONTEND_STATIC_PATH . '/' . $asset;
 
-        foreach (glob(BP . self::CSS_PATH_PATTERN) as $cssFile) {
-            $fileName = $this->getFileName($cssFile);
-            $content = file_get_contents($cssFile);
-            $content = $this->parsePubDirPath($content);
-            file_put_contents($cssDir . '/' . $fileName, $content);
+            if (!file_exists($assetFolder)) {
+                mkdir($assetFolder);
+            }
+
+            foreach (glob($assetPattern) as $file) {
+                $fileName = $this->getFileName($file);
+                $content = file_get_contents($file);
+                $content = $this->parsePubDirPath($content);
+                file_put_contents($assetFolder . '/' . $fileName, $content);
+            }
         }
 
         return $this;
@@ -59,7 +70,8 @@ class StaticContent
      * @param string $filePath
      * @return string
      */
-    private function getFileName($filePath) {
+    private function getFileName($filePath)
+    {
         $filePath = explode('/', $filePath);
 
         return end($filePath);
@@ -70,7 +82,8 @@ class StaticContent
      * @param string $content
      * @return string
      */
-    private function parsePubDirPath($content) {
+    private function parsePubDirPath($content)
+    {
         return str_replace(self::ASSET_PUB_TRIGGER, self::ASSET_PUB_REPLACE, $content);
     }
 
@@ -78,7 +91,8 @@ class StaticContent
      * Generate new deployed version and save it.
      * @return self
      */
-    public function generateDeployedVersion() {
+    public function generateDeployedVersion()
+    {
         file_put_contents(BP . self::DEPLOYED_VERSION_FILE, time());
 
         return $this;
