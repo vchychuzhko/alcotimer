@@ -13,8 +13,8 @@ $timerConfigurations = $this->getTimerConfigurations();
     <meta name="keywords" content="Alcohol,Alco,Timer,AlcoTimer,Web,App,Drink">
     <link rel="shortcut icon" type="image/png" href="<?= $mediaPath; ?>/images/favicon.png"/>
     <link rel="stylesheet" type="text/css" href="<?= $staticPath; ?>/css/homepage.css"/>
-    <script src="<?= $staticPath; ?>/jquery.min.js"></script>
-    <script src="<?= $staticPath; ?>/jquery-ui.min.js"></script>
+    <script src="<?= $staticPath; ?>/lib/jquery.min.js"></script>
+    <script src="<?= $staticPath; ?>/lib/jquery-ui.min.js"></script>
     <script src="<?= $staticPath; ?>/js/base.js"></script>
     <script src="<?= $staticPath; ?>/js/range-slider.js"></script>
     <script src="<?= $staticPath; ?>/js/radial-slider.js"></script>
