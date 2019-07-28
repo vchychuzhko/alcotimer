@@ -1,6 +1,6 @@
 <?php
 
-namespace Awesome\Logger;
+namespace Awesome\Logger\Model;
 
 class LogWriter
 {
@@ -12,9 +12,9 @@ class LogWriter
      */
     public function write($string)
     {
-        $content = (string) @file_get_contents(BP . DS . self::EXCEPTION_LOG_FILE);
+        $content = (string) @file_get_contents(BP . '/' . self::EXCEPTION_LOG_FILE);
         file_put_contents(
-            BP . DS . self::EXCEPTION_LOG_FILE,
+            BP . '/' . self::EXCEPTION_LOG_FILE,
             ($content ? "$content\n" : '') . date('m/d/Y h:i:s a', time()) . ' - ' . $string
         );
     }

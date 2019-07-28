@@ -1,6 +1,6 @@
 <?php
 
-namespace Awesome\Console;
+namespace Awesome\Console\Model;
 
 abstract class AbstractCommand
 {
@@ -14,6 +14,12 @@ abstract class AbstractCommand
         'green' => '0;32',
         'light-green' => '1;32'
     ];
+
+    /**
+     * @param array $args
+     * @return string
+     */
+    abstract function execute($args = []);
 
     /**
      * Parse input arguments.
@@ -38,7 +44,7 @@ abstract class AbstractCommand
      * @return string
      */
     protected function colourText($text, $colour = 'green') {
-        if (!(strncasecmp(PHP_OS, 'WIN', 3) == 0) && isset($this->colours[$colour])) {
+        if (DS !== '\\' && isset($this->colours[$colour])) {
             $text = "\033[" . $this->colours[$colour] . "m" . $text . "\033[0m";
         }
 

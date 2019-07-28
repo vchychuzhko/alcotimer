@@ -1,17 +1,23 @@
 <?php
 
-namespace Awesome\Frontend;
+namespace Awesome\Frontend\Model;
+
+use \Awesome\Maintenance\Model\Maintenance;
 
 class App
 {
-    public const CONFIG_FILE = 'app' . DS . 'config.php';
-    private const TEMPLATES_DIR = BP . DS . 'app' . DS . 'templates';
-    private const MAINTENANCE_PAGE_PATH = BP . DS . 'pub' . DS . 'pages' . DS . 'maintenance.html';
+    public const CONFIG_FILE = 'app/config.php';
+    private const TEMPLATES_DIR = BP . '/app/templates';
 
     /**
-     * @var \Awesome\Logger\LogWriter
+     * @var \Awesome\Logger\Model\LogWriter
      */
     private $logWriter;
+
+    /**
+     * @var Maintenance $maintenance
+     */
+    private $maintenance;
 
     /**
      * @var array $config
@@ -19,11 +25,18 @@ class App
     private $config;
 
     /**
+     * @var \Awesome\Cache\Model\StaticContent $staticContent
+     */
+    private $staticContent;
+
+    /**
      * App constructor.
      */
     public function __construct()
     {
-        $this->logWriter = new \Awesome\Logger\LogWriter();
+        $this->logWriter = new \Awesome\Logger\Model\LogWriter();
+        $this->maintenance = new Maintenance();
+        $this->staticContent = new \Awesome\Cache\Model\StaticContent();
         $this->config = $this->loadConfig();
     }
 
@@ -33,7 +46,7 @@ class App
     public function run()
     {
         ob_start();
-        $template = self::MAINTENANCE_PAGE_PATH;
+        $template = Maintenance::MAINTENANCE_PAGE_PATH;
 
         if (!$this->isMaintenance() && $this->config) {
             $routes = $this->config['routes'];
@@ -44,10 +57,16 @@ class App
                 $templateName = $systemRoutes[$redirectStatus];
             } else {
                 $uri = (string) strtok(trim($_SERVER['REQUEST_URI'], '/'), '?');
-                $templateName = $routes[$uri] ?? $systemRoutes['404'];
+
+                if (isset($routes[$uri])) {
+                    $templateName = $routes[$uri];
+                } else {
+                    http_response_code(404);
+                    $templateName = $systemRoutes['404'];
+                }
             }
 
-            $templateFile = self::TEMPLATES_DIR . DS . $templateName;
+            $templateFile = self::TEMPLATES_DIR . '/' . $templateName;
 
             if (file_exists($templateFile)) {
                 $template = $templateFile;
@@ -70,8 +89,8 @@ class App
     {
         $config = [];
 
-        if (file_exists(BP . DS . self::CONFIG_FILE)) {
-            require_once(BP . DS . self::CONFIG_FILE);
+        if (file_exists(BP . '/' . self::CONFIG_FILE)) {
+            require_once(BP . '/' . self::CONFIG_FILE);
         } else {
             $this->logWriter->write('Config file is missing.');
         }
@@ -80,20 +99,14 @@ class App
     }
 
     /**
-     * Check if maintenance mode is enabled for this IP.
+     * Check if maintenance mode is active.
      * @return bool
      */
-    private function isMaintenance() {
-        $enabled = false;
+    private function isMaintenance()
+    {
+        $ip = $_SERVER['REMOTE_ADDR'];
 
-        if (($allowedIPs = @file_get_contents(BP . DS . \Awesome\Console\Command\Maintenance::MAINTENANCE_FILE)) !== false) {
-            $allowedIPs = explode(',', $allowedIPs);
-            $ip = $_SERVER['REMOTE_ADDR'];
-
-            $enabled = !in_array($ip, $allowedIPs);
-        };
-
-        return $enabled;
+        return $this->maintenance->isMaintenanceForIp($ip);
     }
 
     /**
@@ -115,13 +128,25 @@ class App
     }
 
     /**
-     * Get current static deployed version.
+     *
      * @return string
      */
-    public function getDeployedVersion()
+    public function getStaticPath()
     {
-        $version = @file_get_contents(BP . DS . \Awesome\Console\Command\Cache::DEPLOYED_VERSION_FILE);
+        if (!$deployedVersion = $this->staticContent->getDeployedVersion()) {
+            $deployedVersion = $this->staticContent->deploy()->getDeployedVersion();
+            //@TODO: Resolve situation when frontend folder is missing, but deployed version is present
+        }
 
-        return (string) $version;
+        return PUB_DIR . '/static/version' . $deployedVersion . '/frontend';
+    }
+
+    /**
+     *
+     * @return string
+     */
+    public function getMediaPath()
+    {
+        return '/' . PUB_DIR . 'media';
     }
 }

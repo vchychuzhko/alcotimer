@@ -8,10 +8,10 @@ if (PHP_SAPI !== 'cli') {
 
 define('DS', DIRECTORY_SEPARATOR);
 define('BP', dirname(__DIR__));
-require_once(BP . DS . 'app' . DS . 'autoload.php');
+require_once(BP . '/app/autoload.php');
 
 try {
-    $console = new \Awesome\Console\Console();
+    $console = new \Awesome\Console\Model\Console();
     $console->run();
 } catch (\Throwable $t) {
     echo 'Error occurred: ' . $t->getMessage();

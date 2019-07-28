@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<config>
+    <namespace name="cache">
+        <command name="clean" class="Awesome\Cache\Console\Clean">
+            <description><![CDATA[Flush XML config cache.]]></description>
+        </command>
+    </namespace>
+    <namespace name="static">
+        <command name="deploy" class="Awesome\Cache\Console\StaticDeploy">
+            <description><![CDATA[Generate static files (assets).]]></description>
+        </command>
+    </namespace>
+</config>
