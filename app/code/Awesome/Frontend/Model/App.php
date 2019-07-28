@@ -133,7 +133,12 @@ class App
      */
     public function getStaticPath()
     {
-        return PUB_DIR . '/' . 'static/version' . $this->staticContent->getDeployedVersion() . '/' . 'frontend';
+        if (!$deployedVersion = $this->staticContent->getDeployedVersion()) {
+            $deployedVersion = $this->staticContent->deploy()->getDeployedVersion();
+            //@TODO: Resolve situation when frontend folder is missing, but deployed version is present
+        }
+
+        return PUB_DIR . '/static/version' . $deployedVersion . '/frontend';
     }
 
     /**
