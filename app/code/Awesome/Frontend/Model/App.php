@@ -25,12 +25,18 @@ class App
     private $config;
 
     /**
+     * @var \Awesome\Cache\Model\StaticContent $staticContent
+     */
+    private $staticContent;
+
+    /**
      * App constructor.
      */
     public function __construct()
     {
         $this->logWriter = new \Awesome\Logger\Model\LogWriter();
         $this->maintenance = new Maintenance();
+        $this->staticContent = new \Awesome\Cache\Model\StaticContent();
         $this->config = $this->loadConfig();
     }
 
@@ -122,23 +128,12 @@ class App
     }
 
     /**
-     * Get current static deployed version.
-     * @return string
-     */
-    public function getDeployedVersion()
-    {
-        $version = @file_get_contents(BP . '/' . \Awesome\Cache\Model\StaticCache::DEPLOYED_VERSION_FILE);
-
-        return (string) $version;
-    }
-
-    /**
      *
      * @return string
      */
     public function getStaticPath()
     {
-        return PUB_DIR . '/' . 'static/version' . $this->getDeployedVersion() . '/' . 'frontend';
+        return PUB_DIR . '/' . 'static/version' . $this->staticContent->getDeployedVersion() . '/' . 'frontend';
     }
 
     /**
