@@ -9,7 +9,7 @@
 .page-wrapper .content {
     align-items: center;
     background-color: #7DD0B6;
-    background-image: url('/pub/media/images/back.jpg');
+    background-image: url('{@pubDir}/media/images/back.jpg');
     display: flex;
     justify-content: center;
     overflow-y: hidden;

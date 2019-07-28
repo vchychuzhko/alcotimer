@@ -1,4 +1,4 @@
-<?php /** @var \Awesome\Frontend\App $this */
+<?php /** @var \Awesome\Frontend\Model\App $this */
 $deployedVersion = $this->getDeployedVersion();
 ?>
 <!DOCTYPE html>

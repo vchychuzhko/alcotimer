@@ -1,16 +1,18 @@
 <?php
 
-define('APP_DIR', BP . DS . 'app' . DS . 'code');
+define('APP_DIR', BP . '/app/code');
+require_once('polyfill.php');
 
 /**
- * Function to load classes.
+ * Function to load classes by provided namespace.
  * @param string $classNamespace
  */
-function __autoload($classNamespace) {
+function __autoload($classNamespace)
+{
     $path = '';
 
     foreach (explode('\\', $classNamespace) as $pathItem) {
-        $path .= DS . $pathItem;
+        $path .= '/' . $pathItem;
     }
     require_once(APP_DIR . $path . '.php');
 }

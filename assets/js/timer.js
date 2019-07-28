@@ -162,12 +162,16 @@
 
         /**
          * Stop the timer and reset its time
+         * @param {boolean} save
          */
-        stop: function () {
+        stop: function (save = true) {
             this.pause();
 
             this.currentTime = null;
-            this.saveConfigurations();
+
+            if (save) {
+                this.saveConfigurations();
+            }
         },
 
         /**
@@ -274,6 +278,7 @@
          * Update timer according to slider value
          */
         updateTimer: function() {
+            this.stop(false);
             let $valueContainer = $(this.element).find(this.options.valueContainer),
                 timeInSeconds = this.percentageToSeconds(parseFloat($valueContainer.text()));
 
