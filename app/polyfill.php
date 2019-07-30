@@ -16,7 +16,7 @@ if (!function_exists('array_key_first')) {
 }
 
 /**
- * Function for recursive directory removing.
+ * Function for recursive directory removing - https://www.php.net/manual/en/function.rmdir.php#117354
  * @param string $dir
  */
 if (!function_exists('rrmdir')) {
