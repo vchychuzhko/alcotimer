@@ -13,7 +13,8 @@ ErrorDocument 500 /pages/maintenance.html
 ############################################
 ## enable rewrites
 
-    Options +SymLinksIfOwnerMatch # Server requirements
+    Options +SymLinksIfOwnerMatch
+    # Server requirements
     RewriteEngine on
 
 ############################################

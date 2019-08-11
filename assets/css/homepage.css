@@ -31,6 +31,7 @@
     top: 50%;
     transform: translate(-50%, -50%);
     width: 300px;
+    z-index: 2;
 }
 
 .page-wrapper .content .timer-container .timer-wrapper.radial-container .radial-slider {
@@ -181,6 +182,7 @@
     top: 0;
     right: 0;
     width: 75px;
+    z-index: 1;
 }
 
 .page-wrapper .content .timer-container .random-button-container .random-button {

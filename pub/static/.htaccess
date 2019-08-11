@@ -7,7 +7,8 @@
 </IfModule>
 
 # To avoid situation when web server automatically adds extension to path
-#Options -MultiViews # Server requirements
+#Options -MultiViews
+# Server requirements
 
 <IfModule mod_rewrite.c>
     RewriteEngine On
