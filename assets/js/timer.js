@@ -181,7 +181,7 @@
             this.setTime(this.currentTime);
             this.stop();
 
-            let audio = new Audio('/pub/media/audio/alert_sound.mp3'),
+            let audio = new Audio('{@pubDir}/media/audio/alert_sound.mp3'),
                 playPromise = audio.play();
 
             if (playPromise !== undefined) {

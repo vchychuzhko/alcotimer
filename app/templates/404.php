@@ -1,16 +1,18 @@
 <?php /** @var \Awesome\Frontend\Model\App $this */
-$deployedVersion = $this->getDeployedVersion();
+$staticPath = $this->getStaticPath();
+$mediaPath = $this->getMediaPath();
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Not Found</title>
-    <link rel="shortcut icon" type="image/png" href="/pub/media/images/favicon.png"/>
-    <link rel="stylesheet" type="text/css" href="/assets/css/errors.css"/>
-    <script src="/lib/jquery/jquery.min.js"></script>
-    <script src="/lib/jquery-ui/jquery-ui.min.js"></script>
-    <script src="/assets/js/base.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/png" href="<?= $mediaPath; ?>/images/favicon.png"/>
+    <link rel="stylesheet" type="text/css" href="<?= $staticPath; ?>/css/errors.css"/>
+    <script src="<?= $staticPath; ?>/lib/jquery.min.js"></script>
+    <script src="<?= $staticPath; ?>/lib/jquery-ui.min.js"></script>
+    <script src="<?= $staticPath; ?>/js/base.js"></script>
 </head>
 <body class="not-found-page">
     <main class="page-wrapper">
