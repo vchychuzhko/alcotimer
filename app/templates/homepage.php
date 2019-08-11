@@ -9,8 +9,9 @@ $timerConfigurations = $this->getTimerConfigurations();
 <head>
     <meta charset="UTF-8">
     <title>AlcoTimer</title>
-    <meta name="description" content="Web App for people, who would like to make drinking process become really challenging">
+    <meta name="description" content="Web App for people, who would like to make drinking process become really challenging.">
     <meta name="keywords" content="Alcohol,Alco,Timer,AlcoTimer,Web,App,Drink">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" type="image/png" href="<?= $mediaPath; ?>/images/favicon.png"/>
     <link rel="stylesheet" type="text/css" href="<?= $staticPath; ?>/css/homepage.css"/>
     <script src="<?= $staticPath; ?>/lib/jquery.min.js"></script>

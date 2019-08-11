@@ -1,3 +1,4 @@
+ErrorDocument 403 /
 ErrorDocument 404 /
 ErrorDocument 500 /pages/maintenance.html
 
@@ -12,7 +13,7 @@ ErrorDocument 500 /pages/maintenance.html
 ############################################
 ## enable rewrites
 
-    Options +FollowSymLinks
+    Options +SymLinksIfOwnerMatch # Server requirements
     RewriteEngine on
 
 ############################################
