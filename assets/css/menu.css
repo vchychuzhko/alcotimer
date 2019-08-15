@@ -1,22 +1,22 @@
-/*@TODO: rework menu for wide and low-height screens*/
 .menu {
     background: #eee;
     height: 100%;
+    left: -300px;
     max-width: 300px;
-    position: absolute;
+    position: fixed;
+    top: 0;
     transition-duration: 0.5s;
     transition-property: left;
     transition-timing-function: ease;
-    width: 80%;
-    left: -300px;
+    width: calc(100% - 54px);
 }
 
 .menu.active {
-     left: 0;
+    left: 0;
 }
 
 .page-wrapper {
-    transition-duration: .5s;
+    transition-duration: 0.5s;
     transition-property: margin-left;
     transition-timing-function: ease;
 }
@@ -25,17 +25,17 @@
     margin-left: 300px;
 }
 
-.menu .toggle-container {
+header .toggle-container {
     cursor: pointer;
     height: 40px;
+    left: 10px;
     position: absolute;
-    right: -60px;
     top: 5px;
     width: 50px;
     z-index: 10;
 }
 
-.menu .toggle-container .toggle {
+header .toggle-container .toggle {
     border: none;
     cursor: pointer;
     left: 50%;
@@ -43,9 +43,9 @@
     transform: translate(-50%, -50%);
 }
 
-.menu .toggle-container .toggle,
-.menu .toggle-container .toggle:before,
-.menu .toggle-container .toggle:after {
+header .toggle-container .toggle,
+header .toggle-container .toggle:before,
+header .toggle-container .toggle:after {
     background: #000;
     border-radius: 4px;
     position: absolute;
@@ -56,25 +56,25 @@
     width: 40px;
 }
 
-.menu .toggle-container .toggle:before,
-.menu .toggle-container .toggle:after {
+header .toggle-container .toggle:before,
+header .toggle-container .toggle:after {
     display: block;
     content: "";
 }
 
-.menu .toggle-container .toggle:before {
+header .toggle-container .toggle:before {
     top: -10px;
 }
 
-.menu .toggle-container .toggle:after {
+header .toggle-container .toggle:after {
     bottom: -10px;
 }
 
-.menu.active .toggle-container .toggle:before {
+.menu.active + .page-wrapper header .toggle-container .toggle:before {
     transform: translate3d(-8px,0,0) rotate(-45deg) scaleX(0.7);
 }
 
-.menu.active .toggle-container .toggle:after {
+.menu.active + .page-wrapper header .toggle-container .toggle:after {
     transform: translate3d(-8px, 0, 0) rotate(45deg) scaleX(0.7);
 }
 
@@ -227,12 +227,24 @@
 }
 
 @media (max-width: 640px) {
-    body {
-        overflow-x: hidden;
-    }
-
     .page-wrapper {
         min-width: 100%;
+    }
+
+    .menu.active + .page-wrapper {
+        position: fixed;
+    }
+
+    .menu.active + .page-wrapper header .toggle-container {
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    .menu.active + .page-wrapper header .toggle-container .toggle {
+        top: 25px;
+        left: 30px;
     }
 
     .menu.active + .page-wrapper .menu-mobile-overlay {
@@ -254,37 +266,31 @@
 }
 
 @media (max-width: 375px) {
-    .menu {
-        left: -80%;
-        max-width: unset;
-    }
-
-    .menu .toggle-container {
-        right: -50px;
+    header .toggle-container {
         width: 40px;
     }
 
-    .menu.active .toggle-container .toggle {
-        left: 5%;
-    }
-
-    .menu .toggle-container .toggle,
-    .menu .toggle-container .toggle:before,
-    .menu .toggle-container .toggle:after {
+    header .toggle-container .toggle,
+    header .toggle-container .toggle:before,
+    header .toggle-container .toggle:after {
         height: 3px;
         width: 30px;
     }
 
-    .menu .toggle-container .toggle:before {
+    header .toggle-container .toggle:before {
         top: -7px;
     }
 
-    .menu .toggle-container .toggle:after {
+    header .toggle-container .toggle:after {
         bottom: -7px;
     }
 
     .menu.active + .page-wrapper {
-        margin-left: 80%;
+        margin-left: calc(100% - 54px);
+    }
+
+    .menu {
+        max-width: unset;
     }
 
     .menu .menu-list {

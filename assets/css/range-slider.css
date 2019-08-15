@@ -28,6 +28,7 @@
     pointer-events: all;
     position: absolute;
     top: -250%;
+    touch-action: none; /*prevent scrolling on touchmove*/
     transform: translateX(-50%);
     width: 25px;
 }

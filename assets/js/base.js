@@ -7,7 +7,6 @@
 
         /**
          * Constructor
-         * @private
          */
         _create: function () {
             this.initBindings();
@@ -20,8 +19,12 @@
         initBindings: function () {
             let $menu = $(this.options.menuSelector);
 
-            $menu.on('click', '.toggle-container', function () {
+            $('header').on('click', '.toggle-container', function () {
                 $menu.toggleClass('active');
+            }.bind(this));
+
+            $('.menu-mobile-overlay').on('click', function () {
+                $('.toggle-container').trigger('click');
             }.bind(this));
 
             $menu.on('close-menu', function () {

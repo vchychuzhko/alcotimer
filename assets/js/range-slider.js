@@ -8,7 +8,6 @@
 
         /**
          * Constructor
-         * @private
          */
         _create: function () {
             this.initValuesRestrictions();
@@ -45,8 +44,8 @@
             }.bind(this));
 
             $(this.element).on('mousemove touchmove', function (event) {
-                try {
-                    if (this.isDragging) {
+                if (this.isDragging) {
+                    try {
                         let touch = event.originalEvent.touches ? event.originalEvent.touches[0] : undefined,
                             pos = event.pageX || touch.pageX,
                             $event = $(event.target),
@@ -64,9 +63,9 @@
                         }
 
                         this.setControllerPosition($event, newPos, true);
+                    } catch (e) {
+                        //do nothing, touch error happened
                     }
-                } catch (e) {
-                    //do nothing, touch error happened
                 }
             }.bind(this));
 
