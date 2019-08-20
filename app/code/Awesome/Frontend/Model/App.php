@@ -138,7 +138,7 @@ class App
             //@TODO: Resolve situation when frontend folder is missing, but deployed version is present
         }
 
-        return PUB_DIR . '/static/version' . $deployedVersion . '/frontend';
+        return '/' . PUB_DIR . 'static/version' . $deployedVersion . '/frontend';
     }
 
     /**

@@ -14,7 +14,7 @@
          */
         _create: function () {
             this.initBindings();
-            $(document).on('ready', this.initTimer.bind(this));
+            $(document).ready(this.initTimer.bind(this));
         },
 
         /**
