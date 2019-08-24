@@ -11,6 +11,7 @@ class LogWriter
     /**
      * Write all Errors, Warnings and Exceptions to log file
      * @param string $string
+     * @return self
      */
     public function write($string)
     {
@@ -19,9 +20,12 @@ class LogWriter
             BP . '/' . self::EXCEPTION_LOG_FILE,
             ($content ? "$content\n" : '') . $this->getCurrentTime() . ' - ' . $string
         );
+
+        return $this;
     }
 
     /**
+     * Prepare current time and offset as a string.
      * @return string
      */
     private function getCurrentTime()
@@ -37,6 +41,7 @@ class LogWriter
     }
 
     /**
+     * Get difference (offset) between current and UTC time.
      * @param \DateTime $utcTime
      * @return string
      */

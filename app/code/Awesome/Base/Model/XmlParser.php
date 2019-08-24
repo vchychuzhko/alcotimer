@@ -5,8 +5,10 @@ namespace Awesome\Base\Model;
 class XmlParser
 {
     private const CLI_XML_PATH_PATTERN = '/*/*/etc/cli.xml';
+    private const PAGE_XML_PATH_PATTERN = '/*/*/view/*/layout/%n.xml';
     private const ETC_CACHE_KEY = 'etc';
     private const CLI_CACHE_TAG = 'cli';
+    private const PAGE_CACHE_KEY = 'pages';
 
     /**
      * @var \Awesome\Cache\Model\Cache $cache
@@ -39,6 +41,31 @@ class XmlParser
         }
 
         return $commandList;
+    }
+
+    /**
+     * Collect page structure according to the requested handle.
+     * @param $handle
+     * @return array
+     */
+    public function retrievePageStructure($handle)
+    {
+        if (!$pageStructure = $this->cache->get(self::PAGE_CACHE_KEY, $handle)) {
+            $pattern = APP_DIR . str_replace('%n', $handle, self::PAGE_XML_PATH_PATTERN);
+
+            foreach (glob($pattern) as $cliXmlFile) {
+                $cliData = simplexml_load_file($cliXmlFile);
+
+                $parsedData = $this->parseXmlNode($cliData);
+                $pageStructure = array_merge_recursive($pageStructure, $parsedData['page']);
+            }
+
+            if (!empty($pageStructure)) {
+                $this->cache->save(self::PAGE_CACHE_KEY, $handle, $pageStructure);
+            }
+        }
+
+        return $pageStructure;
     }
 
     /**

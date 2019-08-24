@@ -30,6 +30,11 @@ class App
     private $staticContent;
 
     /**
+     * @var \Awesome\Base\Model\PageRenderer
+     */
+    private $pageRenderer;
+
+    /**
      * App constructor.
      */
     public function __construct()
@@ -37,6 +42,7 @@ class App
         $this->logWriter = new \Awesome\Logger\Model\LogWriter();
         $this->maintenance = new Maintenance();
         $this->staticContent = new \Awesome\Cache\Model\StaticContent();
+        $this->pageRenderer = new \Awesome\Base\Model\PageRenderer();
         $this->config = $this->loadConfig();
     }
 
@@ -45,40 +51,45 @@ class App
      */
     public function run()
     {
-        ob_start();
-        $template = Maintenance::MAINTENANCE_PAGE_PATH;
+        $this->logWriter->logVisitor();
 
         if (!$this->isMaintenance() && $this->config) {
-            $routes = $this->config['routes'];
-            $systemRoutes = $this->config['system_routes'];
-            $redirectStatus = (string) ($_SERVER['REDIRECT_STATUS'] ?? '');
+            $handle = $this->resolveUrl();
+            $response = $this->pageRenderer->render($handle);
+        } else {
+            $response = file_get_contents(Maintenance::MAINTENANCE_PAGE_PATH);
+        }
 
-            if ($redirectStatus === '403') {
-                $templateName = $systemRoutes[$redirectStatus];
+        echo $response;
+    }
+
+    /**
+     * Resolve page handle by requested URL.
+     * @return string
+     */
+    public function resolveUrl()
+    {
+        $redirectStatus = (string) ($_SERVER['REDIRECT_STATUS'] ?? '');
+
+        if ($redirectStatus === '403') {
+            $handle = 'forbidden';
+            http_response_code(403);
+        } else {
+            $uri = (string) strtok(trim($_SERVER['REQUEST_URI'], '/'), '?');
+
+            if ($uri === '') {
+                $handle = $this->config['routes']['homepage'];
             } else {
-                $uri = (string) strtok(trim($_SERVER['REQUEST_URI'], '/'), '?');
-
-                if (isset($routes[$uri])) {
-                    $templateName = $routes[$uri];
-                } else {
-                    http_response_code(404);
-                    $templateName = $systemRoutes['404'];
-                }
+                $handle = str_replace('/', '_', $uri);
             }
 
-            $templateFile = self::TEMPLATES_DIR . '/' . $templateName;
-
-            if (file_exists($templateFile)) {
-                $template = $templateFile;
-            } else {
-                $this->logWriter->write('No such file: ' . $templateFile);
+            if (!$this->pageRenderer->handleExist($handle)) {
+                $handle = 'notfound';
+                http_response_code(404);
             }
         }
 
-        include $template;
-
-        $response = ob_get_clean();
-        echo $response;
+        return $handle;
     }
 
     /**
