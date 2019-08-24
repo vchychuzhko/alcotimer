@@ -4,20 +4,20 @@ namespace Awesome\Cache\Model;
 
 class Cache
 {
-    private const CACHE_DIR = BP . '/var/cache';
-    private const ETC_CACHE_FILE = 'etc-cache';
+    private const CACHE_DIR = '/var/cache';
 
     /**
      * Retrieve cache by key.
      * @param string $key
+     * @param string $tag
      * @return array
      */
-    public function get($key = '')
+    public function get($key = '', $tag = '')
     {
-        $cache = $this->readCacheFile();
+        $cache = $this->readCacheFile($key);
 
-        if ($key) {
-            $data = $cache[$key] ?? [];
+        if ($tag) {
+            $data = $cache[$tag] ?? [];
         } else {
             $data = $cache;
         }
@@ -27,16 +27,17 @@ class Cache
 
     /**
      * Save data to cache.
-     * @param array $data
      * @param string $key
+     * @param string $tag
+     * @param array $data
      * @return self
      */
-    public function save($data, $key)
+    public function save($key, $tag, $data)
     {
-        $cache = $this->get();
-        $cache[$key] = $data;
+        $cache = $this->get($key);
+        $cache[$tag] = $data;
 
-        $this->saveToCacheFile($cache);
+        $this->saveToCacheFile($key, $cache);
 
         return $this;
     }
@@ -44,16 +45,17 @@ class Cache
     /**
      * Remove cache by key.
      * @param string $key
+     * @param string $tag
      * @return self
      */
-    public function remove($key = '')
+    public function remove($key = '', $tag = '')
     {
         if ($key) {
-            $cache = $this->readCacheFile();
-            unset($cache[$key]);
-            $this->saveToCacheFile($cache);
+            $cache = $this->readCacheFile($key);
+            unset($cache[$tag]);
+            $this->saveToCacheFile($key, $cache);
         } else {
-            @unlink(self::CACHE_DIR . '/' . self::ETC_CACHE_FILE);
+            @rmdir(BP . self::CACHE_DIR);
         }
 
         return $this;
@@ -61,27 +63,29 @@ class Cache
 
     /**
      * Read cache file.
+     * @param string $key
      * @return array
      */
-    public function readCacheFile()
+    public function readCacheFile($key)
     {
-        $cache = @file_get_contents(self::CACHE_DIR . '/' . self::ETC_CACHE_FILE);
+        $cache = @file_get_contents(BP . self::CACHE_DIR . '/' . $key . '-cache');
 
         return json_decode($cache, true) ?: [];
     }
 
     /**
      * Save data to cache file.
+     * @param string $key
      * @param array $data
      * @return self
      */
-    private function saveToCacheFile($data)
+    private function saveToCacheFile($key, $data)
     {
-        if (!file_exists(self::CACHE_DIR)) {
-            mkdir(self::CACHE_DIR);
+        if (!file_exists(BP . self::CACHE_DIR)) {
+            mkdir(BP . self::CACHE_DIR);
         }
 
-        file_put_contents(self::CACHE_DIR . '/' . self::ETC_CACHE_FILE, json_encode($data));
+        file_put_contents(BP . self::CACHE_DIR . '/' . $key . '-cache', json_encode($data));
 
         return $this;
     }

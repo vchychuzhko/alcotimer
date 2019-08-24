@@ -5,7 +5,8 @@ namespace Awesome\Base\Model;
 class XmlParser
 {
     private const CLI_XML_PATH_PATTERN = '/*/*/etc/cli.xml';
-    private const CLI_CACHE_KEY = 'cli';
+    private const ETC_CACHE_KEY = 'etc';
+    private const CLI_CACHE_TAG = 'cli';
 
     /**
      * @var \Awesome\Cache\Model\Cache $cache
@@ -26,7 +27,7 @@ class XmlParser
      */
     public function retrieveConsoleCommands()
     {
-        if (!$commandList = $this->cache->get(self::CLI_CACHE_KEY)) {
+        if (!$commandList = $this->cache->get(self::ETC_CACHE_KEY, self::CLI_CACHE_TAG)) {
             foreach (glob(APP_DIR . self::CLI_XML_PATH_PATTERN) as $cliXmlFile) {
                 $cliData = simplexml_load_file($cliXmlFile);
 
@@ -34,7 +35,7 @@ class XmlParser
                 $commandList = array_merge_recursive($commandList, $parsedData['config']);
             }
 
-            $this->cache->save($commandList, self::CLI_CACHE_KEY);
+            $this->cache->save(self::ETC_CACHE_KEY, self::CLI_CACHE_TAG, $commandList);
         }
 
         return $commandList;
@@ -79,7 +80,7 @@ class XmlParser
     /**
      * Check if string is a boolean and convert it.
      * @param string $value
-     * @return string|boolean
+     * @return string|bool
      */
     private function stringBooleanCheck($value)
     {
