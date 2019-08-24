@@ -1,5 +1,6 @@
 <?php /** General configuration file */
-$config = [
+return [
+    'app_mode' => 'production',
     'support_email_address' => '',
     'routes' => [
         '' => 'homepage.php'

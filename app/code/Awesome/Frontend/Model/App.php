@@ -6,7 +6,7 @@ use \Awesome\Maintenance\Model\Maintenance;
 
 class App
 {
-    public const CONFIG_FILE = 'app/config.php';
+    public const CONFIG_FILE_PATH = 'app/config.php';
     private const TEMPLATES_DIR = BP . '/app/templates';
 
     /**
@@ -87,15 +87,9 @@ class App
      */
     public function loadConfig()
     {
-        $config = [];
+        $config = @include(BP . '/' . self::CONFIG_FILE_PATH);
 
-        if (file_exists(BP . '/' . self::CONFIG_FILE)) {
-            require_once(BP . '/' . self::CONFIG_FILE);
-        } else {
-            $this->logWriter->write('Config file is missing.');
-        }
-
-        return $config;
+        return $config ?: [];
     }
 
     /**
@@ -134,7 +128,8 @@ class App
     public function getStaticPath()
     {
         if (!$deployedVersion = $this->staticContent->getDeployedVersion()) {
-            $deployedVersion = $this->staticContent->deploy()->getDeployedVersion();
+            $deployedVersion = $this->staticContent->deploy()
+                ->getDeployedVersion();
             //@TODO: Resolve situation when frontend folder is missing, but deployed version is present
         }
 
