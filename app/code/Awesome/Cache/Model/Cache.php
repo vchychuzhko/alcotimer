@@ -43,7 +43,7 @@ class Cache
     }
 
     /**
-     * Remove cache by key.
+     * Remove cache by key, tag or both.
      * @param string $key
      * @param string $tag
      * @return self
@@ -51,11 +51,15 @@ class Cache
     public function remove($key = '', $tag = '')
     {
         if ($key) {
-            $cache = $this->readCacheFile($key);
-            unset($cache[$tag]);
-            $this->saveToCacheFile($key, $cache);
+            if ($tag) {
+                $cache = $this->readCacheFile($key);
+                unset($cache[$tag]);
+                $this->saveToCacheFile($key, $cache);
+            } else {
+                $this->removeCacheFile($key);
+            }
         } else {
-            @rmdir(BP . self::CACHE_DIR);
+            @rrmdir(BP . self::CACHE_DIR);
         }
 
         return $this;
@@ -86,6 +90,18 @@ class Cache
         }
 
         file_put_contents(BP . self::CACHE_DIR . '/' . $key . '-cache', json_encode($data));
+
+        return $this;
+    }
+
+    /**
+     * Remove cache file according to key.
+     * @param string $key
+     * @return self
+     */
+    private function removeCacheFile($key)
+    {
+        @unlink(BP . self::CACHE_DIR . '/' . $key . '-cache');
 
         return $this;
     }
