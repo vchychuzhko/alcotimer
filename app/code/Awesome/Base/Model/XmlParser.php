@@ -56,9 +56,9 @@ class XmlParser
             $pattern = APP_DIR . str_replace('%n', $handle, self::PAGE_XML_PATH_PATTERN);
 
             foreach (glob($pattern) as $pageXmlFile) {
-                $cliData = simplexml_load_file($pageXmlFile);
+                $pageData = simplexml_load_file($pageXmlFile);
 
-                $parsedData = $this->parseXmlNode($cliData);
+                $parsedData = $this->parseXmlNode($pageData);
                 $pageStructure = array_merge_recursive($pageStructure, $parsedData['page']);
             }
 
@@ -99,8 +99,8 @@ class XmlParser
 
                 $parsedNode[$nodeName][$childName] = $child[$childName];
             }
-        } else {
-            $parsedNode[$nodeName] = trim((string)$xmlNode);
+        } elseif ($text = trim((string)$xmlNode)) {
+            $parsedNode[$nodeName]['text'] = $text;
         }
 
         return $parsedNode;

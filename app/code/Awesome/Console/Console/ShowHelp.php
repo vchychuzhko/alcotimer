@@ -34,11 +34,11 @@ class ShowHelp extends \Awesome\Console\Model\AbstractCommand
                     $optionList = $command['optionList'] ?? [];
                     $output .= "\n" . $this->colourText(
                         \Awesome\Console\Model\Console::COMMAND_BASE . ' ' . $namespace . ':' . $name
-                        ) . ' | ' . $command['description'];
+                        ) . ' | ' . $command['description']['text'];
 
                     foreach ($optionList as $option) {
-                        $output .= "\n" . $option['mask'] . ' - '
-                            . $option['description'] ?? ''
+                        $output .= "\n" . $option['mask']['text'] . ' - '
+                            . $option['description']['text'] ?? ''
                             . ($option['required'] ? '' : ' (optional)');
                     }
                 }

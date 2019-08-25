@@ -2,7 +2,7 @@
 <config>
     <namespace name="cache">
         <command name="clean" class="Awesome\Cache\Console\Clean">
-            <description><![CDATA[Flush XML config cache.]]></description>
+            <description><![CDATA[Flush XML, including CLI and page cache.]]></description>
         </command>
     </namespace>
     <namespace name="static">
