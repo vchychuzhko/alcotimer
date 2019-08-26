@@ -1,5 +1,10 @@
 <?php
 
+if (PHP_MAJOR_VERSION < 7 && PHP_MINOR_VERSION < 1) {
+    echo 'PHP version of 7.1 or higher is required.';
+    exit(1);
+}
+
 define('APP_DIR', BP . '/app/code');
 require_once('polyfill.php');
 
