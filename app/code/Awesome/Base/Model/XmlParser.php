@@ -8,14 +8,10 @@ class XmlParser
     private const ETC_CACHE_KEY = 'etc';
     private const CLI_CACHE_TAG = 'cli';
 
-    private const DEFAULT_PAGE_XML_PATH_PATTERN = '/*/*/view/*/layout/default.xml';
-    private const PAGE_XML_PATH_PATTERN = '/*/*/view/*/layout/%n.xml';
-    private const PAGE_CACHE_KEY = 'pages';
-
     /**
      * @var \Awesome\Cache\Model\Cache $cache
      */
-    private $cache;
+    protected $cache;
 
     /**
      * XmlParser constructor.
@@ -46,36 +42,11 @@ class XmlParser
     }
 
     /**
-     * Collect page structure according to the requested handle.
-     * @param $handle
-     * @return array
-     */
-    public function retrievePageStructure($handle)
-    {
-        if (!$pageStructure = $this->cache->get(self::PAGE_CACHE_KEY, $handle)) {
-            $pattern = APP_DIR . str_replace('%n', $handle, self::PAGE_XML_PATH_PATTERN);
-
-            foreach (glob($pattern) as $pageXmlFile) {
-                $pageData = simplexml_load_file($pageXmlFile);
-
-                $parsedData = $this->parseXmlNode($pageData);
-                $pageStructure = array_merge_recursive($pageStructure, $parsedData['page']);
-            }
-
-            if (!empty($pageStructure)) {
-                $this->cache->save(self::PAGE_CACHE_KEY, $handle, $pageStructure);
-            }
-        }
-
-        return $pageStructure;
-    }
-
-    /**
      * Convert XML node into array
      * @param \SimpleXMLElement $xmlNode
      * @return array
      */
-    private function parseXmlNode($xmlNode) {
+    protected function parseXmlNode($xmlNode) {
         $parsedNode = [];
         $nodeName = $xmlNode->getName();
         $attributes = [];
@@ -111,7 +82,7 @@ class XmlParser
      * @param string $value
      * @return string|bool
      */
-    private function stringBooleanCheck($value)
+    protected function stringBooleanCheck($value)
     {
         if ($value === 'true' || $value === 'false') {
             $value = $value === 'true';
