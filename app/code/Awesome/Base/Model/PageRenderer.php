@@ -19,15 +19,32 @@ class PageRenderer
     private $handle;
 
     /**
+     * @var string $view
+     */
+    private $view;
+
+    /**
      * @var array $structure
      */
     private $structure;
+
+    /**
+     * @var \Awesome\Base\Block\Html\Head $headTemplate
+     */
+    private $headRenderer;
+
+    /**
+     * @var \Awesome\Base\Block\Html\Body $bodyTemplate
+     */
+    private $bodyRenderer;
 
     /**
      * PageRenderer constructor.
      */
     function __construct()
     {
+        $this->headRenderer = new \Awesome\Base\Block\Html\Head();
+        $this->bodyRenderer = new \Awesome\Base\Block\Html\Body();
         $this->pageXmlParser = new \Awesome\Base\Model\PageXmlParser();
     }
 
@@ -42,32 +59,10 @@ class PageRenderer
         $page = '';
 
         if ($this->handleExist($handle, $view)) {
-            $page = <<<HTML
-<!DOCTYPE html>
-<html lang="en">
-HTML;
-
-            if ($head = $this->structure['head']) {
-                $this->headRenderer->setData($head);
-                $page .= $this->headRenderer->toHtml();
-            }
-
-            if ($body = $this->structure['body']) {
-                $bodyClass = $this->getBodyClass();
-
-                $page .= <<<HTML
-<body class="$bodyClass">
-HTML;
-                $page .= 'body';
-
-                $page .= <<<HTML
-</body>
-HTML;
-            }
-
-            $page .= <<<HTML
-</html>
-HTML;
+            $this->view = $view;
+            ob_start(); //prevent includes from output everything to the page
+            $page = include(APP_DIR . self::BASE_TEMPLATE_PATH);
+            ob_clean();
         }
 
         return $page;
@@ -107,5 +102,47 @@ HTML;
         }
 
         return $this->handle;
+    }
+
+    /**
+     *
+     * @return string
+     */
+    public function getHead()
+    {
+        $head = '';
+
+        if ($headStructure = $this->structure['head']) {
+            $this->headRenderer->setData($headStructure);
+            $this->headRenderer->setData('view', $this->view);
+            $head = $this->headRenderer->toHtml();
+        }
+
+        return $head;
+    }
+
+    /**
+     *
+     * @return string
+     */
+    public function getBodyClass()
+    {
+        return str_replace('_', '-', $this->handle);
+    }
+
+    /**
+     *
+     * @return string
+     */
+    public function getBody()
+    {
+        $body = '';
+
+        if ($bodyStructure = $this->structure['head']) {
+            $this->bodyRenderer->setData($bodyStructure);
+            $body = $this->bodyRenderer->toHtml();
+        }
+
+        return $body;
     }
 }

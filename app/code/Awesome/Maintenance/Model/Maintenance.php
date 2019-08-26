@@ -5,7 +5,7 @@ namespace Awesome\Maintenance\Model;
 class Maintenance
 {
     public const MAINTENANCE_FILE = 'maintenance.flag';
-    public const MAINTENANCE_PAGE_PATH = BP . '/pub/pages/maintenance.html';
+    public const MAINTENANCE_PAGE_PATH = '/pub/pages/maintenance.html';
 
     /**
      * Enable maintenance mode.

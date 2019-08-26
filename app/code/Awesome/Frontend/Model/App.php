@@ -41,7 +41,6 @@ class App
     {
         $this->logWriter = new \Awesome\Logger\Model\LogWriter();
         $this->maintenance = new Maintenance();
-        $this->staticContent = new \Awesome\Cache\Model\StaticContent();
         $this->pageRenderer = new \Awesome\Base\Model\PageRenderer();
         $this->config = $this->loadConfig();
     }
@@ -53,11 +52,11 @@ class App
     {
         $this->logWriter->logVisitor();
 
-        if (!$this->isMaintenance() && $this->config) {
-            $handle = $this->resolveUrl();
-            $response = $this->pageRenderer->render($handle);
-        } else {
-            $response = file_get_contents(Maintenance::MAINTENANCE_PAGE_PATH);
+        $handle = $this->resolveUrl();
+        $response = $this->pageRenderer->render($handle);
+
+        if ($this->isMaintenance() || !$this->config || !$response) {
+            $response = file_get_contents(BP . Maintenance::MAINTENANCE_PAGE_PATH);
         }
 
         echo $response;
@@ -130,29 +129,5 @@ class App
     public function getTimerConfigurations()
     {
         return $this->config['timer_config'];
-    }
-
-    /**
-     *
-     * @return string
-     */
-    public function getStaticPath()
-    {
-        if (!$deployedVersion = $this->staticContent->getDeployedVersion()) {
-            $deployedVersion = $this->staticContent->deploy()
-                ->getDeployedVersion();
-            //@TODO: Resolve situation when frontend folder is missing, but deployed version is present
-        }
-
-        return '/' . PUB_DIR . 'static/version' . $deployedVersion . '/frontend';
-    }
-
-    /**
-     *
-     * @return string
-     */
-    public function getMediaPath()
-    {
-        return '/' . PUB_DIR . 'media';
     }
 }

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<page>
+    <head>
+        <script src="//www.google.com/recaptcha/apiv3.js"/>
+    </head>
+    <body>
+        <block name="content" class="Awesome\Base\Block\Template" template="Awesome_Base::content.phtml">
+            <block name="header" class="Awesome\Base\Block\Template" template="Awesome_Frontend::header.phtml" sortOrder="1"/>
+            <block name="footer" class="Awesome\Base\Block\Template" template="Awesome_Frontend::footer.phtml" sortOrder="9"/>
+        </block>
+    </body>
+</page>
