@@ -6,10 +6,5 @@ class Body extends \Awesome\Base\Block\Template
 {
     private const BODY_TEMPLATE_PATH = '/Awesome/Base/view/base/templates/html/body.phtml';
 
-    /**
-     * @inheritDoc
-     */
-    public function toHtml() {
-        return include(APP_DIR . self::BODY_TEMPLATE_PATH);
-    }
+    protected $template = APP_DIR . self::BODY_TEMPLATE_PATH;
 }

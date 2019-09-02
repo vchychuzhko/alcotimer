@@ -13,7 +13,7 @@ class Console
     private $args;
 
     /**
-     * @var \Awesome\Base\Model\XmlParser $xmlParser
+     * @var \Awesome\Base\Model\XmlParser\CliXmlParser $xmlParser
      */
     private $xmlParser;
 
@@ -23,7 +23,7 @@ class Console
     public function __construct()
     {
         $this->args = $_SERVER['argv'];
-        $this->xmlParser = new \Awesome\Base\Model\XmlParser();
+        $this->xmlParser = new \Awesome\Base\Model\XmlParser\CliXmlParser();
     }
 
     /**
@@ -76,10 +76,10 @@ class Console
             $commandList = $this->xmlParser->retrieveConsoleCommands();
 
             $namespace = $this->findMatch($namespace, array_keys($commandList));
-            $command = $this->findMatch($command, array_keys($commandList[$namespace]));
+            $command = $this->findMatch($command, array_keys($commandList[$namespace]['children']));
 
             if ($command) {
-                $className = $commandList[$namespace][$command]['class'];
+                $className = $commandList[$namespace]['children'][$command]['class'];
             }
         }
 

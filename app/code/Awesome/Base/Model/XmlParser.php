@@ -4,10 +4,6 @@ namespace Awesome\Base\Model;
 
 class XmlParser
 {
-    private const CLI_XML_PATH_PATTERN = '/*/*/etc/cli.xml';
-    private const ETC_CACHE_KEY = 'etc';
-    private const CLI_CACHE_TAG = 'cli';
-
     /**
      * @var \Awesome\Cache\Model\Cache $cache
      */
@@ -22,31 +18,11 @@ class XmlParser
     }
 
     /**
-     * Collect data about all available console commands.
-     * @return array
-     */
-    public function retrieveConsoleCommands()
-    {
-        if (!$commandList = $this->cache->get(self::ETC_CACHE_KEY, self::CLI_CACHE_TAG)) {
-            foreach (glob(APP_DIR . self::CLI_XML_PATH_PATTERN) as $cliXmlFile) {
-                $cliData = simplexml_load_file($cliXmlFile);
-
-                $parsedData = $this->parseXmlNode($cliData);
-                $commandList = array_merge_recursive($commandList, $parsedData['config']);
-            }
-
-            $this->cache->save(self::ETC_CACHE_KEY, self::CLI_CACHE_TAG, $commandList);
-        }
-
-        return $commandList;
-    }
-
-    /**
-     * Convert XML node into array
+     * Convert XML node into array.
      * @param \SimpleXMLElement $xmlNode
      * @return array
      */
-    protected function parseXmlNode($xmlNode) {
+    public function parseXmlNode($xmlNode) {
         $parsedNode = [];
         $nodeName = $xmlNode->getName();
         $attributes = [];
@@ -68,7 +44,7 @@ class XmlParser
                 $child = $this->parseXmlNode($child);
                 $childName = array_key_first($child);
 
-                $parsedNode[$nodeName][$childName] = $child[$childName];
+                $parsedNode[$nodeName]['children'][$childName] = $child[$childName];
             }
         } elseif ($text = trim((string)$xmlNode)) {
             $parsedNode[$nodeName]['text'] = $text;

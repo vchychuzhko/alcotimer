@@ -9,7 +9,7 @@ class PageRenderer
     private const ADMINHTML_VIEW = 'adminhtml';
 
     /**
-     * @var \Awesome\Base\Model\PageXmlParser $pageXmlParser
+     * @var \Awesome\Base\Model\XmlParser\PageXmlParser $pageXmlParser
      */
     private $pageXmlParser;
 
@@ -45,7 +45,7 @@ class PageRenderer
     {
         $this->headRenderer = new \Awesome\Base\Block\Html\Head();
         $this->bodyRenderer = new \Awesome\Base\Block\Html\Body();
-        $this->pageXmlParser = new \Awesome\Base\Model\PageXmlParser();
+        $this->pageXmlParser = new \Awesome\Base\Model\XmlParser\PageXmlParser();
     }
 
     /**
@@ -61,8 +61,8 @@ class PageRenderer
         if ($this->handleExist($handle, $view)) {
             $this->view = $view;
             ob_start(); //prevent includes from output everything to the page
-            $page = include(APP_DIR . self::BASE_TEMPLATE_PATH);
-            ob_clean();
+            include(APP_DIR . self::BASE_TEMPLATE_PATH);
+            $page = ob_get_clean();
         }
 
         return $page;

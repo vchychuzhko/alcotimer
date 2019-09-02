@@ -5,7 +5,7 @@ namespace Awesome\Console\Console;
 class ShowHelp extends \Awesome\Console\Model\AbstractCommand
 {
     /**
-     * @var \Awesome\Base\Model\XmlParser $xmlParser
+     * @var \Awesome\Base\Model\XmlParser\CliXmlParser $xmlParser
      */
     private $xmlParser;
 
@@ -14,7 +14,7 @@ class ShowHelp extends \Awesome\Console\Model\AbstractCommand
      */
     public function __construct()
     {
-        $this->xmlParser = new \Awesome\Base\Model\XmlParser();
+        $this->xmlParser = new \Awesome\Base\Model\XmlParser\CliXmlParser();
     }
 
     /**
@@ -26,20 +26,24 @@ class ShowHelp extends \Awesome\Console\Model\AbstractCommand
         $output = "---- AlcoTimer CLI ----\n";
 
         if ($commandList = $this->xmlParser->retrieveConsoleCommands()) {
-            //@TODO: update reading functionality
             $output .= 'Here is the list of available commands:';
 
             foreach ($commandList as $namespace => $commands) {
-                foreach ($commands as $name => $command) {
-                    $optionList = $command['optionList'] ?? [];
+                foreach ($commands['children'] as $name => $command) {
+                    $command = $command['children'];
+
+                    $optionList = $command['optionList']['children'] ?? [];
                     $output .= "\n" . $this->colourText(
                         \Awesome\Console\Model\Console::COMMAND_BASE . ' ' . $namespace . ':' . $name
                         ) . ' | ' . $command['description']['text'];
 
                     foreach ($optionList as $option) {
+                        $required = $option['required'] ? '' : ' (optional)';
+                        $option = $option['children'];
+
                         $output .= "\n" . $option['mask']['text'] . ' - '
-                            . $option['description']['text'] ?? ''
-                            . ($option['required'] ? '' : ' (optional)');
+                            . ($option['description']['text'] ?? '')
+                            . $required;
                     }
                 }
             }

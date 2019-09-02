@@ -32,7 +32,10 @@ class Template
      * @return string
      */
     public function toHtml() {
-        return include($this->template);
+        ob_start();
+        include($this->template);
+
+        return ob_get_clean();
     }
 
     /**
