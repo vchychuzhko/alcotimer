@@ -1,6 +1,6 @@
 <?php
 
-namespace Awesome\Frontend\Model;
+namespace Awesome\Base\Model;
 
 use \Awesome\Maintenance\Model\Maintenance;
 
@@ -30,7 +30,7 @@ class App
     private $staticContent;
 
     /**
-     * @var \Awesome\Base\Model\PageRenderer
+     * @var \Awesome\Base\Model\App\PageRenderer
      */
     private $pageRenderer;
 
@@ -41,7 +41,7 @@ class App
     {
         $this->logWriter = new \Awesome\Logger\Model\LogWriter();
         $this->maintenance = new Maintenance();
-        $this->pageRenderer = new \Awesome\Base\Model\PageRenderer();
+        $this->pageRenderer = new \Awesome\Base\Model\App\PageRenderer();
         $this->config = $this->loadConfig();
     }
 

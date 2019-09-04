@@ -1,12 +1,13 @@
 <?php
 
-namespace Awesome\Base\Model;
+namespace Awesome\Base\Model\App;
 
 class PageRenderer
 {
     private const BASE_TEMPLATE_PATH = '/Awesome/Base/view/base/templates/base.phtml';
     private const FRONTEND_VIEW = 'frontend';
     private const ADMINHTML_VIEW = 'adminhtml';
+    private const BASE_VIEW = 'base';
 
     /**
      * @var \Awesome\Base\Model\XmlParser\PageXmlParser $pageXmlParser
@@ -79,6 +80,7 @@ class PageRenderer
         $handle = $this->parseHandle($handle);
         $this->structure = $this->structure ?? $this->pageXmlParser->retrievePageStructure($handle, $view);
 
+//        return $this->pageXmlParser->handleExist();
         return !empty($this->structure);
     }
 
@@ -114,7 +116,7 @@ class PageRenderer
 
         if ($headStructure = $this->structure['head']) {
             $this->headRenderer->setData($headStructure);
-            $this->headRenderer->setData('view', $this->view);
+            $this->headRenderer->setView(self::BASE_VIEW);
             $head = $this->headRenderer->toHtml();
         }
 
@@ -140,8 +142,9 @@ class PageRenderer
 
         if ($bodyStructure = $this->structure['head']) {
             $this->bodyRenderer->setData($bodyStructure);
+            $this->bodyRenderer->setView(self::BASE_VIEW);
             $body = $this->bodyRenderer->toHtml();
-        }
+        };
 
         return $body;
     }

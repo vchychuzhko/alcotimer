@@ -5,5 +5,5 @@ define('BP', dirname(__DIR__));
 define('PUB_DIR', '');
 require_once(BP . '/app/autoload.php');
 
-$app = new \Awesome\Frontend\Model\App();
+$app = new \Awesome\Base\Model\App();
 $app->run();
