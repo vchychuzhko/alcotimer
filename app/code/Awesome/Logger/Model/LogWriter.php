@@ -11,7 +11,7 @@ class LogWriter
     /**
      * Write all Errors, Warnings and Exceptions to log file
      * @param string $string
-     * @return self
+     * @return $this
      */
     public function write($string)
     {

@@ -14,7 +14,7 @@ class StaticContent
 
     /**
      * Deploy static files.
-     * @return self
+     * @return $this
      */
     function deploy()
     {
@@ -28,7 +28,7 @@ class StaticContent
 
     /**
      * Remove all static files and recreate frontend directory.
-     * @return self
+     * @return $this
      */
     public function removeStatic()
     {
@@ -40,7 +40,7 @@ class StaticContent
 
     /**
      * Collect, parse and generate css/js files.
-     * @return self
+     * @return $this
      */
     private function generateAssets()
     {
@@ -69,7 +69,7 @@ class StaticContent
 
     /**
      * Filter and copy library js files to the frontend directory.
-     * @return self
+     * @return $this
      */
     private function processLibs()
     {
@@ -114,7 +114,7 @@ class StaticContent
 
     /**
      * Generate new deployed version and save it.
-     * @return self
+     * @return $this
      */
     public function generateDeployedVersion()
     {

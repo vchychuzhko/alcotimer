@@ -39,7 +39,7 @@ class Template
     }
 
     /**
-     *
+     * Return URL path to media folder, according to the root folder.
      * @return string
      */
     public function getMediaUrl()
@@ -48,7 +48,7 @@ class Template
     }
 
     /**
-     *
+     * Return URL path to static folder, according to the root folder.
      * @return string
      */
     public function getStaticUrl()
@@ -112,7 +112,7 @@ class Template
      *
      * @param string|array $key
      * @param mixed $value
-     * @return self
+     * @return $this
      */
     public function setData($key, $value = null)
     {

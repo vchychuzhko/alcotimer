@@ -30,7 +30,7 @@ class Cache
      * @param string $key
      * @param string $tag
      * @param array $data
-     * @return self
+     * @return $this
      */
     public function save($key, $tag, $data)
     {
@@ -46,7 +46,7 @@ class Cache
      * Remove cache by key, tag or both.
      * @param string $key
      * @param string $tag
-     * @return self
+     * @return $this
      */
     public function remove($key = '', $tag = '')
     {
@@ -81,7 +81,7 @@ class Cache
      * Save data to cache file.
      * @param string $key
      * @param array $data
-     * @return self
+     * @return $this
      */
     private function saveToCacheFile($key, $data)
     {
@@ -97,7 +97,7 @@ class Cache
     /**
      * Remove cache file according to key.
      * @param string $key
-     * @return self
+     * @return $this
      */
     private function removeCacheFile($key)
     {

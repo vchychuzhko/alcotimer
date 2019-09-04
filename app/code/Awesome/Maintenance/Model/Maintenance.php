@@ -10,7 +10,7 @@ class Maintenance
     /**
      * Enable maintenance mode.
      * @param array $allowedIPs
-     * @return self
+     * @return $this
      */
     public function enable($allowedIPs = [])
     {
@@ -21,7 +21,7 @@ class Maintenance
 
     /**
      * Disable maintenance mode.
-     * @return self
+     * @return $this
      */
     public function disable()
     {
