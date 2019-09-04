@@ -2,6 +2,8 @@
 
 namespace Awesome\Base\Model\App;
 
+use \Awesome\Base\Model\XmlParser\PageXmlParser;
+
 class PageRenderer
 {
     private const BASE_TEMPLATE_PATH = '/Awesome/Base/view/base/templates/base.phtml';
@@ -10,7 +12,7 @@ class PageRenderer
     private const BASE_VIEW = 'base';
 
     /**
-     * @var \Awesome\Base\Model\XmlParser\PageXmlParser $pageXmlParser
+     * @var PageXmlParser $pageXmlParser
      */
     private $pageXmlParser;
 
@@ -46,7 +48,7 @@ class PageRenderer
     {
         $this->headRenderer = new \Awesome\Base\Block\Html\Head();
         $this->bodyRenderer = new \Awesome\Base\Block\Html\Body();
-        $this->pageXmlParser = new \Awesome\Base\Model\XmlParser\PageXmlParser();
+        $this->pageXmlParser = new PageXmlParser();
     }
 
     /**
@@ -55,12 +57,16 @@ class PageRenderer
      * @param string $view
      * @return string
      */
-    public function render($handle, $view = self::FRONTEND_VIEW)
+    public function render($handle, $view = PageXmlParser::FRONTEND_VIEW)
     {
         $page = '';
+        $handle = $this->parseHandle($handle);
 
         if ($this->handleExist($handle, $view)) {
+            $this->handle = $handle;
             $this->view = $view;
+            $this->structure = $this->pageXmlParser->retrievePageStructure($handle, $view);
+
             ob_start(); //prevent includes from output everything to the page
             include(APP_DIR . self::BASE_TEMPLATE_PATH);
             $page = ob_get_clean();
@@ -75,13 +81,11 @@ class PageRenderer
      * @param string $view
      * @return bool
      */
-    public function handleExist($handle, $view = self::FRONTEND_VIEW)
+    public function handleExist($handle, $view = PageXmlParser::FRONTEND_VIEW)
     {
         $handle = $this->parseHandle($handle);
-        $this->structure = $this->structure ?? $this->pageXmlParser->retrievePageStructure($handle, $view);
 
-//        return $this->pageXmlParser->handleExist();
-        return !empty($this->structure);
+        return $this->pageXmlParser->handleExist($handle, $view);
     }
 
     /**
@@ -92,22 +96,16 @@ class PageRenderer
      */
     private function parseHandle($handle)
     {
-        if ($this->handle !== $handle) {
-            $handle = str_replace('-', '_', $handle);
-            $parts = explode('_', $handle);
-            $handle = $parts[0] . '_' //module
-                . ($parts[1] ?? 'index') . '_' //page
-                . ($parts[2] ?? 'index'); //action
+        $parts = explode('_', $handle);
+        $handle = $parts[0] . '_' //module
+            . ($parts[1] ?? 'index') . '_' //page
+            . ($parts[2] ?? 'index'); //action
 
-            $this->handle = $handle;
-            $this->structure = null;
-        }
-
-        return $this->handle;
+        return $handle;
     }
 
     /**
-     *
+     * Create and render head part of the page.
      * @return string
      */
     public function getHead()
@@ -124,16 +122,18 @@ class PageRenderer
     }
 
     /**
-     *
+     * Get body class by page handle.
      * @return string
      */
     public function getBodyClass()
     {
-        return str_replace('_', '-', $this->handle);
+        $class = str_replace('-', '', $this->handle);
+
+        return str_replace('_', '-', $class);
     }
 
     /**
-     *
+     * Create and render body part of the page.
      * @return string
      */
     public function getBody()

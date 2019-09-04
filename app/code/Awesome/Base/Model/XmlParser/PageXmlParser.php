@@ -7,6 +7,7 @@ class PageXmlParser extends \Awesome\Base\Model\XmlParser //@TODO: add abstract 
     private const DEFAULT_PAGE_XML_PATH_PATTERN = '/*/*/view/%v/layout/default.xml';
     private const PAGE_XML_PATH_PATTERN = '/*/*/view/%v/layout/%h.xml';
     private const PAGE_CACHE_KEY = 'pages';
+    private const PAGE_CACHE_TAG = 'page-handles';
 
     /**
      * @var array $assetMap
@@ -61,6 +62,50 @@ class PageXmlParser extends \Awesome\Base\Model\XmlParser //@TODO: add abstract 
         }
 
         return $pageStructure;
+    }
+
+    /**
+     * Check if requested handle exist in collected handles.
+     * @param string $handle
+     * @param string $view
+     * @return bool
+     */
+    public function handleExist($handle, $view)
+    {
+        return in_array($handle, $this->collectHandles()[$view]);
+    }
+
+    /**
+     * Retrieve all available page handles and save them to cache.
+     * @return array
+     */
+    private function collectHandles()
+    {
+        if (!$handles = $this->cache->get(self::PAGE_CACHE_KEY, self::PAGE_CACHE_TAG)) {
+            foreach ([self::FRONTEND_VIEW, self::ADMINHTML_VIEW, self::BASE_VIEW] as $view) {
+                $pattern = APP_DIR . str_replace('%v', $view, self::PAGE_XML_PATH_PATTERN);
+                $pattern = str_replace('%h', '*', $pattern);
+                $collectedHandles = [];
+
+                if ($foundHandles = glob($pattern)) {
+
+                    foreach ($foundHandles as $collectedHandle) {
+                        $collectedHandle = explode('/', $collectedHandle);
+                        $collectedHandle = str_replace('.xml', '', end($collectedHandle));
+
+                        $collectedHandles[] = $collectedHandle;
+                    }
+
+                    $collectedHandles = array_flip($collectedHandles);
+                }
+
+                $handles[$view] = array_flip($collectedHandles);
+            }
+
+            $this->cache->save(self::PAGE_CACHE_KEY, self::PAGE_CACHE_TAG, $handles);
+        }
+
+        return $handles;
     }
 
     /**

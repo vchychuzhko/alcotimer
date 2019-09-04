@@ -4,6 +4,10 @@ namespace Awesome\Base\Model;
 
 class XmlParser
 {
+    public const FRONTEND_VIEW = 'frontend';
+    public const ADMINHTML_VIEW = 'adminhtml';
+    public const BASE_VIEW = 'base';
+
     /**
      * @var \Awesome\Cache\Model\Cache $cache
      */
