@@ -13,7 +13,7 @@ class Console
     private $args;
 
     /**
-     * @var \Awesome\Base\Model\XmlParser\CliXmlParser $xmlParser
+     * @var \Awesome\Console\Model\XmlParser\CliXmlParser $xmlParser
      */
     private $xmlParser;
 
@@ -23,7 +23,7 @@ class Console
     public function __construct()
     {
         $this->args = $_SERVER['argv'];
-        $this->xmlParser = new \Awesome\Base\Model\XmlParser\CliXmlParser();
+        $this->xmlParser = new \Awesome\Console\Model\XmlParser\CliXmlParser();
     }
 
     /**

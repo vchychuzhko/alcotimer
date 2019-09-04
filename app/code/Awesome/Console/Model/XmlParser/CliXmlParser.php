@@ -1,6 +1,6 @@
 <?php
 
-namespace Awesome\Base\Model\XmlParser;
+namespace Awesome\Console\Model\XmlParser;
 
 class CliXmlParser extends \Awesome\Base\Model\XmlParser
 {

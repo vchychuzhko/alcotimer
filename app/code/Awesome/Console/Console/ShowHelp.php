@@ -5,7 +5,7 @@ namespace Awesome\Console\Console;
 class ShowHelp extends \Awesome\Console\Model\AbstractCommand
 {
     /**
-     * @var \Awesome\Base\Model\XmlParser\CliXmlParser $xmlParser
+     * @var \Awesome\Console\Model\XmlParser\CliXmlParser $xmlParser
      */
     private $xmlParser;
 
@@ -14,7 +14,7 @@ class ShowHelp extends \Awesome\Console\Model\AbstractCommand
      */
     public function __construct()
     {
-        $this->xmlParser = new \Awesome\Base\Model\XmlParser\CliXmlParser();
+        $this->xmlParser = new \Awesome\Console\Model\XmlParser\CliXmlParser();
     }
 
     /**
