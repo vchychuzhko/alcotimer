@@ -2,7 +2,10 @@
 
 namespace Awesome\Base\Model\XmlParser;
 
-class PageXmlParser extends \Awesome\Base\Model\XmlParser //@TODO: add abstract class for parsing, XmlParser cannot be their parent
+use Awesome\Base\Model\App;
+
+//@TODO: add abstract class for parsing, XmlParser cannot be their parent
+class PageXmlParser extends \Awesome\Base\Model\XmlParser
 {
     private const DEFAULT_PAGE_XML_PATH_PATTERN = '/*/*/view/%v/layout/default.xml';
     private const PAGE_XML_PATH_PATTERN = '/*/*/view/%v/layout/%h.xml';
@@ -82,7 +85,7 @@ class PageXmlParser extends \Awesome\Base\Model\XmlParser //@TODO: add abstract 
     private function collectHandles()
     {
         if (!$handles = $this->cache->get(self::PAGE_CACHE_KEY, self::PAGE_CACHE_TAG)) {
-            foreach ([self::FRONTEND_VIEW, self::ADMINHTML_VIEW, self::BASE_VIEW] as $view) {
+            foreach ([App::FRONTEND_VIEW, App::BACKEND_VIEW, App::BASE_VIEW] as $view) {
                 $pattern = APP_DIR . str_replace('%v', $view, self::PAGE_XML_PATH_PATTERN);
                 $pattern = str_replace('%h', '*', $pattern);
                 $collectedHandles = [];
@@ -130,7 +133,7 @@ class PageXmlParser extends \Awesome\Base\Model\XmlParser //@TODO: add abstract 
     }
 
     /**
-     *
+     * Parse head part of XML page node.
      * @param \SimpleXMLElement $headNode
      * @return array
      */
@@ -148,6 +151,7 @@ class PageXmlParser extends \Awesome\Base\Model\XmlParser //@TODO: add abstract 
                 $parsedHeadNode[$childName] = trim((string)$child);
             }
         }
+
         return $parsedHeadNode;
     }
 }

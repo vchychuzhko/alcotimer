@@ -1,14 +1,13 @@
 <?php /** @var \Awesome\Base\Block\Html\Head $this */ ?>
 <?php $mediaUrl = $this->getMediaUrl(); ?>
-<?php $view = $this->getView(); ?>
+<?php $staticUrl = $this->getStaticUrl(); ?>
 <meta charset="UTF-8">
 <title><?= $this->getTitle(); ?></title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="shortcut icon" type="image/png" href="<?= $mediaUrl; ?>/images/favicon.png"/>
+<link rel="shortcut icon" type="image/png" href="<?= $mediaUrl . $this->getFavicon(); ?>"/>
 <?php foreach($this->getStyles() as $css): ?>
-    <link rel="stylesheet" type="text/css" href="<?= $this->resolveXmlPath($css['src'], $view, 'css'); ?>"/>
+    <link rel="stylesheet" type="text/css" href="<?= $staticUrl . $css['src']; ?>"/>
 <?php endforeach; ?>
 <?php foreach($this->getScripts() as $script): ?>
-    <script src="<?= $this->resolveXmlPath($script['src'], $view, 'js'); ?>"></script>
+    <script src="<?= $staticUrl . $script['src']; ?>"></script>
 <?php endforeach; ?>
-

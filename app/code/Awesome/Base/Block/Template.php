@@ -10,9 +10,24 @@ class Template
     protected $staticContent;
 
     /**
+     * @var \Awesome\Base\Model\FallbackResolver $fallbackResolver
+     */
+    protected $fallbackResolver;
+
+    /**
      * @var string $template
      */
     protected $template;
+
+    /**
+     * @var string $handle
+     */
+    protected $handle;
+
+    /**
+     * @var string $view
+     */
+    protected $view;
 
     /**
      * @var array $data
@@ -25,17 +40,32 @@ class Template
     public function __construct()
     {
         $this->staticContent = new \Awesome\Cache\Model\StaticContent();
+        $this->fallbackResolver = new \Awesome\Base\Model\FallbackResolver();
     }
 
     /**
-     *
+     * Render related template.
      * @return string
      */
     public function toHtml() {
         ob_start();
-        include($this->template);
+        include($this->resolveTemplatePath());
 
         return ob_get_clean();
+    }
+
+    /**
+     * Set needed page data.
+     * @param $handle
+     * @param $view
+     * @return $this
+     */
+    public function setPageData($handle, $view)
+    {
+        $this->handle = $handle;
+        $this->view = $view;
+
+        return $this;
     }
 
     /**
@@ -44,7 +74,7 @@ class Template
      */
     public function getMediaUrl()
     {
-        return '/' . PUB_DIR . 'media';
+        return '/' . PUB_DIR . 'media/';
     }
 
     /**
@@ -59,28 +89,27 @@ class Template
             //@TODO: Resolve situation when frontend folder is missing, but deployed version is present
         }
 
-        return '/' . PUB_DIR . 'static/version' . $deployedVersion . '/';
+        return '/' . PUB_DIR . 'static/version' . $deployedVersion . '/' . $this->view . '/';
     }
 
     /**
-     *
-     * @param string $path
-     * @param string $view
-     * @param string $type
+     * Parse template XML path to a valid filesystem path.
      * @return string
      */
-    public function resolveXmlPath($path, $view, $type)
+    protected function resolveTemplatePath()
     {
-        @list($module, $file) = explode('::', $path);
+        @list($module, $file) = explode('::', $this->template);
         $path = $module;
 
         if (isset($file)) {
             $module = str_replace('_', '/', $module);
-            $path = $this->getStaticUrl() . $view . '/' . $module . '/' . $type . '/' . $file;
+            $path = '/' . $module . '/view/' . $this->view . '/templates/' . $file;
+            $path = $this->fallbackResolver->resolve($path);
         }
 
-        return $path;
+        return APP_DIR . $path;
     }
+    //@TODO: implement getConfig() function
 
     /**
      * Template data getter.

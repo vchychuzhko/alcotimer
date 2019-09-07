@@ -7,7 +7,9 @@ use \Awesome\Maintenance\Model\Maintenance;
 class App
 {
     public const CONFIG_FILE_PATH = 'app/config.php';
-    private const TEMPLATES_DIR = BP . '/app/templates';
+    public const FRONTEND_VIEW = 'frontend';
+    public const BACKEND_VIEW = 'adminhtml';
+    public const BASE_VIEW = 'base';
 
     /**
      * @var \Awesome\Logger\Model\LogWriter
@@ -23,11 +25,6 @@ class App
      * @var array $config
      */
     private $config;
-
-    /**
-     * @var \Awesome\Cache\Model\StaticContent $staticContent
-     */
-    private $staticContent;
 
     /**
      * @var \Awesome\Base\Model\App\PageRenderer
@@ -53,7 +50,7 @@ class App
         $this->logWriter->logVisitor();
 
         $handle = $this->resolveUrl();
-        $response = $this->pageRenderer->render($handle);
+        $response = $this->pageRenderer->render($handle, self::FRONTEND_VIEW);
 
         if ($this->isMaintenance() || !$this->config || !$response) {
             $response = file_get_contents(BP . Maintenance::MAINTENANCE_PAGE_PATH);
@@ -82,7 +79,7 @@ class App
                 $handle = str_replace('/', '_', $uri);
             }
 
-            if (!$this->pageRenderer->handleExist($handle)) {
+            if (!$this->pageRenderer->handleExist($handle, self::FRONTEND_VIEW)) {
                 $handle = 'notfound';
                 http_response_code(404);
             }
