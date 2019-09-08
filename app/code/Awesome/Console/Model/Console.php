@@ -76,10 +76,10 @@ class Console
             $commandList = $this->xmlParser->retrieveConsoleCommands();
 
             $namespace = $this->findMatch($namespace, array_keys($commandList));
-            $command = $this->findMatch($command, array_keys($commandList[$namespace]['children']));
+            $command = $this->findMatch($command, array_keys($commandList[$namespace]));
 
             if ($command) {
-                $className = $commandList[$namespace]['children'][$command]['class'];
+                $className = $commandList[$namespace][$command]['class'];
             }
         }
 

@@ -4,8 +4,7 @@ namespace Awesome\Base\Model\XmlParser;
 
 use Awesome\Base\Model\App;
 
-//@TODO: add abstract class for parsing, XmlParser cannot be their parent
-class PageXmlParser extends \Awesome\Base\Model\XmlParser
+class PageXmlParser extends \Awesome\Base\Model\AbstractXmlParser
 {
     private const DEFAULT_PAGE_XML_PATH_PATTERN = '/*/*/view/%v/layout/default.xml';
     private const PAGE_XML_PATH_PATTERN = '/*/*/view/%v/layout/%h.xml';
@@ -125,7 +124,7 @@ class PageXmlParser extends \Awesome\Base\Model\XmlParser
             }
 
             if ($mainNode->getName() === 'body') {
-                $parsedNode['body'] = $this->parseXmlNode($mainNode)['body']['children'];
+                $parsedNode = $this->parseBodyNode($mainNode);
             }
         }
 
@@ -146,12 +145,50 @@ class PageXmlParser extends \Awesome\Base\Model\XmlParser
             $childName = $child->getName();
 
             if (isset($this->assetMap[$childName])) {
-                $this->collectedAssets[$this->assetMap[$childName]][] = $this->parseXmlNode($child)[$childName];
+                $this->collectedAssets[$this->assetMap[$childName]][] = reset($child['src']);
             } else {
                 $parsedHeadNode[$childName] = trim((string)$child);
             }
         }
 
         return $parsedHeadNode;
+    }
+
+    /**
+     * Convert Page XML node into array.
+     * @param \SimpleXMLElement $xmlNode
+     * @return array
+     */
+    public function parseBodyNode($xmlNode) {
+        //@TODO: rework this to fit page parsing requirements (data tags)
+        //@TODO: implement sortOrder processing
+        $parsedNode = [];
+        $nodeName = $xmlNode->getName();
+        $attributes = [];
+
+        foreach ($xmlNode->attributes() as $attributeName => $attributeValue) {
+            $attributeValue = (string) $attributeValue;
+
+            if ($attributeName === 'name') {
+                $nodeName = $attributeValue;
+            } else {
+                $attributes[$attributeName] = $this->stringBooleanCheck($attributeValue);
+            }
+        }
+        $parsedNode[$nodeName] = $attributes;
+        $children = $xmlNode->children();
+
+        if (count($children)) {
+            foreach ($children as $child) {
+                $child = $this->parseBodyNode($child);
+                $childName = array_key_first($child);
+
+                $parsedNode[$nodeName]['children'][$childName] = $child[$childName];
+            }
+        } elseif ($text = trim((string) $xmlNode)) {
+            $parsedNode[$nodeName]['text'] = $text;
+        }
+
+        return $parsedNode;
     }
 }

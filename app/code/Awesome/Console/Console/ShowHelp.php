@@ -29,20 +29,17 @@ class ShowHelp extends \Awesome\Console\Model\AbstractCommand
             $output .= 'Here is the list of available commands:';
 
             foreach ($commandList as $namespace => $commands) {
-                foreach ($commands['children'] as $name => $command) {
-                    $command = $command['children'];
-
-                    $optionList = $command['optionList']['children'] ?? [];
+                foreach ($commands as $name => $command) {
+                    $optionList = $command['optionList'] ?? [];
                     $output .= "\n" . $this->colourText(
                         \Awesome\Console\Model\Console::COMMAND_BASE . ' ' . $namespace . ':' . $name
-                        ) . ' | ' . $command['description']['text'];
+                        ) . ' | ' . $command['description'];
 
                     foreach ($optionList as $option) {
                         $required = $option['required'] ? '' : ' (optional)';
-                        $option = $option['children'];
 
-                        $output .= "\n" . $option['mask']['text'] . ' - '
-                            . ($option['description']['text'] ?? '')
+                        $output .= "\n" . $option['mask'] . ' - '
+                            . ($option['description'] ?? '')
                             . $required;
                     }
                 }

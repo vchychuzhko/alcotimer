@@ -15,7 +15,7 @@ class Head extends \Awesome\Base\Block\Template
         $scripts = $this->getData('scripts');
 
         foreach ($scripts as $index => $script) {
-            $scripts[$index]['src'] = $this->resolveAssetsPath($script['src'], 'js');
+            $scripts[$index] = $this->resolveAssetsPath($script, 'js');
         }
 
         return $scripts;
@@ -30,7 +30,7 @@ class Head extends \Awesome\Base\Block\Template
         $styles = $this->getData('styles');
 
         foreach ($styles as $index => $style) {
-            $styles[$index]['src'] = $this->resolveAssetsPath($style['src'], 'css');
+            $styles[$index] = $this->resolveAssetsPath($style, 'css');
         }
 
         return $styles;

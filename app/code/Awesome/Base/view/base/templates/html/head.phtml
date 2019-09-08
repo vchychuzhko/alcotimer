@@ -6,8 +6,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="shortcut icon" type="image/png" href="<?= $mediaUrl . $this->getFavicon(); ?>"/>
 <?php foreach($this->getStyles() as $css): ?>
-    <link rel="stylesheet" type="text/css" href="<?= $staticUrl . $css['src']; ?>"/>
+    <link rel="stylesheet" type="text/css" href="<?= $staticUrl . $css; ?>"/>
 <?php endforeach; ?>
 <?php foreach($this->getScripts() as $script): ?>
-    <script src="<?= $staticUrl . $script['src']; ?>"></script>
+    <script src="<?= $staticUrl . $script; ?>"></script>
 <?php endforeach; ?>
