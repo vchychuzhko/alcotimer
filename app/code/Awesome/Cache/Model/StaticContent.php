@@ -44,6 +44,7 @@ class StaticContent
      */
     private function generateAssets()
     {
+        //@TODO: grab not only pattern, but all files in the asset directory
         $assets = [
             'css' => BP . self::CSS_PATH_PATTERN,
             'js' => BP . self::JS_PATH_PATTERN
@@ -109,6 +110,7 @@ class StaticContent
      */
     private function parsePubDirPath($content)
     {
+        //@TODO: get pub_path from config
         return str_replace(self::ASSET_PUB_TRIGGER, self::ASSET_PUB_REPLACE, $content);
     }
 

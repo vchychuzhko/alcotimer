@@ -160,7 +160,6 @@ class PageXmlParser extends \Awesome\Base\Model\AbstractXmlParser
      * @return array
      */
     public function parseBodyNode($xmlNode) {
-        //@TODO: rework this to fit page parsing requirements (data tags)
         //@TODO: implement sortOrder processing
         $parsedNode = [];
         $nodeName = $xmlNode->getName();
@@ -183,10 +182,14 @@ class PageXmlParser extends \Awesome\Base\Model\AbstractXmlParser
                 $child = $this->parseBodyNode($child);
                 $childName = array_key_first($child);
 
-                $parsedNode[$nodeName]['children'][$childName] = $child[$childName];
+                if ($nodeName === 'data' || $childName === 'data') {
+                    $parsedNode[$nodeName][$childName] = $child[$childName];
+                } else {
+                    $parsedNode[$nodeName]['children'][$childName] = $child[$childName];
+                }
             }
         } elseif ($text = trim((string) $xmlNode)) {
-            $parsedNode[$nodeName]['text'] = $text;
+            $parsedNode[$nodeName] = $text;
         }
 
         return $parsedNode;

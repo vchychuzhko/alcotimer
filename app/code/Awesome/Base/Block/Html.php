@@ -22,17 +22,11 @@ class Html extends \Awesome\Base\Block\Template
     private $headTemplate;
 
     /**
-     * @var \Awesome\Base\Block\Html\Body $bodyTemplate
-     */
-    private $bodyTemplate;
-
-    /**
      * Base Template constructor.
      */
     public function __construct()
     {
         $this->headTemplate = new \Awesome\Base\Block\Html\Head();
-        $this->bodyTemplate = new \Awesome\Base\Block\Html\Body();
         parent::__construct();
     }
 
@@ -97,13 +91,39 @@ class Html extends \Awesome\Base\Block\Template
     {
         $body = '';
 
-        if ($bodyStructure = $this->structure['body']) {
-            $this->bodyTemplate->setStructure($bodyStructure)
-                ->setView($this->view);
-
-            $body = $this->bodyTemplate->toHtml();
+        if ($containers = $this->structure['body']['children']) {
+            foreach ($containers as $container) {
+                $body .= $this->getContent($container);
+            }
         };
 
         return $body;
+    }
+
+    /**
+     * Parse and render blocks recursively.
+     * @param array $block
+     * @return string
+     */
+    private function getContent($block)
+    {
+        $className = $block['class'];
+        $template = $block['template'];
+        $children = $block['children'] ?? [];
+        $data = $block['data'] ?? [];
+
+        /** @var \Awesome\Base\Block\Template $templateClass */
+        $templateClass = new $className();
+        $templateClass->setView($this->view)
+            ->setTemplate($template)
+            ->setData($data);
+
+        $content = $templateClass->toHtml();
+
+        foreach ($children as $childName => $child) {
+            $content .= $this->getContent($child);
+        }
+
+        return $content;
     }
 }

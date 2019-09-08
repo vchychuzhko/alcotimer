@@ -6,5 +6,10 @@
 </head>
 <body class="<?= $this->getBodyClass(); ?>">
     <?= $this->getBody(); ?>
+    <script type="application/javascript">
+        jQuery(function () {
+            $('body').base({});
+        });
+    </script>
 </body>
 </html>

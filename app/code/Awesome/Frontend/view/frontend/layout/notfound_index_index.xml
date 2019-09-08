@@ -1,22 +1,20 @@
 <?xml version="1.0"?>
 <page>
     <head>
-        <title><![CDATA[Flush XML config cache.]]></title>
-        <script src="//www.google.com/recaptcha/apiv0.js" url="true"/>
-        <script src="MSP_ReCaptcha::msp_recaptcha.js"/>
-        <css src="MSP_ReCaptcha::msp_recaptcha.css"/>
+        <title><![CDATA[Not Found]]></title>
+        <css src="Awesome_Frontend::pages/errors.css"/>
     </head>
     <body>
         <referenceBlock name="content">
             <block name="notfound.content"
-                   class="Awesome\Frontend\Block\NotFound"
-                   template="Awesome_Frontend::notfound.phtml"
+                   class="Awesome\Base\Block\Template"
+                   template="Awesome_Frontend::pages/errors.phtml"
                    sortOrder="5"
             >
-                <arguments>
-                    <argument name="error-title"><![CDATA[Flush XML config cache.]]></argument>
-                    <argument name="error-message"><![CDATA[Flush XML config cache.]]></argument>
-                </arguments>
+                <data>
+                    <field name="error_title"><![CDATA[404 error: Not Found]]></field>
+                    <field name="error_message"><![CDATA[Seems, page you are looking for is not present.]]></field>
+                </data>
             </block>
         </referenceBlock>
     </body>

@@ -1,12 +1,16 @@
 <?xml version="1.0"?>
 <page>
     <head>
-        <script src="//www.google.com/recaptcha/apiv3.js"/>
+        <favicon>images/favicon.png</favicon>
+        <script src="lib/jquery.min.js"/>
+        <script src="lib/jquery-ui.min.js"/>
+        <script src="Awesome_Base::base.js"/>
+        <css src="Awesome_Base::base.css"/>
     </head>
     <body>
-        <block name="content" class="Awesome\Base\Block\Template" template="Awesome_Base::content.phtml">
+        <block name="content" class="Awesome\Base\Block\Template" template="Awesome_Base::html/page_wrapper.phtml">
             <block name="header" class="Awesome\Base\Block\Template" template="Awesome_Frontend::header.phtml" sortOrder="1"/>
-            <block name="footer" class="Awesome\Base\Block\Template" template="Awesome_Frontend::footer.phtml" sortOrder="9"/>
+            <block name="footer" class="Awesome\Base\Block\Template" template="Awesome_Frontend::footer.phtml" sortOrder="10"/>
         </block>
     </body>
 </page>

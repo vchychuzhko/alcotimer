@@ -2,6 +2,7 @@
 return [
     'support_email_address' => '',
     'web' => [
+        'pub_path' => '', // or 'pub/' for root
         'homepage' => 'timer',
         'merge' => [
             'js' => 0,
