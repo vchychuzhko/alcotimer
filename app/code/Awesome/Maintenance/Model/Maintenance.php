@@ -4,7 +4,7 @@ namespace Awesome\Maintenance\Model;
 
 class Maintenance
 {
-    public const MAINTENANCE_FILE = 'maintenance.flag';
+    public const MAINTENANCE_FILE = '/var/maintenance.flag';
     public const MAINTENANCE_PAGE_PATH = '/pub/pages/maintenance.html';
 
     /**
@@ -14,7 +14,7 @@ class Maintenance
      */
     public function enable($allowedIPs = [])
     {
-        file_put_contents(BP . '/' . self::MAINTENANCE_FILE, implode(',', $allowedIPs));
+        file_put_contents(BP . self::MAINTENANCE_FILE, implode(',', $allowedIPs));
 
         return $this;
     }
@@ -25,7 +25,7 @@ class Maintenance
      */
     public function disable()
     {
-        @unlink(BP . '/' . self::MAINTENANCE_FILE);
+        @unlink(BP . self::MAINTENANCE_FILE);
 
         return $this;
     }
@@ -37,11 +37,10 @@ class Maintenance
     public function getStatus()
     {
         $status = [
-            'enabled' => false,
-            'allowed_ips' => []
+            'enabled' => false
         ];
 
-        if (($allowedIPs = @file_get_contents(BP . '/' . self::MAINTENANCE_FILE)) !== false) {
+        if (($allowedIPs = @file_get_contents(BP . self::MAINTENANCE_FILE)) !== false) {
             $status['enabled'] = true;
 
             if ($allowedIPs = explode(',', $allowedIPs)) {
