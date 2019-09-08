@@ -1,9 +1,16 @@
 <?php /** General configuration file */
 return [
-    'app_mode' => 'production',
     'support_email_address' => '',
-    'routes' => [
-        '' => 'homepage.php'
+    'web' => [
+        'homepage' => 'timer',
+        'merge' => [
+            'js' => 0,
+            'css' => 0
+        ],
+        'minify' => [
+            'js' => 0,
+            'css' => 0
+        ]
     ],
     'timer_config' => [
         'difference' => 1,

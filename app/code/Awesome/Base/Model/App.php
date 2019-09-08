@@ -72,7 +72,7 @@ class App
             $uri = (string) strtok(trim($_SERVER['REQUEST_URI'], '/'), '?');
 
             if ($uri === '') {
-                $handle = $this->config['routes']['homepage'];
+                $handle = $this->config['web']['homepage'];
             } else {
                 $handle = str_replace('/', '_', $uri);
             }
