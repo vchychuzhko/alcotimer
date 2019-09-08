@@ -14,8 +14,8 @@ class Head extends \Awesome\Base\Block\Template
     {
         $scripts = $this->getData('scripts');
 
-        foreach ($scripts as $script) {
-            $script['src'] = $this->resolveAssetsPath($script['src'], 'js');
+        foreach ($scripts as $index => $script) {
+            $scripts[$index]['src'] = $this->resolveAssetsPath($script['src'], 'js');
         }
 
         return $scripts;
@@ -29,8 +29,8 @@ class Head extends \Awesome\Base\Block\Template
     {
         $styles = $this->getData('styles');
 
-        foreach ($styles as $style) {
-            $style['src'] = $this->resolveAssetsPath($style['src'], 'css');
+        foreach ($styles as $index => $style) {
+            $styles[$index]['src'] = $this->resolveAssetsPath($style['src'], 'css');
         }
 
         return $styles;
@@ -45,13 +45,11 @@ class Head extends \Awesome\Base\Block\Template
     private function resolveAssetsPath($path, $type)
     {
         @list($module, $file) = explode('::', $path);
-        $path = $module;
 
         if (isset($file)) {
-            //@TODO: Check this functionality for assets
-            $path = $this->view . '/' . $module . '/' . $type . '/' . $file;
+            $path = $module . '/' . $type . '/' . $file;
         }
 
-        return $path;
+        return $this->view . '/' . $path;
     }
 }

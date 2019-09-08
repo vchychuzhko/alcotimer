@@ -7,6 +7,11 @@ class Html extends \Awesome\Base\Block\Template
     protected $template = 'Awesome_Base::html.phtml';
 
     /**
+     * @var string $handle
+     */
+    protected $handle;
+
+    /**
      * @var array $structure
      */
     protected $structure;
@@ -32,8 +37,20 @@ class Html extends \Awesome\Base\Block\Template
     }
 
     /**
-     *
-     * @param $structure
+     * Set current page handle
+     * @param string $handle
+     * @return $this
+     */
+    public function setHandle($handle)
+    {
+        $this->handle = $handle;
+
+        return $this;
+    }
+
+    /**
+     * Set html page structure.
+     * @param array $structure
      * @return $this
      */
     public function setStructure($structure)
@@ -52,8 +69,9 @@ class Html extends \Awesome\Base\Block\Template
         $head = '';
 
         if ($headStructure = $this->structure['head']) {
-            $this->headTemplate->setData($headStructure);
-            $this->headTemplate->setPageData($this->handle, $this->view);
+            $this->headTemplate->setData($headStructure)
+                ->setView($this->view);
+
             $head = $this->headTemplate->toHtml();
         }
 
@@ -79,9 +97,10 @@ class Html extends \Awesome\Base\Block\Template
     {
         $body = '';
 
-        if ($bodyStructure = $this->structure['head']) {
-            $this->bodyTemplate->setData($bodyStructure);
-            $this->bodyTemplate->setPageData($this->handle, $this->view);
+        if ($bodyStructure = $this->structure['body']) {
+            $this->bodyTemplate->setStructure($bodyStructure)
+                ->setView($this->view);
+
             $body = $this->bodyTemplate->toHtml();
         };
 

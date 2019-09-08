@@ -47,8 +47,10 @@ class PageRenderer
             if ($this->handleExist($handle, $view)) {
                 $structure = $this->pageXmlParser->retrievePageStructure($handle, $view);
 
-                $this->htmlTemplate->setPageData($handle, $view);
-                $this->htmlTemplate->setStructure($structure);
+                $this->htmlTemplate->setView($view)
+                    ->setHandle($handle)
+                    ->setStructure($structure);
+
                 $pageContent = $this->htmlTemplate->toHtml();
                 $page['content'] = $pageContent;
 
@@ -65,7 +67,7 @@ class PageRenderer
      * @param string $view
      * @return bool
      */
-    public function handleExist($handle, $view )
+    public function handleExist($handle, $view)
     {
         $handle = $this->parseHandle($handle);
 

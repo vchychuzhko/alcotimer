@@ -47,8 +47,6 @@ class App
      */
     public function run()
     {
-        $this->logWriter->logVisitor();
-
         $handle = $this->resolveUrl();
         $response = $this->pageRenderer->render($handle, self::FRONTEND_VIEW);
 

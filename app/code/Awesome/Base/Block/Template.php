@@ -20,11 +20,6 @@ class Template
     protected $template;
 
     /**
-     * @var string $handle
-     */
-    protected $handle;
-
-    /**
      * @var string $view
      */
     protected $view;
@@ -55,14 +50,23 @@ class Template
     }
 
     /**
-     * Set needed page data.
-     * @param $handle
+     * Set template.
+     * @param string $template
+     * @return $this
+     */
+    public function setTemplate($template) {
+        $this->template = $template;
+
+        return $this;
+    }
+
+    /**
+     * Set current page view.
      * @param $view
      * @return $this
      */
-    public function setPageData($handle, $view)
+    public function setView($view)
     {
-        $this->handle = $handle;
         $this->view = $view;
 
         return $this;
@@ -89,7 +93,7 @@ class Template
             //@TODO: Resolve situation when frontend folder is missing, but deployed version is present
         }
 
-        return '/' . PUB_DIR . 'static/version' . $deployedVersion . '/' . $this->view . '/';
+        return '/' . PUB_DIR . 'static/version' . $deployedVersion . '/';
     }
 
     /**
