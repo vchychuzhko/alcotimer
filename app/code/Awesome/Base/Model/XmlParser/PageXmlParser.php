@@ -58,6 +58,9 @@ class PageXmlParser extends \Awesome\Base\Model\AbstractXmlParser
 
                 $pageStructure['head']['scripts'] = $this->collectedAssets['scripts'];
                 $pageStructure['head']['styles'] = $this->collectedAssets['styles'];
+                //@TODO: if merge or minify (get this value from StaticContent Class) change links
+
+                $pageStructure['body'] = $this->applySortOrder($pageStructure['body']);
 
                 $this->cache->save(self::PAGE_CACHE_KEY, $handle, $pageStructure);
             }
@@ -96,11 +99,9 @@ class PageXmlParser extends \Awesome\Base\Model\AbstractXmlParser
 
                         $collectedHandles[] = $collectedHandle;
                     }
-
-                    $collectedHandles = array_flip($collectedHandles);
                 }
 
-                $handles[$view] = array_flip($collectedHandles);
+                $handles[$view] = array_flip(array_flip($collectedHandles));
             }
 
             $this->cache->save(self::PAGE_CACHE_KEY, self::PAGE_CACHE_TAG, $handles);
@@ -180,9 +181,6 @@ class PageXmlParser extends \Awesome\Base\Model\AbstractXmlParser
                 $child = $this->parseBodyNode($child);
                 $childName = array_key_first($child);
 
-                $sortOrder = $child['sortOrder'] ?? 0;
-                //@TODO: implement sortOrder processing
-
                 if ($nodeName === 'data' || $childName === 'data') {
                     $parsedNode[$nodeName][$childName] = $child[$childName];
                 } else {
@@ -194,5 +192,31 @@ class PageXmlParser extends \Awesome\Base\Model\AbstractXmlParser
         }
 
         return $parsedNode;
+    }
+
+    /**
+     * Apply sort order rules for block children.
+     * @param array $blockStructure
+     * @return array
+     */
+    public function applySortOrder($blockStructure)
+    {
+        $children = $blockStructure['children'] ?? [];
+
+        if ($children) {
+            uasort(
+                $blockStructure['children'],
+                function ($a, $b)
+                {
+                    return ($a['sortOrder'] <=> $b['sortOrder']);
+                }
+            );
+
+            foreach ($children as $childName => $child) {
+                $blockStructure['children'][$childName] = $this->applySortOrder($child);
+            }
+        }
+
+        return $blockStructure;
     }
 }
