@@ -12,9 +12,9 @@ class Html extends \Awesome\Base\Block\Template
     protected $handle;
 
     /**
-     * @var array $structure
+     * @var string $head
      */
-    protected $structure;
+    protected $head;
 
     /**
      * @var \Awesome\Base\Block\Html\Head $headTemplate
@@ -43,13 +43,13 @@ class Html extends \Awesome\Base\Block\Template
     }
 
     /**
-     * Set html page structure.
-     * @param array $structure
+     * Set current page head data handle.
+     * @param string $head
      * @return $this
      */
-    public function setStructure($structure)
+    public function setHead($head)
     {
-        $this->structure = $structure;
+        $this->head = $head;
 
         return $this;
     }
@@ -62,7 +62,7 @@ class Html extends \Awesome\Base\Block\Template
     {
         $head = '';
 
-        if ($headStructure = $this->structure['head']) {
+        if ($headStructure = $this->head ?? []) {
             $this->headTemplate->setData($headStructure)
                 ->setView($this->view);
 
@@ -81,49 +81,5 @@ class Html extends \Awesome\Base\Block\Template
         $class = str_replace('-', '', $this->handle);
 
         return str_replace('_', '-', $class);
-    }
-
-    /**
-     * Create and render body part of the page.
-     * @return string
-     */
-    public function getBody()
-    {
-        $body = '';
-
-        if ($containers = $this->structure['body']['children']) {
-            foreach ($containers as $container) {
-                $body .= $this->getContent($container);
-            }
-        };
-
-        return $body;
-    }
-
-    /**
-     * Parse and render blocks recursively.
-     * @param array $block
-     * @return string
-     */
-    private function getContent($block)
-    {
-        $className = $block['class'];
-        $template = $block['template'];
-        $children = $block['children'] ?? [];
-        $data = $block['data'] ?? [];
-
-        /** @var \Awesome\Base\Block\Template $templateClass */
-        $templateClass = new $className();
-        $templateClass->setView($this->view)
-            ->setTemplate($template)
-            ->setData($data);
-
-        $content = $templateClass->toHtml();
-
-        foreach ($children as $childName => $child) {
-            $content .= $this->getContent($child);
-        }
-
-        return $content;
     }
 }

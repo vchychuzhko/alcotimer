@@ -34,6 +34,7 @@ class Cache
      */
     public function save($key, $tag, $data)
     {
+        //@TODO: implement enable/disable cache functionality
         $cache = $this->get($key);
         $cache[$tag] = $data;
 

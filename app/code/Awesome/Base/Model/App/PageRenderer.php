@@ -49,7 +49,8 @@ class PageRenderer
 
                 $this->htmlTemplate->setView($view)
                     ->setHandle($handle)
-                    ->setStructure($structure);
+                    ->setHead($structure['head'])
+                    ->setStructure($structure['body']);
 
                 $pageContent = $this->htmlTemplate->toHtml();
                 $page['content'] = $pageContent;

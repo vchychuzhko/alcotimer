@@ -27,7 +27,12 @@ class Template
     /**
      * @var array $data
      */
-    protected $data;
+    protected $data = [];
+
+    /**
+     * @var array $structure
+     */
+    protected $structure = [];
 
     /**
      * Template constructor.
@@ -36,6 +41,7 @@ class Template
     {
         $this->staticContent = new \Awesome\Cache\Model\StaticContent();
         $this->fallbackResolver = new \Awesome\Base\Model\FallbackResolver();
+        //@TODO: implement getConfig() function
     }
 
     /**
@@ -47,6 +53,51 @@ class Template
         include($this->resolveTemplatePath());
 
         return ob_get_clean();
+    }
+
+    /**
+     * Get and render child block.
+     * Return all of children if no block is specified.
+     * @param string $blockName
+     * @return string
+     */
+    public function getChildHtml($blockName = '')
+    {
+        $childHtml = '';
+
+        if ($blockName) {
+            if ($block = $this->structure[$blockName] ?? []) {
+                $childHtml .= $this->renderBlock($block);
+            }
+        } else {
+            foreach ($this->structure as $child) {
+                $childHtml .= $this->renderBlock($child);
+            }
+        }
+
+        return $childHtml;
+    }
+
+    /**
+     * Parse and render a block.
+     * @param array $block
+     * @return string
+     */
+    private function renderBlock($block)
+    {
+        $className = $block['class'];
+        $template = $block['template'];
+        $children = $block['children'] ?? [];
+        $data = $block['data'] ?? [];
+
+        /** @var \Awesome\Base\Block\Template $templateClass */
+        $templateClass = new $className();
+        $templateClass->setView($this->view)
+            ->setTemplate($template)
+            ->setStructure($children)
+            ->setData($data);
+
+        return $templateClass->toHtml();
     }
 
     /**
@@ -68,6 +119,17 @@ class Template
     public function setView($view)
     {
         $this->view = $view;
+
+        return $this;
+    }
+
+    /**
+     * Set children blocks structure.
+     * @param array $structure
+     * @return $this
+     */
+    public function setStructure($structure) {
+        $this->structure = $structure['children'] ?? $structure;
 
         return $this;
     }
@@ -113,7 +175,6 @@ class Template
 
         return APP_DIR . $path;
     }
-    //@TODO: implement getConfig() function
 
     /**
      * Template data getter.

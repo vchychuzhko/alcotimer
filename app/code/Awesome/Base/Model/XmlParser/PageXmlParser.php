@@ -90,7 +90,6 @@ class PageXmlParser extends \Awesome\Base\Model\AbstractXmlParser
                 $collectedHandles = [];
 
                 if ($foundHandles = glob($pattern)) {
-
                     foreach ($foundHandles as $collectedHandle) {
                         $collectedHandle = explode('/', $collectedHandle);
                         $collectedHandle = str_replace('.xml', '', end($collectedHandle));
@@ -124,7 +123,7 @@ class PageXmlParser extends \Awesome\Base\Model\AbstractXmlParser
             }
 
             if ($mainNode->getName() === 'body') {
-                $parsedNode = $this->parseBodyNode($mainNode);
+                $parsedNode['body'] = $this->parseBodyNode($mainNode)['body'];
             }
         }
 
@@ -160,7 +159,6 @@ class PageXmlParser extends \Awesome\Base\Model\AbstractXmlParser
      * @return array
      */
     public function parseBodyNode($xmlNode) {
-        //@TODO: implement sortOrder processing
         $parsedNode = [];
         $nodeName = $xmlNode->getName();
         $attributes = [];
@@ -181,6 +179,9 @@ class PageXmlParser extends \Awesome\Base\Model\AbstractXmlParser
             foreach ($children as $child) {
                 $child = $this->parseBodyNode($child);
                 $childName = array_key_first($child);
+
+                $sortOrder = $child['sortOrder'] ?? 0;
+                //@TODO: implement sortOrder processing
 
                 if ($nodeName === 'data' || $childName === 'data') {
                     $parsedNode[$nodeName][$childName] = $child[$childName];
