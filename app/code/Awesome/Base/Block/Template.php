@@ -2,17 +2,14 @@
 
 namespace Awesome\Base\Block;
 
+use Awesome\Base\Model\App;
+
 class Template
 {
     /**
      * @var \Awesome\Cache\Model\StaticContent $staticContent
      */
     protected $staticContent;
-
-    /**
-     * @var \Awesome\Base\Model\FallbackResolver $fallbackResolver
-     */
-    protected $fallbackResolver;
 
     /**
      * @var string $template
@@ -40,12 +37,11 @@ class Template
     public function __construct()
     {
         $this->staticContent = new \Awesome\Cache\Model\StaticContent();
-        $this->fallbackResolver = new \Awesome\Base\Model\FallbackResolver();
         //@TODO: implement getConfig() function
     }
 
     /**
-     * Render related template.
+     * Render block's template.
      * @return string
      */
     public function toHtml() {
@@ -57,7 +53,7 @@ class Template
 
     /**
      * Get and render child block.
-     * Return all of children if no block is specified.
+     * Return all children if no block is specified.
      * @param string $blockName
      * @return string
      */
@@ -170,7 +166,10 @@ class Template
         if (isset($file)) {
             $module = str_replace('_', '/', $module);
             $path = '/' . $module . '/view/' . $this->view . '/templates/' . $file;
-            $path = $this->fallbackResolver->resolve($path);
+
+            if (!file_exists(APP_DIR . $path)) {
+                $path = str_replace('/view/' . $this->view, '/view/' . App::BASE_VIEW, $path);
+            }
         }
 
         return APP_DIR . $path;
@@ -210,7 +209,7 @@ class Template
      */
     public function setData($key, $value = null)
     {
-        if ($key === (array)$key) {
+        if ($key === (array) $key) {
             $this->data = $key;
         } else {
             $this->data[$key] = $value;
@@ -221,6 +220,7 @@ class Template
 
     /**
      * Set/Get attribute wrapper.
+     * vendor/magento/framework/DataObject.php - L381
      *
      * @param string $method
      * @param array $args
@@ -239,7 +239,6 @@ class Template
                 $value = isset($args[0]) ? $args[0] : null;
 
                 return $this->setData($key, $value);
-                //vendor/magento/framework/DataObject.php - L381
         }
 
         throw new \Exception(
@@ -254,7 +253,7 @@ class Template
      * @param string $name
      * @return string
      */
-    protected function underscore($name)
+    private function underscore($name)
     {
         $result = strtolower(trim(preg_replace('/([A-Z]|[0-9]+)/', "_$1", $name), '_'));
 

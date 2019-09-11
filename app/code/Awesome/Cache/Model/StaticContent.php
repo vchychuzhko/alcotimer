@@ -133,7 +133,7 @@ class StaticContent
     {
         $version = @file_get_contents(BP . self::DEPLOYED_VERSION_FILE);
 
-        return (string)$version;
+        return (string) $version;
     }
 
     /**

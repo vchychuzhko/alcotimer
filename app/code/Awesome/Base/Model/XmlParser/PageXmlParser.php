@@ -147,7 +147,7 @@ class PageXmlParser extends \Awesome\Base\Model\AbstractXmlParser
             if (isset($this->assetMap[$childName])) {
                 $this->collectedAssets[$this->assetMap[$childName]][] = reset($child['src']);
             } else {
-                $parsedHeadNode[$childName] = trim((string)$child);
+                $parsedHeadNode[$childName] = trim((string) $child);
             }
         }
 

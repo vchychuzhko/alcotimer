@@ -2,7 +2,7 @@
 
 namespace Awesome\Base\Model;
 
-class AbstractXmlParser
+abstract class AbstractXmlParser
 {
     /**
      * @var \Awesome\Cache\Model\Cache $cache
@@ -24,10 +24,8 @@ class AbstractXmlParser
      */
     protected function stringBooleanCheck($value)
     {
-        if ($value === 'true' || $value === 'false') {
-            $value = $value === 'true';
-        }
-
-        return $value;
+        return ($value === 'true' || $value === 'false')
+            ? ($value === 'true')
+            : $value;
     }
 }

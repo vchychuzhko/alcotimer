@@ -4,14 +4,19 @@ return [
     'web' => [
         'pub_path' => '', // or 'pub/' for root
         'homepage' => 'timer',
-        'merge' => [
-            'js' => 0,
-            'css' => 0
+        'js' => [
+            'minify' => 0,
+            'merge' => 0
         ],
-        'minify' => [
-            'js' => 0,
-            'css' => 0
+        'css' => [
+            'minify' => 0,
+            'merge' => 0
         ]
+    ],
+    'cache' => [
+        'etc' => 1,
+        'layout' => 1,
+        'full-page' => 1
     ],
     'timer_config' => [
         'difference' => 1,
@@ -22,9 +27,5 @@ return [
         'min_value' => 1,
         'max_value' => 30,
         'show_loader' => 1
-    ],
-    'system_routes' => [
-        '403' => '403.php',
-        '404' => '404.php'
     ]
 ];
