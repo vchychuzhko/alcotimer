@@ -208,7 +208,15 @@ class PageXmlParser extends \Awesome\Base\Model\AbstractXmlParser
                 $blockStructure['children'],
                 function ($a, $b)
                 {
-                    return ($a['sortOrder'] <=> $b['sortOrder']);
+                    $a = $a['sortOrder'] ?? -1;
+                    $b = $b['sortOrder'] ?? -1;
+                    $compare = $a <=> $b;
+
+                    if ($a < 0 || $b < 0) {
+                        $compare = 0;
+                    }
+
+                    return $compare;
                 }
             );
 
