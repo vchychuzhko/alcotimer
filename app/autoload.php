@@ -5,6 +5,8 @@ if (PHP_MAJOR_VERSION < 7 && PHP_MINOR_VERSION < 1) {
     exit(1);
 }
 
+define('DS', DIRECTORY_SEPARATOR);
+define('BP', dirname(__DIR__));
 define('APP_DIR', BP . '/app/code');
 require_once('polyfill.php');
 

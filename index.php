@@ -1,11 +1,9 @@
 <?php
 
-define('DS', DIRECTORY_SEPARATOR);
-define('BP', __DIR__);
 define('PUB_DIR', 'pub/');
-require_once(BP . '/app/autoload.php');
+require_once(__DIR__ . '/app/autoload.php');
 
-//@TODO: implement error handle
+//@TODO: implement error handle including logging
 //function errorHandler($foo, $bar, $baz) // -- 4
 //{
 //    $foo = false;
