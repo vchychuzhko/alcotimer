@@ -93,6 +93,7 @@ class StaticContent
 
                     $content = file_get_contents($assetFile);
                     $content = $this->parsePubDirPath($content);
+                    //@TODO: insert minifying/merging here
 
                     file_put_contents($staticFolder . $folder . '/' . $file, $content);
                 }
@@ -180,9 +181,7 @@ class StaticContent
      */
     public function getDeployedVersion()
     {
-        $version = @file_get_contents(BP . self::DEPLOYED_VERSION_FILE);
-
-        return (string) $version;
+        return (string) @file_get_contents(BP . self::DEPLOYED_VERSION_FILE);
     }
 
     /**

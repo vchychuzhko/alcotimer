@@ -6,7 +6,7 @@ use \Awesome\Maintenance\Model\Maintenance;
 
 class App
 {
-    public const CONFIG_FILE_PATH = 'app/config.php';
+    public const CONFIG_FILE_PATH = 'app/etc/config.php';
     public const FRONTEND_VIEW = 'frontend';
     public const BACKEND_VIEW = 'adminhtml';
     public const BASE_VIEW = 'base';
