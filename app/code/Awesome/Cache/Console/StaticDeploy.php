@@ -24,6 +24,7 @@ class StaticDeploy extends \Awesome\Console\Model\AbstractCommand
     public function execute($args = [])
     {
         $this->staticContent->deploy();
+        //@TODO: implement view parameters
 
         return 'Static content was deployed.';
     }
