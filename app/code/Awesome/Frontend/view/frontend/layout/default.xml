@@ -2,10 +2,12 @@
 <page>
     <head>
         <favicon>images/favicon.png</favicon>
-        <script src="lib/jquery.min.js"/>
-        <script src="lib/jquery-ui.min.js"/>
-        <script src="Awesome_Base::base.js"/>
+        <script src="lib/jquery/jquery.min.js"/>
+        <script src="lib/jquery-ui/jquery-ui.min.js"/>
+        <script src="Awesome_Frontend::base.js"/>
         <css src="Awesome_Base::base.css"/>
+        <css src="Awesome_Frontend::header.css"/>
+        <css src="Awesome_Frontend::footer.css"/>
     </head>
     <body>
         <block name="content" class="Awesome\Base\Block\Template" template="Awesome_Base::html/page_wrapper.phtml">
