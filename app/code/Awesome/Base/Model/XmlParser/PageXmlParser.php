@@ -15,6 +15,7 @@ class PageXmlParser extends \Awesome\Base\Model\AbstractXmlParser
      * @var array $assetMap
      */
     private $assetMap = [
+        'lib' => 'libs',
         'script' => 'scripts',
         'css' => 'styles'
     ];
@@ -23,6 +24,7 @@ class PageXmlParser extends \Awesome\Base\Model\AbstractXmlParser
      * @var array $collectedAssets
      */
     private $collectedAssets = [
+        'libs' => [],
         'scripts' => [],
         'styles' => []
     ];
@@ -56,6 +58,7 @@ class PageXmlParser extends \Awesome\Base\Model\AbstractXmlParser
                     $pageStructure = array_merge_recursive($pageStructure, $parsedData);
                 }
 
+                $pageStructure['head']['libs'] = $this->collectedAssets['libs'];
                 $pageStructure['head']['scripts'] = $this->collectedAssets['scripts'];
                 $pageStructure['head']['styles'] = $this->collectedAssets['styles'];
                 //@TODO: if merge or minify (get this value from StaticContent Class) change links

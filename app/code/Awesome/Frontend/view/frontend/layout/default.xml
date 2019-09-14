@@ -2,15 +2,15 @@
 <page>
     <head>
         <favicon>images/favicon.png</favicon>
-        <script src="lib/jquery/jquery.min.js"/>
-        <script src="lib/jquery-ui/jquery-ui.min.js"/>
+        <lib src="lib/jquery/jquery.min.js"/>
+        <lib src="lib/jquery-ui/jquery-ui.min.js"/>
         <script src="Awesome_Frontend::base.js"/>
         <css src="Awesome_Base::base.css"/>
         <css src="Awesome_Frontend::header.css"/>
         <css src="Awesome_Frontend::footer.css"/>
     </head>
     <body>
-        <block name="content" class="Awesome\Base\Block\Template" template="Awesome_Base::html/page_wrapper.phtml">
+        <block name="page-wrapper" class="Awesome\Base\Block\Template" template="Awesome_Base::html/page_wrapper.phtml" sortOrder="5">
             <block name="header" class="Awesome\Base\Block\Template" template="Awesome_Frontend::header.phtml" sortOrder="1"/>
             <block name="footer" class="Awesome\Base\Block\Template" template="Awesome_Frontend::footer.phtml" sortOrder="10"/>
         </block>

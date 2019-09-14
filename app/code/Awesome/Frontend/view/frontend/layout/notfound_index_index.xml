@@ -5,7 +5,7 @@
         <css src="Awesome_Frontend::pages/errors.css"/>
     </head>
     <body>
-        <referenceBlock name="content">
+        <referenceBlock name="page-wrapper">
             <block name="notfound.content"
                    class="Awesome\Base\Block\Template"
                    template="Awesome_Frontend::pages/errors.phtml"

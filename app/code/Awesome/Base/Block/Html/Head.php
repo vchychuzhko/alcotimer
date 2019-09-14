@@ -7,7 +7,22 @@ class Head extends \Awesome\Base\Block\Template
     protected $template = 'Awesome_Base::html/head.phtml';
 
     /**
-     * Get scripts URLs resolving their path.
+     * Get js libs URLs, resolving their path.
+     * @return array
+     */
+    public function getLibs()
+    {
+        $libs = $this->getData('libs');
+
+        foreach ($libs as $index => $lib) {
+            $libs[$index] = $this->resolveAssetsPath($lib, 'js');
+        }
+
+        return $libs;
+    }
+
+    /**
+     * Get scripts URLs, resolving their path.
      * @return array
      */
     public function getScripts()
@@ -22,7 +37,7 @@ class Head extends \Awesome\Base\Block\Template
     }
 
     /**
-     * Get styles URLs resolving their path.
+     * Get styles URLs, resolving their path.
      * @return array
      */
     public function getStyles()
