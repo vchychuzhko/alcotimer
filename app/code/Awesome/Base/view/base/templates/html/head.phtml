@@ -3,7 +3,9 @@
 <?php $staticUrl = $this->getStaticUrl(); ?>
 <meta charset="UTF-8">
 <title><?= $this->getTitle(); ?></title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="<?= $this->getDescription(); ?>"/>
+<meta name="keywords" content="<?= $this->getKeywords(); ?>"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
 <link rel="shortcut icon" type="image/png" href="<?= $mediaUrl . $this->getFavicon(); ?>"/>
 <?php foreach($this->getLibs() as $lib): ?>
     <script src="<?= $staticUrl . $lib; ?>"></script>

@@ -6,12 +6,17 @@
         <lib src="lib/jquery-ui/jquery-ui.min.js"/>
         <script src="Awesome_Frontend::base.js"/>
         <css src="Awesome_Base::base.css"/>
+        <css src="Awesome_Frontend::menu/menu.css"/>
+        <css src="Awesome_Frontend::widget/message.css"/>
         <css src="Awesome_Frontend::header.css"/>
         <css src="Awesome_Frontend::footer.css"/>
     </head>
     <body>
+        <block name="menu" class="Awesome\Frontend\Block\Menu" template="Awesome_Frontend::menu/menu.phtml" sortOrder="1"/>
         <block name="page-wrapper" class="Awesome\Base\Block\Template" template="Awesome_Base::html/page_wrapper.phtml" sortOrder="5">
-            <block name="header" class="Awesome\Base\Block\Template" template="Awesome_Frontend::header.phtml" sortOrder="1"/>
+            <block name="header" class="Awesome\Base\Block\Template" template="Awesome_Frontend::header.phtml" sortOrder="1">
+                <block name="menu-toggler" class="Awesome\Base\Block\Template" template="Awesome_Frontend::menu/menu_toggler.phtml"/>
+            </block>
             <block name="footer" class="Awesome\Base\Block\Template" template="Awesome_Frontend::footer.phtml" sortOrder="10"/>
         </block>
     </body>

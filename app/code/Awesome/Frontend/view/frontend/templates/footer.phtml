@@ -2,3 +2,47 @@
 <footer>
     <p>&copy; 2019 AwesomeTeam. All rights reserved</p>
 </footer>
+<div class="hint" style="display: none;">
+    <div class="hint-content" style="position: absolute;
+            z-index: 21;
+            width: 50%;
+            background: white;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            min-width: 250px;
+            padding: 20px 10px;">
+        <h2 style="text-align: center;">Small info for newcomers!</h2>
+        <p style="margin: 20px 0;">When the time is over, you have to drink!</p>
+        <p style="margin: 20px 0;">Big red button in the center will start or stop the timer. Circular slider around it will help you to set up the time. And "Random" button.. will give you a random time!</p>
+        <p style="margin: 20px 0;">Time interval can be configured in the menu, in the left-top corner of the screen.</p>
+        <button type="button" style="font-weight: 600;
+                color: red;
+                cursor: pointer;
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                border: 1px solid black;
+                background-color: white;
+                position: absolute;
+                top: -15px;
+                right: -15px;" title="Close" onclick="hideX()">X</button>
+        <button type="button" style="display: block;
+                cursor: pointer;
+                margin: auto;
+                padding: 10px 20px;
+                border-radius: 20px;
+                border: 1px solid black;
+                background-color: white;" onclick="hideX()">Got it!</button>
+    </div>
+    <div class="overlay" style="
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            z-index: 20;
+            opacity: 0.6;">
+    </div>
+</div>

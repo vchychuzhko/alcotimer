@@ -18,6 +18,7 @@ class Config
     public function __construct()
     {
         $this->config = $this->loadConfig();
+        //@TODO: add setConfig() functionality
     }
 
     /**

@@ -1,0 +1,29 @@
+<?php /** @var \Awesome\Frontend\Block\Menu $this */ ?>
+<?php $supportEmailAddress = $this->getSupportEmailAddress(); ?>
+<div class="menu">
+    <div class="menu-list">
+        <div class="title">
+            <h2>AlcoMenu</h2>
+            <p style="text-align: right;font-size: 14px;">0.2.0 open beta</p>
+            <!-- @TODO: temporary public versing -->
+        </div>
+        <?= $this->getChildHtml('settings'); ?>
+        <div class="contact-us">
+            <p>Face any bug or have new ideas?</p>
+            <p>Send us an email:
+                <a href="mailto:<?= $supportEmailAddress; ?>?subject = AlcoTimer" class="mail-address word-break copy-on-click">
+                    <?= $supportEmailAddress; ?>
+                </a>
+            </p>
+        </div>
+        <div style="text-align: center">
+            <button type="button" style="cursor: pointer;
+                margin: 10px 0 20px;
+                padding: 10px 20px;
+                border-radius: 20px;
+                border: 1px solid black;
+                background-color: white;" onclick="showX()">Show hint</button>
+            <!-- @TODO: temporary hint button -->
+        </div>
+    </div>
+</div>
