@@ -12,6 +12,11 @@ class Template
     protected $staticContent;
 
     /**
+     * @var \Awesome\Base\Model\Config $config
+     */
+    protected $config;
+
+    /**
      * @var string $template
      */
     protected $template;
@@ -37,7 +42,7 @@ class Template
     public function __construct()
     {
         $this->staticContent = new \Awesome\Cache\Model\StaticContent();
-        //@TODO: implement getConfig() function
+        $this->config = new \Awesome\Base\Model\Config();
     }
 
     /**

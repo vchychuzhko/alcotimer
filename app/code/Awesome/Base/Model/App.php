@@ -6,7 +6,6 @@ use \Awesome\Maintenance\Model\Maintenance;
 
 class App
 {
-    public const CONFIG_FILE_PATH = 'app/etc/config.php';
     public const FRONTEND_VIEW = 'frontend';
     public const BACKEND_VIEW = 'adminhtml';
     public const BASE_VIEW = 'base';
@@ -22,7 +21,7 @@ class App
     private $maintenance;
 
     /**
-     * @var array $config
+     * @var \Awesome\Base\Model\Config $config
      */
     private $config;
 
@@ -39,7 +38,7 @@ class App
         $this->logWriter = new \Awesome\Logger\Model\LogWriter();
         $this->maintenance = new Maintenance();
         $this->pageRenderer = new \Awesome\Base\Model\App\PageRenderer();
-        $this->config = $this->loadConfig();
+        $this->config = new \Awesome\Base\Model\Config();
     }
 
     /**
@@ -50,7 +49,7 @@ class App
         $handle = $this->resolveUrl();
         $response = $this->pageRenderer->render($handle, self::FRONTEND_VIEW);
 
-        if ($this->isMaintenance() || !$this->config || !$response) {
+        if ($this->isMaintenance() || !$response) {
             $response = file_get_contents(BP . Maintenance::MAINTENANCE_PAGE_PATH);
         }
 
@@ -72,7 +71,7 @@ class App
             $uri = (string) strtok(trim($_SERVER['REQUEST_URI'], '/'), '?');
 
             if ($uri === '') {
-                $handle = $this->config['web']['homepage'];
+                $handle = $this->config->getConfig('web/homepage');
             } else {
                 $handle = str_replace('/', '_', $uri);
             }
@@ -87,17 +86,6 @@ class App
     }
 
     /**
-     * Include configuration file.
-     * @return array
-     */
-    public function loadConfig()
-    {
-        $config = @include(BP . '/' . self::CONFIG_FILE_PATH);
-
-        return $config ?: [];
-    }
-
-    /**
      * Check if maintenance mode is active.
      * @return bool
      */
@@ -106,23 +94,5 @@ class App
         $ip = $_SERVER['REMOTE_ADDR'];
 
         return $this->maintenance->isMaintenanceForIp($ip);
-    }
-
-    /**
-     * Get site support email address.
-     * @return string
-     */
-    public function getSupportEmailAddress()
-    {
-        return $this->config['support_email_address'] ?? '';
-    }
-
-    /**
-     * Get timer configurations.
-     * @return array
-     */
-    public function getTimerConfigurations()
-    {
-        return $this->config['timer_config'];
     }
 }

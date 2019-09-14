@@ -2,7 +2,7 @@
 return [
     'support_email_address' => '',
     'web' => [
-        'pub_path' => '', // or 'pub/' for root
+        'pub_path' => '', // '' or 'pub/' for root
         'homepage' => 'timer',
         'js' => [
             'minify' => 0,
