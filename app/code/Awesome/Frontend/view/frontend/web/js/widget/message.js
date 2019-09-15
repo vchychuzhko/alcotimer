@@ -1,56 +1,17 @@
 ;(function ($) {
-    $.widget('awesome.base', {
-        options: {
-            menuSelector: '.menu',
-            copyTextSelector: '.copy-on-click'
-        },
-
+    $.widget('awesome.message', {
         /**
          * Constructor
          */
         _create: function () {
             this.initBindings();
-            $('body').on('base.showMessage', this.showMessage.bind(this));
         },
 
         /**
          * Init event listeners
          */
         initBindings: function () {
-            let $menu = $(this.options.menuSelector);
-
-            $('header').on('click', '.toggle-container', function () {
-                $menu.toggleClass('active');
-            }.bind(this));
-
-            $('.menu-mobile-overlay').on('click', function () {
-                $('.toggle-container').trigger('click');
-            }.bind(this));
-
-            $menu.on('close-menu', function () {
-                $menu.removeClass('active');
-            }.bind(this));
-
-            $(this.options.copyTextSelector).on('click', this.copyText.bind(this));
-        },
-
-        /**
-         * Copy text to the clipboard
-         * @param {object} event
-         */
-        copyText: function (event) {
-            event.preventDefault();
-            let $temp = $('<input>'),
-                $body = $('body');
-
-            $body.append($temp);
-            $temp.val($(event.target).text()).select();
-            document.execCommand('copy');
-            $temp.remove();
-
-            $body.trigger('base.showMessage', {
-                message: 'Copied to the clipboard!'
-            });
+            $('body').on('message.showMessage', this.showMessage.bind(this));
         },
 
         /**

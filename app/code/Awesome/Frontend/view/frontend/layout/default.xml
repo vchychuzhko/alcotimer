@@ -4,7 +4,9 @@
         <favicon>images/favicon.png</favicon>
         <lib src="lib/jquery/jquery.min.js"/>
         <lib src="lib/jquery-ui/jquery-ui.min.js"/>
-        <script src="Awesome_Frontend::base.js"/>
+        <script src="Awesome_Base::base.js"/>
+        <script src="Awesome_Frontend::menu/menu.js"/>
+        <script src="Awesome_Frontend::widget/message.js"/>
         <css src="Awesome_Base::base.css"/>
         <css src="Awesome_Frontend::menu/menu.css"/>
         <css src="Awesome_Frontend::widget/message.css"/>

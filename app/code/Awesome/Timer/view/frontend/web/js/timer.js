@@ -203,7 +203,7 @@
                         $blink.hide(200);
                         $blink.remove();
 
-                        $body.trigger('base.showMessage', {
+                        $body.trigger('message.showMessage', {
                             message: 'Time to drink, dude!',
                             duration: 5000,
                         });

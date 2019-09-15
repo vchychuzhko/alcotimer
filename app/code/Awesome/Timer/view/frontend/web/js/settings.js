@@ -22,18 +22,18 @@
         initBindings: function () {
             $(this.element).on('click', '.apply-button', function () {
                 this.applySettings();
-                $('body').trigger('base.showMessage', {
+                $('body').trigger('message.showMessage', {
                     message: 'Settings were applied!'
                 });
 
                 setTimeout(function () {
-                    $('.menu').trigger('close-menu');
+                    $('.menu').trigger('menu.closeMenu');
                 }, 200);
             }.bind(this));
 
             $(this.element).on('click', '.reset-button', function () {
                 this.resetSettings();
-                $('body').trigger('base.showMessage', {
+                $('body').trigger('message.showMessage', {
                     message: 'Settings were reset to default ones.'
                 });
             }.bind(this));
