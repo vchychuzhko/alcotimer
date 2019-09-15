@@ -19,13 +19,19 @@ return [
         'full-page' => 1
     ],
     'timer_config' => [
-        'difference' => 1,
-        'default_min_value' => 5,
-        'default_max_value' => 20,
-        'default_time' => 9,
-        'hide_random_time' => 1,
-        'min_value' => 1,
-        'max_value' => 30,
-        'show_loader' => 1
+        'timer' => [
+            'default_time' => 9
+        ],
+        'settings' => [
+            'default_min_value' => 5,
+            'default_max_value' => 20,
+            'hide_random_time' => 1,
+            'show_loader' => 1
+        ],
+        'random_range' => [
+            'difference' => 1,
+            'min_value' => 1,
+            'max_value' => 30,
+        ]
     ]
 ];

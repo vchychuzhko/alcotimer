@@ -252,16 +252,26 @@ class Template
     }
 
     /**
-     * Converts field names for setters and getters.
-     * $this->setMyField($value) === $this->setData('my_field', $value)
+     * Converts camelCase to snake_case for setters and getters.
+     * $this->getMyField() === $this->getData('my_field')
      *
-     * @param string $name
+     * @param string $string
      * @return string
      */
-    private function underscore($name)
+    protected function underscore($string)
     {
-        $result = strtolower(trim(preg_replace('/([A-Z]|[0-9]+)/', "_$1", $name), '_'));
+        return strtolower(trim(preg_replace('/([A-Z]|[0-9]+)/', "_$1", $string), '_'));
+    }
 
-        return $result;
+    /**
+     * Converts snake_case to camelCase for js widget configurations.
+     *
+     * @param $string
+     * @param string $separator
+     * @return string
+     */
+    protected function camelCase($string, $separator = '_')
+    {
+        return str_replace($separator, '', lcfirst(ucwords($string, $separator)));
     }
 }
