@@ -5,6 +5,7 @@ namespace Awesome\Logger\Model;
 class LogWriter
 {
     private const EXCEPTION_LOG_FILE = 'var/log/exception.log';
+    private const VISITOR_LOG_FILE = 'var/log/visitor.log';
     private const CURRENT_TIMEZONE = 'Europe/Kiev';
     private const TIME_FORMAT = 'Y-m-d H:i:s';
 
@@ -19,6 +20,23 @@ class LogWriter
         file_put_contents(
             BP . '/' . self::EXCEPTION_LOG_FILE,
             ($content ? "$content\n" : '') . $this->getCurrentTime() . ' - ' . $string
+        );
+
+        return $this;
+    }
+
+    /**
+     *
+     * @return $this
+     */
+    public function logVisitor()
+    {
+        $content = (string) @file_get_contents(BP . '/' . self::VISITOR_LOG_FILE);
+        file_put_contents(
+            BP . '/' . self::VISITOR_LOG_FILE,
+            ($content ? "$content\n" : '')
+                . $this->getCurrentTime() . ' - '
+                . $_SERVER['REMOTE_ADDR'] . ' - http://alcotimer.xyz' . $_SERVER['REQUEST_URI']
         );
 
         return $this;
