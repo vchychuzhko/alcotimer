@@ -2,8 +2,8 @@
     $.widget('awesome.settings', {
         options: {
             hideRandomTime: false,
-            minDefaultValue: 5,
-            maxDefaultValue: 20,
+            defaultMinValue: 5,
+            defaultMaxValue: 20,
             showLoader: true
         },
 
@@ -73,9 +73,9 @@
                 $hideRandomTimeInput = $(this.element).find('.hide-random-time'),
                 $showLoaderInput = $(this.element).find('.show-loader');
 
-            $minTimeInput.val(this.options.minDefaultValue);
+            $minTimeInput.val(this.options.defaultMinValue);
             $minTimeInput.trigger('change');
-            $maxTimeInput.val(this.options.maxDefaultValue);
+            $maxTimeInput.val(this.options.defaultMaxValue);
             $maxTimeInput.trigger('change');
             $hideRandomTimeInput.prop('checked' , this.options.hideRandomTime);
             $showLoaderInput.prop('checked' , this.options.showLoader);
@@ -93,8 +93,8 @@
                 $hideRandomTimeInput = $(this.element).find('.hide-random-time'),
                 $showLoaderInput = $(this.element).find('.show-loader');
 
-            this.options.minDefaultValue = parseInt($minTimeInput.val());
-            this.options.maxDefaultValue = parseInt($maxTimeInput.val());
+            this.options.defaultMinValue = parseInt($minTimeInput.val());
+            this.options.defaultMaxValue = parseInt($maxTimeInput.val());
             this.options.hideRandomTime = $hideRandomTimeInput.prop('checked');
             this.options.showLoader = $showLoaderInput.prop('checked');
 
@@ -110,8 +110,8 @@
          */
         saveSettings: function () {
             localStorage.settings = JSON.stringify({
-                'minTime': this.options.minDefaultValue,
-                'maxTime': this.options.maxDefaultValue,
+                'minTime': this.options.defaultMinValue,
+                'maxTime': this.options.defaultMaxValue,
                 'hideRandomTime': this.options.hideRandomTime,
                 'showLoader': this.options.showLoader
             });

@@ -47,8 +47,8 @@ class Timer extends \Awesome\Base\Block\Template
     private  function processConfig($config)
     {
         foreach ($config as $configKey => $configValue) {
-            $settings[$this->camelCase($configKey)] = $configValue;
-            unset($settings[$configKey]);
+            unset($config[$configKey]);
+            $config[$this->camelCase($configKey)] = $configValue;
         }
 
         return json_encode($config);
