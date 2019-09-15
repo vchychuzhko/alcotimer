@@ -24,9 +24,6 @@ $timerConfigurations = $this->getTimerConfigurations();
 </head>
 <body class="homepage">
     <div class="menu">
-        <div class="toggle-container">
-            <button class="toggle" type="button" name="Menu toggler" value="Toggle Menu"></button>
-        </div>
         <div class="menu-list">
             <?php include('template/settings.html'); ?>
             <div class="contact-us">

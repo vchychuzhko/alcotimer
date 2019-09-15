@@ -1,0 +1,26 @@
+.radial-container .radial-slider {
+    border: 14px solid #9b59b6; /*#acb659*/
+    background: transparent;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    box-sizing: border-box;
+    height: 100%;
+    position: absolute;
+    width: 100%;
+}
+
+.radial-container .radial-slider .radial-controller {
+    background-color: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #000;
+    content: "";
+    cursor: pointer;
+    height: 30px;
+    left: 50%;
+    position: absolute;
+    top: -7px; /*slider border width divided by 2*/
+    touch-action: none; /*prevent scrolling on touchmove*/
+    transform: translate(-50%, -50%);
+    width: 30px;
+    z-index: 4;
+}

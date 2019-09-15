@@ -5,7 +5,7 @@ namespace Awesome\Console\Console;
 class ShowHelp extends \Awesome\Console\Model\AbstractCommand
 {
     /**
-     * @var \Awesome\Base\Model\XmlParser $xmlParser
+     * @var \Awesome\Console\Model\XmlParser\CliXmlParser $xmlParser
      */
     private $xmlParser;
 
@@ -14,7 +14,7 @@ class ShowHelp extends \Awesome\Console\Model\AbstractCommand
      */
     public function __construct()
     {
-        $this->xmlParser = new \Awesome\Base\Model\XmlParser();
+        $this->xmlParser = new \Awesome\Console\Model\XmlParser\CliXmlParser();
     }
 
     /**
@@ -26,7 +26,6 @@ class ShowHelp extends \Awesome\Console\Model\AbstractCommand
         $output = "---- AlcoTimer CLI ----\n";
 
         if ($commandList = $this->xmlParser->retrieveConsoleCommands()) {
-            //@TODO: update reading functionality
             $output .= 'Here is the list of available commands:';
 
             foreach ($commandList as $namespace => $commands) {
@@ -37,9 +36,11 @@ class ShowHelp extends \Awesome\Console\Model\AbstractCommand
                         ) . ' | ' . $command['description'];
 
                     foreach ($optionList as $option) {
+                        $required = $option['required'] ? '' : ' (optional)';
+
                         $output .= "\n" . $option['mask'] . ' - '
-                            . $option['description'] ?? ''
-                            . ($option['required'] ? '' : ' (optional)');
+                            . ($option['description'] ?? '')
+                            . $required;
                     }
                 }
             }

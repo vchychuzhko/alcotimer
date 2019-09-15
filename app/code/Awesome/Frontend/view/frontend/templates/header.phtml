@@ -1,0 +1,8 @@
+<?php /** @var \Awesome\Base\Block\Template $this */ ?>
+<?php $mediaUrl = $this->getMediaUrl(); ?>
+<header>
+    <?= $this->getChildHtml(''); ?>
+    <div class="logo-container">
+        <img src="<?= $mediaUrl; ?>images/logo.png" alt="AlcoTimer logo" class="no-select"/>
+    </div>
+</header>

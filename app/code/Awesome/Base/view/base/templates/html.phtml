@@ -1,0 +1,15 @@
+<?php /** @var \Awesome\Base\Block\Html $this */ ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <?= $this->getHead(); ?>
+</head>
+<body class="<?= $this->getBodyClass(); ?>">
+    <?= $this->getChildHtml(); ?>
+    <script type="application/javascript">
+        jQuery(function () {
+            $('body').base({});
+        });
+    </script>
+</body>
+</html>

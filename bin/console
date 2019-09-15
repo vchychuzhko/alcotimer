@@ -6,9 +6,7 @@ if (PHP_SAPI !== 'cli') {
     exit(1);
 }
 
-define('DS', DIRECTORY_SEPARATOR);
-define('BP', dirname(__DIR__));
-require_once(BP . '/app/autoload.php');
+require_once(__DIR__ . '/../app/autoload.php');
 
 try {
     $console = new \Awesome\Console\Model\Console();

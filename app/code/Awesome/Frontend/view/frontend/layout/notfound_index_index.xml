@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<page>
+    <head>
+        <title><![CDATA[Not Found]]></title>
+        <css src="Awesome_Frontend::pages/errors.css"/>
+    </head>
+    <body>
+        <referenceBlock name="page-wrapper">
+            <block name="notfound.content"
+                   class="Awesome\Base\Block\Template"
+                   template="Awesome_Frontend::pages/errors.phtml"
+                   sortOrder="5"
+            >
+                <data>
+                    <field name="error_title"><![CDATA[404 error: Not Found]]></field>
+                    <field name="error_message"><![CDATA[Seems, page you are looking for is not present.]]></field>
+                </data>
+            </block>
+        </referenceBlock>
+    </body>
+</page>

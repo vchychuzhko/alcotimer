@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<page>
+    <head>
+        <title><![CDATA[Forbidden]]></title>
+        <css src="Awesome_Frontend::pages/errors.css"/>
+    </head>
+    <body>
+        <referenceBlock name="page-wrapper">
+            <block name="forbidden.content"
+                   class="Awesome\Base\Block\Template"
+                   template="Awesome_Frontend::pages/errors.phtml"
+                   sortOrder="5"
+            >
+                <data>
+                    <field name="error_title"><![CDATA[403 error: Forbidden]]></field>
+                    <field name="error_message"><![CDATA[The page you are trying to access is not available for you.]]></field>
+                </data>
+            </block>
+        </referenceBlock>
+    </body>
+</page>
