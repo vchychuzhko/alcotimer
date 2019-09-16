@@ -191,36 +191,11 @@
             this.setTime(this.currentTime);
             this.stop();
 
-            let audio = new Audio('{@pubDir}/media/audio/alert_sound.mp3'),
-                playPromise = audio.play();
+            let sound = new Howl({
+                src: ['{@pubDir}/media/audio/alert_sound.mp3']
+            });
 
-            if (playPromise !== undefined) {
-                playPromise.catch(function () {
-                    let $body = $('body'),
-                        $blink = $('<div></div>').css({
-                            'background-color': '#fff',
-                            'height': '100%',
-                            'left': '0',
-                            'position': 'fixed',
-                            'top': '0',
-                            'width': '100%',
-                            'z-index': '51'
-                        });
-
-                    $body.append($blink);
-
-                    setTimeout(function () {
-                        $blink.hide(200);
-                        $blink.remove();
-
-                        $body.trigger('message.showMessage', {
-                            message: 'Time to drink, dude!',
-                            duration: 5000,
-                        });
-                    }.bind(this), 400);
-                    //@TODO: Play is forbidden by the browser, should be handled in some way. No workaround has an effect.
-                });
-            }
+            sound.play();
         },
 
         /**

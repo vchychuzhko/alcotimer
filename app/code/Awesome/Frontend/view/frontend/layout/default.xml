@@ -3,7 +3,8 @@
     <head>
         <favicon>images/favicon.png</favicon>
         <lib src="lib/jquery/jquery.min.js"/>
-        <lib src="lib/jquery-ui/jquery-ui.min.js"/>
+        <lib src="lib/jquery/jquery-ui.min.js"/>
+        <lib src="lib/goldfire/howler.min.js"/>
         <script src="Awesome_Base::base.js"/>
         <css src="Awesome_Base::base.css"/>
         <css src="Awesome_Frontend::header.css"/>
