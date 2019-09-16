@@ -29,6 +29,7 @@
                 $message = $('<p class="message">' + message + '</p>'),
                 $container =  $('<span class="message-container' + (isError ? ' error' : '') + '"></span>')
                     .append($message);
+            //@TODO: rework to ready structure with only adding message (knockout?)
 
             $('body').append($container);
 

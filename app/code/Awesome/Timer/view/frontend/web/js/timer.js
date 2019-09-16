@@ -5,7 +5,7 @@
     $.widget('awesome.timer', {
         options: {
             defaultTime: 9,
-            valueContainer: '.radial-percentage-value'
+            radialContainerSelector: '.radial-container'
         },
 
         /**
@@ -23,12 +23,18 @@
         initBindings: function () {
             $(this.element).on('click', '.timer-button', this.toggleTimer.bind(this));
             $(this.element).on('click', '.random-button', this.setRandom.bind(this));
-            $(this.element).on('timer.updateSettings', function () {
+
+            $(this.element).on('timer.updateSettings', function (event, data) {
                 this.pause();
-                this.loadSettings();
-                this.updateTimer();
+                this.applySettings(data.settings);
+                this.setTime(this.enteredTime);
             }.bind(this));
-            $(this.element).on('timer.percentageUpdate', this.options.valueContainer, this.updateTimer.bind(this));
+
+            $(this.element).on(
+                'radial-slider.percentageUpdate',
+                this.options.radialContainerSelector,
+                this.updateTimer.bind(this)
+            );
         },
 
         /**
@@ -36,7 +42,8 @@
          */
         initTimer: function () {
             this.state = STOPPED_STATE;
-            this.loadSettings();
+
+            this.applySettings();
             this.loadTimerStateData();
 
             if (this.state === RUNNING_STATE) {
@@ -56,9 +63,12 @@
 
         /**
          * Retrieve and update settings from the menu
+         * @param {object} settings
          */
-        loadSettings: function () {
-            let settings = JSON.parse(localStorage.getItem('settings'));
+        applySettings: function (settings  = {}) {
+            if ($.isEmptyObject(settings)) {
+                settings = JSON.parse(localStorage.getItem('settings'));
+            }
 
             this.minTime = settings.minTime * 60;
             this.maxTime = settings.maxTime * 60;
@@ -276,11 +286,13 @@
 
         /**
          * Update timer according to slider value
+         * @param {object} event
+         * @param {object} data
+         * @property {number} data.percentage
          */
-        updateTimer: function() {
+        updateTimer: function(event, data) {
             this.stop(false);
-            let $valueContainer = $(this.element).find(this.options.valueContainer),
-                timeInSeconds = this.percentageToSeconds(parseFloat($valueContainer.text()));
+            let timeInSeconds = this.percentageToSeconds(data.percentage);
 
             this.enteredTime = timeInSeconds;
             this.currentTime = null;
@@ -295,10 +307,11 @@
          * @param {number} timeInSeconds
          */
         updateSlider: function(timeInSeconds) {
-            let $valueContainer = $(this.element).find(this.options.valueContainer);
+            let $slider = $(this.element).find(this.options.radialContainerSelector);
 
-            $valueContainer.text(this.secondsToPercentage(timeInSeconds));
-            $valueContainer.trigger('radial-slider.timeUpdate');
+            $slider.trigger('radial-slider.percentageSet', {
+                percentage: this.secondsToPercentage(timeInSeconds)
+            });
         }
     });
 })(jQuery);

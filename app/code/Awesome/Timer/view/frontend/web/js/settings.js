@@ -22,6 +22,7 @@
         initBindings: function () {
             $(this.element).on('click', '.apply-button', function () {
                 this.applySettings();
+                this.saveSettings();
                 $('body').trigger('message.showMessage', {
                     message: 'Settings were applied!'
                 });
@@ -61,7 +62,7 @@
                 this.resetSettings();
             }
 
-            this.applySettings(false);
+            this.applySettings();
         },
 
         /**
@@ -85,9 +86,8 @@
 
         /**
          * Apply settings by entered values
-         * @param {boolean} save
          */
-        applySettings: function (save = true) {
+        applySettings: function () {
             let $minTimeInput = $(this.element).find('.min-value.time'),
                 $maxTimeInput = $(this.element).find('.max-value.time'),
                 $hideRandomTimeInput = $(this.element).find('.hide-random-time'),
@@ -98,11 +98,14 @@
             this.options.hideRandomTime = $hideRandomTimeInput.prop('checked');
             this.options.showLoader = $showLoaderInput.prop('checked');
 
-            if (save) {
-                this.saveSettings();
-            }
-
-            $('.timer-container').trigger('timer.updateSettings');
+            $('.timer-container').trigger('timer.updateSettings', {
+                'settings': {
+                    'minTime': this.options.defaultMinValue,
+                    'maxTime': this.options.defaultMaxValue,
+                    'hideRandomTime': this.options.hideRandomTime,
+                    'showLoader': this.options.showLoader
+                }
+            });
         },
 
         /**
