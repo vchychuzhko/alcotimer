@@ -2,8 +2,8 @@
     $.widget('awesome.settings', {
         options: {
             hideRandomTime: false,
-            minDefaultValue: 5,
-            maxDefaultValue: 20,
+            defaultMinValue: 5,
+            defaultMaxValue: 20,
             showLoader: true
         },
 
@@ -22,6 +22,7 @@
         initBindings: function () {
             $(this.element).on('click', '.apply-button', function () {
                 this.applySettings();
+                this.saveSettings();
                 $('body').trigger('message.showMessage', {
                     message: 'Settings were applied!'
                 });
@@ -61,7 +62,7 @@
                 this.resetSettings();
             }
 
-            this.applySettings(false);
+            this.applySettings();
         },
 
         /**
@@ -73,9 +74,9 @@
                 $hideRandomTimeInput = $(this.element).find('.hide-random-time'),
                 $showLoaderInput = $(this.element).find('.show-loader');
 
-            $minTimeInput.val(this.options.minDefaultValue);
+            $minTimeInput.val(this.options.defaultMinValue);
             $minTimeInput.trigger('change');
-            $maxTimeInput.val(this.options.maxDefaultValue);
+            $maxTimeInput.val(this.options.defaultMaxValue);
             $maxTimeInput.trigger('change');
             $hideRandomTimeInput.prop('checked' , this.options.hideRandomTime);
             $showLoaderInput.prop('checked' , this.options.showLoader);
@@ -85,24 +86,26 @@
 
         /**
          * Apply settings by entered values
-         * @param {boolean} save
          */
-        applySettings: function (save = true) {
+        applySettings: function () {
             let $minTimeInput = $(this.element).find('.min-value.time'),
                 $maxTimeInput = $(this.element).find('.max-value.time'),
                 $hideRandomTimeInput = $(this.element).find('.hide-random-time'),
                 $showLoaderInput = $(this.element).find('.show-loader');
 
-            this.options.minDefaultValue = parseInt($minTimeInput.val());
-            this.options.maxDefaultValue = parseInt($maxTimeInput.val());
+            this.options.defaultMinValue = parseInt($minTimeInput.val());
+            this.options.defaultMaxValue = parseInt($maxTimeInput.val());
             this.options.hideRandomTime = $hideRandomTimeInput.prop('checked');
             this.options.showLoader = $showLoaderInput.prop('checked');
 
-            if (save) {
-                this.saveSettings();
-            }
-
-            $('.timer-container').trigger('timer.updateSettings');
+            $('.timer-container').trigger('timer.updateSettings', {
+                'settings': {
+                    'minTime': this.options.defaultMinValue,
+                    'maxTime': this.options.defaultMaxValue,
+                    'hideRandomTime': this.options.hideRandomTime,
+                    'showLoader': this.options.showLoader
+                }
+            });
         },
 
         /**
@@ -110,8 +113,8 @@
          */
         saveSettings: function () {
             localStorage.settings = JSON.stringify({
-                'minTime': this.options.minDefaultValue,
-                'maxTime': this.options.maxDefaultValue,
+                'minTime': this.options.defaultMinValue,
+                'maxTime': this.options.defaultMaxValue,
                 'hideRandomTime': this.options.hideRandomTime,
                 'showLoader': this.options.showLoader
             });

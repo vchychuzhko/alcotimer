@@ -16,6 +16,11 @@ a:hover {
     word-wrap: break-word;
 }
 
+button {
+    outline: none;
+    /*@TODO: temporary solution, should be some kind of focus effect*/
+}
+
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
     -webkit-appearance: none;

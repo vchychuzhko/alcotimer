@@ -8,7 +8,7 @@
     </head>
     <body>
         <block name="menu" class="Awesome\Ui\Block\Menu" template="Awesome_Ui::menu.phtml" sortOrder="1"/>
-        <referenceBlock name="page-wrapper">
+        <referenceContainer name="page-wrapper">
             <referenceBlock name="header">
                 <block name="menu-toggler" class="Awesome\Base\Block\Template" template="Awesome_Ui::menu/menu_toggler.phtml"/>
             </referenceBlock>
@@ -17,10 +17,10 @@
                    template="Awesome_Ui::menu/menu_overlay.phtml"
                    sortOrder="2"
             />
-        </referenceBlock>
-        <referenceBlock name="js-init-section">
+        </referenceContainer>
+        <referenceContainer name="js-init-section">
             <block name="menu-init" class="Awesome\Base\Block\Template" template="Awesome_Ui::menu/menu_init.phtml"/>
             <block name="message-init" class="Awesome\Base\Block\Template" template="Awesome_Ui::message/message_init.phtml"/>
-        </referenceBlock>
+        </referenceContainer>
     </body>
 </page>

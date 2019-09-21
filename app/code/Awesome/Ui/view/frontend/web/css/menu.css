@@ -50,7 +50,7 @@ header .toggle-container .toggle:after {
     border-radius: 4px;
     position: absolute;
     height: 4px;
-    transition-duration: .5s;
+    transition-duration: 0.5s;
     transition-property: transform;
     transition-timing-function: ease;
     width: 40px;

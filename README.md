@@ -1,5 +1,5 @@
 # AlcoTimer
-#### Version: 0.2.0-beta
+#### Version: 0.2.1-beta
 
 That's still the very beginning, although, he's ready for the real tests.
 

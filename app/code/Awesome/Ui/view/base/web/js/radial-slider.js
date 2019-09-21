@@ -1,20 +1,16 @@
 ;(function ($) {
     let MAX_ANGLE = 360,
         MIN_ANGLE = 0,
-        STEP_INDICATOR_ANGLE = 10;
+        STEP_INDICATOR_ANGLE = 30;
 
     $.widget('awesome.radialSlider', {
-        options: {
-            valueContainer: '.radial-percentage-value'
-        },
-
         /**
          * Constructor
          * @private
          */
         _create: function () {
             this.initBindings();
-            $(window).trigger('resize');
+            this.updateCircleParameters();
         },
 
         /**
@@ -81,20 +77,7 @@
                 }
             }.bind(this));
 
-            $(this.element).on('radial-slider.timeUpdate', this.options.valueContainer, function (event) {
-                let $valueContainer = $(event.target),
-                    percentage = parseFloat($valueContainer.text());
-
-                if (percentage === 0) {
-                    this.minReached = true;
-                }
-
-                if (percentage === 100) {
-                    this.maxReached = true;
-                }
-
-                this.setControllerPosition(percentage, true, false);
-            }.bind(this));
+            $(this.element).on('radial-slider.percentageSet', this.updateSlider.bind(this));
         },
 
         /**
@@ -116,11 +99,26 @@
          * @param {number} angle
          */
         updatePercentage: function (angle) {
-            let percentage = angle / MAX_ANGLE * 100,
-                $valueContainer = $(this.element).find(this.options.valueContainer);
+            let percentage = angle / MAX_ANGLE * 100;
 
-            $valueContainer.text(percentage);
-            $valueContainer.trigger('timer.percentageUpdate');
+            $(this.element).data('percentage', percentage.toString())
+                .trigger('radial-slider.percentageUpdate', {
+                    percentage: percentage
+                });
+        },
+
+        /**
+         * Update slider state after outer action
+         * @param {object} event
+         * @param {object} data
+         */
+        updateSlider: function (event, data) {
+            let percentage = data.percentage;
+
+            this.minReached = percentage === 0;
+            this.maxReached = percentage === 100;
+
+            this.setControllerPosition(percentage, true, false);
         },
 
         /**
