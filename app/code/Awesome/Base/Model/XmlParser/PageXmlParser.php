@@ -62,7 +62,7 @@ class PageXmlParser extends \Awesome\Base\Model\AbstractXmlParser
                 $pageStructure['head']['libs'] = $this->collectedAssets['libs'];
                 $pageStructure['head']['scripts'] = $this->collectedAssets['scripts'];
                 $pageStructure['head']['styles'] = $this->collectedAssets['styles'];
-                //@TODO: if merge or minify (get this value from StaticContent Class) change links
+                //@TODO: if merge or minify (get this value from StaticContent Class) change links here
 
                 $pageStructure['body'] = $this->applySortOrder($pageStructure['body']);
 

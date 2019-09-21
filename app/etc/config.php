@@ -20,7 +20,8 @@ return [
     ],
     'timer_config' => [
         'timer' => [
-            'default_time' => 8
+            'default_time' => 8,
+            'sound' => 'media/audio/football_sound.mp3' // path example - media/audio/file.mp3
         ],
         'settings' => [
             'default_min_value' => 2,

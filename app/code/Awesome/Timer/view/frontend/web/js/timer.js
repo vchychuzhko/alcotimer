@@ -5,7 +5,8 @@
     $.widget('awesome.timer', {
         options: {
             defaultTime: 9,
-            radialContainerSelector: '.radial-container'
+            radialContainerSelector: '.radial-container',
+            sound: 'media/audio/alert_sound.mp3'
         },
 
         /**
@@ -192,7 +193,7 @@
             this.stop();
 
             let sound = new Howl({
-                src: ['{@pubDir}/media/audio/alert_sound.mp3']
+                src: ['{@pubDir}/' + this.options.sound]
             });
 
             sound.play();
