@@ -1,0 +1,10 @@
+<?php /** @var \Awesome\Base\Block\Template\Container $this */ ?>
+<?php if ($tag = $this->getHtmlTag()): ?>
+    <<?= $tag; ?>
+    class="<?= $this->getHtmlClass(); ?>"
+    id="<?= $this->getHtmlId(); ?>">
+    <?= $this->getChildHtml(); ?>
+    </<?= $tag; ?>>
+<?php else: ?>
+    <?= $this->getChildHtml(); ?>
+<?php endif; ?>

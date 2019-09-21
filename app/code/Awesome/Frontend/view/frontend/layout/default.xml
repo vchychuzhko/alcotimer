@@ -11,14 +11,14 @@
         <css src="Awesome_Frontend::footer.css"/>
     </head>
     <body>
-        <block name="page-wrapper" class="Awesome\Base\Block\Template" template="Awesome_Base::html/page_wrapper.phtml" sortOrder="5">
+        <container name="page-wrapper" sortOrder="5">
+            <data>
+                <field name="html_tag"><![CDATA[main]]></field>
+                <field name="html_class"><![CDATA[page-wrapper]]></field>
+            </data>
             <block name="header" class="Awesome\Base\Block\Template" template="Awesome_Frontend::header.phtml" sortOrder="1"/>
             <block name="footer" class="Awesome\Base\Block\Template" template="Awesome_Frontend::footer.phtml" sortOrder="10"/>
-        </block>
-        <block name="js-init-section"
-               class="Awesome\Base\Block\Template"
-               template="Awesome_Base::html/js_init_section.phtml"
-               sortOrder="10"
-        />
+        </container>
+        <container name="js-init-section" sortOrder="10"/>
     </body>
 </page>

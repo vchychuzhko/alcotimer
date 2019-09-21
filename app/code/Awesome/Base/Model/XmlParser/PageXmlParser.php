@@ -3,6 +3,7 @@
 namespace Awesome\Base\Model\XmlParser;
 
 use Awesome\Base\Model\App;
+use Awesome\Base\Block\Template\Container;
 
 class PageXmlParser extends \Awesome\Base\Model\AbstractXmlParser
 {
@@ -166,6 +167,11 @@ class PageXmlParser extends \Awesome\Base\Model\AbstractXmlParser
         $parsedNode = [];
         $nodeName = $xmlNode->getName();
         $attributes = [];
+
+        if ($nodeName === Container::CONTAINER_XML_TAG) {
+            $attributes['class'] = Container::class;
+            $attributes['template'] = Container::CONTAINER_TEMPLATE;
+        }
 
         foreach ($xmlNode->attributes() as $attributeName => $attributeValue) {
             $attributeValue = (string) $attributeValue;

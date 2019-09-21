@@ -5,7 +5,7 @@
         <css src="Awesome_Frontend::pages/errors.css"/>
     </head>
     <body>
-        <referenceBlock name="page-wrapper">
+        <referenceContainer name="page-wrapper">
             <block name="notfound.content"
                    class="Awesome\Base\Block\Template"
                    template="Awesome_Frontend::pages/errors.phtml"
@@ -16,6 +16,6 @@
                     <field name="error_message"><![CDATA[Seems, page you are looking for is not present.]]></field>
                 </data>
             </block>
-        </referenceBlock>
+        </referenceContainer>
     </body>
 </page>
