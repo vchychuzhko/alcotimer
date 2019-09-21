@@ -3,6 +3,8 @@
  * Get first key in array.
  * https://www.php.net/manual/en/function.array-key-first.php
  * Can be removed for PHP 7.3
+ * @param array $array
+ * @return mixed
  */
 if (!function_exists('array_key_first')) {
     function array_key_first(array $array)

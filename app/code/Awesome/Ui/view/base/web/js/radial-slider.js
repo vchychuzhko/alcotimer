@@ -1,7 +1,7 @@
 ;(function ($) {
     let MAX_ANGLE = 360,
         MIN_ANGLE = 0,
-        STEP_INDICATOR_ANGLE = 30;
+        STEP_INDICATOR_ANGLE = 90;
 
     $.widget('awesome.radialSlider', {
         /**
