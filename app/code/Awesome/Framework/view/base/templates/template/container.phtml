@@ -1,8 +1,8 @@
 <?php /** @var \Awesome\Framework\Block\Template\Container $this */ ?>
 <?php if ($tag = $this->getHtmlTag()): ?>
     <<?= $tag; ?>
-    class="<?= $this->getHtmlClass(); ?>"
-    id="<?= $this->getHtmlId(); ?>">
+        <?= ($class = $this->getHtmlClass()) ? 'class="' . $class . '"' : ''; ?>
+        <?= ($id = $this->getHtmlId()) ? 'id="' . $id . '"' : ''; ?>>
         <?= $this->getChildHtml(); ?>
     </<?= $tag; ?>>
 <?php else: ?>

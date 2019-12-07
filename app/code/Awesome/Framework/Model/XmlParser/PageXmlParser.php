@@ -170,7 +170,6 @@ class PageXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
 
         if ($nodeName === Container::CONTAINER_XML_TAG) {
             $attributes['class'] = Container::class;
-            $attributes['template'] = Container::CONTAINER_TEMPLATE;
         }
 
         foreach ($xmlNode->attributes() as $attributeName => $attributeValue) {

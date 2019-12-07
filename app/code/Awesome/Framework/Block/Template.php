@@ -87,12 +87,12 @@ class Template
     private function renderBlock($block)
     {
         $className = $block['class'];
-        $template = $block['template'];
+        /** @var \Awesome\Framework\Block\Template $templateClass */
+        $templateClass = new $className();
+        $template = $block['template'] ?? $templateClass->getTemplate();
         $children = $block['children'] ?? [];
         $data = $block['data'] ?? [];
 
-        /** @var \Awesome\Framework\Block\Template $templateClass */
-        $templateClass = new $className();
         $templateClass->setView($this->view)
             ->setTemplate($template)
             ->setStructure($children)
@@ -102,7 +102,7 @@ class Template
     }
 
     /**
-     * Set template.
+     * Set block's template.
      * @param string $template
      * @return $this
      */
@@ -110,6 +110,15 @@ class Template
         $this->template = $template;
 
         return $this;
+    }
+
+    /**
+     * Retrieve block's template.
+     * @return string
+     */
+    public function getTemplate()
+    {
+        return $this->template;
     }
 
     /**
