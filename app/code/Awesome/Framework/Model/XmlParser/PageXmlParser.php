@@ -1,11 +1,11 @@
 <?php
 
-namespace Awesome\Base\Model\XmlParser;
+namespace Awesome\Framework\Model\XmlParser;
 
-use Awesome\Base\Model\App;
-use Awesome\Base\Block\Template\Container;
+use Awesome\Framework\Model\App;
+use Awesome\Framework\Block\Template\Container;
 
-class PageXmlParser extends \Awesome\Base\Model\AbstractXmlParser
+class PageXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
 {
     private const DEFAULT_PAGE_XML_PATH_PATTERN = '/*/*/view/%v/layout/default.xml';
     private const PAGE_XML_PATH_PATTERN = '/*/*/view/%v/layout/%h.xml';

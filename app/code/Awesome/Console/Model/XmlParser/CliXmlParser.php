@@ -2,7 +2,7 @@
 
 namespace Awesome\Console\Model\XmlParser;
 
-class CliXmlParser extends \Awesome\Base\Model\AbstractXmlParser
+class CliXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
 {
     private const CLI_XML_PATH_PATTERN = '/*/*/etc/cli.xml';
     private const ETC_CACHE_KEY = 'etc';

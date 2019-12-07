@@ -5,7 +5,6 @@ namespace Awesome\Console\Model;
 class Console
 {
     public const COMMAND_BASE = 'php bin/console';
-    private const HELP_SUGGESTION = 'Try run `' . self::COMMAND_BASE . '` to see possible commands.';
 
     /**
      * @var array $args
@@ -40,7 +39,7 @@ class Console
                 $output = $consoleClass->execute($commandArgs);
             } else {
                 $output = '`' . $commandName . '` command is not defined in this application' . "\n"
-                    . self::HELP_SUGGESTION;
+                    . 'Try run `'. self::COMMAND_BASE . '` to see possible commands.';
             }
         } else {
             $help = new \Awesome\Console\Console\ShowHelp();

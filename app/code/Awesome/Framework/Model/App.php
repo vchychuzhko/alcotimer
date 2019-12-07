@@ -1,6 +1,6 @@
 <?php
 
-namespace Awesome\Base\Model;
+namespace Awesome\Framework\Model;
 
 use \Awesome\Maintenance\Model\Maintenance;
 
@@ -21,12 +21,12 @@ class App
     private $maintenance;
 
     /**
-     * @var \Awesome\Base\Model\Config $config
+     * @var \Awesome\Framework\Model\Config $config
      */
     private $config;
 
     /**
-     * @var \Awesome\Base\Model\App\PageRenderer
+     * @var \Awesome\Framework\Model\App\PageRenderer
      */
     private $pageRenderer;
 
@@ -37,8 +37,8 @@ class App
     {
         $this->logWriter = new \Awesome\Logger\Model\LogWriter();
         $this->maintenance = new Maintenance();
-        $this->pageRenderer = new \Awesome\Base\Model\App\PageRenderer();
-        $this->config = new \Awesome\Base\Model\Config();
+        $this->pageRenderer = new \Awesome\Framework\Model\App\PageRenderer();
+        $this->config = new \Awesome\Framework\Model\Config();
     }
 
     /**
@@ -88,7 +88,7 @@ class App
     }
 
     /**
-     * Check if maintenance mode is active.
+     * Check if maintenance mode is active for current IP.
      * @return bool
      */
     private function isMaintenance()

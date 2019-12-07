@@ -5,8 +5,8 @@
         <lib src="lib/jquery/jquery.min.js"/>
         <lib src="lib/jquery/jquery-ui.min.js"/>
         <lib src="lib/goldfire/howler.min.js"/>
-        <script src="Awesome_Base::base.js"/>
-        <css src="Awesome_Base::base.css"/>
+        <script src="Awesome_Framework::base.js"/>
+        <css src="Awesome_Framework::base.css"/>
         <css src="Awesome_Frontend::header.css"/>
         <css src="Awesome_Frontend::footer.css"/>
     </head>
@@ -16,8 +16,8 @@
                 <field name="html_tag"><![CDATA[main]]></field>
                 <field name="html_class"><![CDATA[page-wrapper]]></field>
             </data>
-            <block name="header" class="Awesome\Base\Block\Template" template="Awesome_Frontend::header.phtml" sortOrder="1"/>
-            <block name="footer" class="Awesome\Base\Block\Template" template="Awesome_Frontend::footer.phtml" sortOrder="10"/>
+            <block name="header" class="Awesome\Framework\Block\Template" template="Awesome_Frontend::header.phtml" sortOrder="1"/>
+            <block name="footer" class="Awesome\Framework\Block\Template" template="Awesome_Frontend::footer.phtml" sortOrder="10"/>
         </container>
         <container name="js-init-section" sortOrder="10"/>
     </body>

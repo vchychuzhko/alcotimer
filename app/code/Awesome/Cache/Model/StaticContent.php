@@ -2,7 +2,7 @@
 
 namespace Awesome\Cache\Model;
 
-use Awesome\Base\Model\App;
+use Awesome\Framework\Model\App;
 
 class StaticContent
 {
@@ -14,7 +14,7 @@ class StaticContent
     private const JS_LIB_PATH_PATTERN = '/lib/*/*.js';
 
     /**
-     * @var \Awesome\Base\Model\Config $config
+     * @var \Awesome\Framework\Model\Config $config
      */
     private $config;
 
@@ -23,7 +23,7 @@ class StaticContent
      */
     public function __construct()
     {
-        $this->config = new \Awesome\Base\Model\Config();
+        $this->config = new \Awesome\Framework\Model\Config();
     }
 
     /**

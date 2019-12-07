@@ -2,7 +2,7 @@
 
 namespace Awesome\Timer\Block;
 
-class Timer extends \Awesome\Base\Block\Template
+class Timer extends \Awesome\Framework\Block\Template
 {
     private const TIMER_CONFIG = 'timer_config';
 

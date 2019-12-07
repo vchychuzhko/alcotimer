@@ -7,7 +7,7 @@
     <body>
         <referenceContainer name="page-wrapper">
             <block name="forbidden.content"
-                   class="Awesome\Base\Block\Template"
+                   class="Awesome\Framework\Block\Template"
                    template="Awesome_Frontend::pages/errors.phtml"
                    sortOrder="5"
             >

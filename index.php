@@ -11,7 +11,7 @@ require_once(__DIR__ . '/app/autoload.php');
 //set_error_handler('errorHandler');
 
 //try {
-$app = new \Awesome\Base\Model\App();
+$app = new \Awesome\Framework\Model\App();
 $app->run();
 //} catch (Throwable $t) {
 //    echo 'Error occurred: ' . $t->getMessage();

@@ -14,11 +14,11 @@
     </head>
     <body>
         <referenceBlock name="menu">
-            <block name="settings" class="Awesome\Base\Block\Template" template="Awesome_Timer::menu/settings.phtml"/>
+            <block name="settings" class="Awesome\Framework\Block\Template" template="Awesome_Timer::menu/settings.phtml"/>
         </referenceBlock>
         <referenceContainer name="page-wrapper">
             <block name="timer.content"
-                   class="Awesome\Base\Block\Template"
+                   class="Awesome\Framework\Block\Template"
                    template="Awesome_Timer::timer.phtml"
                    sortOrder="5"
             />

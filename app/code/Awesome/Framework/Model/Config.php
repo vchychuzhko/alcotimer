@@ -1,6 +1,6 @@
 <?php
 
-namespace Awesome\Base\Model;
+namespace Awesome\Framework\Model;
 
 class Config
 {

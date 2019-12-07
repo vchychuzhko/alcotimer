@@ -1,8 +1,8 @@
 <?php
 
-namespace Awesome\Base\Block;
+namespace Awesome\Framework\Block;
 
-use Awesome\Base\Model\App;
+use Awesome\Framework\Model\App;
 
 class Template
 {
@@ -12,7 +12,7 @@ class Template
     protected $staticContent;
 
     /**
-     * @var \Awesome\Base\Model\Config $config
+     * @var \Awesome\Framework\Model\Config $config
      */
     protected $config;
 
@@ -42,7 +42,7 @@ class Template
     public function __construct()
     {
         $this->staticContent = new \Awesome\Cache\Model\StaticContent();
-        $this->config = new \Awesome\Base\Model\Config();
+        $this->config = new \Awesome\Framework\Model\Config();
     }
 
     /**
@@ -91,7 +91,7 @@ class Template
         $children = $block['children'] ?? [];
         $data = $block['data'] ?? [];
 
-        /** @var \Awesome\Base\Block\Template $templateClass */
+        /** @var \Awesome\Framework\Block\Template $templateClass */
         $templateClass = new $className();
         $templateClass->setView($this->view)
             ->setTemplate($template)

@@ -1,8 +1,8 @@
 <?php
 
-namespace Awesome\Base\Model\App;
+namespace Awesome\Framework\Model\App;
 
-use \Awesome\Base\Model\XmlParser\PageXmlParser;
+use \Awesome\Framework\Model\XmlParser\PageXmlParser;
 
 class PageRenderer
 {
@@ -14,7 +14,7 @@ class PageRenderer
     private $pageXmlParser;
 
     /**
-     * @var \Awesome\Base\Block\Html $htmlTemplate
+     * @var \Awesome\Framework\Block\Html $htmlTemplate
      */
     private $htmlTemplate;
 
@@ -28,7 +28,7 @@ class PageRenderer
      */
     function __construct()
     {
-        $this->htmlTemplate = new \Awesome\Base\Block\Html();
+        $this->htmlTemplate = new \Awesome\Framework\Block\Html();
         $this->pageXmlParser = new PageXmlParser();
         $this->cache = new \Awesome\Cache\Model\Cache();
     }

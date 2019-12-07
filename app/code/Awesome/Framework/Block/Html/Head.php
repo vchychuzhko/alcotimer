@@ -1,10 +1,10 @@
 <?php
 
-namespace Awesome\Base\Block\Html;
+namespace Awesome\Framework\Block\Html;
 
-class Head extends \Awesome\Base\Block\Template
+class Head extends \Awesome\Framework\Block\Template
 {
-    protected $template = 'Awesome_Base::html/head.phtml';
+    protected $template = 'Awesome_Framework::html/head.phtml';
 
     /**
      * Get js libs URLs, resolving their path.

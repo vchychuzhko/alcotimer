@@ -1,10 +1,10 @@
 <?php
 
-namespace Awesome\Base\Block;
+namespace Awesome\Framework\Block;
 
-class Html extends \Awesome\Base\Block\Template
+class Html extends \Awesome\Framework\Block\Template
 {
-    protected $template = 'Awesome_Base::html.phtml';
+    protected $template = 'Awesome_Framework::html.phtml';
 
     /**
      * @var string $handle
@@ -17,7 +17,7 @@ class Html extends \Awesome\Base\Block\Template
     protected $head;
 
     /**
-     * @var \Awesome\Base\Block\Html\Head $headTemplate
+     * @var \Awesome\Framework\Block\Html\Head $headTemplate
      */
     private $headTemplate;
 
@@ -26,7 +26,7 @@ class Html extends \Awesome\Base\Block\Template
      */
     public function __construct()
     {
-        $this->headTemplate = new \Awesome\Base\Block\Html\Head();
+        $this->headTemplate = new \Awesome\Framework\Block\Html\Head();
         parent::__construct();
     }
 
