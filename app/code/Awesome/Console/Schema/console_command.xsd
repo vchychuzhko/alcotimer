@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="config">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="namespace" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="command" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="option" minOccurs="0" maxOccurs="unbounded">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="description" type="xs:string"/>
+                                                </xs:sequence>
+                                                <xs:attribute type="xs:string" name="name" use="required"/>
+                                                <xs:attribute type="xs:boolean" name="required" default="false"/>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="description" type="xs:string"/>
+                                    </xs:sequence>
+                                    <xs:attribute type="xs:string" name="name" use="required"/>
+                                    <xs:attribute type="xs:string" name="class" use="required"/>
+                                    <xs:attribute type="xs:boolean" name="disabled" default="false"/>
+                                </xs:complexType>
+                                <xs:unique name="optionKey">
+                                    <xs:selector xpath=".//option"/>
+                                    <xs:field xpath="@name"/>
+                                </xs:unique>
+                            </xs:element>
+                        </xs:sequence>
+                        <xs:attribute type="xs:string" name="name" use="required"/>
+                    </xs:complexType>
+                    <xs:unique name="commandKey">
+                        <xs:selector xpath=".//command"/>
+                        <xs:field xpath="@name"/>
+                    </xs:unique>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+        <xs:unique name="namespaceKey">
+            <xs:selector xpath=".//namespace"/>
+            <xs:field xpath="@name"/>
+        </xs:unique>
+    </xs:element>
+</xs:schema>

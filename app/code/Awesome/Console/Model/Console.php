@@ -77,7 +77,7 @@ class Console
             $namespace = $this->findMatch($namespace, array_keys($commandList));
             $command = $this->findMatch($command, array_keys($commandList[$namespace]));
 
-            if ($command) {
+            if ($command && !$commandList[$namespace][$command]['disabled']) {
                 $className = $commandList[$namespace][$command]['class'];
             }
         }

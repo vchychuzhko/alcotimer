@@ -20,7 +20,7 @@ class CliXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
                 $cliData = simplexml_load_file($cliXmlFile);
 
                 $parsedData = $this->parseCliNode($cliData);
-                $commandList = array_merge_recursive($commandList, $parsedData['config']);
+                $commandList = array_replace_recursive($commandList, $parsedData);
             }
 
             $this->cache->save(Cache::ETC_CACHE_KEY, self::CLI_CACHE_TAG, $commandList);
@@ -36,30 +36,33 @@ class CliXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
      */
     private function parseCliNode($xmlNode) {
         $parsedNode = [];
-        $nodeName = $xmlNode->getName();
-        $attributes = [];
 
-        foreach ($xmlNode->attributes() as $attributeName => $attributeValue) {
-            $attributeValue = (string) $attributeValue;
+        foreach ($xmlNode->children() as $namespace) {
+            $namespaceName = (string) $namespace['name'];
+            $parsedNode[$namespaceName] = [];
 
-            if ($attributeName === 'name') {
-                $nodeName = $attributeValue;
-            } else {
-                $attributes[$attributeName] = $this->stringBooleanCheck($attributeValue);
+            foreach ($namespace->children() as $command) {
+                $class = (string) $command['class'];
+                $disabled = $this->stringBooleanCheck((string) $command['disabled']);
+                $description = (string) $command->description;
+                $options = [];
+
+                foreach ($command->children() as $commandField) {
+                    if ($commandField->getName() === 'option') {
+                        $options[(string) $commandField['name']] = [
+                            'required' => $this->stringBooleanCheck((string) $commandField['required']),
+                            'description' => (string) $commandField->description
+                        ];
+                    }
+                }
+
+                $parsedNode[$namespaceName][(string) $command['name']] = [
+                    'class' => $class,
+                    'disabled' => $disabled,
+                    'description' => $description,
+                    'options' => $options
+                ];
             }
-        }
-        $parsedNode[$nodeName] = $attributes;
-        $children = $xmlNode->children();
-
-        if (count($children)) {
-            foreach ($children as $child) {
-                $child = $this->parseCliNode($child);
-                $childName = array_key_first($child);
-
-                $parsedNode[$nodeName][$childName] = $child[$childName];
-            }
-        } elseif ($text = trim((string) $xmlNode)) {
-            $parsedNode[$nodeName] = $text;
         }
 
         return $parsedNode;

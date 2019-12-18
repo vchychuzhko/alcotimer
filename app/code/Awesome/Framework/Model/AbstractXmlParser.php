@@ -18,14 +18,12 @@ abstract class AbstractXmlParser
     }
 
     /**
-     * Check if string is a boolean and convert it.
+     * Check if string is a boolean "true", otherwise return false.
      * @param string $value
-     * @return string|bool
+     * @return bool
      */
     protected function stringBooleanCheck($value)
     {
-        return ($value === 'true' || $value === 'false')
-            ? ($value === 'true')
-            : $value;
+        return $value === 'true';
     }
 }
