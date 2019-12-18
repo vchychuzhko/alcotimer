@@ -2,10 +2,11 @@
 
 namespace Awesome\Console\Model\XmlParser;
 
+use Awesome\Cache\Model\Cache;
+
 class CliXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
 {
     private const CLI_XML_PATH_PATTERN = '/*/*/etc/cli.xml';
-    private const ETC_CACHE_KEY = 'etc';
     private const CLI_CACHE_TAG = 'cli';
 
     /**
@@ -14,7 +15,7 @@ class CliXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
      */
     public function retrieveConsoleCommands()
     {
-        if (!$commandList = $this->cache->get(self::ETC_CACHE_KEY, self::CLI_CACHE_TAG)) {
+        if (!$commandList = $this->cache->get(Cache::ETC_CACHE_KEY, self::CLI_CACHE_TAG)) {
             foreach (glob(APP_DIR . self::CLI_XML_PATH_PATTERN) as $cliXmlFile) {
                 $cliData = simplexml_load_file($cliXmlFile);
 
@@ -22,7 +23,7 @@ class CliXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
                 $commandList = array_merge_recursive($commandList, $parsedData['config']);
             }
 
-            $this->cache->save(self::ETC_CACHE_KEY, self::CLI_CACHE_TAG, $commandList);
+            $this->cache->save(Cache::ETC_CACHE_KEY, self::CLI_CACHE_TAG, $commandList);
         }
 
         return $commandList;

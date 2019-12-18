@@ -5,6 +5,8 @@ namespace Awesome\Cache\Model;
 class Cache
 {
     private const CACHE_DIR = '/var/cache';
+    public const ETC_CACHE_KEY = 'etc';
+    public const PAGE_CACHE_KEY = 'pages';
 
     /**
      * Retrieve cache by key.

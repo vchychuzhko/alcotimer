@@ -4,12 +4,12 @@ namespace Awesome\Framework\Model\XmlParser;
 
 use Awesome\Framework\Model\App;
 use Awesome\Framework\Block\Template\Container;
+use Awesome\Cache\Model\Cache;
 
 class PageXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
 {
     private const DEFAULT_PAGE_XML_PATH_PATTERN = '/*/*/view/%v/layout/default.xml';
     private const PAGE_XML_PATH_PATTERN = '/*/*/view/%v/layout/%h.xml';
-    private const PAGE_CACHE_KEY = 'pages';
     private const PAGE_CACHE_TAG = 'page-handles';
 
     /**
@@ -38,7 +38,7 @@ class PageXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
      */
     public function retrievePageStructure($handle, $view)
     {
-        if (!$pageStructure = $this->cache->get(self::PAGE_CACHE_KEY, $handle)) {
+        if (!$pageStructure = $this->cache->get(Cache::PAGE_CACHE_KEY, $handle)) {
             $pattern = APP_DIR . str_replace('%v', $view, self::PAGE_XML_PATH_PATTERN);
             $pattern = str_replace('%h', $handle, $pattern);
 
@@ -66,7 +66,7 @@ class PageXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
 
                 $pageStructure['body'] = $this->applySortOrder($pageStructure['body']);
 
-                $this->cache->save(self::PAGE_CACHE_KEY, $handle, $pageStructure);
+                $this->cache->save(Cache::PAGE_CACHE_KEY, $handle, $pageStructure);
             }
         }
 
@@ -90,7 +90,7 @@ class PageXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
      */
     private function collectHandles()
     {
-        if (!$handles = $this->cache->get(self::PAGE_CACHE_KEY, self::PAGE_CACHE_TAG)) {
+        if (!$handles = $this->cache->get(Cache::PAGE_CACHE_KEY, self::PAGE_CACHE_TAG)) {
             foreach ([App::FRONTEND_VIEW, App::BACKEND_VIEW, App::BASE_VIEW] as $view) {
                 $pattern = APP_DIR . str_replace('%v', $view, self::PAGE_XML_PATH_PATTERN);
                 $pattern = str_replace('%h', '*', $pattern);
@@ -108,7 +108,7 @@ class PageXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
                 $handles[$view] = array_flip(array_flip($collectedHandles));
             }
 
-            $this->cache->save(self::PAGE_CACHE_KEY, self::PAGE_CACHE_TAG, $handles);
+            $this->cache->save(Cache::PAGE_CACHE_KEY, self::PAGE_CACHE_TAG, $handles);
         }
 
         return $handles;
