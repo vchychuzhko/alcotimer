@@ -195,6 +195,7 @@ class StaticContent
      */
     public function getDeployedVersion()
     {
+        //@TODO: Resolve situation when frontend folder is missing, but deployed version is present
         return (string) @file_get_contents(BP . self::DEPLOYED_VERSION_FILE);
     }
 

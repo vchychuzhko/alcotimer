@@ -37,6 +37,16 @@ class Template
     protected $structure = [];
 
     /**
+     * @var string $mediaUrl
+     */
+    private $mediaUrl;
+
+    /**
+     * @var string $staticUrl
+     */
+    private $staticUrl;
+
+    /**
      * Template constructor.
      */
     public function __construct()
@@ -68,7 +78,7 @@ class Template
 
         if ($blockName) {
             if ($block = $this->structure[$blockName] ?? []) {
-                $childHtml .= $this->renderBlock($block);
+                $childHtml = $this->renderBlock($block);
             }
         } else {
             foreach ($this->structure as $child) {
@@ -123,7 +133,7 @@ class Template
 
     /**
      * Set current page view.
-     * @param $view
+     * @param string $view
      * @return $this
      */
     public function setView($view)
@@ -134,7 +144,7 @@ class Template
     }
 
     /**
-     * Set children blocks structure.
+     * Set child blocks.
      * @param array $structure
      * @return $this
      */
@@ -145,27 +155,38 @@ class Template
     }
 
     /**
-     * Return URL path to media folder, according to the root folder.
+     * Return URI path to for file in the media folder.
+     * If file path is not specified, returns media folder URI path.
+     * @param string $file
      * @return string
      */
-    public function getMediaUrl()
+    public function getMediaUrl($file = '')
     {
-        return '/' . PUB_DIR . 'media/';
+        if ($this->mediaUrl === null) {
+            $this->mediaUrl = '/' . PUB_DIR . 'media/';
+        }
+
+        return $this->mediaUrl . $file;
     }
 
     /**
-     * Return URL path to static folder, according to the root folder.
+     * Return URI path for file in the static folder.
+     * If file path is not specified, returns static folder URI path.
+     * @param string $file
      * @return string
      */
-    public function getStaticUrl()
+    public function getStaticUrl($file = '')
     {
-        if (!$deployedVersion = $this->staticContent->getDeployedVersion()) {
-            $deployedVersion = $this->staticContent->deploy()
-                ->getDeployedVersion();
-            //@TODO: Resolve situation when frontend folder is missing, but deployed version is present
+        if ($this->staticUrl === null) {
+            if (!$deployedVersion = $this->staticContent->getDeployedVersion()) {
+                $deployedVersion = $this->staticContent->deploy()
+                    ->getDeployedVersion();
+            }
+
+            $this->staticUrl = '/' . PUB_DIR . 'static/version' . $deployedVersion . '/';
         }
 
-        return '/' . PUB_DIR . 'static/version' . $deployedVersion . '/';
+        return $this->staticUrl . $file;
     }
 
     /**
@@ -213,8 +234,7 @@ class Template
      * Template data setter.
      *
      * The $key parameter can be string or array.
-     * If $key is string, the attribute value will be overwritten by $value
-     *
+     * If $key is string, the attribute value will be overwritten by $value.
      * If $key is an array, it will overwrite all the data in the object.
      *
      * @param string|array $key
