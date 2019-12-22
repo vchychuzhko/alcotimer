@@ -6,7 +6,8 @@ class Cache
 {
     private const CACHE_DIR = '/var/cache';
     public const ETC_CACHE_KEY = 'etc';
-    public const PAGE_CACHE_KEY = 'pages';
+    public const LAYOUT_CACHE_KEY = 'layout';
+    public const FULL_PAGE_CACHE_KEY = 'full-page';
 
     /**
      * Retrieve cache by key.
@@ -14,7 +15,7 @@ class Cache
      * @param string $tag
      * @return array
      */
-    public function get($key = '', $tag = '')
+    public function get($key, $tag = '')
     {
         $cache = $this->readCacheFile($key);
 
@@ -46,23 +47,20 @@ class Cache
     }
 
     /**
-     * Remove cache by key, tag or both.
+     * Remove cache by key and tag.
+     * If key is not specified, remove all caches.
      * @param string $key
      * @param string $tag
      * @return $this
      */
     public function remove($key = '', $tag = '')
     {
-        if ($key) {
-            if ($tag) {
-                $cache = $this->readCacheFile($key);
-                unset($cache[$tag]);
-                $this->saveToCacheFile($key, $cache);
-            } else {
-                $this->removeCacheFile($key);
-            }
+        if ($key && $tag) {
+            $cache = $this->readCacheFile($key);
+            unset($cache[$tag]);
+            $this->saveToCacheFile($key, $cache);
         } else {
-            @rrmdir(BP . self::CACHE_DIR);
+            $this->removeCacheFile($key);
         }
 
         return $this;
@@ -99,12 +97,17 @@ class Cache
 
     /**
      * Remove cache file according to key.
+     * If key is not specified, remove all caches.
      * @param string $key
      * @return $this
      */
-    private function removeCacheFile($key)
+    private function removeCacheFile($key = '')
     {
-        @unlink(BP . self::CACHE_DIR . '/' . $key . '-cache');
+        if ($key) {
+            @unlink(BP . self::CACHE_DIR . '/' . $key . '-cache');
+        } else {
+            @rrmdir(BP . self::CACHE_DIR);
+        }
 
         return $this;
     }

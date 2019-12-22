@@ -3,11 +3,10 @@
 namespace Awesome\Framework\Model\App;
 
 use \Awesome\Framework\Model\XmlParser\PageXmlParser;
+use \Awesome\Cache\Model\Cache;
 
 class PageRenderer
 {
-    private const FULL_PAGE_CACHE_KEY = 'full-page';
-
     /**
      * @var PageXmlParser $pageXmlParser
      */
@@ -19,7 +18,7 @@ class PageRenderer
     private $htmlTemplate;
 
     /**
-     * @var \Awesome\Cache\Model\Cache $cache
+     * @var Cache $cache
      */
     protected $cache;
 
@@ -28,9 +27,9 @@ class PageRenderer
      */
     function __construct()
     {
-        $this->htmlTemplate = new \Awesome\Framework\Block\Html();
         $this->pageXmlParser = new PageXmlParser();
-        $this->cache = new \Awesome\Cache\Model\Cache();
+        $this->htmlTemplate = new \Awesome\Framework\Block\Html();
+        $this->cache = new Cache();
     }
 
     /**
@@ -43,7 +42,7 @@ class PageRenderer
     {
         $handle = $this->parseHandle($handle);
 
-        if (!$page = $this->cache->get(self::FULL_PAGE_CACHE_KEY, $handle)) {
+        if (!$page = $this->cache->get(Cache::FULL_PAGE_CACHE_KEY, $handle)) {
             if ($this->handleExist($handle, $view)) {
                 $structure = $this->pageXmlParser->retrievePageStructure($handle, $view);
 
@@ -55,7 +54,7 @@ class PageRenderer
                 $pageContent = $this->htmlTemplate->toHtml();
                 $page['content'] = $pageContent;
 
-                $this->cache->save(self::FULL_PAGE_CACHE_KEY, $handle, $page);
+                $this->cache->save(Cache::FULL_PAGE_CACHE_KEY, $handle, $page);
             }
         }
 
@@ -84,9 +83,9 @@ class PageRenderer
     private function parseHandle($handle)
     {
         $parts = explode('_', $handle);
-        $handle = $parts[0] . '_' //module
-            . ($parts[1] ?? 'index') . '_' //page
-            . ($parts[2] ?? 'index'); //action
+        $handle = $parts[0] . '_'           //module
+            . ($parts[1] ?? 'index') . '_'  //page
+            . ($parts[2] ?? 'index');       //action
 
         return $handle;
     }

@@ -38,7 +38,7 @@ class PageXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
      */
     public function retrievePageStructure($handle, $view)
     {
-        if (!$pageStructure = $this->cache->get(Cache::PAGE_CACHE_KEY, $handle)) {
+        if (!$pageStructure = $this->cache->get(Cache::LAYOUT_CACHE_KEY, $handle)) {
             $pattern = APP_DIR . str_replace('%v', $view, self::PAGE_XML_PATH_PATTERN);
             $pattern = str_replace('%h', $handle, $pattern);
 
@@ -66,7 +66,7 @@ class PageXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
 
                 $pageStructure['body'] = $this->applySortOrder($pageStructure['body']);
 
-                $this->cache->save(Cache::PAGE_CACHE_KEY, $handle, $pageStructure);
+                $this->cache->save(Cache::LAYOUT_CACHE_KEY, $handle, $pageStructure);
             }
         }
 
@@ -74,41 +74,45 @@ class PageXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
     }
 
     /**
-     * Check if requested handle exist in collected handles.
+     * Check if requested page handle exist.
      * @param string $handle
      * @param string $view
      * @return bool
      */
     public function handleExist($handle, $view)
     {
-        return in_array($handle, $this->collectHandles()[$view]);
+        return in_array($handle, $this->collectHandles($view));
     }
 
     /**
-     * Retrieve all available page handles and save them to cache.
+     * Retrieve all available page handles for a specific view.
+     * Return all of handles if view is not specified.
+     * @param string $requestedView
      * @return array
      */
-    private function collectHandles()
+    private function collectHandles($requestedView = '')
     {
-        if (!$handles = $this->cache->get(Cache::PAGE_CACHE_KEY, self::PAGE_CACHE_TAG)) {
+        if (!$handles = $this->cache->get(Cache::LAYOUT_CACHE_KEY, self::PAGE_CACHE_TAG)) {
             foreach ([App::FRONTEND_VIEW, App::BACKEND_VIEW, App::BASE_VIEW] as $view) {
                 $pattern = APP_DIR . str_replace('%v', $view, self::PAGE_XML_PATH_PATTERN);
                 $pattern = str_replace('%h', '*', $pattern);
                 $collectedHandles = [];
 
-                if ($foundHandles = glob($pattern)) {
-                    foreach ($foundHandles as $collectedHandle) {
-                        $collectedHandle = explode('/', $collectedHandle);
-                        $collectedHandle = str_replace('.xml', '', end($collectedHandle));
+                foreach (glob($pattern) as $collectedHandle) {
+                    $collectedHandle = explode('/', $collectedHandle);
+                    $collectedHandle = str_replace('.xml', '', end($collectedHandle));
 
-                        $collectedHandles[] = $collectedHandle;
-                    }
+                    $collectedHandles[] = $collectedHandle;
                 }
 
-                $handles[$view] = array_flip(array_flip($collectedHandles));
+                $handles[$view] = array_unique($collectedHandles);
             }
 
-            $this->cache->save(Cache::PAGE_CACHE_KEY, self::PAGE_CACHE_TAG, $handles);
+            $this->cache->save(Cache::LAYOUT_CACHE_KEY, self::PAGE_CACHE_TAG, $handles);
+        }
+
+        if ($requestedView) {
+            $handles = $handles[$requestedView] ?? [];
         }
 
         return $handles;
