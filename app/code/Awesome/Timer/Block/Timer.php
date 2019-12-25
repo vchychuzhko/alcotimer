@@ -21,7 +21,7 @@ class Timer extends \Awesome\Framework\Block\Template
      * Get timer settings json.
      * @return string
      */
-    public function getSettings()
+    public function getSettingsJson()
     {
         $settings = $this->config->getConfig(self::TIMER_CONFIG . '/settings') ?: [];
 
@@ -32,9 +32,9 @@ class Timer extends \Awesome\Framework\Block\Template
      * Get timer time set by default.
      * @return string
      */
-    public function getDefaultTime()
+    public function getDefaultTimeJson()
     {
-        $timerConfig = $this->config->getConfig(self::TIMER_CONFIG . '/timer') ?? [];
+        $timerConfig = $this->config->getConfig(self::TIMER_CONFIG . '/timer') ?: [];
 
         return $this->processConfig($timerConfig);
     }

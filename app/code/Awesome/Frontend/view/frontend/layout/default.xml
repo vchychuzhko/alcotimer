@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
-<page>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="../../../../Framework/Schema/page_layout.xsd">
     <head>
-        <favicon>images/favicon.png</favicon>
+        <favicon src="images/favicon.png"/>
         <lib src="lib/jquery/jquery.min.js"/>
         <lib src="lib/jquery/jquery-ui.min.js"/>
-        <lib src="lib/goldfire/howler.min.js"/>
         <script src="Awesome_Framework::base.js"/>
         <css src="Awesome_Framework::base.css"/>
         <css src="Awesome_Frontend::header.css"/>

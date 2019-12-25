@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="page">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="head" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="title" type="xs:string" minOccurs="0"/>
+                            <xs:element name="favicon" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:attribute name="src" type="xs:string" use="required"/>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="lib" minOccurs="0" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:attribute name="src" type="xs:string" use="required"/>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="script" minOccurs="0" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:attribute name="src" type="xs:string" use="required"/>
+                                    <xs:attribute name="async" type="xs:boolean" default="false"/>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="css" minOccurs="0" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:attribute name="src" type="xs:string" use="required"/>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="body" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element ref="block" minOccurs="0" maxOccurs="unbounded"/>
+                            <xs:element ref="referenceBlock" minOccurs="0" maxOccurs="unbounded"/>
+                            <xs:element ref="container" minOccurs="0" maxOccurs="unbounded"/>
+                            <xs:element ref="referenceContainer" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="block" type="blockType"/>
+    <xs:element name="referenceBlock" type="referenceType"/>
+    <xs:element name="container" type="containerType"/>
+    <xs:element name="referenceContainer" type="referenceType"/>
+
+    <xs:complexType name="blockType">
+        <xs:sequence>
+            <xs:element ref="block" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element ref="referenceBlock" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element ref="container" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element ref="referenceContainer" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="name" use="required"/>
+        <xs:attribute name="class" use="required"/>
+        <xs:attribute name="template" use="required"/>
+        <xs:attribute name="sortOrder"/>
+    </xs:complexType>
+    <xs:complexType name="containerType">
+        <xs:sequence>
+            <xs:element ref="block" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element ref="referenceBlock" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element ref="container" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element ref="referenceContainer" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="name" use="required"/>
+        <xs:attribute name="htmlTag"/>
+        <xs:attribute name="htmlClass"/>
+        <xs:attribute name="htmlId"/>
+        <xs:attribute name="sortOrder"/>
+    </xs:complexType>
+    <xs:complexType name="referenceType">
+        <xs:sequence>
+            <xs:element ref="block" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element ref="referenceBlock" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element ref="container" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element ref="referenceContainer" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="name" use="required"/>
+        <xs:attribute name="remove"/>
+        <xs:attribute name="sortOrder"/>
+    </xs:complexType>
+</xs:schema>

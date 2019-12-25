@@ -14,7 +14,7 @@ class Html extends \Awesome\Framework\Block\Template
     /**
      * @var string $head
      */
-    protected $head;
+    protected $headStructure;
 
     /**
      * @var \Awesome\Framework\Block\Html\Head $headTemplate
@@ -43,33 +43,33 @@ class Html extends \Awesome\Framework\Block\Template
     }
 
     /**
-     * Set current page head data handle.
-     * @param string $head
+     * Set current page head data.
+     * @param string $headStructure
      * @return $this
      */
-    public function setHead($head)
+    public function setHeadStructure($headStructure)
     {
-        $this->head = $head;
+        $this->headStructure = $headStructure;
 
         return $this;
     }
 
     /**
-     * Create and render head part of the page.
+     * Render head part of the page.
      * @return string
      */
     public function getHead()
     {
-        $head = '';
+        $headHtml = '';
 
-        if ($headStructure = $this->head ?? []) {
-            $this->headTemplate->setData($headStructure)
-                ->setView($this->view);
+        if ($headStructure = $this->headStructure ?? []) {
+            $this->headTemplate->setView($this->view)
+                ->setStructure($headStructure);
 
-            $head = $this->headTemplate->toHtml();
+            $headHtml = $this->headTemplate->toHtml();
         }
 
-        return $head;
+        return $headHtml;
     }
 
     /**

@@ -4,6 +4,7 @@
         <title><![CDATA[AlcoTimer]]></title>
         <description><![CDATA[Web App for people, who would like to make drinking process become really challenging.]]></description>
         <keywords><![CDATA[Alcohol,Alco,Timer,AlcoTimer,Web,App,Drink]]></keywords>
+        <lib src="lib/goldfire/howler.min.js"/>
         <script src="Awesome_Ui::radial-slider.js"/>
         <script src="Awesome_Ui::range-slider.js"/>
         <script src="Awesome_Timer::settings.js"/>

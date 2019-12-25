@@ -1,10 +1,16 @@
 <?php /** @var \Awesome\Framework\Block\Html\Head $this */ ?>
 <meta charset="UTF-8">
-<title><?= $this->getTitle(); ?></title>
-<meta name="description" content="<?= $this->getDescription(); ?>"/>
-<meta name="keywords" content="<?= $this->getKeywords(); ?>"/>
+<?php if ($title = $this->getTitle()): ?>
+    <title><?= $title; ?></title>
+<?php endif; ?>
+<?php if ($description = $this->getDescription()): ?>
+    <meta name="description" content="<?= $description; ?>"/>
+<?php endif; ?>
+<?php if ($keywords = $this->getKeywords()): ?>
+    <meta name="keywords" content="<?= $keywords; ?>"/>
+<?php endif; ?>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<link rel="shortcut icon" type="image/png" href="<?= $this->getMediaUrl($this->getFavicon()); ?>"/>
+<link rel="shortcut icon" type="image/png" href="<?= $this->getMediaUrl($this->getFaviconSrc()); ?>"/>
 <?php foreach($this->getLibs() as $lib): ?>
     <script src="<?= $this->getStaticUrl($lib); ?>"></script>
 <?php endforeach; ?>

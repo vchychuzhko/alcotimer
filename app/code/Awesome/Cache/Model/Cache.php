@@ -32,7 +32,7 @@ class Cache
      * Save data to cache.
      * @param string $key
      * @param string $tag
-     * @param array $data
+     * @param mixed $data
      * @return $this
      */
     public function save($key, $tag, $data)

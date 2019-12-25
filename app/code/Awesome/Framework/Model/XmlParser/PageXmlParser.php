@@ -10,24 +10,15 @@ class PageXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
 {
     private const DEFAULT_PAGE_XML_PATH_PATTERN = '/*/*/view/%v/layout/default.xml';
     private const PAGE_XML_PATH_PATTERN = '/*/*/view/%v/layout/%h.xml';
-    private const PAGE_CACHE_TAG = 'page-handles';
-
-    /**
-     * @var array $assetMap
-     */
-    private $assetMap = [
-        'lib' => 'libs',
-        'script' => 'scripts',
-        'css' => 'styles'
-    ];
+    private const PAGE_HANDLES_CACHE_TAG = 'page-handles';
 
     /**
      * @var array $collectedAssets
      */
     private $collectedAssets = [
-        'libs' => [],
-        'scripts' => [],
-        'styles' => []
+        'lib' => [],
+        'script' => [],
+        'css' => []
     ];
 
     /**
@@ -39,6 +30,15 @@ class PageXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
     public function retrievePageStructure($handle, $view)
     {
         if (!$pageStructure = $this->cache->get(Cache::LAYOUT_CACHE_KEY, $handle)) {
+            $defaultPattern = APP_DIR . str_replace('%v', $view, self::DEFAULT_PAGE_XML_PATH_PATTERN);
+
+            foreach (glob($defaultPattern) as $defaultXmlFile) {
+                $pageData = simplexml_load_file($defaultXmlFile);
+
+                $parsedData = $this->parsePageNode($pageData);
+                $pageStructure = array_replace_recursive($pageStructure, $parsedData);
+            }
+
             $pattern = APP_DIR . str_replace('%v', $view, self::PAGE_XML_PATH_PATTERN);
             $pattern = str_replace('%h', $handle, $pattern);
 
@@ -46,28 +46,15 @@ class PageXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
                 $pageData = simplexml_load_file($pageXmlFile);
 
                 $parsedData = $this->parsePageNode($pageData);
-                $pageStructure = array_merge_recursive($pageStructure, $parsedData);
+                $pageStructure = array_replace_recursive($pageStructure, $parsedData);
             }
 
-            if (!empty($pageStructure)) {
-                $pattern = APP_DIR . str_replace('%v', $view, self::DEFAULT_PAGE_XML_PATH_PATTERN);
+            //@TODO: Add check for minify/merge enabled and replace links
+            $pageStructure['head'] = array_merge($pageStructure['head'], $this->collectedAssets);
 
-                foreach (glob($pattern) as $defaultXmlFile) {
-                    $defaultData = simplexml_load_file($defaultXmlFile);
+            $pageStructure['body'] = $this->applySortOrder($pageStructure['body']);
 
-                    $parsedData = $this->parsePageNode($defaultData);
-                    $pageStructure = array_merge_recursive($pageStructure, $parsedData);
-                }
-
-                $pageStructure['head']['libs'] = $this->collectedAssets['libs'];
-                $pageStructure['head']['scripts'] = $this->collectedAssets['scripts'];
-                $pageStructure['head']['styles'] = $this->collectedAssets['styles'];
-                //@TODO: if merge or minify (get this value from StaticContent Class) change links here
-
-                $pageStructure['body'] = $this->applySortOrder($pageStructure['body']);
-
-                $this->cache->save(Cache::LAYOUT_CACHE_KEY, $handle, $pageStructure);
-            }
+            $this->cache->save(Cache::LAYOUT_CACHE_KEY, $handle, $pageStructure);
         }
 
         return $pageStructure;
@@ -92,7 +79,7 @@ class PageXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
      */
     private function collectHandles($requestedView = '')
     {
-        if (!$handles = $this->cache->get(Cache::LAYOUT_CACHE_KEY, self::PAGE_CACHE_TAG)) {
+        if (!$handles = $this->cache->get(Cache::LAYOUT_CACHE_KEY, self::PAGE_HANDLES_CACHE_TAG)) {
             foreach ([App::FRONTEND_VIEW, App::BACKEND_VIEW, App::BASE_VIEW] as $view) {
                 $pattern = APP_DIR . str_replace('%v', $view, self::PAGE_XML_PATH_PATTERN);
                 $pattern = str_replace('%h', '*', $pattern);
@@ -108,7 +95,7 @@ class PageXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
                 $handles[$view] = array_unique($collectedHandles);
             }
 
-            $this->cache->save(Cache::LAYOUT_CACHE_KEY, self::PAGE_CACHE_TAG, $handles);
+            $this->cache->save(Cache::LAYOUT_CACHE_KEY, self::PAGE_HANDLES_CACHE_TAG, $handles);
         }
 
         if ($requestedView) {
@@ -147,15 +134,22 @@ class PageXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
     private function parseHeadNode($headNode)
     {
         $parsedHeadNode = [];
-        $children = $headNode->children();
 
-        foreach ($children as $child) {
-            $childName = $child->getName();
-
-            if (isset($this->assetMap[$childName])) {
-                $this->collectedAssets[$this->assetMap[$childName]][] = reset($child['src']);
-            } else {
-                $parsedHeadNode[$childName] = trim((string) $child);
+        foreach ($headNode->children() as $child) {
+            switch ($childName = $child->getName()) {
+                case 'title':
+                case 'description':
+                case 'keywords':
+                    $parsedHeadNode[$childName] = (string) $child;
+                    break;
+                case 'favicon':
+                    $parsedHeadNode[$childName] = (string) $child['src'];
+                    break;
+                case 'lib':
+                case 'script':
+                case 'css':
+                    $this->collectedAssets[$childName][] = (string) $child['src'];
+                    break;
             }
         }
 

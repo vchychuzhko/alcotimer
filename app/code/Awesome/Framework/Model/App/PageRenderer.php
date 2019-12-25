@@ -42,23 +42,22 @@ class PageRenderer
     {
         $handle = $this->parseHandle($handle);
 
-        if (!$page = $this->cache->get(Cache::FULL_PAGE_CACHE_KEY, $handle)) {
+        if (!$pageContent = $this->cache->get(Cache::FULL_PAGE_CACHE_KEY, $handle)) {
             if ($this->handleExist($handle, $view)) {
                 $structure = $this->pageXmlParser->retrievePageStructure($handle, $view);
 
                 $this->htmlTemplate->setView($view)
                     ->setHandle($handle)
-                    ->setHead($structure['head'])
+                    ->setHeadStructure($structure['head'])
                     ->setStructure($structure['body']);
 
                 $pageContent = $this->htmlTemplate->toHtml();
-                $page['content'] = $pageContent;
 
-                $this->cache->save(Cache::FULL_PAGE_CACHE_KEY, $handle, $page);
+                $this->cache->save(Cache::FULL_PAGE_CACHE_KEY, $handle, $pageContent);
             }
         }
 
-        return $page['content'] ?? '';
+        return $pageContent ?? '';
     }
 
     /**
