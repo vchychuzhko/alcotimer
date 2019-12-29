@@ -4,6 +4,7 @@ return [
     'web' => [
         'pub_path' => '', // '' or 'pub/' for root
         'homepage' => 'timer',
+        'show_forbidden' => 0,
         'js' => [
             'minify' => 0,
             'merge' => 0

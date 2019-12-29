@@ -5,7 +5,7 @@ namespace Awesome\Framework\Model;
 class Config
 {
     private const CONFIG_FILE_PATH = '/app/etc/config.php';
-    private const PATH_DELIMITER = '/';
+    private const CONFIG_PATH_DELIMITER = '/';
 
     /**
      * @var array $config
@@ -35,11 +35,11 @@ class Config
     /**
      * Get config value by path.
      * @param string $path
-     * @return string
+     * @return mixed
      */
     public function getConfig($path)
     {
-        $config = '';
+        $config = null;
 
         if ($pathParts = $this->checkPath($path)) {
             $config = $this->config;
@@ -60,7 +60,7 @@ class Config
      */
     private function checkPath($path)
     {
-        $pathParts = explode(self::PATH_DELIMITER, $path);
+        $pathParts = explode(self::CONFIG_PATH_DELIMITER, $path);
         $exists = false;
 
         $config = $this->config;

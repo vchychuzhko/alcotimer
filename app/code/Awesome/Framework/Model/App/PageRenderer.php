@@ -43,18 +43,16 @@ class PageRenderer
         $handle = $this->parseHandle($handle);
 
         if (!$pageContent = $this->cache->get(Cache::FULL_PAGE_CACHE_KEY, $handle)) {
-            if ($this->handleExist($handle, $view)) {
-                $structure = $this->pageXmlParser->retrievePageStructure($handle, $view);
+            $structure = $this->pageXmlParser->retrievePageStructure($handle, $view);
 
-                $this->htmlTemplate->setView($view)
-                    ->setHandle($handle)
-                    ->setHeadStructure($structure['head'])
-                    ->setStructure($structure['body']);
+            $this->htmlTemplate->setView($view)
+                ->setHandle($handle)
+                ->setHeadStructure($structure['head'])
+                ->setStructure($structure['body']);
 
-                $pageContent = $this->htmlTemplate->toHtml();
+            $pageContent = $this->htmlTemplate->toHtml();
 
-                $this->cache->save(Cache::FULL_PAGE_CACHE_KEY, $handle, $pageContent);
-            }
+            $this->cache->save(Cache::FULL_PAGE_CACHE_KEY, $handle, $pageContent);
         }
 
         return $pageContent ?? '';
@@ -68,8 +66,6 @@ class PageRenderer
      */
     public function handleExist($handle, $view)
     {
-        $handle = $this->parseHandle($handle);
-
         return $this->pageXmlParser->handleExist($handle, $view);
     }
 
@@ -79,8 +75,9 @@ class PageRenderer
      * @param string $handle
      * @return string
      */
-    private function parseHandle($handle)
+    public function parseHandle($handle)
     {
+        $handle = str_replace('/', '_', $handle);
         $parts = explode('_', $handle);
         $handle = $parts[0] . '_'           //module
             . ($parts[1] ?? 'index') . '_'  //page

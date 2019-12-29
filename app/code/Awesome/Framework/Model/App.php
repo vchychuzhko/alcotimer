@@ -66,17 +66,16 @@ class App
     {
         $redirectStatus = (string) ($_SERVER['REDIRECT_STATUS'] ?? '');
 
-        if ($redirectStatus === '403') {
+        if ($redirectStatus === '403' && $this->showForbiddenPage()) {
             $handle = 'forbidden';
             http_response_code(403);
         } else {
             $uri = (string) strtok(trim($_SERVER['REQUEST_URI'], '/'), '?');
 
             if ($uri === '') {
-                $handle = $this->config->getConfig('web/homepage');
-            } else {
-                $handle = str_replace('/', '_', $uri);
+                $uri = $this->getHomepageHandle();
             }
+            $handle = $this->pageRenderer->parseHandle($uri);
 
             if (!$this->pageRenderer->handleExist($handle, self::FRONTEND_VIEW)) {
                 $handle = 'notfound';
@@ -96,5 +95,23 @@ class App
         $ip = $_SERVER['REMOTE_ADDR'];
 
         return $this->maintenance->isMaintenanceForIp($ip);
+    }
+
+    /**
+     * Check if it is allowed to show 403 Forbidden page.
+     * @return bool
+     */
+    private function showForbiddenPage()
+    {
+        return (bool) $this->config->getConfig('web/show_forbidden');
+    }
+
+    /**
+     * Return currently set homepage handle.
+     * @return string
+     */
+    private function getHomepageHandle()
+    {
+        return (string) $this->config->getConfig('web/homepage');
     }
 }
