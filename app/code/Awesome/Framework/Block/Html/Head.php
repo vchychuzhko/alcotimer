@@ -7,12 +7,17 @@ class Head extends \Awesome\Framework\Block\Template
     protected $template = 'Awesome_Framework::html/head.phtml';
 
     /**
+     * @var array $headData
+     */
+    protected $headData;
+
+    /**
      * Get page title.
      * @return string
      */
     public function getTitle()
     {
-        return (string) $this->getStructureData('title');
+        return (string) $this->getHeadData('title');
     }
 
     /**
@@ -21,7 +26,7 @@ class Head extends \Awesome\Framework\Block\Template
      */
     public function getDescription()
     {
-        return (string) $this->getStructureData('description');
+        return (string) $this->getHeadData('description');
     }
 
     /**
@@ -30,16 +35,16 @@ class Head extends \Awesome\Framework\Block\Template
      */
     public function getKeywords()
     {
-        return (string) $this->getStructureData('keywords');
+        return (string) $this->getHeadData('keywords');
     }
 
     /**
      * Get favicon src path.
      * @return string
      */
-    public function getFaviconSrc()
+    public function getFavicon()
     {
-        return (string) $this->getStructureData('favicon');
+        return (string) $this->getHeadData('favicon');
     }
 
     /**
@@ -48,10 +53,10 @@ class Head extends \Awesome\Framework\Block\Template
      */
     public function getLibs()
     {
-        $libs = $this->getStructureData('lib') ?? [];
+        $libs = $this->getHeadData('lib') ?? [];
 
         foreach ($libs as $index => $lib) {
-            $libs[$index] = $this->resolveAssetsPath($lib, 'js');
+            $libs[$index] = $this->resolveAssetsPath($lib, 'lib');
         }
 
         return $libs;
@@ -63,7 +68,7 @@ class Head extends \Awesome\Framework\Block\Template
      */
     public function getScripts()
     {
-        $scripts = $this->getStructureData('script') ?? [];
+        $scripts = $this->getHeadData('script') ?? [];
 
         foreach ($scripts as $index => $script) {
             $scripts[$index] = $this->resolveAssetsPath($script, 'js');
@@ -78,13 +83,40 @@ class Head extends \Awesome\Framework\Block\Template
      */
     public function getStyles()
     {
-        $styles = $this->getStructureData('css') ?? [];
+        $styles = $this->getHeadData('css') ?? [];
 
         foreach ($styles as $index => $style) {
             $styles[$index] = $this->resolveAssetsPath($style, 'css');
         }
 
         return $styles;
+    }
+
+    /**
+     * Set html head data.
+     * @param array $headData
+     * @return $this
+     */
+    public function setHeadData($headData) {
+        $this->headData = $headData;
+
+        return $this;
+    }
+
+    /**
+     * Get html head data by key.
+     * Return all data if no key is specified.
+     * @param string $key
+     * @return mixed
+     */
+    public function getHeadData($key = '') {
+        if ($key === '') {
+            $data = $this->headData;
+        } else {
+            $data = $this->headData[$key] ?? null;
+        }
+
+        return $data;
     }
 
     /**
@@ -95,12 +127,15 @@ class Head extends \Awesome\Framework\Block\Template
      */
     private function resolveAssetsPath($path, $type)
     {
-        @list($module, $file) = explode('::', $path);
+        if (strpos($path, '//') === false) {
+            @list($module, $file) = explode('::', $path);
 
-        if (isset($file)) {
-            $path = $module . '/' . $type . '/' . $file;
+            if (isset($file)) {
+                $path = $module . '/' . $type . '/' . $file;
+            }
+            $path = $this->getStaticUrl($this->view . '/' . $path);
         }
 
-        return $this->view . '/' . $path;
+        return $path;
     }
 }

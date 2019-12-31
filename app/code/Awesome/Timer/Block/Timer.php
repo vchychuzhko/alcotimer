@@ -29,10 +29,10 @@ class Timer extends \Awesome\Framework\Block\Template
     }
 
     /**
-     * Get timer time set by default.
+     * Get timer configurations.
      * @return string
      */
-    public function getDefaultTimeJson()
+    public function getTimerConfigJson()
     {
         $timerConfig = $this->config->getConfig(self::TIMER_CONFIG . '/timer') ?: [];
 

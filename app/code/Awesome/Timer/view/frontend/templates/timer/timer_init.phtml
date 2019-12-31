@@ -3,7 +3,7 @@
     jQuery(function () {
         $('.random-time.range-slider').rangeSlider(<?= $this->getRandomRangeConfigJson(); ?>);
         $('.settings').settings(<?= $this->getSettingsJson(); ?>);
-        $('.timer-container').timer(<?= $this->getDefaultTimeJson(); ?>);
+        $('.timer-container').timer(<?= $this->getTimerConfigJson(); ?>);
         $('.timer-wrapper.radial-container').radialSlider({});
     });
 </script>

@@ -10,13 +10,15 @@
     <meta name="keywords" content="<?= $keywords; ?>"/>
 <?php endif; ?>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<link rel="shortcut icon" type="image/png" href="<?= $this->getMediaUrl($this->getFaviconSrc()); ?>"/>
+<?php if ($favicon = $this->getFavicon()): ?>
+    <link rel="shortcut icon" type="image/png" href="<?= $this->getMediaUrl($favicon); ?>"/>
+<?php endif; ?>
 <?php foreach($this->getLibs() as $lib): ?>
-    <script src="<?= $this->getStaticUrl($lib); ?>"></script>
+    <script src="<?= $lib; ?>"></script>
 <?php endforeach; ?>
 <?php foreach($this->getStyles() as $css): ?>
-    <link rel="stylesheet" type="text/css" href="<?= $this->getStaticUrl($css); ?>"/>
+    <link rel="stylesheet" type="text/css" href="<?= $css; ?>"/>
 <?php endforeach; ?>
 <?php foreach($this->getScripts() as $script): ?>
-    <script src="<?= $this->getStaticUrl($script); ?>"></script>
+    <script src="<?= $script; ?>"></script>
 <?php endforeach; ?>
