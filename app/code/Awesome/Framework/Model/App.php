@@ -2,13 +2,15 @@
 
 namespace Awesome\Framework\Model;
 
-use \Awesome\Maintenance\Model\Maintenance;
-
 class App
 {
     public const FRONTEND_VIEW = 'frontend';
     public const BACKEND_VIEW = 'adminhtml';
     public const BASE_VIEW = 'base';
+
+    public const SHOW_FORBIDDEN_CONFIG = 'web/show_forbidden';
+    public const HOMEPAGE_HANDLE_CONFIG = 'web/homepage';
+    public const WEB_ROOT_CONFIG = 'web/web_root_is_pub';
 
     /**
      * @var \Awesome\Logger\Model\LogWriter
@@ -16,7 +18,7 @@ class App
     private $logWriter;
 
     /**
-     * @var Maintenance $maintenance
+     * @var \Awesome\Maintenance\Model\Maintenance $maintenance
      */
     private $maintenance;
 
@@ -36,7 +38,7 @@ class App
     public function __construct()
     {
         $this->logWriter = new \Awesome\Logger\Model\LogWriter();
-        $this->maintenance = new Maintenance();
+        $this->maintenance = new \Awesome\Maintenance\Model\Maintenance();
         $this->pageRenderer = new \Awesome\Framework\Model\App\PageRenderer();
         $this->config = new \Awesome\Framework\Model\Config();
     }
@@ -48,11 +50,11 @@ class App
     {
         $this->logWriter->logVisitor();
 
-        $handle = $this->resolveUrl();
-        $response = $this->pageRenderer->render($handle, self::FRONTEND_VIEW);
-
-        if ($this->isMaintenance() || !$response) {
-            $response = file_get_contents(BP . Maintenance::MAINTENANCE_PAGE_PATH);
+        if (!$this->isMaintenance()) {
+            $pageHandle = $this->resolveUrl();
+            $response = $this->pageRenderer->render($pageHandle, self::FRONTEND_VIEW);
+        } else {
+            $response = $this->pageRenderer->renderMaintenancePage();
         }
 
         echo $response;
@@ -62,7 +64,7 @@ class App
      * Resolve page handle by requested URL.
      * @return string
      */
-    public function resolveUrl()
+    private function resolveUrl()
     {
         $redirectStatus = (string) ($_SERVER['REDIRECT_STATUS'] ?? '');
 
@@ -103,7 +105,7 @@ class App
      */
     private function showForbiddenPage()
     {
-        return (bool) $this->config->getConfig('web/show_forbidden');
+        return (bool) $this->config->getConfig(self::SHOW_FORBIDDEN_CONFIG);
     }
 
     /**
@@ -112,6 +114,6 @@ class App
      */
     private function getHomepageHandle()
     {
-        return (string) $this->config->getConfig('web/homepage');
+        return (string) $this->config->getConfig(self::HOMEPAGE_HANDLE_CONFIG);
     }
 }

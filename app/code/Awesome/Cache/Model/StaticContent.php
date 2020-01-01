@@ -7,8 +7,7 @@ use Awesome\Framework\Model\App;
 class StaticContent
 {
     private const DEPLOYED_VERSION_FILE = '/pub/static/deployed_version.txt';
-    private const PUB_PATH_CONFIG = 'web/pub_path';
-    private const ASSET_PUB_TRIGGER = '{@pubDir}/';
+    private const ASSET_PUB_TRIGGER = '{@pubDir}';
     private const STATIC_FOLDER_PATH = '/pub/static';
     private const ASSET_FOLDER_PATH_PATTERN = '/*/*/view/%v/web/%a';
     private const JS_LIB_PATH_PATTERN = '/lib/*/*.js';
@@ -173,9 +172,9 @@ class StaticContent
      */
     private function parsePubDirPath($content)
     {
-        $pubPath = $this->config->getConfig(self::PUB_PATH_CONFIG);
+        $pubPath = $this->config->getConfig(App::WEB_ROOT_CONFIG) ? '/' : '/pub/';
 
-        return str_replace(self::ASSET_PUB_TRIGGER, '/' . $pubPath, $content);
+        return str_replace(self::ASSET_PUB_TRIGGER, $pubPath, $content);
     }
 
     /**

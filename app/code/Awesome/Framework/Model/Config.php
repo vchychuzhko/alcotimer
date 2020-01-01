@@ -27,9 +27,7 @@ class Config
      */
     private function loadConfig()
     {
-        $config = @include(BP . self::CONFIG_FILE_PATH);
-
-        return $config ?: [];
+        return include(BP . self::CONFIG_FILE_PATH);
     }
 
     /**

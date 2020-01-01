@@ -1,6 +1,5 @@
 <?php
 
-define('PUB_DIR', 'pub/');
 require_once(__DIR__ . '/app/autoload.php');
 
 //@TODO: implement error handle including logging

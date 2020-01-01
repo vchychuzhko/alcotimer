@@ -55,7 +55,16 @@ class PageRenderer
             $this->cache->save(Cache::FULL_PAGE_CACHE_KEY, $handle, $pageContent);
         }
 
-        return $pageContent ?? '';
+        return $pageContent ?: '';
+    }
+
+    /**
+     * Render maintenance page.
+     * @return string
+     */
+    public function renderMaintenancePage()
+    {
+        return file_get_contents(BP . \Awesome\Maintenance\Model\Maintenance::MAINTENANCE_PAGE_PATH);
     }
 
     /**

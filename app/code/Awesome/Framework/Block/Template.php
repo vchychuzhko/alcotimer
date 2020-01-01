@@ -167,14 +167,14 @@ class Template
 
     /**
      * Return URI path to for file in the media folder.
-     * If file path is not specified, returns media folder URI path.
+     * If file is not specified, return media folder URI path.
      * @param string $file
      * @return string
      */
     public function getMediaUrl($file = '')
     {
         if ($this->mediaUrl === null) {
-            $this->mediaUrl = '/' . PUB_DIR . 'media/';
+            $this->mediaUrl = $this->getPubUrl('/media/');
         }
 
         return $this->mediaUrl . $file;
@@ -182,7 +182,7 @@ class Template
 
     /**
      * Return URI path for file in the static folder.
-     * If file path is not specified, returns static folder URI path.
+     * If file is not specified, return static folder URI path.
      * @param string $file
      * @return string
      */
@@ -194,10 +194,21 @@ class Template
                     ->getDeployedVersion();
             }
 
-            $this->staticUrl = '/' . PUB_DIR . 'static/version' . $deployedVersion . '/';
+            $this->staticUrl = $this->getPubUrl('/static/version' . $deployedVersion . '/');
         }
 
         return $this->staticUrl . $file;
+    }
+
+    /**
+     * Return URI path for file in the pub folder.
+     * If file is not specified, return pub folder URI path.
+     * @param string $file
+     * @return string
+     */
+    protected function getPubUrl($file = '')
+    {
+        return ($this->config->getConfig(App::WEB_ROOT_CONFIG) ? '' : '/pub') . $file;
     }
 
     /**

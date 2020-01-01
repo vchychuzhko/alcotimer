@@ -2,7 +2,7 @@
 return [
     'support_email_address' => '',
     'web' => [
-        'pub_path' => '', // '' or 'pub/' for root
+        'web_root_is_pub' => 1, // 0 for project root
         'homepage' => 'timer',
         'show_forbidden' => 0,
         'js' => [
@@ -22,7 +22,7 @@ return [
     'timer_config' => [
         'timer' => [
             'default_time' => 8,
-            'sound' => 'media/audio/football_sound.mp3' // path example - media/audio/file.mp3
+            'sound' => 'audio/football_sound.mp3' // path example - audio/file.mp3, must be in 'media' folder
         ],
         'settings' => [
             'default_min_value' => 2,

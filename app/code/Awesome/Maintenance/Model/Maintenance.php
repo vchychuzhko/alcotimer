@@ -41,10 +41,13 @@ class Maintenance
         ];
 
         if (($allowedIPs = @file_get_contents(BP . self::MAINTENANCE_FILE)) !== false) {
-            $status['enabled'] = true;
+            $status = [
+                'enabled' => true,
+                'allowed_ips' => []
+            ];
 
-            if ($allowedIPs = explode(',', $allowedIPs)) {
-                $status['allowed_ips'] = $allowedIPs;
+            if ($allowedIPs) {
+                $status['allowed_ips'] = explode(',', $allowedIPs);
             }
         };
 

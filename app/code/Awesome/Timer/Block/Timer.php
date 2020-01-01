@@ -4,7 +4,7 @@ namespace Awesome\Timer\Block;
 
 class Timer extends \Awesome\Framework\Block\Template
 {
-    private const TIMER_CONFIG = 'timer_config';
+    private const TIMER_CONFIG_PATH = 'timer_config';
 
     /**
      * Get random time range slider json.
@@ -12,7 +12,7 @@ class Timer extends \Awesome\Framework\Block\Template
      */
     public function getRandomRangeConfigJson()
     {
-        $randomRangeConfig = $this->config->getConfig(self::TIMER_CONFIG . '/random_range') ?: [];
+        $randomRangeConfig = $this->config->getConfig(self::TIMER_CONFIG_PATH . '/random_range') ?: [];
 
         return $this->processConfig($randomRangeConfig);
     }
@@ -23,7 +23,7 @@ class Timer extends \Awesome\Framework\Block\Template
      */
     public function getSettingsJson()
     {
-        $settings = $this->config->getConfig(self::TIMER_CONFIG . '/settings') ?: [];
+        $settings = $this->config->getConfig(self::TIMER_CONFIG_PATH . '/settings') ?: [];
 
         return $this->processConfig($settings);
     }
@@ -34,7 +34,11 @@ class Timer extends \Awesome\Framework\Block\Template
      */
     public function getTimerConfigJson()
     {
-        $timerConfig = $this->config->getConfig(self::TIMER_CONFIG . '/timer') ?: [];
+        $timerConfig = $this->config->getConfig(self::TIMER_CONFIG_PATH . '/timer') ?: [];
+
+        if (isset($timerConfig['sound'])) {
+            $timerConfig['sound'] = $this->getMediaUrl($timerConfig['sound']);
+        }
 
         return $this->processConfig($timerConfig);
     }
