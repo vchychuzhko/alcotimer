@@ -7,6 +7,8 @@
                     <xs:complexType>
                         <xs:sequence>
                             <xs:element name="title" type="xs:string" minOccurs="0"/>
+                            <xs:element name="description" type="xs:string" minOccurs="0"/>
+                            <xs:element name="keywords" type="xs:string" minOccurs="0"/>
                             <xs:element name="favicon" minOccurs="0">
                                 <xs:complexType>
                                     <xs:attribute name="src" type="xs:string" use="required"/>
@@ -33,13 +35,21 @@
                 </xs:element>
                 <xs:element name="body" minOccurs="0">
                     <xs:complexType>
-                        <xs:sequence>
+                        <xs:sequence minOccurs="0" maxOccurs="unbounded">
                             <xs:element ref="block" minOccurs="0" maxOccurs="unbounded"/>
                             <xs:element ref="referenceBlock" minOccurs="0" maxOccurs="unbounded"/>
                             <xs:element ref="container" minOccurs="0" maxOccurs="unbounded"/>
                             <xs:element ref="referenceContainer" minOccurs="0" maxOccurs="unbounded"/>
                         </xs:sequence>
                     </xs:complexType>
+                    <xs:unique name="blockKey">
+                        <xs:selector xpath=".//block"/>
+                        <xs:field xpath="@name"/>
+                    </xs:unique>
+                    <xs:unique name="containerKey">
+                        <xs:selector xpath=".//container"/>
+                        <xs:field xpath="@name"/>
+                    </xs:unique>
                 </xs:element>
             </xs:sequence>
         </xs:complexType>
@@ -51,39 +61,39 @@
     <xs:element name="referenceContainer" type="referenceType"/>
 
     <xs:complexType name="blockType">
-        <xs:sequence>
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
             <xs:element ref="block" minOccurs="0" maxOccurs="unbounded"/>
             <xs:element ref="referenceBlock" minOccurs="0" maxOccurs="unbounded"/>
             <xs:element ref="container" minOccurs="0" maxOccurs="unbounded"/>
             <xs:element ref="referenceContainer" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
-        <xs:attribute name="name" use="required"/>
-        <xs:attribute name="class" use="required"/>
-        <xs:attribute name="template" use="required"/>
-        <xs:attribute name="sortOrder"/>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="class" type="xs:string" use="required"/>
+        <xs:attribute name="template" type="xs:string" use="required"/>
+        <xs:attribute name="sortOrder" type="xs:nonNegativeInteger"/>
     </xs:complexType>
     <xs:complexType name="containerType">
-        <xs:sequence>
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
             <xs:element ref="block" minOccurs="0" maxOccurs="unbounded"/>
             <xs:element ref="referenceBlock" minOccurs="0" maxOccurs="unbounded"/>
             <xs:element ref="container" minOccurs="0" maxOccurs="unbounded"/>
             <xs:element ref="referenceContainer" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
-        <xs:attribute name="name" use="required"/>
-        <xs:attribute name="htmlTag"/>
-        <xs:attribute name="htmlClass"/>
-        <xs:attribute name="htmlId"/>
-        <xs:attribute name="sortOrder"/>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="htmlTag" type="xs:string"/>
+        <xs:attribute name="htmlClass" type="xs:string"/>
+        <xs:attribute name="htmlId" type="xs:string"/>
+        <xs:attribute name="sortOrder" type="xs:nonNegativeInteger"/>
     </xs:complexType>
     <xs:complexType name="referenceType">
-        <xs:sequence>
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
             <xs:element ref="block" minOccurs="0" maxOccurs="unbounded"/>
             <xs:element ref="referenceBlock" minOccurs="0" maxOccurs="unbounded"/>
             <xs:element ref="container" minOccurs="0" maxOccurs="unbounded"/>
             <xs:element ref="referenceContainer" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
-        <xs:attribute name="name" use="required"/>
-        <xs:attribute name="remove"/>
-        <xs:attribute name="sortOrder"/>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="remove" type="xs:boolean" default="false"/>
+        <xs:attribute name="sortOrder" type="xs:nonNegativeInteger"/>
     </xs:complexType>
 </xs:schema>

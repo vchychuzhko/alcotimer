@@ -19,11 +19,12 @@ abstract class AbstractXmlParser
 
     /**
      * Check if string is a boolean "true", otherwise return false.
-     * @param string $value
+     * Not case sensitive.
+     * @param string $string
      * @return bool
      */
-    protected function stringBooleanCheck($value)
+    protected function stringBooleanCheck($string)
     {
-        return $value === 'true';
+        return strtolower($string) === 'true';
     }
 }

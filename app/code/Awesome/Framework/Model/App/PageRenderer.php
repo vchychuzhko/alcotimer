@@ -2,13 +2,12 @@
 
 namespace Awesome\Framework\Model\App;
 
-use \Awesome\Framework\Model\XmlParser\PageXmlParser;
 use \Awesome\Cache\Model\Cache;
 
 class PageRenderer
 {
     /**
-     * @var PageXmlParser $pageXmlParser
+     * @var \Awesome\Framework\Model\XmlParser\PageXmlParser $pageXmlParser
      */
     private $pageXmlParser;
 
@@ -27,7 +26,7 @@ class PageRenderer
      */
     function __construct()
     {
-        $this->pageXmlParser = new PageXmlParser();
+        $this->pageXmlParser = new \Awesome\Framework\Model\XmlParser\PageXmlParser();
         $this->htmlTemplate = new \Awesome\Framework\Block\Html();
         $this->cache = new Cache();
     }
@@ -48,7 +47,7 @@ class PageRenderer
             $this->htmlTemplate->setView($view)
                 ->setHandle($handle)
                 ->setHeadStructure($structure['head'])
-                ->setStructure($structure['body']);
+                ->setBodyStructure($structure['body']);
 
             $pageContent = $this->htmlTemplate->toHtml();
 

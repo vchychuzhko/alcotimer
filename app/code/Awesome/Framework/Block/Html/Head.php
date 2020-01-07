@@ -97,7 +97,8 @@ class Head extends \Awesome\Framework\Block\Template
      * @param array $headData
      * @return $this
      */
-    public function setHeadData($headData) {
+    public function setHeadData($headData)
+    {
         $this->headData = $headData;
 
         return $this;
@@ -109,7 +110,8 @@ class Head extends \Awesome\Framework\Block\Template
      * @param string $key
      * @return mixed
      */
-    public function getHeadData($key = '') {
+    public function getHeadData($key = '')
+    {
         if ($key === '') {
             $data = $this->headData;
         } else {

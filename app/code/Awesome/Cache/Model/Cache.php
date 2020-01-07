@@ -13,7 +13,7 @@ class Cache
      * Retrieve cache by key.
      * @param string $key
      * @param string $tag
-     * @return array
+     * @return mixed
      */
     public function get($key, $tag = '')
     {

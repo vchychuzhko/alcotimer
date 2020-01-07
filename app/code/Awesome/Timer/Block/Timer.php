@@ -4,7 +4,7 @@ namespace Awesome\Timer\Block;
 
 class Timer extends \Awesome\Framework\Block\Template
 {
-    private const TIMER_CONFIG_PATH = 'timer_config';
+    public const TIMER_CONFIG_PATH = 'timer_config';
 
     /**
      * Get random time range slider json.

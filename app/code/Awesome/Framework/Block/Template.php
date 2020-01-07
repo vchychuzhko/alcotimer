@@ -17,29 +17,34 @@ class Template
     protected $config;
 
     /**
-     * @var string $template
-     */
-    protected $template;
-
-    /**
      * @var string $view
      */
     protected $view;
 
     /**
-     * @var array $structure
+     * @var string $name
      */
-    protected $structure;
+    protected $name;
+
+    /**
+     * @var string $template
+     */
+    protected $template;
+
+    /**
+     * @var array $children
+     */
+    protected $children = [];
 
     /**
      * @var string $mediaUrl
      */
-    private $mediaUrl;
+    protected $mediaUrl;
 
     /**
      * @var string $staticUrl
      */
-    private $staticUrl;
+    protected $staticUrl;
 
     /**
      * Template constructor.
@@ -54,7 +59,8 @@ class Template
      * Render block's template.
      * @return string
      */
-    public function toHtml() {
+    public function toHtml()
+    {
         ob_start();
         include($this->resolveTemplatePath());
 
@@ -62,8 +68,8 @@ class Template
     }
 
     /**
-     * Get and render child block.
-     * Return all children if no block is specified.
+     * Render a child block.
+     * Return all children if no blockName is specified.
      * @param string $blockName
      * @return string
      */
@@ -72,11 +78,11 @@ class Template
         $childHtml = '';
 
         if ($blockName) {
-            if ($block = $this->structure[$blockName] ?? []) {
+            if ($block = $this->children[$blockName] ?? []) {
                 $childHtml = $this->renderBlock($block);
             }
         } else {
-            foreach ($this->structure as $child) {
+            foreach ($this->children as $child) {
                 $childHtml .= $this->renderBlock($child);
             }
         }
@@ -91,17 +97,23 @@ class Template
      */
     private function renderBlock($block)
     {
+        //@TODO: move this template preparation process to some kind of renderer
         $className = $block['class'];
         /** @var \Awesome\Framework\Block\Template $templateClass */
         $templateClass = new $className();
-        $template = $block['template'] ?? $templateClass->getTemplate();
-        $children = $block['children'] ?? [];
-        $data = $block['data'] ?? [];
+        $name = $block['name'];
+        $template = $block['template'] ?: $templateClass->getTemplate();
+        $children = $block['children'];
+
+
+        if ($containerTagData = $block['containerData'] ?? []) {
+            $templateClass->setContainerTagData($containerTagData);
+        }
 
         $templateClass->setView($this->view)
+            ->setNameInLayout($name)
             ->setTemplate($template)
-            ->setStructure($children)
-            ->setData($data);
+            ->setChildren($children);
 
         return $templateClass->toHtml();
     }
@@ -111,19 +123,20 @@ class Template
      * @param string $template
      * @return $this
      */
-    public function setTemplate($template) {
+    public function setTemplate($template)
+    {
         $this->template = $template;
 
         return $this;
     }
 
     /**
-     * Retrieve block's template.
+     * Get block's template.
      * @return string
      */
     public function getTemplate()
     {
-        return $this->template;
+        return $this->template ?: '';
     }
 
     /**
@@ -136,33 +149,6 @@ class Template
         $this->view = $view;
 
         return $this;
-    }
-
-    /**
-     * Set block's structure.
-     * @param array $structure
-     * @return $this
-     */
-    public function setStructure($structure) {
-        $this->structure = $structure;
-
-        return $this;
-    }
-
-    /**
-     * Get block's structure attribute by key.
-     * Return all data if no key is set.
-     * @param string $key
-     * @return mixed
-     */
-    public function getStructureData($key = '') {
-        if ($key === '') {
-            $data = $this->structure;
-        } else {
-            $data = $this->structure[$key] ?? null;
-        }
-
-        return $data;
     }
 
     /**
@@ -212,6 +198,39 @@ class Template
     }
 
     /**
+     * Set block children elements.
+     * @param array $children
+     * @return $this
+     */
+    protected function setChildren($children)
+    {
+        $this->children = $children;
+
+        return $this;
+    }
+
+    /**
+     * Set block name.
+     * @param string $name
+     * @return $this
+     */
+    protected function setNameInLayout($name)
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * Get current block name.
+     * @return string
+     */
+    public function getNameInLayout()
+    {
+        return $this->name ?: '';
+    }
+
+    /**
      * Parse template XML path to a valid filesystem path.
      * @return string
      */
@@ -230,5 +249,16 @@ class Template
         }
 
         return APP_DIR . $path;
+    }
+
+    /**
+     * Converts snake_case text to camelCase.
+     * @param $string
+     * @param string $separator
+     * @return string
+     */
+    protected function camelCase($string, $separator = '_')
+    {
+        return str_replace($separator, '', lcfirst(ucwords($string, $separator)));
     }
 }

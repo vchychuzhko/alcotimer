@@ -3,7 +3,6 @@
 namespace Awesome\Framework\Model\XmlParser;
 
 use Awesome\Framework\Model\App;
-use Awesome\Framework\Block\Template\Container;
 use Awesome\Cache\Model\Cache;
 
 class PageXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
@@ -20,6 +19,16 @@ class PageXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
         'script' => [],
         'css' => []
     ];
+
+    /**
+     * @var array $references
+     */
+    private $references = [];
+
+    /**
+     * @var array $referencesToRemove
+     */
+    private $referencesToRemove = [];
 
     /**
      * Collect page structure according to the requested handle.
@@ -52,7 +61,8 @@ class PageXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
             //@TODO: Add check for minify/merge enabled and replace links
             $pageStructure['head'] = array_merge($pageStructure['head'], $this->collectedAssets);
 
-            $pageStructure['body'] = $this->applySortOrder($pageStructure['body']);
+            $this->applyReferences($pageStructure['body']);
+            $this->applySortOrder($pageStructure['body']);
 
             $this->cache->save(Cache::LAYOUT_CACHE_KEY, $handle, $pageStructure);
         }
@@ -107,19 +117,20 @@ class PageXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
 
     /**
      * Convert page XML node into array.
-     * @param \SimpleXMLElement $xmlNode
+     * @param \SimpleXMLElement $pageNode
      * @return array
      */
-    private function parsePageNode($xmlNode) {
+    private function parsePageNode($pageNode)
+    {
         $parsedNode = [];
 
-        foreach ($xmlNode->children() as $mainNode) {
-            if ($mainNode->getName() === 'head') {
-                $parsedNode['head'] = $this->parseHeadNode($mainNode);
+        foreach ($pageNode->children() as $rootNode) {
+            if ($rootNode->getName() === 'head') {
+                $parsedNode['head'] = $this->parseHeadNode($rootNode);
             }
 
-            if ($mainNode->getName() === 'body') {
-                $parsedNode['body'] = $this->parseBodyNode($mainNode)['body'];
+            if ($rootNode->getName() === 'body') {
+                $parsedNode['body'] = $this->parseBodyNode($rootNode);
             }
         }
 
@@ -157,55 +168,129 @@ class PageXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
     }
 
     /**
-     * Convert Page XML node into array.
-     * @param \SimpleXMLElement $xmlNode
+     * Parse body part of XML page node.
+     * @param \SimpleXMLElement $bodyNode
      * @return array
      */
-    public function parseBodyNode($xmlNode) {
-        $parsedNode = [];
-        $nodeName = $xmlNode->getName();
-        $attributes = [];
+    private function parseBodyNode($bodyNode)
+    {
+        $parsedBodyNode = [
+            'children' => []
+        ];
 
-        if ($nodeName === Container::CONTAINER_XML_TAG) {
-            $attributes['class'] = Container::class;
-        }
-
-        foreach ($xmlNode->attributes() as $attributeName => $attributeValue) {
-            $attributeValue = (string) $attributeValue;
-
-            if ($attributeName === 'name') {
-                $nodeName = $attributeValue;
-            } else {
-                $attributes[$attributeName] = $this->stringBooleanCheck($attributeValue);
+        foreach ($bodyNode->children() as $bodyItem) {
+            if ($parsedItem = $this->parseBodyItem($bodyItem)) {
+                $parsedBodyNode['children'][(string)$bodyItem['name']] = $parsedItem;
             }
         }
-        $parsedNode[$nodeName] = $attributes;
-        $children = $xmlNode->children();
 
-        if (count($children)) {
-            foreach ($children as $child) {
-                $child = $this->parseBodyNode($child);
-                $childName = array_key_first($child);
-
-                if ($nodeName === 'data' || $childName === 'data') {
-                    $parsedNode[$nodeName][$childName] = $child[$childName];
-                } else {
-                    $parsedNode[$nodeName]['children'][$childName] = $child[$childName];
-                }
-            }
-        } elseif ($text = trim((string) $xmlNode)) {
-            $parsedNode[$nodeName] = $text;
-        }
-
-        return $parsedNode;
+        return $parsedBodyNode;
     }
 
     /**
-     * Apply sort order rules for block children.
+     * Resolve block, container or reference items.
+     * @param \SimpleXMLElement $itemNode
+     * @return array
+     */
+    private function parseBodyItem($itemNode)
+    {
+        $parsedItemNode = [];
+
+        switch ($itemNode->getName()) {
+            case 'block':
+                $parsedItemNode = [
+                    'name' => (string) $itemNode['name'],
+                    'class' => (string) $itemNode['class'],
+                    'template' => (string) $itemNode['template'],
+                    'children' => []
+                ];
+
+                if ($sortOrder = (string) $itemNode['sortOrder']) {
+                    $parsedItemNode['sortOrder'] = $sortOrder;
+                }
+
+                foreach ($itemNode->children() as $child) {
+                    $parsedItemNode['children'][(string) $child['name']] = $this->parseBodyItem($child);
+                }
+                break;
+            case 'container':
+                $parsedItemNode = [
+                    'name' => (string) $itemNode['name'],
+                    'class' => ((string) $itemNode['class']) ?: \Awesome\Framework\Block\Template\Container::class,
+                    'template' => (string) $itemNode['template'],
+                    'children' => []
+                ];
+
+                if ($htmlTag = (string) $itemNode['htmlTag']) {
+                    $parsedItemNode['containerData'] = [
+                        'htmlTag' => $htmlTag,
+                        'htmlClass' => (string) $itemNode['htmlClass'],
+                        'htmlId' => (string) $itemNode['htmlId']
+                    ];
+                }
+
+                if ($sortOrder = (string) $itemNode['sortOrder']) {
+                    $parsedItemNode['sortOrder'] = $sortOrder;
+                }
+
+                foreach ($itemNode->children() as $child) {
+                    $parsedItemNode['children'][(string) $child['name']] = $this->parseBodyItem($child);
+                }
+                break;
+            case 'referenceBlock':
+            case 'referenceContainer':
+                if ($this->stringBooleanCheck((string) $itemNode['remove'])) {
+                    $this->referencesToRemove[] = (string) $itemNode['name'];
+                } else {
+                    $reference = [
+                        'children' => []
+                    ];
+
+                    if ($sortOrder = (string) $itemNode['sortOrder']) {
+                        $reference['sortOrder'] = $sortOrder;
+                    }
+
+                    foreach ($itemNode->children() as $child) {
+                        $reference['children'][(string) $child['name']] = $this->parseBodyItem($child);
+                    }
+                    $this->references[] = [
+                        'name' => (string) $itemNode['name'],
+                        'data' => $reference
+                    ];
+                }
+                break;
+        }
+
+        return $parsedItemNode;
+    }
+
+    /**
+     * Apply reference updates to a parsed page.
+     * @param array $bodyStructure
+     * @return array
+     */
+    private function applyReferences(&$bodyStructure)
+    {
+        foreach ($this->references as $reference) {
+            $referenceName = $reference['name'];
+            $referenceData = $reference['data'];
+
+            array_update_by_key_recursive($bodyStructure, $referenceName, $referenceData);
+        }
+
+        foreach ($this->referencesToRemove as $referenceToRemove) {
+            array_remove_by_key_recursive($bodyStructure, $referenceToRemove);
+        }
+
+        return $bodyStructure;
+    }
+
+    /**
+     * Apply sort order rules to a parsed page.
      * @param array $blockStructure
      * @return array
      */
-    public function applySortOrder($blockStructure)
+    private function applySortOrder(&$blockStructure)
     {
         $children = $blockStructure['children'] ?? [];
 

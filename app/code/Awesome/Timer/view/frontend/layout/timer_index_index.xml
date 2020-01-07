@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<page>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="../../../../Framework/Schema/page_layout.xsd">
     <head>
         <title><![CDATA[AlcoTimer]]></title>
         <description><![CDATA[Web App for people, who would like to make drinking process become really challenging.]]></description>

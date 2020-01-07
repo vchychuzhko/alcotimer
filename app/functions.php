@@ -1,7 +1,7 @@
 <?php
 /**
  * Get first key in array.
- * https://www.php.net/manual/en/function.array-key-first.php
+ * Based on https://www.php.net/manual/en/function.array-key-first.php
  * Can be removed for PHP 7.3
  * @param array $array
  * @return mixed
@@ -18,8 +18,46 @@ if (!function_exists('array_key_first')) {
 }
 
 /**
+ * Update element in a multidimensional array by a specified key.
+ * Based on https://www.php.net/manual/en/function.array-walk-recursive.php#114574
+ * @param array $array
+ * @param string $elementKeyToRemove
+ */
+if (!function_exists('array_update_by_key_recursive')) {
+    function array_update_by_key_recursive(&$array, $elementKeyToUpdate, $newValue)
+    {
+        foreach ($array as $key => $value) {
+            if ($key === $elementKeyToUpdate) {
+                $array[$key] = array_replace_recursive($array[$key], $newValue);
+            } elseif (is_array($value)) {
+                array_update_by_key_recursive($array[$key], $elementKeyToUpdate, $newValue);
+            }
+        }
+    }
+}
+
+/**
+ * Remove element in a multidimensional array by a specified key.
+ * Based on https://www.php.net/manual/en/function.array-walk-recursive.php#114574
+ * @param array $array
+ * @param string $elementKeyToRemove
+ */
+if (!function_exists('array_remove_by_key_recursive')) {
+    function array_remove_by_key_recursive(&$array, $elementKeyToRemove)
+    {
+        foreach ($array as $key => $value) {
+            if ($key === $elementKeyToRemove) {
+                unset($array[$key]);
+            } elseif (is_array($value)) {
+                 array_remove_by_key_recursive($array[$key], $elementKeyToRemove);
+            }
+        }
+    }
+}
+
+/**
  * Remove directory recursively.
- * https://www.php.net/manual/en/function.rmdir.php#117354
+ * Based on https://www.php.net/manual/en/function.rmdir.php#117354
  * @param string $dir
  */
 if (!function_exists('rrmdir')) {
@@ -45,7 +83,7 @@ if (!function_exists('rrmdir')) {
 
 /**
  * Get all files in the directory recursively by regex filter if needed.
- * https://stackoverflow.com/a/35105800
+ * Based on https://stackoverflow.com/a/35105800
  * @param string $dir
  * @param string $filter
  * @param array $results
@@ -72,7 +110,7 @@ if (!function_exists('rscandir')) {
 
 /**
  * Replace the first occurrence of the searched string.
- * https://stackoverflow.com/a/2606638
+ * Based on https://stackoverflow.com/a/2606638
  * @param string $search
  * @param string $replace
  * @param string $subject

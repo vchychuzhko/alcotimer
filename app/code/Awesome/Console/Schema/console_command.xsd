@@ -3,10 +3,10 @@
     <xs:element name="config">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="namespace" maxOccurs="unbounded">
+                <xs:element name="namespace" minOccurs="0" maxOccurs="unbounded">
                     <xs:complexType>
                         <xs:sequence>
-                            <xs:element name="command" maxOccurs="unbounded">
+                            <xs:element name="command" minOccurs="0" maxOccurs="unbounded">
                                 <xs:complexType>
                                     <xs:sequence>
                                         <xs:element name="option" minOccurs="0" maxOccurs="unbounded">

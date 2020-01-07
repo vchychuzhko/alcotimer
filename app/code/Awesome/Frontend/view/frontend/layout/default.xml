@@ -11,11 +11,7 @@
         <css src="Awesome_Frontend::footer.css"/>
     </head>
     <body>
-        <container name="page-wrapper" sortOrder="5">
-            <data>
-                <field name="html_tag"><![CDATA[main]]></field>
-                <field name="html_class"><![CDATA[page-wrapper]]></field>
-            </data>
+        <container name="page-wrapper" htmlTag="main" htmlClass="page-wrapper" sortOrder="5">
             <block name="header" class="Awesome\Framework\Block\Template" template="Awesome_Frontend::header.phtml" sortOrder="1"/>
             <block name="footer" class="Awesome\Framework\Block\Template" template="Awesome_Frontend::footer.phtml" sortOrder="10"/>
         </container>

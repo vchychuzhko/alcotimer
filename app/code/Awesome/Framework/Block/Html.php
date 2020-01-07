@@ -50,6 +50,18 @@ class Html extends \Awesome\Framework\Block\Template
     }
 
     /**
+     * Set current page body structure data.
+     * @param array $bodyStructure
+     * @return $this
+     */
+    public function setBodyStructure($bodyStructure)
+    {
+        $this->children = $bodyStructure['children'];
+
+        return $this;
+    }
+
+    /**
      * Render head part of the page.
      * @return string
      */

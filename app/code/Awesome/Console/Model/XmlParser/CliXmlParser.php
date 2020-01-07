@@ -34,7 +34,8 @@ class CliXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
      * @param \SimpleXMLElement $xmlNode
      * @return array
      */
-    private function parseCliNode($xmlNode) {
+    private function parseCliNode($xmlNode)
+    {
         $parsedNode = [];
 
         foreach ($xmlNode->children() as $namespace) {
