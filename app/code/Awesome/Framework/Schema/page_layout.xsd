@@ -5,7 +5,7 @@
             <xs:sequence>
                 <xs:element name="head" minOccurs="0">
                     <xs:complexType>
-                        <xs:sequence>
+                        <xs:sequence minOccurs="0" maxOccurs="unbounded">
                             <xs:element name="title" type="xs:string" minOccurs="0"/>
                             <xs:element name="description" type="xs:string" minOccurs="0"/>
                             <xs:element name="keywords" type="xs:string" minOccurs="0"/>
@@ -26,6 +26,11 @@
                                 </xs:complexType>
                             </xs:element>
                             <xs:element name="css" minOccurs="0" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:attribute name="src" type="xs:string" use="required"/>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="remove" minOccurs="0" maxOccurs="unbounded">
                                 <xs:complexType>
                                     <xs:attribute name="src" type="xs:string" use="required"/>
                                 </xs:complexType>

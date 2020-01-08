@@ -21,6 +21,11 @@ class PageXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
     ];
 
     /**
+     * @var array $assetsToRemove
+     */
+    private $assetsToRemove = [];
+
+    /**
      * @var array $references
      */
     private $references = [];
@@ -58,6 +63,7 @@ class PageXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
                 $pageStructure = array_replace_recursive($pageStructure, $parsedData);
             }
 
+            $this->filterRemovedAssets();
             //@TODO: Add check for minify/merge enabled and replace links
             $pageStructure['head'] = array_merge($pageStructure['head'], $this->collectedAssets);
 
@@ -146,6 +152,7 @@ class PageXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
     {
         $parsedHeadNode = [];
 
+        //@TODO: Implement 'async' loading option
         foreach ($headNode->children() as $child) {
             switch ($childName = $child->getName()) {
                 case 'title':
@@ -161,10 +168,23 @@ class PageXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
                 case 'css':
                     $this->collectedAssets[$childName][] = (string) $child['src'];
                     break;
+                case 'remove':
+                    $this->assetsToRemove[] = (string) $child['src'];
+                    break;
             }
         }
 
         return $parsedHeadNode;
+    }
+
+    /**
+     * Filter collected assets according to remove references.
+     */
+    private function filterRemovedAssets()
+    {
+        foreach ($this->assetsToRemove as $asset) {
+            array_remove_by_value_recursive($this->collectedAssets, $asset);
+        }
     }
 
     /**
