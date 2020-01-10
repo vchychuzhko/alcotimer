@@ -4,71 +4,76 @@ namespace Awesome\Logger\Model;
 
 class LogWriter
 {
-    private const EXCEPTION_LOG_FILE = 'var/log/exception.log';
-    private const VISITOR_LOG_FILE = 'var/log/visitor.log';
+    private const LOG_DIRECTORY = '/var/log';
+    private const EXCEPTION_LOG_FILE = 'exception.log';
+    private const VISITOR_LOG_FILE = 'visitor.log';
     private const CURRENT_TIMEZONE = 'Europe/Kiev';
     private const TIME_FORMAT = 'Y-m-d H:i:s';
 
     /**
-     * Write all Errors, Warnings and Exceptions to log file
-     * @param string $string
+     * Write an error to a log file.
+     * @param string $errorMessage
      * @return $this
      */
-    public function write($string)
+    public function error($errorMessage)
     {
-        $content = (string) @file_get_contents(BP . '/' . self::EXCEPTION_LOG_FILE);
-        file_put_contents(
-            BP . '/' . self::EXCEPTION_LOG_FILE,
-            ($content ? "$content\n" : '') . $this->getCurrentTime() . ' - ' . $string
+        $this->write(
+            self::EXCEPTION_LOG_FILE,
+            $errorMessage
         );
 
         return $this;
     }
 
     /**
-     *
+     * Log visited pages.
      * @return $this
      */
     public function logVisitor()
     {
-        $content = (string) @file_get_contents(BP . '/' . self::VISITOR_LOG_FILE);
-        file_put_contents(
-            BP . '/' . self::VISITOR_LOG_FILE,
-            ($content ? "$content\n" : '')
-                . $this->getCurrentTime() . ' - '
-                . $_SERVER['REMOTE_ADDR'] . ' - http://alcotimer.xyz' . $_SERVER['REQUEST_URI']
+        $this->write(
+            self::VISITOR_LOG_FILE,
+            $_SERVER['REMOTE_ADDR'] . ' - http://alcotimer.xyz' . $_SERVER['REQUEST_URI']
         );
 
         return $this;
     }
 
     /**
-     * Prepare current time and offset as a string.
+     * Write message to a log file.
+     * @param string $logFile
+     * @param string $message
+     * @return $this
+     */
+    private function write($logFile, $message)
+    {
+        if (!file_exists(BP . self::LOG_DIRECTORY)) {
+            mkdir(BP . self::LOG_DIRECTORY);
+        }
+
+        file_put_contents(
+            BP . self::LOG_DIRECTORY . '/' . $logFile,
+            $this->getCurrentTime() . ': ' . $message . "\n",
+            FILE_APPEND
+        );
+
+        return $this;
+    }
+
+    /**
+     * Prepare datetime according to the current timezone as a string.
      * @return string
      */
     private function getCurrentTime()
     {
         try {
-            $time = new \DateTime('UTC');
-            $time = $time->format(self::TIME_FORMAT) . $this->getOffset($time);
+            $date = new \DateTime('now', new \DateTimeZone(self::CURRENT_TIMEZONE));
+            $time = $date->format(self::TIME_FORMAT);
         } catch (\Exception $e) {
-            $time = gmdate(self::TIME_FORMAT, time()) . ' UTC';
+            date_default_timezone_set(self::CURRENT_TIMEZONE);
+            $time = date(self::TIME_FORMAT);
         }
 
         return $time;
-    }
-
-    /**
-     * Get difference (offset) between current and UTC time.
-     * @param \DateTime $utcTime
-     * @return string
-     */
-    private function getOffset($utcTime)
-    {
-        $currentTimeZone = timezone_open(self::CURRENT_TIMEZONE);
-        $offsetInSecs =  $currentTimeZone->getOffset($utcTime);
-        $offset = gmdate('H:i', abs($offsetInSecs));
-
-        return ' UTC' . ($offsetInSecs > 0 ? '+' : '-') . $offset;
     }
 }

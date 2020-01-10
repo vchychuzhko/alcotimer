@@ -7,9 +7,9 @@ use Awesome\Framework\Model\App;
 class StaticContent
 {
     private const DEPLOYED_VERSION_FILE = '/pub/static/deployed_version.txt';
-    private const ASSET_PUB_TRIGGER = '{@pubDir}';
+    private const PUB_FOLDER_TRIGGER = '{@pubDir}';
     private const STATIC_FOLDER_PATH = '/pub/static';
-    private const ASSET_FOLDER_PATH_PATTERN = '/*/*/view/%v/web/%a';
+    private const ASSETS_FOLDER_PATH_PATTERN = '/*/*/view/%v/web/%a';
     private const JS_LIB_PATH_PATTERN = '/lib/*/*.js';
 
     /**
@@ -84,8 +84,8 @@ class StaticContent
     private function generateAssets($view)
     {
         $staticFolder = BP . self::STATIC_FOLDER_PATH . '/' . $view;
-        $viewPath = str_replace('%v', $view, self::ASSET_FOLDER_PATH_PATTERN);
-        $baseViewPath = str_replace('%v', App::BASE_VIEW, self::ASSET_FOLDER_PATH_PATTERN);
+        $viewPath = str_replace('%v', $view, self::ASSETS_FOLDER_PATH_PATTERN);
+        $baseViewPath = str_replace('%v', App::BASE_VIEW, self::ASSETS_FOLDER_PATH_PATTERN);
         $assets = [
             'css_base' => str_replace('%a', 'css', $baseViewPath),
             'css_view' => str_replace('%a', 'css', $viewPath),
@@ -174,7 +174,7 @@ class StaticContent
     {
         $pubPath = $this->config->getConfig(App::WEB_ROOT_CONFIG) ? '/' : '/pub/';
 
-        return str_replace(self::ASSET_PUB_TRIGGER, $pubPath, $content);
+        return str_replace(self::PUB_FOLDER_TRIGGER, $pubPath, $content);
     }
 
     /**
