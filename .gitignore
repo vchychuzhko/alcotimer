@@ -1,10 +1,7 @@
 /.idea
 
-/maintenance.flag
-
 /var/*
 !/var/.htaccess
 
-!/pub/static/
 /pub/static/*
 !/pub/static/.htaccess
