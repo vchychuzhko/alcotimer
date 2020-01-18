@@ -13,6 +13,6 @@ class Menu extends \Awesome\Framework\Block\Template
      */
     public function getSupportEmailAddress()
     {
-        return $this->config->getConfig(self::SUPPORT_EMAIL_CONFIG);
+        return $this->config->get(self::SUPPORT_EMAIL_CONFIG);
     }
 }

@@ -105,7 +105,7 @@ class App
      */
     private function showForbiddenPage()
     {
-        return (bool) $this->config->getConfig(self::SHOW_FORBIDDEN_CONFIG);
+        return (bool) $this->config->get(self::SHOW_FORBIDDEN_CONFIG);
     }
 
     /**
@@ -114,6 +114,6 @@ class App
      */
     private function getHomepageHandle()
     {
-        return (string) $this->config->getConfig(self::HOMEPAGE_HANDLE_CONFIG);
+        return (string) $this->config->get(self::HOMEPAGE_HANDLE_CONFIG);
     }
 }

@@ -12,7 +12,7 @@ class Timer extends \Awesome\Framework\Block\Template
      */
     public function getRandomRangeConfigJson()
     {
-        $randomRangeConfig = $this->config->getConfig(self::TIMER_CONFIG_PATH . '/random_range') ?: [];
+        $randomRangeConfig = $this->config->get(self::TIMER_CONFIG_PATH . '/random_range') ?: [];
 
         return $this->processConfig($randomRangeConfig);
     }
@@ -23,7 +23,7 @@ class Timer extends \Awesome\Framework\Block\Template
      */
     public function getSettingsJson()
     {
-        $settings = $this->config->getConfig(self::TIMER_CONFIG_PATH . '/settings') ?: [];
+        $settings = $this->config->get(self::TIMER_CONFIG_PATH . '/settings') ?: [];
 
         return $this->processConfig($settings);
     }
@@ -34,7 +34,7 @@ class Timer extends \Awesome\Framework\Block\Template
      */
     public function getTimerConfigJson()
     {
-        $timerConfig = $this->config->getConfig(self::TIMER_CONFIG_PATH . '/timer') ?: [];
+        $timerConfig = $this->config->get(self::TIMER_CONFIG_PATH . '/timer') ?: [];
 
         if (isset($timerConfig['sound'])) {
             $timerConfig['sound'] = $this->getMediaUrl($timerConfig['sound']);

@@ -172,7 +172,7 @@ class StaticContent
      */
     private function parsePubDirPath($content)
     {
-        $pubPath = $this->config->getConfig(App::WEB_ROOT_CONFIG) ? '/' : '/pub/';
+        $pubPath = $this->config->get(App::WEB_ROOT_CONFIG) ? '/' : '/pub/';
 
         return str_replace(self::PUB_FOLDER_TRIGGER, $pubPath, $content);
     }

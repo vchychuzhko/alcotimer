@@ -13,34 +13,19 @@ class Config
     private $config;
 
     /**
-     * Config constructor.
-     */
-    public function __construct()
-    {
-        $this->config = $this->loadConfig();
-        //@TODO: add setConfig() functionality
-    }
-
-    /**
-     * Include configuration file.
-     * @return array
-     */
-    private function loadConfig()
-    {
-        return include(BP . self::CONFIG_FILE_PATH);
-    }
-
-    /**
      * Get config value by path.
+     * Default value will be returned if no corresponding config is found.
      * @param string $path
+     * @param mixed|null $defaultValue
      * @return mixed
      */
-    public function getConfig($path)
+    public function get($path, $defaultValue = null)
     {
-        $config = null;
+        $config = $defaultValue;
 
-        if ($pathParts = $this->checkPath($path)) {
-            $config = $this->config;
+        if ($this->pathExist($path)) {
+            $pathParts = $this->parseConfigPath($path);
+            $config = $this->getConfig();
 
             foreach($pathParts as $pathPart) {
                 $config = $config[$pathPart];
@@ -51,17 +36,28 @@ class Config
     }
 
     /**
-     * Check if requested path exists and return its exploded path.
-     * Returns empty array if path does not exist.
-     * @param string $path
-     * @return array
+     * Set config value by path.
+     * @param string $key
+     * @param mixed|null $value
+     * @return $this
      */
-    private function checkPath($path)
+    public function set($key, $value)
     {
-        $pathParts = explode(self::CONFIG_PATH_DELIMITER, $path);
-        $exists = false;
+        //@TODO: Implement config set functionality
 
-        $config = $this->config;
+        return $this;
+    }
+
+    /**
+     * Check if the requested config path exists.
+     * @param string $path
+     * @return bool
+     */
+    private function pathExist($path)
+    {
+        $pathParts = $this->parseConfigPath($path);
+        $config = $this->getConfig();
+        $exists = false;
 
         foreach($pathParts as $pathPart) {
             if ($exists = isset($config[$pathPart])) {
@@ -71,6 +67,31 @@ class Config
             }
         }
 
-        return $exists ? $pathParts : [];
+        return $exists;
+    }
+
+    /**
+     * Parse requested path string into array of path parts.
+     * @param string $path
+     * @return array
+     */
+    private function parseConfigPath($path)
+    {
+        return explode(self::CONFIG_PATH_DELIMITER, $path);
+    }
+
+    /**
+     * Load and get config by including configuration file.
+     * Can be forced to re-parse the file.
+     * @param bool $forceUpdate
+     * @return array
+     */
+    private function getConfig($forceUpdate = false)
+    {
+        if ($this->config === null || $forceUpdate) {
+            $this->config = include(BP . self::CONFIG_FILE_PATH);
+        }
+
+        return $this->config;
     }
 }

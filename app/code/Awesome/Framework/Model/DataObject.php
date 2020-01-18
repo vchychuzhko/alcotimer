@@ -94,7 +94,7 @@ class DataObject
     /**
      * Converts snake_case to camelCase for js widget configurations.
      *
-     * @param $string
+     * @param string $string
      * @param string $separator
      * @return string
      */

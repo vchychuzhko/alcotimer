@@ -194,7 +194,7 @@ class Template
      */
     protected function getPubUrl($file = '')
     {
-        return ($this->config->getConfig(App::WEB_ROOT_CONFIG) ? '' : '/pub') . $file;
+        return ($this->config->get(App::WEB_ROOT_CONFIG) ? '' : '/pub') . $file;
     }
 
     /**
@@ -252,8 +252,8 @@ class Template
     }
 
     /**
-     * Converts snake_case text to camelCase.
-     * @param $string
+     * Converts snake_case string to camelCase.
+     * @param string $string
      * @param string $separator
      * @return string
      */
