@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<page>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="../../../../Framework/Schema/page_layout.xsd">
     <head>
         <script src="Awesome_Ui::menu.js"/>
         <script src="Awesome_Ui::message.js"/>
@@ -10,17 +11,22 @@
         <block name="menu" class="Awesome\Ui\Block\Menu" template="Awesome_Ui::menu.phtml" sortOrder="1"/>
         <referenceContainer name="page-wrapper">
             <referenceBlock name="header">
-                <block name="menu-toggler" class="Awesome\Base\Block\Template" template="Awesome_Ui::menu/menu_toggler.phtml"/>
+                <block name="menu-toggler"
+                       class="Awesome\Framework\Block\Template"
+                       template="Awesome_Ui::menu/menu_toggler.phtml"/>
             </referenceBlock>
             <block name="menu-overlay"
-                   class="Awesome\Base\Block\Template"
+                   class="Awesome\Framework\Block\Template"
                    template="Awesome_Ui::menu/menu_overlay.phtml"
-                   sortOrder="2"
-            />
+                   sortOrder="2"/>
         </referenceContainer>
         <referenceContainer name="js-init-section">
-            <block name="menu-init" class="Awesome\Base\Block\Template" template="Awesome_Ui::menu/menu_init.phtml"/>
-            <block name="message-init" class="Awesome\Base\Block\Template" template="Awesome_Ui::message/message_init.phtml"/>
+            <block name="menu-init"
+                   class="Awesome\Framework\Block\Template"
+                   template="Awesome_Ui::menu/menu_init.phtml"/>
+            <block name="message-init"
+                   class="Awesome\Framework\Block\Template"
+                   template="Awesome_Ui::message/message_init.phtml"/>
         </referenceContainer>
     </body>
 </page>

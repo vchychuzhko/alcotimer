@@ -1,6 +1,6 @@
 <?php
 
-namespace Awesome\Base\Model;
+namespace Awesome\Framework\Model;
 
 abstract class AbstractXmlParser
 {
@@ -18,14 +18,13 @@ abstract class AbstractXmlParser
     }
 
     /**
-     * Check if string is a boolean and convert it.
-     * @param string $value
-     * @return string|bool
+     * Check if string is a boolean "true", otherwise return false.
+     * Not case sensitive.
+     * @param string $string
+     * @return bool
      */
-    protected function stringBooleanCheck($value)
+    protected function stringBooleanCheck($string)
     {
-        return ($value === 'true' || $value === 'false')
-            ? ($value === 'true')
-            : $value;
+        return strtolower($string) === 'true';
     }
 }

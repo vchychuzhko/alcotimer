@@ -1,23 +1,12 @@
-<IfModule mod_php5.c>
-    php_flag engine 0
-</IfModule>
-
-<IfModule mod_php7.c>
-    php_flag engine 0
-</IfModule>
-
 # To avoid situation when web server automatically adds extension to path
 #Options -MultiViews
-# Server requirements
+# Server requirements - https://wiki.ukraine.com.ua/hosting:htaccess:unsupported-options
 
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
     # Remove signature of the static files that is used to overcome the browser cache
     RewriteRule ^version.+?/(.+)$ $1 [L]
-
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-l
 </IfModule>
 
 ############################################
@@ -28,7 +17,6 @@ AddType application/javascript js jsonp
 AddType application/json json
 
 # HTML
-
 AddType text/html html
 
 # CSS
@@ -62,19 +50,16 @@ AddType text/csv csv
 AddType application/xml xml
 
 <IfModule mod_headers.c>
-
-    <FilesMatch .*\.(ico|jpg|jpeg|png|gif|svg|js|css|swf|eot|ttf|otf|woff|woff2|json)$>
+    <FilesMatch .*\.(ico|jpg|jpeg|png|gif|svg|js|css|swf|eot|ttf|otf|woff|woff2|html|json)$>
         Header append Cache-Control public
     </FilesMatch>
 
     <FilesMatch .*\.(zip|gz|gzip|bz2|csv|xml)$>
         Header append Cache-Control no-store
     </FilesMatch>
-
 </IfModule>
 
 <IfModule mod_expires.c>
-
 ############################################
 ## Add default Expires header
 ## http://developer.yahoo.com/performance/rules.html#expires
@@ -120,5 +105,4 @@ AddType application/xml xml
     ExpiresByType application/x-font-otf "access plus 1 year"
     ExpiresByType application/x-font-woff "access plus 1 year"
     ExpiresByType application/font-woff2 "access plus 1 year"
-
 </IfModule>

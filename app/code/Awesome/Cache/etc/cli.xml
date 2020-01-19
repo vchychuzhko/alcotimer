@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<config>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="../../Console/Schema/console_command.xsd">
     <namespace name="cache">
         <command name="clean" class="Awesome\Cache\Console\Clean">
             <description><![CDATA[Flush XML, including CLI and page cache.]]></description>

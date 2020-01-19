@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<config>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="../../Console/Schema/console_command.xsd">
     <namespace name="help">
         <command name="show" class="Awesome\Console\Console\ShowHelp">
             <description><![CDATA[Show a list of allowed console commands.]]></description>

@@ -2,10 +2,11 @@
 
 namespace Awesome\Console\Model\XmlParser;
 
-class CliXmlParser extends \Awesome\Base\Model\AbstractXmlParser
+use Awesome\Cache\Model\Cache;
+
+class CliXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
 {
     private const CLI_XML_PATH_PATTERN = '/*/*/etc/cli.xml';
-    private const ETC_CACHE_KEY = 'etc';
     private const CLI_CACHE_TAG = 'cli';
 
     /**
@@ -14,15 +15,15 @@ class CliXmlParser extends \Awesome\Base\Model\AbstractXmlParser
      */
     public function retrieveConsoleCommands()
     {
-        if (!$commandList = $this->cache->get(self::ETC_CACHE_KEY, self::CLI_CACHE_TAG)) {
+        if (!$commandList = $this->cache->get(Cache::ETC_CACHE_KEY, self::CLI_CACHE_TAG)) {
             foreach (glob(APP_DIR . self::CLI_XML_PATH_PATTERN) as $cliXmlFile) {
                 $cliData = simplexml_load_file($cliXmlFile);
 
                 $parsedData = $this->parseCliNode($cliData);
-                $commandList = array_merge_recursive($commandList, $parsedData['config']);
+                $commandList = array_replace_recursive($commandList, $parsedData);
             }
 
-            $this->cache->save(self::ETC_CACHE_KEY, self::CLI_CACHE_TAG, $commandList);
+            $this->cache->save(Cache::ETC_CACHE_KEY, self::CLI_CACHE_TAG, $commandList);
         }
 
         return $commandList;
@@ -33,32 +34,36 @@ class CliXmlParser extends \Awesome\Base\Model\AbstractXmlParser
      * @param \SimpleXMLElement $xmlNode
      * @return array
      */
-    private function parseCliNode($xmlNode) {
+    private function parseCliNode($xmlNode)
+    {
         $parsedNode = [];
-        $nodeName = $xmlNode->getName();
-        $attributes = [];
 
-        foreach ($xmlNode->attributes() as $attributeName => $attributeValue) {
-            $attributeValue = (string) $attributeValue;
+        foreach ($xmlNode->children() as $namespace) {
+            $namespaceName = (string) $namespace['name'];
+            $parsedNode[$namespaceName] = [];
 
-            if ($attributeName === 'name') {
-                $nodeName = $attributeValue;
-            } else {
-                $attributes[$attributeName] = $this->stringBooleanCheck($attributeValue);
+            foreach ($namespace->children() as $command) {
+                $class = (string) $command['class'];
+                $disabled = $this->stringBooleanCheck((string) $command['disabled']);
+                $description = (string) $command->description;
+                $options = [];
+
+                foreach ($command->children() as $commandField) {
+                    if ($commandField->getName() === 'option') {
+                        $options[(string) $commandField['name']] = [
+                            'required' => $this->stringBooleanCheck((string) $commandField['required']),
+                            'description' => (string) $commandField->description
+                        ];
+                    }
+                }
+
+                $parsedNode[$namespaceName][(string) $command['name']] = [
+                    'class' => $class,
+                    'disabled' => $disabled,
+                    'description' => $description,
+                    'options' => $options
+                ];
             }
-        }
-        $parsedNode[$nodeName] = $attributes;
-        $children = $xmlNode->children();
-
-        if (count($children)) {
-            foreach ($children as $child) {
-                $child = $this->parseCliNode($child);
-                $childName = array_key_first($child);
-
-                $parsedNode[$nodeName][$childName] = $child[$childName];
-            }
-        } elseif ($text = trim((string) $xmlNode)) {
-            $parsedNode[$nodeName] = $text;
         }
 
         return $parsedNode;

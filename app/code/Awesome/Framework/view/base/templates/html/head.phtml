@@ -1,0 +1,24 @@
+<?php /** @var \Awesome\Framework\Block\Html\Head $this */ ?>
+<meta charset="UTF-8">
+<?php if ($title = $this->getTitle()): ?>
+    <title><?= $title; ?></title>
+<?php endif; ?>
+<?php if ($description = $this->getDescription()): ?>
+    <meta name="description" content="<?= $description; ?>"/>
+<?php endif; ?>
+<?php if ($keywords = $this->getKeywords()): ?>
+    <meta name="keywords" content="<?= $keywords; ?>"/>
+<?php endif; ?>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<?php if ($favicon = $this->getFavicon()): ?>
+    <link rel="shortcut icon" type="image/png" href="<?= $this->getMediaUrl($favicon); ?>"/>
+<?php endif; ?>
+<?php foreach($this->getLibs() as $lib): ?>
+    <script src="<?= $lib; ?>"></script>
+<?php endforeach; ?>
+<?php foreach($this->getStyles() as $css): ?>
+    <link rel="stylesheet" type="text/css" href="<?= $css; ?>"/>
+<?php endforeach; ?>
+<?php foreach($this->getScripts() as $script): ?>
+    <script src="<?= $script; ?>"></script>
+<?php endforeach; ?>

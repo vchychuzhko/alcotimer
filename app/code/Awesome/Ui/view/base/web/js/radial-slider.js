@@ -92,6 +92,8 @@
             this.centerX = ($circle.outerWidth() - this.borderWidth) / 2;
             this.centerY = ($circle.outerHeight() - this.borderWidth) / 2;
             this.radius = ($circle.outerWidth() - this.borderWidth) / 2;
+
+            this.setControllerPosition(this.getValueFromController(), false, false);
         },
 
         /**

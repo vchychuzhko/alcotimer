@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<page>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="../../../../Framework/Schema/page_layout.xsd">
     <head>
         <title><![CDATA[Forbidden]]></title>
         <css src="Awesome_Frontend::pages/errors.css"/>
@@ -7,15 +8,9 @@
     <body>
         <referenceContainer name="page-wrapper">
             <block name="forbidden.content"
-                   class="Awesome\Base\Block\Template"
+                   class="Awesome\Frontend\Block\Error\Forbidden"
                    template="Awesome_Frontend::pages/errors.phtml"
-                   sortOrder="5"
-            >
-                <data>
-                    <field name="error_title"><![CDATA[403 error: Forbidden]]></field>
-                    <field name="error_message"><![CDATA[The page you are trying to access is not available for you.]]></field>
-                </data>
-            </block>
+                   sortOrder="5"/>
         </referenceContainer>
     </body>
 </page>

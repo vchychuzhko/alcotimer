@@ -1,20 +1,10 @@
-ErrorDocument 403 /
-ErrorDocument 404 /
-ErrorDocument 500 /pub/pages/maintenance.html
-
-# Deny access to filenames starting with dot(.)
-<FilesMatch "^\.">
-    Order allow,deny
-    Deny from all
-</FilesMatch>
-
 <IfModule mod_rewrite.c>
-
 ############################################
 ## enable rewrites
 
+    #Options +FollowSymLinks
     Options +SymLinksIfOwnerMatch
-    # Server requirements
+    # Server requirements - https://wiki.ukraine.com.ua/hosting:htaccess:unsupported-optionsrequirements
     RewriteEngine on
 
 ############################################
@@ -40,5 +30,38 @@ ErrorDocument 500 /pub/pages/maintenance.html
 ## rewrite everything else to index.php
 
     RewriteRule .* index.php [L]
-
 </IfModule>
+
+############################################
+## Prevent character encoding issues from server overrides
+## If you still have problems, use the second line instead
+
+    AddDefaultCharset Off
+    #AddDefaultCharset UTF-8
+    AddType 'text/html; charset=UTF-8' html
+
+<IfModule mod_expires.c>
+############################################
+## Add default Expires header
+## http://developer.yahoo.com/performance/rules.html#expires
+
+    ExpiresDefault "access plus 1 year"
+    ExpiresByType text/html A0
+    ExpiresByType text/plain A0
+</IfModule>
+
+###########################################
+## Deny access to files that begin with a dot
+    <FilesMatch "^\.">
+        Require all denied
+    </FilesMatch>
+    <Files README.md>
+        Require all denied
+    </Files>
+
+# For 404s and 403s redirect to index
+ErrorDocument 403 /
+ErrorDocument 404 /
+
+# For 500s that aren't handled by the application, show plain 500 response
+ErrorDocument 500 /pub/pages/maintenance.html

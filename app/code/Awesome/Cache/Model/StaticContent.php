@@ -2,19 +2,18 @@
 
 namespace Awesome\Cache\Model;
 
-use Awesome\Base\Model\App;
+use Awesome\Framework\Model\App;
 
 class StaticContent
 {
     private const DEPLOYED_VERSION_FILE = '/pub/static/deployed_version.txt';
-    private const PUB_PATH_CONFIG = 'web/pub_path';
-    private const ASSET_PUB_TRIGGER = '{@pubDir}/';
+    private const PUB_FOLDER_TRIGGER = '{@pubDir}';
     private const STATIC_FOLDER_PATH = '/pub/static';
-    private const ASSET_FOLDER_PATH_PATTERN = '/*/*/view/%v/web/%a';
+    private const ASSETS_FOLDER_PATH_PATTERN = '/*/*/view/%v/web/%a';
     private const JS_LIB_PATH_PATTERN = '/lib/*/*.js';
 
     /**
-     * @var \Awesome\Base\Model\Config $config
+     * @var \Awesome\Framework\Model\Config $config
      */
     private $config;
 
@@ -23,7 +22,7 @@ class StaticContent
      */
     public function __construct()
     {
-        $this->config = new \Awesome\Base\Model\Config();
+        $this->config = new \Awesome\Framework\Model\Config();
     }
 
     /**
@@ -85,8 +84,8 @@ class StaticContent
     private function generateAssets($view)
     {
         $staticFolder = BP . self::STATIC_FOLDER_PATH . '/' . $view;
-        $viewPath = str_replace('%v', $view, self::ASSET_FOLDER_PATH_PATTERN);
-        $baseViewPath = str_replace('%v', App::BASE_VIEW, self::ASSET_FOLDER_PATH_PATTERN);
+        $viewPath = str_replace('%v', $view, self::ASSETS_FOLDER_PATH_PATTERN);
+        $baseViewPath = str_replace('%v', App::BASE_VIEW, self::ASSETS_FOLDER_PATH_PATTERN);
         $assets = [
             'css_base' => str_replace('%a', 'css', $baseViewPath),
             'css_view' => str_replace('%a', 'css', $viewPath),
@@ -173,9 +172,9 @@ class StaticContent
      */
     private function parsePubDirPath($content)
     {
-        $pubPath = $this->config->getConfig(self::PUB_PATH_CONFIG);
+        $pubPath = $this->config->get(App::WEB_ROOT_CONFIG) ? '/' : '/pub/';
 
-        return str_replace(self::ASSET_PUB_TRIGGER, '/' . $pubPath, $content);
+        return str_replace(self::PUB_FOLDER_TRIGGER, $pubPath, $content);
     }
 
     /**
@@ -195,6 +194,7 @@ class StaticContent
      */
     public function getDeployedVersion()
     {
+        //@TODO: Resolve situation when frontend folder is missing, but deployed version is present
         return (string) @file_get_contents(BP . self::DEPLOYED_VERSION_FILE);
     }
 

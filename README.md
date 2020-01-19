@@ -1,13 +1,16 @@
 # AlcoTimer
-#### Version: 0.2.1-beta
+*0.2.2-beta*
 
-That's still the very beginning, although, he's ready for the real tests.
+Web application for people, who would like to make drinking process become really challenging.  
 
-Run command below to see possible console commands:
+### Usage
+Run below command to see possible console commands:  
 ```bash
 php bin/console help:show
 ```
 
-Requirements: PHP 7.1 or higher.
+### Requirements
+* Apache 2.4 or higher
+* PHP 7.1 or higher.  
 
-###### Web equivalent of [app](https://bitbucket.org/vchychuzhko/alcotimer) for people, who would like to make drinking process become really challenging.
+###### Started as a web equivalent of [Android app](https://bitbucket.org/vchychuzhko/alcotimer)

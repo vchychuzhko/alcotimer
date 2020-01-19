@@ -1,9 +1,11 @@
 <?xml version="1.0"?>
-<page>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="../../../../Framework/Schema/page_layout.xsd">
     <head>
         <title><![CDATA[AlcoTimer]]></title>
         <description><![CDATA[Web App for people, who would like to make drinking process become really challenging.]]></description>
         <keywords><![CDATA[Alcohol,Alco,Timer,AlcoTimer,Web,App,Drink]]></keywords>
+        <lib src="lib/goldfire/howler.min.js"/>
         <script src="Awesome_Ui::radial-slider.js"/>
         <script src="Awesome_Ui::range-slider.js"/>
         <script src="Awesome_Timer::settings.js"/>
@@ -14,11 +16,11 @@
     </head>
     <body>
         <referenceBlock name="menu">
-            <block name="settings" class="Awesome\Base\Block\Template" template="Awesome_Timer::menu/settings.phtml"/>
+            <block name="settings" class="Awesome\Framework\Block\Template" template="Awesome_Timer::menu/settings.phtml"/>
         </referenceBlock>
         <referenceContainer name="page-wrapper">
             <block name="timer.content"
-                   class="Awesome\Base\Block\Template"
+                   class="Awesome\Framework\Block\Template"
                    template="Awesome_Timer::timer.phtml"
                    sortOrder="5"
             />

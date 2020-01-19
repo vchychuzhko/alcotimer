@@ -6,7 +6,7 @@
         options: {
             defaultTime: 9,
             radialContainerSelector: '.radial-container',
-            sound: 'media/audio/alert_sound.mp3'
+            sound: '/pub/media/audio/alert_sound.mp3'
         },
 
         /**
@@ -193,7 +193,7 @@
             this.stop();
 
             let sound = new Howl({
-                src: ['{@pubDir}/' + this.options.sound]
+                src: [this.options.sound]
             });
 
             sound.play();
