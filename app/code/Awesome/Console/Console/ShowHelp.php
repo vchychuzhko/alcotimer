@@ -11,35 +11,50 @@ class ShowHelp extends \Awesome\Console\Model\AbstractCommand
 
     /**
      * ShowHelp constructor.
+     * @inheritDoc
      */
-    public function __construct()
+    public function __construct($options = [], $arguments = [])
     {
         $this->xmlParser = new \Awesome\Console\Model\XmlParser\CliXmlParser();
+        parent::__construct($options, $arguments);
     }
 
     /**
-     * Show help with the list of all available commands.
+     * Show help with app version or list of all available commands.
      * @inheritDoc
      */
-    public function execute($args = [])
+    public function execute()
     {
-        $output = "---- AlcoTimer CLI ----\n";
+        $output = $this->getAppCliTitle() . "\n\n"
+            . $this->colourText('Usage:', 'brown') . "\n"
+            . '  ' . 'command [options] [arguments]' . "\n\n";
+
+        //@TODO: Implement command options functionality
+        $options = [
+            '-h, --help' => 'Display this help message',
+            '-q, --quiet' => 'Do not output any message',
+            '-v, --version' => 'Display this application version',
+//            '-n, --no-interaction' => 'Do not ask any interactive questions'
+        ];
+
+        if ($options) {
+            $output .= $this->colourText('Options:', 'brown') . "\n";
+
+            foreach ($options as $name => $description) {
+                $output .= '  ' . str_pad($this->colourText($name), 35) . $description . "\n";
+            }
+            $output .= "\n";
+        }
 
         if ($commandList = $this->xmlParser->retrieveConsoleCommands()) {
-            $output .= 'Here is the list of available commands:';
+            $output .= $this->colourText('Available commands:', 'brown') . "\n";
 
             foreach ($commandList as $namespace => $commands) {
+                $output .= ' ' . $this->colourText($namespace, 'brown') . "\n";
+
                 foreach ($commands as $name => $command) {
                     if (!$command['disabled']) {
-                        $output .= "\n" . $this->colourText(
-                                \Awesome\Console\Model\Console::COMMAND_BASE . ' ' . $namespace . ':' . $name
-                            ) . ' | ' . $command['description'];
-
-                        foreach ($command['options'] as $option) {
-                            $required = $option['required'] ? ' (required)' : '';
-
-                            $output .= "\n" . $option['description'] . $required;
-                        }
+                        $output .= '  ' . str_pad($this->colourText($namespace . ':' . $name), 40) . $command['description'] . "\n";
                     }
                 }
             }
@@ -48,5 +63,14 @@ class ShowHelp extends \Awesome\Console\Model\AbstractCommand
         }
 
         return $output;
+    }
+
+    /**
+     * Get application CLI title with version.
+     * @return string
+     */
+    public function getAppCliTitle()
+    {
+        return 'AlcoTimer CLI ' . $this->colourText(\Awesome\Framework\Model\App::VERSION);
     }
 }

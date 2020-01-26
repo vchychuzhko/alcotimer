@@ -4,6 +4,8 @@ namespace Awesome\Framework\Model;
 
 class App
 {
+    public const VERSION = '0.2.3';
+
     public const FRONTEND_VIEW = 'frontend';
     public const BACKEND_VIEW = 'adminhtml';
     public const BASE_VIEW = 'base';

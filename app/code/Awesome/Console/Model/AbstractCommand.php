@@ -43,26 +43,31 @@ abstract class AbstractCommand
     ];
 
     /**
-     * @param array $args
-     * @return string
+     * @var array $options
      */
-    abstract function execute($args = []);
+    protected $options;
 
     /**
-     * Parse input arguments.
-     * @param array $args
-     * @return array
+     * @var array $arguments
      */
-    protected function parseArguments($args) {
-        $arguments = [];
+    protected $arguments;
 
-        foreach ($args as $arg) {
-            @list($argument, $value) = explode('=', str_replace('--', '', $arg));
-            $arguments[$argument][] = $value;
-        }
-
-        return $arguments;
+    /**
+     * AbstractCommand constructor.
+     * @param array $options
+     * @param array $arguments
+     */
+    public function __construct($options = [], $arguments = [])
+    {
+        $this->options = $options;
+        $this->arguments = $arguments;
     }
+
+    /**
+     * Run the console command.
+     * @return string
+     */
+    abstract public function execute();
 
     /**
      * Wrap text with colour for CLI.
@@ -83,5 +88,14 @@ abstract class AbstractCommand
         }
 
         return $text;
+    }
+
+    /**
+     * Determine if help should be shown.
+     * @return bool
+     */
+    protected function showHelp()
+    {
+        return isset($this->options['h']) || isset($this->options['help']);
     }
 }

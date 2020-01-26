@@ -4,81 +4,114 @@ namespace Awesome\Console\Model;
 
 class Console
 {
-    public const COMMAND_BASE = 'php bin/console';
-
-    /**
-     * @var array $args
-     */
-    private $args;
-
     /**
      * @var \Awesome\Console\Model\XmlParser\CliXmlParser $xmlParser
      */
     private $xmlParser;
 
     /**
-     * Console constructor.
+     * @var \Awesome\Console\Console\ShowHelp $help
+     */
+    private $help;
+
+    /**
+     * Console app constructor.
      */
     public function __construct()
     {
-        $this->args = $_SERVER['argv'];
         $this->xmlParser = new \Awesome\Console\Model\XmlParser\CliXmlParser();
+        $this->help = new \Awesome\Console\Console\ShowHelp();
     }
 
     /**
-     * Execute the command.
+     * Run the CLI application.
      */
     public function run()
     {
-        list($commandName, $commandArgs) = $this->parseInput();
+        list($command, $options, $arguments) = $this->parseInput();
 
-        if ($commandName) {
-            if ($className = $this->mapClassName($commandName)) {
+        if ($this->showVersion($options)) {
+            $output = $this->help->getAppCliTitle();
+        } elseif ($command) {
+            $output = $this->help->colourText('Command "' . $command . '" is not defined.', 'white', 'red') . "\n";
+            $className = $this->parseCommand($command);
+
+            if ($className && !is_array($className)) {
                 /** @var \Awesome\Console\Model\AbstractCommand $consoleClass */
-                $consoleClass = new $className();
-                $output = $consoleClass->execute($commandArgs);
-            } else {
-                $output = '`' . $commandName . '` command is not defined in this application' . "\n"
-                    . 'Try run `'. self::COMMAND_BASE . '` to see possible commands.';
+                $consoleClass = new $className($options, $arguments);
+                $output = $consoleClass->execute() . "\n";
+            } elseif ($className) {
+                $output .= "\n" . '  Did you mean one of these?' . "\n"
+                    . $this->help->colourText(implode("\n", $className), 'brown') . "\n";
             }
         } else {
-            $help = new \Awesome\Console\Console\ShowHelp();
-            $output = $help->execute();
+            $output = $this->help->execute() . "\n";
         }
 
-        echo $output . "\n";
+        if ($this->isQuiet($options)) {
+            $output = '';
+        }
+
+        echo $output;
     }
 
     /**
-     * Parse console input into array of arguments.
+     * Parse console input into command, options and arguments.
+     * Return array with the mentioned order.
      * @return array
      */
     private function parseInput()
     {
+        $args = $_SERVER['argv'];
+        $command = '';
+        $options = [];
+        $arguments = [];
+
+        if (isset($args[1]) && strpos($args[1], '-') !== 0) {
+            $command = $args[1];
+        }
+
+        foreach (array_slice($args, 1) as $arg) {
+            if (strpos($arg, '--') === 0) {
+                @list($option, $value) = explode('=', str_replace_first('--', '', $arg));
+                $options[$option][] = $value ?: true;
+            } elseif (strpos($arg, '-') === 0) {
+                $option = substr($arg, 1, 1);
+                $value = substr($arg, 2);
+                $options[$option][] = $value ?: true;
+            } else {
+                $arguments[] = $arg;
+            }
+        }
+
         return [
-            $this->args[1] ?? [], //commandName
-            array_slice($this->args, 2) ?? [] //additionalArgs
+            $command,
+            $options,
+            $arguments
         ];
     }
 
     /**
-     * Get class namespace by called command.
-     * @param string $commandName
-     * @return string
+     * Get classname by called command.
+     * @param string $input
+     * @return string|array
      */
-    private function mapClassName($commandName)
+    private function parseCommand($input)
     {
-        @list($namespace, $command) = explode(':', $commandName);
         $className = '';
+        @list($namespace, $command) = explode(':', $input);
+        $consoleCommands = $this->xmlParser->retrieveConsoleCommands();
 
-        if ($namespace && $command) {
-            $commandList = $this->xmlParser->retrieveConsoleCommands();
+        if ($namespace = $this->findMatch($namespace, array_keys($consoleCommands))) {
+            $command = $this->findMatch($command, array_keys($consoleCommands[$namespace]));
 
-            $namespace = $this->findMatch($namespace, array_keys($commandList));
-            $command = $this->findMatch($command, array_keys($commandList[$namespace]));
-
-            if ($command && !$commandList[$namespace][$command]['disabled']) {
-                $className = $commandList[$namespace][$command]['class'];
+            if ($command && !$consoleCommands[$namespace][$command]['disabled']) {
+                $className = $consoleCommands[$namespace][$command]['class'];
+            } else  {
+                $className = array_keys($consoleCommands[$namespace]);
+                $className = array_map(function ($candidate) use ($namespace) {
+                    return '    ' . $namespace . ':' . $candidate;
+                }, $className);
             }
         }
 
@@ -86,7 +119,7 @@ class Console
     }
 
     /**
-     * Find corresponding string by its part.
+     * Find potential matched string in array by its part.
      * @param string $search
      * @param array $candidates
      * @return string
@@ -109,5 +142,25 @@ class Console
         }
 
         return $match;
+    }
+
+    /**
+     * Determine if application version should be shown.
+     * @param array $options
+     * @return bool
+     */
+    private function showVersion($options)
+    {
+        return isset($options['v']) || isset($options['version']);
+    }
+
+    /**
+     * Determine if output should be disabled.
+     * @param $options
+     * @return bool
+     */
+    private function isQuiet($options)
+    {
+        return isset($options['q']) || isset($options['quiet']);
     }
 }

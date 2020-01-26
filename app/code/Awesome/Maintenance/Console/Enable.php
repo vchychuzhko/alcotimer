@@ -2,31 +2,32 @@
 
 namespace Awesome\Maintenance\Console;
 
-use \Awesome\Maintenance\Model\Maintenance;
-
 class Enable extends \Awesome\Console\Model\AbstractCommand
 {
     /**
-     * @var Maintenance $maintenance
+     * @var \Awesome\Maintenance\Model\Maintenance $maintenance
      */
     private $maintenance;
 
     /**
-     * Enable constructor.
+     * Maintenance Enable constructor.
+     * @inheritDoc
      */
-    public function __construct()
+    public function __construct($options = [], $arguments = [])
     {
-        $this->maintenance = new Maintenance();
+        $this->maintenance = new \Awesome\Maintenance\Model\Maintenance();
+        parent::__construct($options, $arguments);
     }
 
     /**
      * Enable maintenance mode.
      * @inheritDoc
      */
-    public function execute($args = [])
+    public function execute()
     {
-        $allowedIPs = $this->parseArguments($args)['ip'] ?? [];
+        $allowedIPs = $this->options['ip'] ?? [];
         $this->maintenance->enable($allowedIPs);
+        //@TODO: add IP address validation
 
         return $this->colourText('Maintenance mode was enabled.');
     }

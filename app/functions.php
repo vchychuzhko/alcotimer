@@ -2,7 +2,7 @@
 /**
  * Get first key in array.
  * Based on https://www.php.net/manual/en/function.array-key-first.php
- * Can be removed for PHP 7.3
+ * A polyfill for PHP versions below 7.3
  * @param array $array
  * @return mixed
  */
