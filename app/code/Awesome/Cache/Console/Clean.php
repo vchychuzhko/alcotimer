@@ -2,7 +2,7 @@
 
 namespace Awesome\Cache\Console;
 
-class Clean extends \Awesome\Console\Model\AbstractCommand
+class Clean extends \Awesome\Framework\Model\Cli\AbstractCommand
 {
     /**
      * @var \Awesome\Cache\Model\Cache $cache

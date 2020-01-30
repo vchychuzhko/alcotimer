@@ -1,6 +1,6 @@
 <?php
 
-namespace Awesome\Console\Model\Console;
+namespace Awesome\Framework\Model\Cli;
 
 class Output
 {

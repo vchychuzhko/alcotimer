@@ -1,11 +1,11 @@
 <?php
 
-namespace Awesome\Console\Console;
+namespace Awesome\Framework\Console;
 
-class ShowHelp extends \Awesome\Console\Model\AbstractCommand
+class ShowHelp extends \Awesome\Framework\Model\Cli\AbstractCommand
 {
     /**
-     * @var \Awesome\Console\Model\XmlParser\CliXmlParser $xmlParser
+     * @var \Awesome\Framework\XmlParser\CliXmlParser $xmlParser
      */
     private $xmlParser;
 
@@ -15,7 +15,7 @@ class ShowHelp extends \Awesome\Console\Model\AbstractCommand
      */
     public function __construct($options = [], $arguments = [])
     {
-        $this->xmlParser = new \Awesome\Console\Model\XmlParser\CliXmlParser();
+        $this->xmlParser = new \Awesome\Framework\XmlParser\CliXmlParser();
         parent::__construct($options, $arguments);
     }
 
@@ -53,6 +53,15 @@ class ShowHelp extends \Awesome\Console\Model\AbstractCommand
                 'default' => null
             ],
 //            '-n, --no-interaction' => 'Do not ask any interactive questions'
+        ];
+
+        $arguments = [
+            [
+                'name' => 'cache-types',
+                'mode' => 'optional', //     const REQUIRED = 1;    const OPTIONAL = 2;    const IS_ARRAY = 4;
+                'description' => 'Cache types to be cleared',
+                'default' => null
+            ]
         ];
 
         $padding = max(array_map(function ($option) {

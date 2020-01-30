@@ -1,11 +1,11 @@
 <?php
 
-namespace Awesome\Framework\Model\XmlParser;
+namespace Awesome\Framework\XmlParser;
 
-use Awesome\Framework\Model\App;
+use Awesome\Framework\App\Http;
 use Awesome\Cache\Model\Cache;
 
-class PageXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
+class PageXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
 {
     private const DEFAULT_PAGE_XML_PATH_PATTERN = '/*/*/view/%v/layout/default.xml';
     private const PAGE_XML_PATH_PATTERN = '/*/*/view/%v/layout/%h.xml';
@@ -96,7 +96,7 @@ class PageXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
     private function collectHandles($requestedView = '')
     {
         if (!$handles = $this->cache->get(Cache::LAYOUT_CACHE_KEY, self::PAGE_HANDLES_CACHE_TAG)) {
-            foreach ([App::FRONTEND_VIEW, App::BACKEND_VIEW, App::BASE_VIEW] as $view) {
+            foreach ([Http::FRONTEND_VIEW, Http::BACKEND_VIEW, Http::BASE_VIEW] as $view) {
                 $pattern = APP_DIR . str_replace('%v', $view, self::PAGE_XML_PATH_PATTERN);
                 $pattern = str_replace('%h', '*', $pattern);
                 $collectedHandles = [];

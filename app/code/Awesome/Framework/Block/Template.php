@@ -2,7 +2,7 @@
 
 namespace Awesome\Framework\Block;
 
-use Awesome\Framework\Model\App;
+use Awesome\Framework\App\Http;
 
 class Template
 {
@@ -194,7 +194,7 @@ class Template
      */
     protected function getPubUrl($file = '')
     {
-        return ($this->config->get(App::WEB_ROOT_CONFIG) ? '' : '/pub') . $file;
+        return ($this->config->get(Http::WEB_ROOT_CONFIG) ? '' : '/pub') . $file;
     }
 
     /**
@@ -244,7 +244,7 @@ class Template
             $path = '/' . $module . '/view/' . $this->view . '/templates/' . $file;
 
             if (!file_exists(APP_DIR . $path)) {
-                $path = str_replace('/view/' . $this->view, '/view/' . App::BASE_VIEW, $path);
+                $path = str_replace('/view/' . $this->view, '/view/' . Http::BASE_VIEW, $path);
             }
         }
 

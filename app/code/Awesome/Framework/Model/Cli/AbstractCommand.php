@@ -1,8 +1,8 @@
 <?php
 
-namespace Awesome\Console\Model;
+namespace Awesome\Framework\Model\Cli;
 
-use Awesome\Console\Model\Console\Output;
+use Awesome\Framework\Model\Cli\Output;
 
 abstract class AbstractCommand
 {

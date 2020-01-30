@@ -2,7 +2,7 @@
 
 namespace Awesome\Cache\Console;
 
-class StaticDeploy extends \Awesome\Console\Model\AbstractCommand
+class StaticDeploy extends \Awesome\Framework\Model\Cli\AbstractCommand
 {
     /**
      * @var \Awesome\Cache\Model\StaticContent $staticContent

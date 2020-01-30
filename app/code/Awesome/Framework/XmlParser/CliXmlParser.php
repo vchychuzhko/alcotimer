@@ -1,10 +1,10 @@
 <?php
 
-namespace Awesome\Console\Model\XmlParser;
+namespace Awesome\Framework\XmlParser;
 
 use Awesome\Cache\Model\Cache;
 
-class CliXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
+class CliXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
 {
     private const CLI_XML_PATH_PATTERN = '/*/*/etc/cli.xml';
     private const CLI_CACHE_TAG = 'cli';

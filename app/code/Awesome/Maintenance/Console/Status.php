@@ -2,7 +2,7 @@
 
 namespace Awesome\Maintenance\Console;
 
-class Status extends \Awesome\Console\Model\AbstractCommand
+class Status extends \Awesome\Framework\Model\Cli\AbstractCommand
 {
     /**
      * @var \Awesome\Maintenance\Model\Maintenance $maintenance

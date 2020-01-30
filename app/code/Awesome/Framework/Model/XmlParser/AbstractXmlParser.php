@@ -1,6 +1,6 @@
 <?php
 
-namespace Awesome\Framework\Model;
+namespace Awesome\Framework\Model\XmlParser;
 
 abstract class AbstractXmlParser
 {

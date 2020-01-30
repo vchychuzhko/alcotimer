@@ -2,7 +2,7 @@
 
 namespace Awesome\Cache\Model;
 
-use Awesome\Framework\Model\App;
+use Awesome\Framework\App\Http;
 
 class StaticContent
 {
@@ -36,7 +36,7 @@ class StaticContent
         if ($view) {
             $this->processView($view);
         } else {
-            foreach ([App::FRONTEND_VIEW, App::BACKEND_VIEW] as $view) {
+            foreach ([Http::FRONTEND_VIEW, Http::BACKEND_VIEW] as $view) {
                 $this->processView($view);
             }
         }
@@ -85,7 +85,7 @@ class StaticContent
     {
         $staticFolder = BP . self::STATIC_FOLDER_PATH . $view;
         $viewPath = str_replace('%v', $view, self::ASSETS_FOLDER_PATH_PATTERN);
-        $baseViewPath = str_replace('%v', App::BASE_VIEW, self::ASSETS_FOLDER_PATH_PATTERN);
+        $baseViewPath = str_replace('%v', Http::BASE_VIEW, self::ASSETS_FOLDER_PATH_PATTERN);
         $assets = [
             'css_base' => str_replace('%a', 'css', $baseViewPath),
             'css_view' => str_replace('%a', 'css', $viewPath),
@@ -172,7 +172,7 @@ class StaticContent
      */
     private function parsePubDirPath($content)
     {
-        $pubPath = $this->config->get(App::WEB_ROOT_CONFIG) ? '/' : '/pub/';
+        $pubPath = $this->config->get(Http::WEB_ROOT_CONFIG) ? '/' : '/pub/';
 
         return str_replace(self::PUB_FOLDER_TRIGGER, $pubPath, $content);
     }

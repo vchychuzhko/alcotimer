@@ -1,16 +1,16 @@
 <?php
 
-namespace Awesome\Console\Model;
+namespace Awesome\Framework\App;
 
-class Console
+class Cli
 {
     /**
-     * @var \Awesome\Console\Model\XmlParser\CliXmlParser $xmlParser
+     * @var \Awesome\Framework\XmlParser\CliXmlParser $xmlParser
      */
     private $xmlParser;
 
     /**
-     * @var \Awesome\Console\Model\Console\Output $output
+     * @var \Awesome\Framework\Model\Cli\Output $output
      */
     private $output;
 
@@ -19,8 +19,8 @@ class Console
      */
     public function __construct()
     {
-        $this->xmlParser = new \Awesome\Console\Model\XmlParser\CliXmlParser();
-        $this->output = new \Awesome\Console\Model\Console\Output();
+        $this->xmlParser = new \Awesome\Framework\XmlParser\CliXmlParser();
+        $this->output = new \Awesome\Framework\Model\Cli\Output();
     }
 
     /**
@@ -29,7 +29,6 @@ class Console
     public function run()
     {
         list($command, $options, $arguments) = $this->parseInput();
-        $help = new \Awesome\Console\Console\ShowHelp();
 
         if ($this->isQuiet($options)) {
             $this->output->mute();
@@ -41,7 +40,7 @@ class Console
             $className = $this->parseCommand($command);
 
             if ($className && !is_array($className)) {
-                /** @var \Awesome\Console\Model\AbstractCommand $consoleClass */
+                /** @var \Awesome\Framework\Model\Cli\AbstractCommand $consoleClass */
                 $consoleClass = new $className($options, $arguments);
                 //@TODO: Create Input object with entered options and arguments, pass it to the execute() instead of controller
                 $consoleClass->execute($this->output);
@@ -62,6 +61,8 @@ class Console
         } else {
             $this->showAppCliTitle();
             $this->output->writeln();
+
+            $help = new \Awesome\Framework\Console\ShowHelp();
             $help->execute($this->output);
         }
     }
@@ -180,6 +181,6 @@ class Console
      */
     private function showAppCliTitle()
     {
-        $this->output->writeln('AlcoTimer CLI ' . $this->output->colourText(\Awesome\Framework\Model\App::VERSION));
+        $this->output->writeln('AlcoTimer CLI ' . $this->output->colourText(\Awesome\Framework\App\Http::VERSION));
     }
 }

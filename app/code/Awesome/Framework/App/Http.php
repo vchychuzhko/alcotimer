@@ -1,10 +1,10 @@
 <?php
 
-namespace Awesome\Framework\Model;
+namespace Awesome\Framework\App;
 
-class App
+class Http
 {
-    public const VERSION = '0.2.3';
+    public const VERSION = '0.3.0';
 
     public const FRONTEND_VIEW = 'frontend';
     public const BACKEND_VIEW = 'adminhtml';
@@ -30,7 +30,7 @@ class App
     private $config;
 
     /**
-     * @var \Awesome\Framework\Model\App\PageRenderer
+     * @var \Awesome\Framework\Model\Http\PageRenderer
      */
     private $pageRenderer;
 
@@ -41,7 +41,7 @@ class App
     {
         $this->logWriter = new \Awesome\Logger\Model\LogWriter();
         $this->maintenance = new \Awesome\Maintenance\Model\Maintenance();
-        $this->pageRenderer = new \Awesome\Framework\Model\App\PageRenderer();
+        $this->pageRenderer = new \Awesome\Framework\Model\Http\PageRenderer();
         $this->config = new \Awesome\Framework\Model\Config();
     }
 
