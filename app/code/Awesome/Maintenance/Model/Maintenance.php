@@ -55,11 +55,12 @@ class Maintenance
     }
 
     /**
-     * Check if maintenance mode is enabled for this IP.
+     * Check if maintenance mode is currently enabled.
+     * IP address can be specified.
      * @param string $ip
      * @return bool
      */
-    public function isMaintenanceForIp($ip) {
+    public function isMaintenance($ip = '') {
         $state = $this->getStatus();
 
         return $state['enabled'] && !in_array($ip, $state['allowed_ips']);

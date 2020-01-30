@@ -6,11 +6,11 @@ use Awesome\Framework\Model\App;
 
 class StaticContent
 {
+    private const STATIC_FOLDER_PATH = '/pub/static/';
     private const DEPLOYED_VERSION_FILE = '/pub/static/deployed_version.txt';
-    private const PUB_FOLDER_TRIGGER = '{@pubDir}';
-    private const STATIC_FOLDER_PATH = '/pub/static';
     private const ASSETS_FOLDER_PATH_PATTERN = '/*/*/view/%v/web/%a';
     private const JS_LIB_PATH_PATTERN = '/lib/*/*.js';
+    private const PUB_FOLDER_TRIGGER = '{@pubDir}';
 
     /**
      * @var \Awesome\Framework\Model\Config $config
@@ -53,8 +53,8 @@ class StaticContent
      */
     private function processView($view)
     {
-        if (!file_exists(BP . self::STATIC_FOLDER_PATH . '/' . $view)) {
-            mkdir(BP . self::STATIC_FOLDER_PATH . '/' . $view);
+        if (!file_exists(BP . self::STATIC_FOLDER_PATH . $view)) {
+            mkdir(BP . self::STATIC_FOLDER_PATH . $view);
         }
 
         $this->removeStatic($view);
@@ -71,7 +71,7 @@ class StaticContent
      */
     private function removeStatic($view)
     {
-        rrmdir(BP . self::STATIC_FOLDER_PATH . '/' . $view);
+        rrmdir(BP . self::STATIC_FOLDER_PATH . $view);
 
         return $this;
     }
@@ -83,7 +83,7 @@ class StaticContent
      */
     private function generateAssets($view)
     {
-        $staticFolder = BP . self::STATIC_FOLDER_PATH . '/' . $view;
+        $staticFolder = BP . self::STATIC_FOLDER_PATH . $view;
         $viewPath = str_replace('%v', $view, self::ASSETS_FOLDER_PATH_PATTERN);
         $baseViewPath = str_replace('%v', App::BASE_VIEW, self::ASSETS_FOLDER_PATH_PATTERN);
         $assets = [
@@ -122,7 +122,7 @@ class StaticContent
      */
     private function processLibs($view)
     {
-        $staticFolder = BP . self::STATIC_FOLDER_PATH . '/' . $view;
+        $staticFolder = BP . self::STATIC_FOLDER_PATH . $view;
 
         $libFiles = glob(BP . self::JS_LIB_PATH_PATTERN);
         $libFiles = $this->filterMinifiedFiles($libFiles);
@@ -138,7 +138,7 @@ class StaticContent
     }
 
     /**
-     * Retrieve file name by the whole path.
+     * Retrieve relative path and file name from absolute path.
      * @param string $path
      * @param bool $isLib
      * @return array
@@ -178,7 +178,7 @@ class StaticContent
     }
 
     /**
-     * Generate new deployed version and save it.
+     * Generate static deployed version and save it.
      * @return $this
      */
     public function generateDeployedVersion()

@@ -98,7 +98,7 @@ class App
     {
         $ip = $_SERVER['REMOTE_ADDR'];
 
-        return $this->maintenance->isMaintenanceForIp($ip);
+        return $this->maintenance->isMaintenance($ip);
     }
 
     /**
