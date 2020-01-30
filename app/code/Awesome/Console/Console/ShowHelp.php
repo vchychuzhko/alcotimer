@@ -20,57 +20,74 @@ class ShowHelp extends \Awesome\Console\Model\AbstractCommand
     }
 
     /**
-     * Show help with app version or list of all available commands.
+     * Show help with app version and list of all available commands.
      * @inheritDoc
      */
-    public function execute()
+    public function execute($output)
     {
-        $output = $this->getAppCliTitle() . "\n\n"
-            . $this->colourText('Usage:', 'brown') . "\n"
-            . '  ' . 'command [options] [arguments]' . "\n\n";
+        $output->writeln($output->colourText('Usage:', 'brown'));
+        $output->writeln('command [options] [arguments]', 2);
+        $output->writeln();
 
         //@TODO: Implement command options functionality
         $options = [
-            '-h, --help' => 'Display this help message',
-            '-q, --quiet' => 'Do not output any message',
-            '-v, --version' => 'Display this application version',
+            [
+                'name' => 'help',
+                'shortcut' => 'h',
+                'mode' => 'optional',
+                'description' => 'Display this help message',
+                'default' => null
+            ],
+            [
+                'name' => 'quiet',
+                'shortcut' => 'q',
+                'mode' => 'optional',
+                'description' => 'Do not output any message',
+                'default' => null
+            ],
+            [
+                'name' => 'version',
+                'shortcut' => 'v',
+                'mode' => 'optional', //     const VALUE_NONE = 1;    const VALUE_REQUIRED = 2;    const VALUE_OPTIONAL = 4;    const VALUE_IS_ARRAY = 8;
+                'description' => 'Display this application version',
+                'default' => null
+            ],
 //            '-n, --no-interaction' => 'Do not ask any interactive questions'
         ];
 
-        if ($options) {
-            $output .= $this->colourText('Options:', 'brown') . "\n";
+        $padding = max(array_map(function ($option) {
+            //@TODO: Move option pre-render to a separate function
+            return strlen('-' . $option['shortcut'] . ', --' . $option['name']);
+        }, $options));
 
-            foreach ($options as $name => $description) {
-                $output .= '  ' . str_pad($this->colourText($name), 35) . $description . "\n";
+        if ($options) {
+            $output->writeln($output->colourText('Options:', 'brown'));
+
+            foreach ($options as $option) {
+                $output->writeln(
+                    str_pad('-' . $option['shortcut'] . ', --' . $option['name'], $padding + 2) . $option['description']
+                );
             }
-            $output .= "\n";
+            $output->writeln();
         }
 
         if ($commandList = $this->xmlParser->retrieveConsoleCommands()) {
-            $output .= $this->colourText('Available commands:', 'brown') . "\n";
+            $output->writeln($output->colourText('Available commands:', 'brown'));
 
             foreach ($commandList as $namespace => $commands) {
-                $output .= ' ' . $this->colourText($namespace, 'brown') . "\n";
+                $output->writeln($output->colourText($namespace, 'brown'), 1);
 
                 foreach ($commands as $name => $command) {
                     if (!$command['disabled']) {
-                        $output .= '  ' . str_pad($this->colourText($namespace . ':' . $name), 40) . $command['description'] . "\n";
+                        $output->writeln(
+                            str_pad($output->colourText($namespace . ':' . $name), 30) . $command['description'],
+                            2
+                        );
                     }
                 }
             }
         } else {
-            $output .= 'No commands are currently available.';
+            $output->writeln('No commands are currently available.');
         }
-
-        return $output;
-    }
-
-    /**
-     * Get application CLI title with version.
-     * @return string
-     */
-    public function getAppCliTitle()
-    {
-        return 'AlcoTimer CLI ' . $this->colourText(\Awesome\Framework\Model\App::VERSION);
     }
 }

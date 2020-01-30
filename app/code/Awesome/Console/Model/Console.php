@@ -10,9 +10,9 @@ class Console
     private $xmlParser;
 
     /**
-     * @var \Awesome\Console\Console\ShowHelp $help
+     * @var \Awesome\Console\Model\Console\Output $output
      */
-    private $help;
+    private $output;
 
     /**
      * Console app constructor.
@@ -20,7 +20,7 @@ class Console
     public function __construct()
     {
         $this->xmlParser = new \Awesome\Console\Model\XmlParser\CliXmlParser();
-        $this->help = new \Awesome\Console\Console\ShowHelp();
+        $this->output = new \Awesome\Console\Model\Console\Output();
     }
 
     /**
@@ -29,30 +29,41 @@ class Console
     public function run()
     {
         list($command, $options, $arguments) = $this->parseInput();
+        $help = new \Awesome\Console\Console\ShowHelp();
+
+        if ($this->isQuiet($options)) {
+            $this->output->mute();
+        }
 
         if ($this->showVersion($options)) {
-            $output = $this->help->getAppCliTitle();
+            $this->showAppCliTitle();
         } elseif ($command) {
-            $output = $this->help->colourText('Command "' . $command . '" is not defined.', 'white', 'red') . "\n";
             $className = $this->parseCommand($command);
 
             if ($className && !is_array($className)) {
                 /** @var \Awesome\Console\Model\AbstractCommand $consoleClass */
                 $consoleClass = new $className($options, $arguments);
-                $output = $consoleClass->execute() . "\n";
-            } elseif ($className) {
-                $output .= "\n" . '  Did you mean one of these?' . "\n"
-                    . $this->help->colourText(implode("\n", $className), 'brown') . "\n";
+                //@TODO: Create Input object with entered options and arguments, pass it to the execute() instead of controller
+                $consoleClass->execute($this->output);
+            } else {
+                $this->output->writeln(
+                    $this->output->colourText('Command "' . $command . '" is not defined.', 'white', 'red')
+                );
+
+                if (is_array($className)) {
+                    $this->output->writeln();
+                    $this->output->writeln('Did you mean one of these?', 2);
+
+                    foreach ($className as $candidate) {
+                        $this->output->writeln($this->output->colourText($candidate, 'brown'), 4);
+                    }
+                }
             }
         } else {
-            $output = $this->help->execute() . "\n";
+            $this->showAppCliTitle();
+            $this->output->writeln();
+            $help->execute($this->output);
         }
-
-        if ($this->isQuiet($options)) {
-            $output = '';
-        }
-
-        echo $output;
     }
 
     /**
@@ -110,7 +121,7 @@ class Console
             } else  {
                 $className = array_keys($consoleCommands[$namespace]);
                 $className = array_map(function ($candidate) use ($namespace) {
-                    return '    ' . $namespace . ':' . $candidate;
+                    return $namespace . ':' . $candidate;
                 }, $className);
             }
         }
@@ -162,5 +173,13 @@ class Console
     private function isQuiet($options)
     {
         return isset($options['q']) || isset($options['quiet']);
+    }
+
+    /**
+     * Output application CLI title with version.
+     */
+    private function showAppCliTitle()
+    {
+        $this->output->writeln('AlcoTimer CLI ' . $this->output->colourText(\Awesome\Framework\Model\App::VERSION));
     }
 }

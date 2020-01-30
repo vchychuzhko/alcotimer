@@ -23,7 +23,7 @@ class Status extends \Awesome\Console\Model\AbstractCommand
      * Get current state of maintenance.
      * @inheritDoc
      */
-    public function execute()
+    public function execute($output)
     {
         $status = 'Maintenance mode is disabled.';
         $state = $this->maintenance->getStatus();
@@ -31,9 +31,9 @@ class Status extends \Awesome\Console\Model\AbstractCommand
         if ($state['enabled']) {
             $allowedIPs = implode(', ', $state['allowed_ips'] ?? []);
             $status = 'Maintenance mode is enabled.'
-                . ($allowedIPs ? ("\n" . 'List of allowed ip addresses: ' . $allowedIPs) : '');
+                . ($allowedIPs ? ("\n" . 'Allowed IP addresses: ' . $output->colourText($allowedIPs, 'brown')) : '');
         }
 
-        return $status;
+        $output->writeln($status);
     }
 }

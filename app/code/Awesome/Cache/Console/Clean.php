@@ -23,11 +23,11 @@ class Clean extends \Awesome\Console\Model\AbstractCommand
      * Clean XML cache files.
      * @inheritDoc
      */
-    public function execute()
+    public function execute($output)
     {
         $this->cache->remove();
         //@TODO: Implement cache type argument
 
-        return 'Cache was cleaned.';
+        $output->writeln('Cache was cleaned.');
     }
 }

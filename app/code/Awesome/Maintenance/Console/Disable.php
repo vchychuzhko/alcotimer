@@ -23,10 +23,10 @@ class Disable extends \Awesome\Console\Model\AbstractCommand
      * Disable maintenance mode.
      * @inheritDoc
      */
-    public function execute()
+    public function execute($output)
     {
         $this->maintenance->disable();
 
-        return $this->colourText('Maintenance mode was disabled.');
+        $output->writeln('Maintenance mode was disabled.');
     }
 }

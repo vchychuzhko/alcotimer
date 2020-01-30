@@ -23,11 +23,11 @@ class StaticDeploy extends \Awesome\Console\Model\AbstractCommand
      * Regenerate static files.
      * @inheritDoc
      */
-    public function execute()
+    public function execute($output)
     {
         $this->staticContent->deploy();
         //@TODO: implement view parameters
 
-        return 'Static content was deployed.';
+        $output->writeln('Static content was deployed.');
     }
 }

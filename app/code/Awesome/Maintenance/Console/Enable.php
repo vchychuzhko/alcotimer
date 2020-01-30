@@ -23,12 +23,12 @@ class Enable extends \Awesome\Console\Model\AbstractCommand
      * Enable maintenance mode.
      * @inheritDoc
      */
-    public function execute()
+    public function execute($output)
     {
         $allowedIPs = $this->options['ip'] ?? [];
         $this->maintenance->enable($allowedIPs);
         //@TODO: add IP address validation
 
-        return $this->colourText('Maintenance mode was enabled.');
+        $output->writeln('Maintenance mode was enabled.');
     }
 }
