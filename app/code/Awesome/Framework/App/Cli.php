@@ -171,7 +171,7 @@ class Cli implements \Awesome\Framework\Model\AppInterface
 
     /**
      * Determine if output should be disabled.
-     * @param $options
+     * @param array $options
      * @return bool
      */
     private function isQuiet($options)

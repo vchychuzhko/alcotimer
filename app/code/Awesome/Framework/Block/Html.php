@@ -4,6 +4,9 @@ namespace Awesome\Framework\Block;
 
 class Html extends \Awesome\Framework\Block\Template
 {
+    /**
+     * @inheritDoc
+     */
     protected $template = 'Awesome_Framework::html.phtml';
 
     /**

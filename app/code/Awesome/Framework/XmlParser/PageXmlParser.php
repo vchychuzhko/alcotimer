@@ -200,7 +200,7 @@ class PageXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
 
         foreach ($bodyNode->children() as $bodyItem) {
             if ($parsedItem = $this->parseBodyItem($bodyItem)) {
-                $parsedBodyNode['children'][(string)$bodyItem['name']] = $parsedItem;
+                $parsedBodyNode['children'][(string) $bodyItem['name']] = $parsedItem;
             }
         }
 

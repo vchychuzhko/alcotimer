@@ -98,8 +98,8 @@ class Output
     /**
      * Show progress bar.
      * Based on https://gist.github.com/mayconbordin/2860547
-     * @param $done
-     * @param $total
+     * @param int $done
+     * @param int $total
      * @param string $info
      * @param int $width
      * @return $this

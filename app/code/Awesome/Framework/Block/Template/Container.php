@@ -4,6 +4,9 @@ namespace Awesome\Framework\Block\Template;
 
 class Container extends \Awesome\Framework\Block\Template
 {
+    /**
+     * @inheritDoc
+     */
     protected $template = 'Awesome_Framework::template/container.phtml';
 
     /**

@@ -68,7 +68,7 @@ class Head extends \Awesome\Framework\Block\Template
      */
     public function getScripts()
     {
-        $scripts = $this->getHeadData('script') ?? [];
+        $scripts = $this->getHeadData('script') ?: [];
 
         foreach ($scripts as $index => $script) {
             $scripts[$index] = $this->resolveAssetsPath($script, 'js');
@@ -83,7 +83,7 @@ class Head extends \Awesome\Framework\Block\Template
      */
     public function getStyles()
     {
-        $styles = $this->getHeadData('css') ?? [];
+        $styles = $this->getHeadData('css') ?: [];
 
         foreach ($styles as $index => $style) {
             $styles[$index] = $this->resolveAssetsPath($style, 'css');

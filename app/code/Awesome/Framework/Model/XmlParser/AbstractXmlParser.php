@@ -2,10 +2,12 @@
 
 namespace Awesome\Framework\Model\XmlParser;
 
+use Awesome\Cache\Model\Cache;
+
 abstract class AbstractXmlParser
 {
     /**
-     * @var \Awesome\Cache\Model\Cache $cache
+     * @var Cache $cache
      */
     protected $cache;
 
@@ -14,7 +16,7 @@ abstract class AbstractXmlParser
      */
     function __construct()
     {
-        $this->cache = new \Awesome\Cache\Model\Cache();
+        $this->cache = new Cache();
     }
 
     /**

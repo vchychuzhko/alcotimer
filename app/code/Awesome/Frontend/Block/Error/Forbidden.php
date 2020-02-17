@@ -2,7 +2,7 @@
 
 namespace Awesome\Frontend\Block\Error;
 
-class Forbidden extends \Awesome\Frontend\Block\AbstractErrorBlock
+class Forbidden extends \Awesome\Framework\Block\Template implements \Awesome\Frontend\Block\ErrorBlockInterface
 {
     /**
      * @inheritDoc
