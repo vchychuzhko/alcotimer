@@ -2,7 +2,7 @@
 
 namespace Awesome\Framework\App;
 
-class Cli
+class Cli implements \Awesome\Framework\Model\AppInterface
 {
     /**
      * @var \Awesome\Framework\XmlParser\CliXmlParser $xmlParser
@@ -25,6 +25,7 @@ class Cli
 
     /**
      * Run the CLI application.
+     * @inheritDoc
      */
     public function run()
     {
@@ -42,7 +43,7 @@ class Cli
             if ($className && !is_array($className)) {
                 /** @var \Awesome\Framework\Model\Cli\AbstractCommand $consoleClass */
                 $consoleClass = new $className($options, $arguments);
-                //@TODO: Create Input object with entered options and arguments, pass it to the execute() instead of controller
+                //@TODO: Create Input object with entered options and arguments, pass it to the execute() instead of constructor
                 $consoleClass->execute($this->output);
             } else {
                 $this->output->writeln(
@@ -74,6 +75,8 @@ class Cli
      */
     private function parseInput()
     {
+        //@TODO: Move this to a ConsoleHandler
+        //@TODO: Create Input instance here with passing parameters
         $args = $_SERVER['argv'];
         $command = '';
         $options = [];
@@ -181,6 +184,6 @@ class Cli
      */
     private function showAppCliTitle()
     {
-        $this->output->writeln('AlcoTimer CLI ' . $this->output->colourText(\Awesome\Framework\App\Http::VERSION));
+        $this->output->writeln('AlcoTimer CLI ' . $this->output->colourText(self::VERSION));
     }
 }

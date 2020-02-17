@@ -123,6 +123,7 @@ class Output
      * @return string
      */
     public function colourText($text, $colour = 'green', $backgroundColour = '') {
+        //@TODO: move all colours to constants
         if (DS !== '\\' && isset($this->colours[$colour])) {
             $background = '';
 

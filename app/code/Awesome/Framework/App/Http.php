@@ -2,10 +2,8 @@
 
 namespace Awesome\Framework\App;
 
-class Http
+class Http implements \Awesome\Framework\Model\AppInterface
 {
-    public const VERSION = '0.3.0';
-
     public const FRONTEND_VIEW = 'frontend';
     public const BACKEND_VIEW = 'adminhtml';
     public const BASE_VIEW = 'base';
@@ -46,7 +44,8 @@ class Http
     }
 
     /**
-     * Run web app.
+     * Run the web application.
+     * @inheritDoc
      */
     public function run()
     {
