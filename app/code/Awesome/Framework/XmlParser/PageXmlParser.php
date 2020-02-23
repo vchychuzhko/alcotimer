@@ -78,23 +78,12 @@ class PageXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
     }
 
     /**
-     * Check if requested page handle exist.
-     * @param string $handle
-     * @param string $view
-     * @return bool
-     */
-    public function handleExist($handle, $view)
-    {
-        return in_array($handle, $this->getHandles($view));
-    }
-
-    /**
      * Get all available page handles for a specific view.
      * Return all of handles if view is not specified.
      * @param string $requestedView
      * @return array
      */
-    private function getHandles($requestedView = '')
+    public function getHandles($requestedView = '')
     {
         if (!$handles = $this->cache->get(Cache::LAYOUT_CACHE_KEY, self::PAGE_HANDLES_CACHE_TAG)) {
             foreach ([Http::FRONTEND_VIEW, Http::BACKEND_VIEW] as $view) {

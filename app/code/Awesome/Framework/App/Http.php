@@ -5,7 +5,7 @@ namespace Awesome\Framework\App;
 use Awesome\Logger\Model\LogWriter;
 use Awesome\Maintenance\Model\Maintenance;
 use Awesome\Framework\Model\Config;
-use Awesome\Framework\Model\Http\LayoutHandler;
+use Awesome\Framework\Handler\LayoutHandler;
 
 class Http implements \Awesome\Framework\Model\AppInterface
 {
@@ -57,8 +57,11 @@ class Http implements \Awesome\Framework\Model\AppInterface
         $this->logWriter->logVisitor();
 
         if (!$this->isMaintenance()) {
-            $pageHandle = $this->resolveUrl();
-            $response = $this->layoutHandler->process($pageHandle, self::FRONTEND_VIEW);
+            $pageView = $this->resolveView();
+            $this->layoutHandler->setView($pageView);
+
+            $pageHandle = $this->resolveHandle();
+            $response = $this->layoutHandler->process($pageHandle);
         } else {
             $response = $this->maintenance->getMaintenancePage();
         }
@@ -67,10 +70,19 @@ class Http implements \Awesome\Framework\Model\AppInterface
     }
 
     /**
+     * Resolve page view by requested URL.
+     * @return string
+     */
+    private function resolveView()
+    {
+        return self::FRONTEND_VIEW;
+    }
+
+    /**
      * Resolve page handle by requested URL.
      * @return string
      */
-    private function resolveUrl()
+    private function resolveHandle()
     {
         $redirectStatus = (string) ($_SERVER['REDIRECT_STATUS'] ?? '');
 
@@ -78,20 +90,29 @@ class Http implements \Awesome\Framework\Model\AppInterface
             $handle = 'forbidden';
             http_response_code(403);
         } else {
-            $uri = (string) strtok(trim($_SERVER['REQUEST_URI'], '/'), '?');
+            $uri = $this->getRequestUri();
 
             if ($uri === '') {
                 $uri = $this->getHomepageHandle();
             }
-            $handle = $this->layoutHandler->parseHandle($uri);
+            $handle = $this->layoutHandler->parse($uri);
 
-            if (!$this->layoutHandler->exist($handle, self::FRONTEND_VIEW)) {
+            if (!$this->layoutHandler->exist($handle)) {
                 $handle = 'notfound';
                 http_response_code(404);
             }
         }
 
         return $handle;
+    }
+
+    /**
+     * Return requested URI path.
+     * @return string
+     */
+    private function getRequestUri()
+    {
+        return (string) strtok(trim($_SERVER['REQUEST_URI'], '/'), '?');
     }
 
     /**
