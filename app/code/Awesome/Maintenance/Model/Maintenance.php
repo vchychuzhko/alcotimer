@@ -65,4 +65,13 @@ class Maintenance
 
         return $state['enabled'] && !in_array($ip, $state['allowed_ips']);
     }
+
+    /**
+     * Get maintenance page.
+     * @return string
+     */
+    public function getMaintenancePage()
+    {
+        return file_get_contents(BP . Maintenance::MAINTENANCE_PAGE_PATH);
+    }
 }

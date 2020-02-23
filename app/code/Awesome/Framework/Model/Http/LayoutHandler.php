@@ -4,7 +4,7 @@ namespace Awesome\Framework\Model\Http;
 
 use \Awesome\Cache\Model\Cache;
 
-class PageRenderer
+class LayoutHandler
 {
     /**
      * @var \Awesome\Framework\XmlParser\PageXmlParser $pageXmlParser
@@ -22,7 +22,7 @@ class PageRenderer
     protected $cache;
 
     /**
-     * PageRenderer constructor.
+     * LayoutHandler constructor.
      */
     function __construct()
     {
@@ -37,12 +37,12 @@ class PageRenderer
      * @param string $view
      * @return string
      */
-    public function render($handle, $view)
+    public function process($handle, $view)
     {
         $handle = $this->parseHandle($handle);
 
         if (!$pageContent = $this->cache->get(Cache::FULL_PAGE_CACHE_KEY, $handle)) {
-            $structure = $this->pageXmlParser->retrievePageStructure($handle, $view);
+            $structure = $this->pageXmlParser->getPageStructure($handle, $view);
 
             $this->htmlTemplate->setView($view)
                 ->setHandle($handle)
@@ -58,21 +58,12 @@ class PageRenderer
     }
 
     /**
-     * Render maintenance page.
-     * @return string
-     */
-    public function renderMaintenancePage()
-    {
-        return file_get_contents(BP . \Awesome\Maintenance\Model\Maintenance::MAINTENANCE_PAGE_PATH);
-    }
-
-    /**
      * Check if requested page handle exists.
      * @param string $handle
      * @param string $view
      * @return bool
      */
-    public function handleExist($handle, $view)
+    public function exist($handle, $view)
     {
         return $this->pageXmlParser->handleExist($handle, $view);
     }

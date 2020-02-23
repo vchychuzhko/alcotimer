@@ -41,7 +41,7 @@ class PageXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
      * @param string $view
      * @return array
      */
-    public function retrievePageStructure($handle, $view)
+    public function getPageStructure($handle, $view)
     {
         if (!$pageStructure = $this->cache->get(Cache::LAYOUT_CACHE_KEY, $handle)) {
             $defaultPattern = APP_DIR . str_replace('%v', $view, self::DEFAULT_PAGE_XML_PATH_PATTERN);
@@ -69,6 +69,7 @@ class PageXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
 
             $this->applyReferences($pageStructure['body']);
             $this->applySortOrder($pageStructure['body']);
+            //@TODO: add validation for duplicating elements
 
             $this->cache->save(Cache::LAYOUT_CACHE_KEY, $handle, $pageStructure);
         }

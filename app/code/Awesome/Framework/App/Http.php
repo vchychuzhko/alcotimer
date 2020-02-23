@@ -2,6 +2,11 @@
 
 namespace Awesome\Framework\App;
 
+use Awesome\Logger\Model\LogWriter;
+use Awesome\Maintenance\Model\Maintenance;
+use Awesome\Framework\Model\Config;
+use Awesome\Framework\Model\Http\LayoutHandler;
+
 class Http implements \Awesome\Framework\Model\AppInterface
 {
     public const FRONTEND_VIEW = 'frontend';
@@ -13,34 +18,34 @@ class Http implements \Awesome\Framework\Model\AppInterface
     public const WEB_ROOT_CONFIG = 'web/web_root_is_pub';
 
     /**
-     * @var \Awesome\Logger\Model\LogWriter
+     * @var LogWriter
      */
     private $logWriter;
 
     /**
-     * @var \Awesome\Maintenance\Model\Maintenance $maintenance
+     * @var Maintenance $maintenance
      */
     private $maintenance;
 
     /**
-     * @var \Awesome\Framework\Model\Config $config
+     * @var LayoutHandler $layoutHandler
      */
-    private $config;
+    private $layoutHandler;
 
     /**
-     * @var \Awesome\Framework\Model\Http\PageRenderer
+     * @var Config $config
      */
-    private $pageRenderer;
+    private $config;
 
     /**
      * App constructor.
      */
     public function __construct()
     {
-        $this->logWriter = new \Awesome\Logger\Model\LogWriter();
-        $this->maintenance = new \Awesome\Maintenance\Model\Maintenance();
-        $this->pageRenderer = new \Awesome\Framework\Model\Http\PageRenderer();
-        $this->config = new \Awesome\Framework\Model\Config();
+        $this->logWriter = new LogWriter();
+        $this->maintenance = new Maintenance();
+        $this->layoutHandler = new LayoutHandler();
+        $this->config = new Config();
     }
 
     /**
@@ -53,9 +58,9 @@ class Http implements \Awesome\Framework\Model\AppInterface
 
         if (!$this->isMaintenance()) {
             $pageHandle = $this->resolveUrl();
-            $response = $this->pageRenderer->render($pageHandle, self::FRONTEND_VIEW);
+            $response = $this->layoutHandler->process($pageHandle, self::FRONTEND_VIEW);
         } else {
-            $response = $this->pageRenderer->renderMaintenancePage();
+            $response = $this->maintenance->getMaintenancePage();
         }
 
         echo $response;
@@ -78,9 +83,9 @@ class Http implements \Awesome\Framework\Model\AppInterface
             if ($uri === '') {
                 $uri = $this->getHomepageHandle();
             }
-            $handle = $this->pageRenderer->parseHandle($uri);
+            $handle = $this->layoutHandler->parseHandle($uri);
 
-            if (!$this->pageRenderer->handleExist($handle, self::FRONTEND_VIEW)) {
+            if (!$this->layoutHandler->exist($handle, self::FRONTEND_VIEW)) {
                 $handle = 'notfound';
                 http_response_code(404);
             }
@@ -110,7 +115,7 @@ class Http implements \Awesome\Framework\Model\AppInterface
     }
 
     /**
-     * Return currently set homepage handle.
+     * Return current homepage handle.
      * @return string
      */
     private function getHomepageHandle()
