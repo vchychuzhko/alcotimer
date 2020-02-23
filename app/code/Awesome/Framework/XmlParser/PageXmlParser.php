@@ -85,19 +85,19 @@ class PageXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
      */
     public function handleExist($handle, $view)
     {
-        return in_array($handle, $this->collectHandles($view));
+        return in_array($handle, $this->getHandles($view));
     }
 
     /**
-     * Retrieve all available page handles for a specific view.
+     * Get all available page handles for a specific view.
      * Return all of handles if view is not specified.
      * @param string $requestedView
      * @return array
      */
-    private function collectHandles($requestedView = '')
+    private function getHandles($requestedView = '')
     {
         if (!$handles = $this->cache->get(Cache::LAYOUT_CACHE_KEY, self::PAGE_HANDLES_CACHE_TAG)) {
-            foreach ([Http::FRONTEND_VIEW, Http::BACKEND_VIEW, Http::BASE_VIEW] as $view) {
+            foreach ([Http::FRONTEND_VIEW, Http::BACKEND_VIEW] as $view) {
                 $pattern = APP_DIR . str_replace('%v', $view, self::PAGE_XML_PATH_PATTERN);
                 $pattern = str_replace('%h', '*', $pattern);
                 $collectedHandles = [];
@@ -176,16 +176,6 @@ class PageXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
         }
 
         return $parsedHeadNode;
-    }
-
-    /**
-     * Filter collected assets according to remove references.
-     */
-    private function filterRemovedAssets()
-    {
-        foreach ($this->assetsToRemove as $asset) {
-            array_remove_by_value_recursive($this->collectedAssets, $asset);
-        }
     }
 
     /**
@@ -283,6 +273,20 @@ class PageXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
         }
 
         return $parsedItemNode;
+    }
+
+    /**
+     * Filter collected assets according to remove references.
+     */
+    private function filterRemovedAssets()
+    {
+        foreach ($this->assetsToRemove as $assetToRemove) {
+            foreach ($this->collectedAssets as $assetsType => $assets) {
+                if (($index = array_search($assetToRemove, $assets)) !== false) {
+                    unset($this->collectedAssets[$assetsType][$index]);
+                }
+            }
+        }
     }
 
     /**

@@ -32,8 +32,8 @@ class Container extends \Awesome\Framework\Block\Template
     public function setContainerTagData($containerData)
     {
         $this->htmlTag = $containerData['htmlTag'];
-        $this->htmlClass = $containerData['htmlClass'];
-        $this->htmlId = $containerData['htmlId'];
+        $this->htmlClass = $containerData['htmlClass'] ?? '';
+        $this->htmlId = $containerData['htmlId'] ?? '';
 
         return $this;
     }

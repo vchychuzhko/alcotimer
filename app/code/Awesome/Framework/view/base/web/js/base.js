@@ -1,7 +1,8 @@
 ;(function ($) {
     $.widget('awesome.base', {
         options: {
-            copyTextSelector: '.copy-on-click'
+            copyTextSelector: '.copy-on-click',
+            showMessage: 1
         },
 
         /**
@@ -32,9 +33,11 @@
             document.execCommand('copy');
             $temp.remove();
 
-            $body.trigger('message.showMessage', {
-                message: 'Copied to the clipboard!'
-            });
+            if (this.showMessage) {
+                $body.trigger('message.showMessage', {
+                    message: 'Copied to the clipboard!'
+                });
+            }
         }
     });
 })(jQuery);

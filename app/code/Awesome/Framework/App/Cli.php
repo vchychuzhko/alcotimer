@@ -115,7 +115,7 @@ class Cli implements \Awesome\Framework\Model\AppInterface
     {
         $className = '';
         @list($namespace, $command) = explode(':', $input);
-        $consoleCommands = $this->xmlParser->retrieveConsoleCommands();
+        $consoleCommands = $this->xmlParser->getConsoleCommands();
 
         if ($namespace = $this->findMatch($namespace, array_keys($consoleCommands))) {
             $command = $this->findMatch($command, array_keys($consoleCommands[$namespace]));

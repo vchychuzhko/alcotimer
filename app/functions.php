@@ -56,25 +56,6 @@ if (!function_exists('array_remove_by_key_recursive')) {
 }
 
 /**
- * Remove element in a multidimensional array by a specified value.
- * Based on https://www.php.net/manual/en/function.array-walk-recursive.php#114574
- * @param array $array
- * @param string $elementValueToRemove
- */
-if (!function_exists('array_remove_by_value_recursive')) {
-    function array_remove_by_value_recursive(&$array, $elementValueToRemove)
-    {
-        foreach ($array as $key => $value) {
-            if ($value === $elementValueToRemove) {
-                unset($array[$key]);
-            } elseif (is_array($value)) {
-                array_remove_by_value_recursive($array[$key], $elementValueToRemove);
-            }
-        }
-    }
-}
-
-/**
  * Remove directory recursively.
  * Based on https://www.php.net/manual/en/function.rmdir.php#117354
  * @param string $dir

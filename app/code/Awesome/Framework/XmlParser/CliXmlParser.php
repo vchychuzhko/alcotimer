@@ -13,7 +13,7 @@ class CliXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
      * Collect data about all available console commands.
      * @return array
      */
-    public function retrieveConsoleCommands()
+    public function getConsoleCommands()
     {
         if (!$commandList = $this->cache->get(Cache::ETC_CACHE_KEY, self::CLI_CACHE_TAG)) {
             foreach (glob(APP_DIR . self::CLI_XML_PATH_PATTERN) as $cliXmlFile) {

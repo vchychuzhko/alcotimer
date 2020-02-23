@@ -56,7 +56,7 @@ class Head extends \Awesome\Framework\Block\Template
         $libs = $this->getHeadData('lib') ?? [];
 
         foreach ($libs as $index => $lib) {
-            $libs[$index] = $this->resolveAssetsPath($lib, 'lib');
+            $libs[$index] = $this->resolveAssetPath($lib, 'lib');
         }
 
         return $libs;
@@ -71,7 +71,7 @@ class Head extends \Awesome\Framework\Block\Template
         $scripts = $this->getHeadData('script') ?: [];
 
         foreach ($scripts as $index => $script) {
-            $scripts[$index] = $this->resolveAssetsPath($script, 'js');
+            $scripts[$index] = $this->resolveAssetPath($script, 'js');
         }
 
         return $scripts;
@@ -86,7 +86,7 @@ class Head extends \Awesome\Framework\Block\Template
         $styles = $this->getHeadData('css') ?: [];
 
         foreach ($styles as $index => $style) {
-            $styles[$index] = $this->resolveAssetsPath($style, 'css');
+            $styles[$index] = $this->resolveAssetPath($style, 'css');
         }
 
         return $styles;
@@ -127,7 +127,7 @@ class Head extends \Awesome\Framework\Block\Template
      * @param string $type
      * @return string
      */
-    private function resolveAssetsPath($path, $type)
+    private function resolveAssetPath($path, $type)
     {
         if (strpos($path, '//') === false) {
             @list($module, $file) = explode('::', $path);

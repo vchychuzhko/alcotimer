@@ -80,7 +80,7 @@ class ShowHelp extends \Awesome\Framework\Model\Cli\AbstractCommand
             $output->writeln();
         }
 
-        if ($commandList = $this->xmlParser->retrieveConsoleCommands()) {
+        if ($commandList = $this->xmlParser->getConsoleCommands()) {
             $output->writeln($output->colourText('Available commands:', 'brown'));
 
             foreach ($commandList as $namespace => $commands) {
