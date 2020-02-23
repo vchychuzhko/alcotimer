@@ -20,7 +20,7 @@ abstract class AbstractHandler
     }
 
     /**
-     * Process requested handle
+     * Process requested handle.
      * @param string $handle
      * @return string
      */

@@ -2,28 +2,28 @@
 
 namespace Awesome\Framework\Console;
 
+use Awesome\Framework\XmlParser\CliXmlParser;
+
 class ShowHelp extends \Awesome\Framework\Model\Cli\AbstractCommand
 {
     /**
-     * @var \Awesome\Framework\XmlParser\CliXmlParser $xmlParser
+     * @var CliXmlParser $xmlParser
      */
     private $xmlParser;
 
     /**
      * ShowHelp constructor.
-     * @inheritDoc
      */
-    public function __construct($options = [], $arguments = [])
+    public function __construct()
     {
-        $this->xmlParser = new \Awesome\Framework\XmlParser\CliXmlParser();
-        parent::__construct($options, $arguments);
+        $this->xmlParser = new CliXmlParser();
     }
 
     /**
      * Show help with app version and list of all available commands.
      * @inheritDoc
      */
-    public function execute($output)
+    public function execute($input, $output)
     {
         $output->writeln($output->colourText('Usage:', 'brown'));
         $output->writeln('command [options] [arguments]', 2);

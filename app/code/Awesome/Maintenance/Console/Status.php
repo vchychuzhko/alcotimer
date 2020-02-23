@@ -2,28 +2,28 @@
 
 namespace Awesome\Maintenance\Console;
 
+use Awesome\Maintenance\Model\Maintenance;
+
 class Status extends \Awesome\Framework\Model\Cli\AbstractCommand
 {
     /**
-     * @var \Awesome\Maintenance\Model\Maintenance $maintenance
+     * @var Maintenance $maintenance
      */
     private $maintenance;
 
     /**
      * Maintenance Status constructor.
-     * @inheritDoc
      */
-    public function __construct($options = [], $arguments = [])
+    public function __construct()
     {
-        $this->maintenance = new \Awesome\Maintenance\Model\Maintenance();
-        parent::__construct($options, $arguments);
+        $this->maintenance = new Maintenance();
     }
 
     /**
      * Get current state of maintenance.
      * @inheritDoc
      */
-    public function execute($output)
+    public function execute($input, $output)
     {
         $status = 'Maintenance mode is disabled.';
         $state = $this->maintenance->getStatus();

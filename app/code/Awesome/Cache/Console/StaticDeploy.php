@@ -11,22 +11,20 @@ class StaticDeploy extends \Awesome\Framework\Model\Cli\AbstractCommand
 
     /**
      * StaticDeploy constructor.
-     * @inheritDoc
      */
-    public function __construct($options = [], $arguments = [])
+    public function __construct()
     {
         $this->staticContent = new \Awesome\Cache\Model\StaticContent();
-        parent::__construct($options, $arguments);
     }
 
     /**
-     * Regenerate static files.
+     * Generate static files.
      * @inheritDoc
      */
-    public function execute($output)
+    public function execute($input, $output)
     {
         $this->staticContent->deploy();
-        //@TODO: implement view parameters
+        //@TODO: Add view attribute
 
         $output->writeln('Static content was deployed.');
     }

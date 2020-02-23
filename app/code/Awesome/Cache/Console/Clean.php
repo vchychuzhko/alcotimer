@@ -11,22 +11,20 @@ class Clean extends \Awesome\Framework\Model\Cli\AbstractCommand
 
     /**
      * Clean constructor.
-     * @inheritDoc
      */
-    function __construct($options = [], $arguments = [])
+    function __construct()
     {
         $this->cache = new \Awesome\Cache\Model\Cache();
-        parent::__construct($options, $arguments);
     }
 
     /**
      * Clean XML cache files.
      * @inheritDoc
      */
-    public function execute($output)
+    public function execute($input, $output)
     {
         $this->cache->remove();
-        //@TODO: Implement cache type argument
+        //@TODO: Add cache type argument
 
         $output->writeln('Cache was cleaned.');
     }

@@ -2,15 +2,26 @@
 
 namespace Awesome\Framework\App;
 
+use Awesome\Framework\Console\ShowHelp;
+use Awesome\Framework\Handler\CliHandler;
+use Awesome\Framework\Model\Cli\AbstractCommand;
+use Awesome\Framework\Model\Cli\Input;
+use Awesome\Framework\Model\Cli\Output;
+
 class Cli implements \Awesome\Framework\Model\AppInterface
 {
     /**
-     * @var \Awesome\Framework\XmlParser\CliXmlParser $xmlParser
+     * @var CliHandler $cliHandler
      */
-    private $xmlParser;
+    private $cliHandler;
 
     /**
-     * @var \Awesome\Framework\Model\Cli\Output $output
+     * @var Input $input
+     */
+    private $input;
+
+    /**
+     * @var Output $output
      */
     private $output;
 
@@ -19,8 +30,8 @@ class Cli implements \Awesome\Framework\Model\AppInterface
      */
     public function __construct()
     {
-        $this->xmlParser = new \Awesome\Framework\XmlParser\CliXmlParser();
-        $this->output = new \Awesome\Framework\Model\Cli\Output();
+        $this->cliHandler = new CliHandler();
+        $this->output = new Output();
     }
 
     /**
@@ -29,32 +40,34 @@ class Cli implements \Awesome\Framework\Model\AppInterface
      */
     public function run()
     {
-        list($command, $options, $arguments) = $this->parseInput();
+        $this->input = $this->cliHandler->parseInput();
 
-        if ($this->isQuiet($options)) {
+        if ($this->isQuiet()) {
             $this->output->mute();
         }
 
-        if ($this->showVersion($options)) {
-            $this->showAppCliTitle();
-        } elseif ($command) {
-            $className = $this->parseCommand($command);
+        if ($this->isNonInteractive()) {
+            $this->input->disableInteraction();
+        }
 
-            if ($className && !is_array($className)) {
-                /** @var \Awesome\Framework\Model\Cli\AbstractCommand $consoleClass */
-                $consoleClass = new $className($options, $arguments);
-                //@TODO: Create Input object with entered options and arguments, pass it to the execute() instead of constructor
-                $consoleClass->execute($this->output);
+        if ($this->showVersion()) {
+            $this->showAppCliTitle();
+        } elseif ($command = $this->input->getCommand()) {
+            if ($className = $this->cliHandler->process($command)) {
+                /** @var AbstractCommand $consoleClass */
+                $consoleClass = new $className();
+                $consoleClass->execute($this->input, $this->output);
             } else {
+                $candidates = $this->cliHandler->getPossibleCandidates($command, false);
                 $this->output->writeln(
                     $this->output->colourText('Command "' . $command . '" is not defined.', 'white', 'red')
                 );
 
-                if (is_array($className)) {
+                if ($candidates) {
                     $this->output->writeln();
                     $this->output->writeln('Did you mean one of these?', 2);
 
-                    foreach ($className as $candidate) {
+                    foreach ($candidates as $candidate) {
                         $this->output->writeln($this->output->colourText($candidate, 'brown'), 4);
                     }
                 }
@@ -63,120 +76,45 @@ class Cli implements \Awesome\Framework\Model\AppInterface
             $this->showAppCliTitle();
             $this->output->writeln();
 
-            $help = new \Awesome\Framework\Console\ShowHelp();
-            $help->execute($this->output);
+            $help = new ShowHelp();
+            $help->execute($this->input, $this->output);
         }
-    }
-
-    /**
-     * Parse console input into command, options and arguments.
-     * Return array with the mentioned order.
-     * @return array
-     */
-    private function parseInput()
-    {
-        //@TODO: Move this to a ConsoleHandler
-        //@TODO: Create Input instance here with passing parameters
-        $args = $_SERVER['argv'];
-        $command = '';
-        $options = [];
-        $arguments = [];
-
-        if (isset($args[1]) && strpos($args[1], '-') !== 0) {
-            $command = $args[1];
-        }
-
-        foreach (array_slice($args, 1) as $arg) {
-            if (strpos($arg, '--') === 0) {
-                @list($option, $value) = explode('=', str_replace_first('--', '', $arg));
-                $options[$option][] = $value ?: true;
-            } elseif (strpos($arg, '-') === 0) {
-                $option = substr($arg, 1, 1);
-                $value = substr($arg, 2);
-                $options[$option][] = $value ?: true;
-            } else {
-                $arguments[] = $arg;
-            }
-        }
-
-        return [
-            $command,
-            $options,
-            $arguments
-        ];
-    }
-
-    /**
-     * Get classname by called command.
-     * @param string $input
-     * @return string|array
-     */
-    private function parseCommand($input)
-    {
-        $className = '';
-        @list($namespace, $command) = explode(':', $input);
-        $consoleCommands = $this->xmlParser->getConsoleCommands();
-
-        if ($namespace = $this->findMatch($namespace, array_keys($consoleCommands))) {
-            $command = $this->findMatch($command, array_keys($consoleCommands[$namespace]));
-
-            if ($command && !$consoleCommands[$namespace][$command]['disabled']) {
-                $className = $consoleCommands[$namespace][$command]['class'];
-            } else  {
-                $className = array_keys($consoleCommands[$namespace]);
-                $className = array_map(function ($candidate) use ($namespace) {
-                    return $namespace . ':' . $candidate;
-                }, $className);
-            }
-        }
-
-        return $className;
-    }
-
-    /**
-     * Find potential matched string in array by its part.
-     * @param string $search
-     * @param array $candidates
-     * @return string
-     */
-    private function findMatch($search, $candidates)
-    {
-        $match = '';
-        $possibleMatches = [];
-
-        if ($search) {
-            foreach ($candidates as $candidate) {
-                if (strpos($candidate, $search) === 0) {
-                    $possibleMatches[] = $candidate;
-                }
-            }
-
-            if (count($possibleMatches) === 1) {
-                $match = $possibleMatches[0];
-            }
-        }
-
-        return $match;
     }
 
     /**
      * Determine if application version should be shown.
-     * @param array $options
      * @return bool
      */
-    private function showVersion($options)
+    private function showVersion()
     {
-        return isset($options['v']) || isset($options['version']);
+        return $this->input->getOption('version');
     }
 
     /**
      * Determine if output should be disabled.
-     * @param array $options
      * @return bool
      */
-    private function isQuiet($options)
+    private function isQuiet()
     {
-        return isset($options['q']) || isset($options['quiet']);
+        return $this->input->getOption('quiet');
+    }
+
+    /**
+     * Determine if user interaction should be disabled.
+     * @return bool
+     */
+    private function isNonInteractive()
+    {
+        return $this->input->getOption('no-interaction');
+    }
+
+    /**
+     * Determine if help should be shown.
+     * @return bool
+     */
+    private function showHelp()
+    {
+        return $this->input->getOption('help');
     }
 
     /**

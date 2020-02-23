@@ -2,44 +2,59 @@
 
 namespace Awesome\Framework\Model\Cli;
 
+use Awesome\Framework\Model\Cli\Input;
 use Awesome\Framework\Model\Cli\Output;
 
 abstract class AbstractCommand
 {
-    /**
-     * @var array $options
-     */
-    protected $options;
+    public const OPTION_REQUIRED = 'required';
+    public const OPTION_OPTIONAL = 'optional';
+
+    public const ARGUMENT_OPTIONAL_ARRAY = 'optional_array';
 
     /**
-     * @var array $arguments
+     * Define all data related to console command.
+     * @return array
      */
-    protected $arguments;
-
-    /**
-     * AbstractCommand constructor.
-     * @param array $options
-     * @param array $arguments
-     */
-    public function __construct($options = [], $arguments = [])
+    public static function getConfiguration()
     {
-        $this->options = $options;
-        $this->arguments = $arguments;
+        return [
+            'description' => '',
+            'options' => [
+                'help' => [
+                    'shortcut' => 'h',
+                    'mode' => self::OPTION_OPTIONAL,
+                    'description' => 'Display this help message',
+                    'default' => null
+                ],
+                'quiet' => [
+                    'shortcut' => 'q',
+                    'mode' => self::OPTION_OPTIONAL,
+                    'description' => 'Do not output any message',
+                    'default' => null
+                ],
+                'version' => [
+                    'shortcut' => 'v',
+                    'mode' => self::OPTION_OPTIONAL,
+                    'description' => 'Display this application version',
+                    'default' => null
+                ],
+                'no-interaction' => [
+                    'shortcut' => 'n',
+                    'mode' => self::OPTION_OPTIONAL,
+                    'description' => 'Do not ask any interactive questions',
+                    'default' => null
+                ]
+            ],
+            'arguments' => []
+        ];
     }
 
     /**
      * Run the console command.
+     * @param Input $input
      * @param Output $output
      * @return string
      */
-    abstract public function execute($output);
-
-    /**
-     * Determine if help should be shown.
-     * @return bool
-     */
-    protected function showHelp()
-    {
-        return isset($this->options['h']) || isset($this->options['help']);
-    }
+    abstract public function execute($input, $output);
 }
