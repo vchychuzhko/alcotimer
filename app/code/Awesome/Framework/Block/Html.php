@@ -2,6 +2,8 @@
 
 namespace Awesome\Framework\Block;
 
+use Awesome\Framework\Block\Html\Head;
+
 class Html extends \Awesome\Framework\Block\Template
 {
     /**
@@ -10,69 +12,32 @@ class Html extends \Awesome\Framework\Block\Template
     protected $template = 'Awesome_Framework::html.phtml';
 
     /**
-     * @var string $handle
-     */
-    protected $handle;
-
-    /**
-     * @var \Awesome\Framework\Block\Html\Head $headTemplate
+     * @var Head $headTemplate
      */
     private $headTemplate;
 
     /**
-     * Base Template constructor.
+     * Html constructor.
+     * @inheritDoc
      */
-    public function __construct()
+    public function __construct($renderer, $name, $template = null, $children = [])
     {
-        $this->headTemplate = new \Awesome\Framework\Block\Html\Head();
-        parent::__construct();
+        $this->headTemplate = new Head($renderer, 'head', null, $children['head']);
+        parent::__construct($renderer, $name, $template, array_keys($children['body']['children']));
     }
 
     /**
-     * Set current page handle
-     * @param string $handle
-     * @return $this
+     * @inheritDoc
      */
-    public function setHandle($handle)
+    public function getChildHtml($blockName = '')
     {
-        $this->handle = $handle;
+        if ($blockName === 'head') {
+            $childHtml = $this->headTemplate->toHtml();
+        } else {
+            $childHtml = parent::getChildHtml($blockName);
+        }
 
-        return $this;
-    }
-
-    /**
-     * Set current page head data.
-     * @param array $headStructure
-     * @return $this
-     */
-    public function setHeadStructure($headStructure)
-    {
-        $this->headTemplate->setHeadData($headStructure);
-
-        return $this;
-    }
-
-    /**
-     * Set current page body structure data.
-     * @param array $bodyStructure
-     * @return $this
-     */
-    public function setBodyStructure($bodyStructure)
-    {
-        $this->children = $bodyStructure['children'];
-
-        return $this;
-    }
-
-    /**
-     * Render head part of the page.
-     * @return string
-     */
-    public function getHead()
-    {
-        $this->headTemplate->setView($this->view);
-
-        return $this->headTemplate->toHtml();
+        return $childHtml;
     }
 
     /**
@@ -81,8 +46,6 @@ class Html extends \Awesome\Framework\Block\Template
      */
     public function getBodyClass()
     {
-        $class = str_replace('-', '', $this->handle);
-
-        return str_replace('_', '-', $class);
+        return str_replace('_', '-', str_replace('-', '', $this->renderer->getHandle()));
     }
 }

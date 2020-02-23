@@ -229,7 +229,8 @@ class PageXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
                     'name' => (string) $itemNode['name'],
                     'class' => ((string) $itemNode['class']) ?: \Awesome\Framework\Block\Template\Container::class,
                     'template' => (string) $itemNode['template'],
-                    'children' => []
+                    'children' => [],
+                    'containerData' => []
                 ];
 
                 if ($htmlTag = (string) $itemNode['htmlTag']) {

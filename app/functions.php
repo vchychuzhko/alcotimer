@@ -18,6 +18,33 @@ if (!function_exists('array_key_first')) {
 }
 
 /**
+ * Get element in a multidimensional array by a specified key.
+ * Based on https://www.php.net/manual/en/function.array-walk-recursive.php#114574
+ * @param array $array
+ * @param string $elementKeyToGet
+ * @return mixed
+ */
+if (!function_exists('array_get_by_key_recursive')) {
+    function array_get_by_key_recursive($array, $elementKeyToGet)
+    {
+        $element = null;
+
+        foreach ($array as $key => $value) {
+            if ($key === $elementKeyToGet) {
+                $element = $value;
+                break;
+            } elseif (is_array($value)) {
+                if ($element = array_get_by_key_recursive($value, $elementKeyToGet)) {
+                    break;
+                }
+            }
+        }
+
+        return $element;
+    }
+}
+
+/**
  * Update element in a multidimensional array by a specified key.
  * Based on https://www.php.net/manual/en/function.array-walk-recursive.php#114574
  * @param array $array

@@ -2,24 +2,17 @@
 
 namespace Awesome\Framework\Block;
 
+use Awesome\Cache\Model\StaticContent;
+use Awesome\Framework\Model\Config;
+use Awesome\Framework\Model\Http\TemplateRenderer;
 use Awesome\Framework\App\Http;
 
 class Template
 {
     /**
-     * @var \Awesome\Cache\Model\StaticContent $staticContent
+     * @var TemplateRenderer $renderer
      */
-    protected $staticContent;
-
-    /**
-     * @var \Awesome\Framework\Model\Config $config
-     */
-    protected $config;
-
-    /**
-     * @var string $view
-     */
-    protected $view;
+    protected $renderer;
 
     /**
      * @var string $name
@@ -34,7 +27,7 @@ class Template
     /**
      * @var array $children
      */
-    protected $children = [];
+    protected $children;
 
     /**
      * @var string $mediaUrl
@@ -47,108 +40,65 @@ class Template
     protected $staticUrl;
 
     /**
-     * Template constructor.
+     * @var StaticContent $staticContent
      */
-    public function __construct()
+    protected $staticContent;
+
+    /**
+     * @var Config $config
+     */
+    protected $config;
+
+    /**
+     * Template constructor.
+     * @param TemplateRenderer $renderer
+     * @param string $name
+     * @param string|null $template
+     * @param array $children
+     */
+    public function __construct($renderer, $name, $template = null, $children = [])
     {
-        $this->staticContent = new \Awesome\Cache\Model\StaticContent();
-        $this->config = new \Awesome\Framework\Model\Config();
+        $this->renderer = $renderer;
+        $this->name = $name;
+        $this->template = $template ?: $this->template;
+        $this->children = $children;
+        $this->staticContent = new StaticContent();
+        $this->config = new Config();
     }
 
     /**
-     * Render block's template.
+     * Render template.
      * @return string
      */
     public function toHtml()
     {
         ob_start();
-        include($this->resolveTemplatePath());
+        include $this->renderer->resolveTemplatePath($this->template);
 
         return ob_get_clean();
     }
 
     /**
-     * Render a child block.
-     * Return all children if no blockName is specified.
-     * @param string $blockName
+     * Get child block.
+     * Return all children if no name is specified.
+     * @param string $childName
      * @return string
      */
-    public function getChildHtml($blockName = '')
+    public function getChildHtml($childName = '')
     {
         $childHtml = '';
 
-        if ($blockName) {
-            if ($block = $this->children[$blockName] ?? []) {
-                $childHtml = $this->renderBlock($block);
+        if ($childName) {
+            if (in_array($childName, $this->children)) {
+                $childHtml = $this->renderer->render($childName);
             }
         } else {
-            foreach ($this->children as $child) {
-                $childHtml .= $this->renderBlock($child);
+            foreach ($this->children as $childName) {
+                $childHtml .= $this->renderer->render($childName);
             }
         }
 
         return $childHtml;
-    }
-
-    /**
-     * Parse and render a block.
-     * @param array $block
-     * @return string
-     */
-    private function renderBlock($block)
-    {
-        //@TODO: move this template preparation process to some kind of renderer
-        $className = $block['class'];
-        /** @var \Awesome\Framework\Block\Template $templateClass */
-        $templateClass = new $className();
-        $name = $block['name'];
-        $template = $block['template'] ?: $templateClass->getTemplate();
-        $children = $block['children'];
-
-
-        if ($containerTagData = $block['containerData'] ?? []) {
-            $templateClass->setContainerTagData($containerTagData);
-        }
-
-        $templateClass->setView($this->view)
-            ->setNameInLayout($name)
-            ->setTemplate($template)
-            ->setChildren($children);
-
-        return $templateClass->toHtml();
-    }
-
-    /**
-     * Set block's template.
-     * @param string $template
-     * @return $this
-     */
-    public function setTemplate($template)
-    {
-        $this->template = $template;
-
-        return $this;
-    }
-
-    /**
-     * Get block's template.
-     * @return string
-     */
-    public function getTemplate()
-    {
-        return $this->template ?: '';
-    }
-
-    /**
-     * Set current page view.
-     * @param string $view
-     * @return $this
-     */
-    public function setView($view)
-    {
-        $this->view = $view;
-
-        return $this;
     }
 
     /**
@@ -198,57 +148,12 @@ class Template
     }
 
     /**
-     * Set block children elements.
-     * @param array $children
-     * @return $this
-     */
-    protected function setChildren($children)
-    {
-        $this->children = $children;
-
-        return $this;
-    }
-
-    /**
-     * Set block name.
-     * @param string $name
-     * @return $this
-     */
-    protected function setNameInLayout($name)
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
      * Get current block name.
      * @return string
      */
     public function getNameInLayout()
     {
         return $this->name ?: '';
-    }
-
-    /**
-     * Parse template XML path to a valid filesystem path.
-     * @return string
-     */
-    protected function resolveTemplatePath()
-    {
-        @list($module, $file) = explode('::', $this->template);
-        $path = $module;
-
-        if (isset($file)) {
-            $module = str_replace('_', '/', $module);
-            $path = '/' . $module . '/view/' . $this->view . '/templates/' . $file;
-
-            if (!file_exists(APP_DIR . $path)) {
-                $path = str_replace('/view/' . $this->view, '/view/' . Http::BASE_VIEW, $path);
-            }
-        }
-
-        return APP_DIR . $path;
     }
 
     /**
@@ -259,6 +164,7 @@ class Template
      */
     protected function camelCase($string, $separator = '_')
     {
+        //@TODO: move this to another place (Config?)
         return str_replace($separator, '', lcfirst(ucwords($string, $separator)));
     }
 }

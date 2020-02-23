@@ -12,6 +12,16 @@ class Head extends \Awesome\Framework\Block\Template
     protected $headData;
 
     /**
+     * Head constructor.
+     * @inheritDoc
+     */
+    public function __construct($renderer, $name, $template = null, $children = [])
+    {
+        $this->headData = $children;
+        parent::__construct($renderer, $name, $template);
+    }
+
+    /**
      * Get page title.
      * @return string
      */
@@ -93,18 +103,6 @@ class Head extends \Awesome\Framework\Block\Template
     }
 
     /**
-     * Set html head data.
-     * @param array $headData
-     * @return $this
-     */
-    public function setHeadData($headData)
-    {
-        $this->headData = $headData;
-
-        return $this;
-    }
-
-    /**
      * Get html head data by key.
      * Return all data if no key is specified.
      * @param string $key
@@ -135,7 +133,7 @@ class Head extends \Awesome\Framework\Block\Template
             if (isset($file)) {
                 $path = $module . '/' . $type . '/' . $file;
             }
-            $path = $this->getStaticUrl($this->view . '/' . $path);
+            $path = $this->getStaticUrl($this->renderer->getView() . '/' . $path);
         }
 
         return $path;

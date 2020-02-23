@@ -2,19 +2,17 @@
 
 namespace Awesome\Framework\Model\Http;
 
-use \Awesome\Cache\Model\Cache;
+use Awesome\Framework\Block\Html;
+use Awesome\Framework\XmlParser\PageXmlParser;
+use Awesome\Cache\Model\Cache;
+use Awesome\Framework\Model\Http\TemplateRenderer;
 
 class LayoutHandler
 {
     /**
-     * @var \Awesome\Framework\XmlParser\PageXmlParser $pageXmlParser
+     * @var PageXmlParser $pageXmlParser
      */
     private $pageXmlParser;
-
-    /**
-     * @var \Awesome\Framework\Block\Html $htmlTemplate
-     */
-    private $htmlTemplate;
 
     /**
      * @var Cache $cache
@@ -27,7 +25,6 @@ class LayoutHandler
     function __construct()
     {
         $this->pageXmlParser = new \Awesome\Framework\XmlParser\PageXmlParser();
-        $this->htmlTemplate = new \Awesome\Framework\Block\Html();
         $this->cache = new Cache();
     }
 
@@ -44,12 +41,10 @@ class LayoutHandler
         if (!$pageContent = $this->cache->get(Cache::FULL_PAGE_CACHE_KEY, $handle)) {
             $structure = $this->pageXmlParser->getPageStructure($handle, $view);
 
-            $this->htmlTemplate->setView($view)
-                ->setHandle($handle)
-                ->setHeadStructure($structure['head'])
-                ->setBodyStructure($structure['body']);
+            $templateRenderer = new TemplateRenderer($handle, $view, $structure['body']['children']);
+            $html = new Html($templateRenderer, 'root', null, $structure);
 
-            $pageContent = $this->htmlTemplate->toHtml();
+            $pageContent = $html->toHtml();
 
             $this->cache->save(Cache::FULL_PAGE_CACHE_KEY, $handle, $pageContent);
         }
