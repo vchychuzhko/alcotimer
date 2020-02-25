@@ -2,12 +2,8 @@
 
 namespace Awesome\Framework\Handler;
 
-use Awesome\Framework\Block\Html;
-use Awesome\Framework\Model\Cli\AbstractCommand;
 use Awesome\Framework\Model\Cli\Input;
 use Awesome\Framework\XmlParser\CliXmlParser;
-use Awesome\Cache\Model\Cache;
-use Awesome\Framework\Model\Http\TemplateRenderer;
 
 class CliHandler extends \Awesome\Framework\Model\Handler\AbstractHandler
 {
@@ -15,11 +11,6 @@ class CliHandler extends \Awesome\Framework\Model\Handler\AbstractHandler
      * @var CliXmlParser $cliXmlParser
      */
     private $cliXmlParser;
-
-    /**
-     * @var array $handles
-     */
-    private $handles = [];
 
     /**
      * CliHandler constructor.
@@ -39,7 +30,7 @@ class CliHandler extends \Awesome\Framework\Model\Handler\AbstractHandler
         $handle = $this->parse($handle);
 
         if ($this->exist($handle)) {
-            $handles = $this->getHandles(true);
+            $handles = $this->cliXmlParser->getHandlesWithClasses();
             $className = $handles[$handle];
         }
 
@@ -55,7 +46,7 @@ class CliHandler extends \Awesome\Framework\Model\Handler\AbstractHandler
     {
         $handle = $this->parse($handle);
 
-        return in_array($handle, $this->getHandles());
+        return in_array($handle, $this->cliXmlParser->getHandles());
     }
 
     /**
@@ -63,7 +54,7 @@ class CliHandler extends \Awesome\Framework\Model\Handler\AbstractHandler
      */
     public function parse($handle)
     {
-        $command = '';
+        $command = $handle;
         $possibleMatches = $this->getPossibleCandidates($handle);
 
         if (count($possibleMatches) === 1) {
@@ -71,29 +62,6 @@ class CliHandler extends \Awesome\Framework\Model\Handler\AbstractHandler
         }
 
         return $command;
-    }
-
-    /**
-     * Get all available handles.
-     * If includeClasses is true, return also their responsible classNames.
-     * @param bool $includeClasses
-     * @return array
-     */
-    private function getHandles($includeClasses = false)
-    {
-        if (!$this->handles) {
-            $commandList = $this->cliXmlParser->getConsoleCommands();
-
-            foreach ($commandList as $namespace => $commands) {
-                foreach ($commands as $commandName => $command) {
-                    if (!$command['disabled']) {
-                        $this->handles[$namespace . ':' . $commandName] = $command['class'];
-                    }
-                }
-            }
-        }
-
-        return $includeClasses ? $this->handles : array_keys($this->handles);
     }
 
     /**
@@ -107,7 +75,7 @@ class CliHandler extends \Awesome\Framework\Model\Handler\AbstractHandler
     {
         $possibleCandidates = [];
         @list($namespace, $command) = explode(':', $handle);
-        $consoleCommands = $this->getHandles();
+        $consoleCommands = $this->cliXmlParser->getHandles();
 
         if ($command) {
             foreach ($consoleCommands as $consoleCommand) {

@@ -20,6 +20,26 @@ abstract class AbstractXmlParser
     }
 
     /**
+     * Get structure data according to the requested handle.
+     * @param string $handle
+     * @return array
+     */
+    abstract public function get($handle);
+
+    /**
+     * Get all available handles.
+     * @return array
+     */
+    abstract public function getHandles();
+
+    /**
+     * Convert XML node into array.
+     * @param \SimpleXMLElement $node
+     * @return array
+     */
+    abstract protected function parse($node);
+
+    /**
      * Check if string is a boolean "true", otherwise return false.
      * Not case sensitive.
      * @param string $string
@@ -28,5 +48,16 @@ abstract class AbstractXmlParser
     protected function stringBooleanCheck($string)
     {
         return strtolower($string) === 'true';
+    }
+
+    /**
+     * Get attribute value from the provided XML node.
+     * @param \SimpleXMLElement $node
+     * @param string $attribute
+     * @return string
+     */
+    protected function getNodeAttribute($node, $attribute = 'name')
+    {
+        return (string) $node[$attribute];
     }
 }

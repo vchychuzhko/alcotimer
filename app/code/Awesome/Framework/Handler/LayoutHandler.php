@@ -38,7 +38,8 @@ class LayoutHandler extends \Awesome\Framework\Model\Handler\AbstractHandler
         $handle = $this->parse($handle);
 
         if (!$pageContent = $this->cache->get(Cache::FULL_PAGE_CACHE_KEY, $handle)) {
-            $structure = $this->pageXmlParser->getPageStructure($handle, $this->view);
+            $structure = $this->pageXmlParser->setView($this->view)
+                ->get($handle);
 
             $templateRenderer = new TemplateRenderer($handle, $this->view, $structure['body']['children']);
             $html = new Html($templateRenderer, 'root', null, $structure);
@@ -58,7 +59,7 @@ class LayoutHandler extends \Awesome\Framework\Model\Handler\AbstractHandler
     {
         $handle = $this->parse($handle);
 
-        return in_array($handle, $this->pageXmlParser->getHandles($this->view));
+        return in_array($handle, $this->pageXmlParser->getHandlesForView($this->view));
     }
 
     /**
