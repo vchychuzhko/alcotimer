@@ -3,6 +3,7 @@
 namespace Awesome\Maintenance\Console;
 
 use Awesome\Maintenance\Model\Maintenance;
+use Awesome\Framework\Validator\IpValidator;
 
 class Enable extends \Awesome\Framework\Model\Cli\AbstractCommand
 {
@@ -12,11 +13,17 @@ class Enable extends \Awesome\Framework\Model\Cli\AbstractCommand
     private $maintenance;
 
     /**
+     * @var IpValidator $validator
+     */
+    private $validator;
+
+    /**
      * Maintenance Enable constructor.
      */
     public function __construct()
     {
         $this->maintenance = new Maintenance();
+        $this->validator = new IpValidator();
     }
 
     /**
@@ -50,35 +57,16 @@ class Enable extends \Awesome\Framework\Model\Cli\AbstractCommand
      */
     public function execute($input, $output)
     {
-        $allowedIPs = $input->getArgument();
+        $allowedIPs = $input->getArgument('ips');
 
-        if ($this->validateIPs($allowedIPs) || $input->getOption('force')) {
+        if ($this->validator->validItems($allowedIPs) || $input->getOption('force')) {
             $this->maintenance->enable($allowedIPs);
 
             $output->writeln('Maintenance mode was enabled.');
         } else {
-            $output->writeln('Provided IP addresses are not valid: Please, check them and try again.');
-            $output->writeln('Use -f option if you are sure and want to proceed anyway.');
+            $output->write('Provided IP addresses are not valid, please, check them and try again: ');
+            $output->writeln($output->colourText(implode(', ', $this->validator->getInvalidItems()), 'brown'));
+            $output->writeln('Use -f/--force option if you want to proceed anyway.');
         }
-    }
-
-    /**
-     * Validate provided IP addresses.
-     * @param array $ips
-     * @return bool
-     */
-    private function validateIPs($ips)
-    {
-        $valid = true;
-        //@TODO: Move it to a separate validator
-
-        foreach ($ips as $ip) {
-            if (!$valid = filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
-                $invalid[] = $ip;
-                break;
-            }
-        }
-
-        return $valid;
     }
 }
