@@ -3,11 +3,14 @@
 namespace Awesome\Framework\XmlParser;
 
 use Awesome\Cache\Model\Cache;
+use Awesome\Framework\Model\Cli\AbstractCommand;
+use Awesome\Framework\Model\Cli\Input\InputDefinition;
 
 class CliXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
 {
     private const CLI_XML_PATH_PATTERN = '/*/*/etc/cli.xml';
-    private const CLI_CACHE_TAG = 'cli-handles';
+    private const CLI_HANDLES_CACHE_TAG = 'cli-handles';
+    private const DEFAULT_HANDLE = 'default';
 
     /**
      * Return data for AbstractCommand in case there is no requested command.
@@ -15,11 +18,24 @@ class CliXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
      */
     public function get($handle)
     {
+        if ($handle === '') {
+            $handle = self::DEFAULT_HANDLE;
+        }
+
         if (!$commandData = $this->cache->get(Cache::CLI_CACHE_KEY, $handle)) {
-            $commandList = $this->getHandlesWithClasses();
+            $commandList = $this->getHandlesClasses();
+            $definition = new InputDefinition();
 
             if (isset($commandList[$handle])) {
-                $commandData = ['class' => $commandList[$handle]];
+                /** @var AbstractCommand $commandClass */
+                $commandClass = $commandList[$handle];
+                $definition = $commandClass::configure($definition);
+
+                $commandData = array_replace_recursive(['class' => $commandClass], $definition->getDefinition());
+            } elseif ($handle === self::DEFAULT_HANDLE) {
+                $definition = AbstractCommand::configure($definition);
+
+                $commandData = $definition->getDefinition();
             }
 
             $this->cache->save(Cache::CLI_CACHE_KEY, $handle, $commandData);
@@ -33,7 +49,7 @@ class CliXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
      */
     public function getHandles()
     {
-        return array_keys($this->getHandlesWithClasses());
+        return array_keys($this->getHandlesClasses());
     }
 
     /**
@@ -42,9 +58,9 @@ class CliXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
      * @param bool $includeDisabled
      * @return array
      */
-    public function getHandlesWithClasses($includeDisabled = false)
+    public function getHandlesClasses($includeDisabled = false)
     {
-        if (!$handles = $this->cache->get(Cache::CLI_CACHE_KEY, self::CLI_CACHE_TAG)) {
+        if (!$handles = $this->cache->get(Cache::CLI_CACHE_KEY, self::CLI_HANDLES_CACHE_TAG)) {
             foreach (glob(APP_DIR . self::CLI_XML_PATH_PATTERN) as $cliXmlFile) {
                 $cliData = simplexml_load_file($cliXmlFile);
                 $parsedData = $this->parse($cliData);
@@ -59,7 +75,7 @@ class CliXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
                 }
             }
 
-            $this->cache->save(Cache::CLI_CACHE_KEY, self::CLI_CACHE_TAG, $handles);
+            $this->cache->save(Cache::CLI_CACHE_KEY, self::CLI_HANDLES_CACHE_TAG, $handles);
         }
 
         return $handles;
@@ -74,10 +90,8 @@ class CliXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
         $parsedNode = [];
 
         foreach ($node->children() as $namespace) {
-            $namespaceName = $this->getNodeAttribute($namespace);
-
             foreach ($namespace->children() as $command) {
-                $commandName = $namespaceName . ':' . $this->getNodeAttribute($command);
+                $commandName = $this->getNodeAttribute($namespace) . ':' . $this->getNodeAttribute($command);
 
                 if (isset($parsedNode[$commandName])) {
                     throw new \LogicException(sprintf('Command "%s" is defined twice in one file.', $commandName));

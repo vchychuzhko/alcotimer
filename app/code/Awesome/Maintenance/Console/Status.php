@@ -20,6 +20,15 @@ class Status extends \Awesome\Framework\Model\Cli\AbstractCommand
     }
 
     /**
+     * @inheritDoc
+     */
+    public static function configure($definition)
+    {
+        return parent::configure($definition)
+            ->setDescription('View current state of maintenance.');
+    }
+
+    /**
      * Get current state of maintenance.
      * @inheritDoc
      */

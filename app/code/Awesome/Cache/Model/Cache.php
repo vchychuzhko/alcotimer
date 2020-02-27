@@ -6,6 +6,7 @@ class Cache
 {
     private const CACHE_DIR = '/var/cache';
     public const ETC_CACHE_KEY = 'etc';
+    public const CLI_CACHE_KEY = 'cli';
     public const LAYOUT_CACHE_KEY = 'layout';
     public const FULL_PAGE_CACHE_KEY = 'full-page';
 
@@ -17,6 +18,7 @@ class Cache
      */
     public function get($key, $tag = '')
     {
+        //@TODO: Possibly, rework it according to Symfony, with save callback
         $cache = $this->readCacheFile($key);
 
         if ($tag) {

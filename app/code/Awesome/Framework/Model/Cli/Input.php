@@ -68,10 +68,10 @@ class Input
         if ($this->interactive) {
             $confirm = false;
             $try = 1;
-            $answer = '';
 
-            while ($try <= $tries && !in_array($answer, $confirmOptions)) {
+            while ($try <= $tries && !$confirm) {
                 $answer = $this->read($prompt);
+                $confirm = in_array($answer, $confirmOptions);
                 $try++;
             }
         }
@@ -80,19 +80,29 @@ class Input
     }
 
     /**
-     * Prompt user to select one of provided options.
+     * Prompt user to select one of the provided options.
      * @param string $prompt
      * @param array $options
-     * @return bool
+     * @param int $tries
+     * @return string
      */
-    public function choice($prompt, $options)
+    public function choice($prompt, $options, $tries = 2)
     {
         $choice = '';
 
-        if ($this->interactive) {
-            $prompt .= "\n" . implode("\n", $options);
-            $choice = $this->read($prompt);
-            //@TODO: add an ability to use kay-value arrays
+        if ($this->interactive && $options) {
+            foreach ($options as $optionKey => $option) {
+                $prompt .= "\n" . $optionKey . ': ' . $option;
+            }
+            $prompt .= "\n" . 'Your choice: ';
+            $try = 1;
+            $chose = false;
+
+            while ($try <= $tries && !$chose) {
+                $choice = $this->read($prompt);
+                $chose = in_array($choice, array_keys($options));
+                $try++;
+            }
         }
 
         return $choice;
@@ -133,7 +143,7 @@ class Input
      * Get input option.
      * Return all collected options if no name is specified.
      * @param string $optionName
-     * @return string
+     * @return string|array
      */
     public function getOption($optionName = '')
     {
@@ -147,16 +157,15 @@ class Input
     }
 
     /**
-     * Get input argument by provided position.
-     * Return all collected arguments if no position is specified.
-     * @param int $argumentPosition
+     * Get input argument.
+     * Return all collected arguments if no name is specified.
+     * @param string $argumentName
      * @return string|array
      */
-    public function getArgument($argumentPosition = 0)
+    public function getArgument($argumentName = '')
     {
-        if ($argumentPosition) {
-            $argument = $this->arguments[$argumentPosition - 1] ?? '';
-            //@TODO: update this for Handler to map arguments by name instead of position, see parseInput()
+        if ($argumentName) {
+            $argument = $this->arguments[$argumentName] ?? '';
         } else {
             $argument = $this->arguments;
         }

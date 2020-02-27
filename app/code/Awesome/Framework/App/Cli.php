@@ -82,15 +82,6 @@ class Cli implements \Awesome\Framework\Model\AppInterface
     }
 
     /**
-     * Determine if application version should be shown.
-     * @return bool
-     */
-    private function showVersion()
-    {
-        return $this->input->getOption('version');
-    }
-
-    /**
      * Determine if output should be disabled.
      * @return bool
      */
@@ -106,6 +97,15 @@ class Cli implements \Awesome\Framework\Model\AppInterface
     private function isNonInteractive()
     {
         return $this->input->getOption('no-interaction');
+    }
+
+    /**
+     * Determine if application version should be shown.
+     * @return bool
+     */
+    private function showVersion()
+    {
+        return $this->input->getOption('version');
     }
 
     /**

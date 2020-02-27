@@ -1,14 +1,10 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="../../Console/Schema/console_command.xsd">
+        xsi:noNamespaceSchemaLocation="../../Framework/Schema/console_command.xsd">
     <namespace name="cache">
-        <command name="clean" class="Awesome\Cache\Console\Clean">
-            <description><![CDATA[Flush XML, including CLI and page cache.]]></description>
-        </command>
+        <command name="clean" class="Awesome\Cache\Console\Clean"/>
     </namespace>
     <namespace name="static">
-        <command name="deploy" class="Awesome\Cache\Console\StaticDeploy">
-            <description><![CDATA[Generate static files (assets).]]></description>
-        </command>
+        <command name="deploy" class="Awesome\Cache\Console\StaticDeploy"/>
     </namespace>
 </config>

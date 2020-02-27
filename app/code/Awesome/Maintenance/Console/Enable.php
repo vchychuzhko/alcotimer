@@ -2,6 +2,7 @@
 
 namespace Awesome\Maintenance\Console;
 
+use Awesome\Framework\Model\Cli\Input\InputDefinition;
 use Awesome\Maintenance\Model\Maintenance;
 use Awesome\Framework\Validator\IpValidator;
 
@@ -29,26 +30,12 @@ class Enable extends \Awesome\Framework\Model\Cli\AbstractCommand
     /**
      * @inheritDoc
      */
-    public static function getConfiguration()
+    public static function configure($definition)
     {
-        return array_replace_recursive(parent::getConfiguration(), [
-            'description' => 'Enable maintenance mode with list of allowed ids.',
-            'options' => [
-                'force' => [
-                    'shortcut' => 'f',
-                    'mode' => self::OPTION_OPTIONAL,
-                    'description' => 'Force maintenance mode enabling',
-                    'default' => null
-                ]
-            ],
-            'arguments' => [
-                'ip' => [
-                    'position' => 0,
-                    'mode' => self::ARGUMENT_OPTIONAL_ARRAY,
-                    'description' => 'Ip addresses to exclude'
-                ]
-            ]
-        ]);
+        return parent::configure($definition)
+            ->setDescription('Enable maintenance mode with list of allowed ids.')
+            ->addOption('force', 'f', InputDefinition::OPTION_OPTIONAL, 'Force maintenance mode enabling')
+            ->addArgument('ips', InputDefinition::ARGUMENT_ARRAY, 'List of IP addresses to exclude');
     }
 
     /**

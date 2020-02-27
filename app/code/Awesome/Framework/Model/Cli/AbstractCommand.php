@@ -3,51 +3,23 @@
 namespace Awesome\Framework\Model\Cli;
 
 use Awesome\Framework\Model\Cli\Input;
+use Awesome\Framework\Model\Cli\Input\InputDefinition;
 use Awesome\Framework\Model\Cli\Output;
 
 abstract class AbstractCommand
 {
-    public const OPTION_REQUIRED = 'required';
-    public const OPTION_OPTIONAL = 'optional';
-
-    public const ARGUMENT_OPTIONAL_ARRAY = 'optional_array';
-
     /**
      * Define all data related to console command.
-     * @return array
+     * @param InputDefinition $definition
+     * @return InputDefinition
+     * @throws \LogicException
      */
-    public static function getConfiguration()
+    public static function configure($definition)
     {
-        return [
-            'description' => '',
-            'options' => [
-                'help' => [
-                    'shortcut' => 'h',
-                    'mode' => self::OPTION_OPTIONAL,
-                    'description' => 'Display this help message',
-                    'default' => null
-                ],
-                'quiet' => [
-                    'shortcut' => 'q',
-                    'mode' => self::OPTION_OPTIONAL,
-                    'description' => 'Do not output any message',
-                    'default' => null
-                ],
-                'version' => [
-                    'shortcut' => 'v',
-                    'mode' => self::OPTION_OPTIONAL,
-                    'description' => 'Display this application version',
-                    'default' => null
-                ],
-                'no-interaction' => [
-                    'shortcut' => 'n',
-                    'mode' => self::OPTION_OPTIONAL,
-                    'description' => 'Do not ask any interactive questions',
-                    'default' => null
-                ]
-            ],
-            'arguments' => []
-        ];
+        return $definition->addOption('help', 'h', InputDefinition::OPTION_OPTIONAL, 'Display this help message')
+            ->addOption('quiet', 'q', InputDefinition::OPTION_OPTIONAL, 'Do not output any message')
+            ->addOption('version', 'v', InputDefinition::OPTION_OPTIONAL, 'Display this application version')
+            ->addOption('no-interaction', 'n', InputDefinition::OPTION_OPTIONAL, 'Do not ask any interactive questions');
     }
 
     /**

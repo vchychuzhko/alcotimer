@@ -25,6 +25,7 @@ class ShowHelp extends \Awesome\Framework\Model\Cli\AbstractCommand
      */
     public function execute($input, $output)
     {
+        //@TODO: this must not be a console command, move it to Cli, perhaps
         $output->writeln($output->colourText('Usage:', 'brown'));
         $output->writeln('command [options] [arguments]', 2);
         $output->writeln();

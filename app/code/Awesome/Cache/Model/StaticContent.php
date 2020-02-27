@@ -65,7 +65,7 @@ class StaticContent
     }
 
     /**
-     * Remove all static files related to needed view, including directory.
+     * Remove all static files related to requested view, including directory.
      * @param string $view
      * @return $this
      */
@@ -199,7 +199,7 @@ class StaticContent
     }
 
     /**
-     * Check and remove files which have minified versions.
+     * Filter files which have minified versions.
      * @param array $files
      * @return array
      */

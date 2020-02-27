@@ -2,10 +2,12 @@
 
 namespace Awesome\Cache\Console;
 
+use Awesome\Cache\Model\Cache;
+
 class Clean extends \Awesome\Framework\Model\Cli\AbstractCommand
 {
     /**
-     * @var \Awesome\Cache\Model\Cache $cache
+     * @var Cache $cache
      */
     private $cache;
 
@@ -14,7 +16,7 @@ class Clean extends \Awesome\Framework\Model\Cli\AbstractCommand
      */
     function __construct()
     {
-        $this->cache = new \Awesome\Cache\Model\Cache();
+        $this->cache = new Cache();
     }
 
     /**

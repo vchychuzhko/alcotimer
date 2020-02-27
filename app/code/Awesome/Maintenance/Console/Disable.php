@@ -20,6 +20,15 @@ class Disable extends \Awesome\Framework\Model\Cli\AbstractCommand
     }
 
     /**
+     * @inheritDoc
+     */
+    public static function configure($definition)
+    {
+        return parent::configure($definition)
+            ->setDescription('Disable maintenance mode.');
+    }
+
+    /**
      * Disable maintenance mode.
      * @inheritDoc
      */
