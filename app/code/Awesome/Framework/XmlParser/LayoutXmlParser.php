@@ -6,11 +6,11 @@ use Awesome\Framework\App\Http;
 use Awesome\Cache\Model\Cache;
 use Awesome\Framework\Block\Template\Container;
 
-class PageXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
+class LayoutXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
 {
-    private const DEFAULT_PAGE_XML_PATH_PATTERN = '/*/*/view/%v/layout/default.xml';
-    private const PAGE_XML_PATH_PATTERN = '/*/*/view/%v/layout/%h.xml';
-    private const PAGE_HANDLES_CACHE_TAG = 'page-handles';
+    private const DEFAULT_LAYOUT_XML_PATH_PATTERN = '/*/*/view/%s/layout/default.xml';
+    private const LAYOUT_XML_PATH_PATTERN = '/*/*/view/%s/layout/%s.xml';
+    private const LAYOUT_HANDLES_CACHE_TAG = 'layout-handles';
 
     /**
      * @var string $view
@@ -46,42 +46,41 @@ class PageXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
      */
     public function get($handle)
     {
-        if (!$pageStructure = $this->cache->get(Cache::LAYOUT_CACHE_KEY, $handle)) {
-            $defaultPattern = APP_DIR . str_replace('%v', $this->view, self::DEFAULT_PAGE_XML_PATH_PATTERN);
+        if (!$layoutStructure = $this->cache->get(Cache::LAYOUT_CACHE_KEY, $handle)) {
+            $defaultPattern = APP_DIR . sprintf(self::DEFAULT_LAYOUT_XML_PATH_PATTERN, $this->view);
 
             foreach (glob($defaultPattern) as $defaultXmlFile) {
-                $pageData = simplexml_load_file($defaultXmlFile);
+                $layoutData = simplexml_load_file($defaultXmlFile);
 
-                $parsedData = $this->parse($pageData);
-                $pageStructure = array_replace_recursive($pageStructure, $parsedData);
+                $parsedData = $this->parse($layoutData);
+                $layoutStructure = array_replace_recursive($layoutStructure, $parsedData);
             }
 
-            $pattern = APP_DIR . str_replace('%v', $this->view, self::PAGE_XML_PATH_PATTERN);
-            $pattern = str_replace('%h', $handle, $pattern);
+            $pattern = APP_DIR . sprintf(self::LAYOUT_XML_PATH_PATTERN, $this->view, $handle);
 
-            foreach (glob($pattern) as $pageXmlFile) {
-                $pageData = simplexml_load_file($pageXmlFile);
+            foreach (glob($pattern) as $layoutXmlFile) {
+                $layoutData = simplexml_load_file($layoutXmlFile);
 
-                $parsedData = $this->parse($pageData);
-                $pageStructure = array_replace_recursive($pageStructure, $parsedData);
+                $parsedData = $this->parse($layoutData);
+                $layoutStructure = array_replace_recursive($layoutStructure, $parsedData);
             }
 
             $this->filterRemovedAssets();
             //@TODO: Add check for minify/merge enabled and replace links
-            $pageStructure['head'] = array_merge($pageStructure['head'], $this->collectedAssets);
+            $layoutStructure['head'] = array_merge($layoutStructure['head'], $this->collectedAssets);
 
-            $this->applyReferences($pageStructure['body']);
-            $this->applySortOrder($pageStructure['body']);
+            $this->applyReferences($layoutStructure['body']);
+            $this->applySortOrder($layoutStructure['body']);
             //@TODO: add validation for duplicating elements
 
-            $this->cache->save(Cache::LAYOUT_CACHE_KEY, $handle, $pageStructure);
+            $this->cache->save(Cache::LAYOUT_CACHE_KEY, $handle, $layoutStructure);
         }
 
-        return $pageStructure;
+        return $layoutStructure;
     }
 
     /**
-     * Get all available page handles for a specified view.
+     * Get all available page layout handles for a specified view.
      * @param string $view
      * @return array
      */
@@ -97,10 +96,9 @@ class PageXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
      */
     public function getHandles()
     {
-        if (!$handles = $this->cache->get(Cache::LAYOUT_CACHE_KEY, self::PAGE_HANDLES_CACHE_TAG)) {
+        if (!$handles = $this->cache->get(Cache::LAYOUT_CACHE_KEY, self::LAYOUT_HANDLES_CACHE_TAG)) {
             foreach ([Http::FRONTEND_VIEW, Http::BACKEND_VIEW] as $view) {
-                $pattern = APP_DIR . str_replace('%v', $view, self::PAGE_XML_PATH_PATTERN);
-                $pattern = str_replace('%h', '*', $pattern);
+                $pattern = APP_DIR . sprintf(self::LAYOUT_XML_PATH_PATTERN, $view, '*');
                 $collectedHandles = [];
 
                 foreach (glob($pattern) as $collectedHandle) {
@@ -113,7 +111,7 @@ class PageXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
                 $handles[$view] = array_unique($collectedHandles);
             }
 
-            $this->cache->save(Cache::LAYOUT_CACHE_KEY, self::PAGE_HANDLES_CACHE_TAG, $handles);
+            $this->cache->save(Cache::LAYOUT_CACHE_KEY, self::LAYOUT_HANDLES_CACHE_TAG, $handles);
         }
 
         return $handles;
@@ -140,7 +138,7 @@ class PageXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
     }
 
     /**
-     * Set current page view.
+     * Set current page layout view.
      * @param string $view
      * @return $this
      */
@@ -152,7 +150,7 @@ class PageXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
     }
 
     /**
-     * Parse head part of XML page node.
+     * Parse head part of XML layout node.
      * @param \SimpleXMLElement $headNode
      * @return array
      */
@@ -187,7 +185,7 @@ class PageXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
     }
 
     /**
-     * Parse body part of XML page node.
+     * Parse body part of XML layout node.
      * @param \SimpleXMLElement $bodyNode
      * @return array
      */
@@ -299,7 +297,7 @@ class PageXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
     }
 
     /**
-     * Apply reference updates to a parsed page.
+     * Apply reference updates to a parsed layout.
      * @param array $bodyStructure
      * @return array
      */
@@ -320,7 +318,7 @@ class PageXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
     }
 
     /**
-     * Apply sort order rules to a parsed page.
+     * Apply sort order rules to a parsed layout.
      * @param array $blockStructure
      * @return array
      */

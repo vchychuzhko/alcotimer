@@ -3,16 +3,16 @@
 namespace Awesome\Framework\Handler;
 
 use Awesome\Framework\Block\Html;
-use Awesome\Framework\XmlParser\PageXmlParser;
+use Awesome\Framework\XmlParser\LayoutXmlParser;
 use Awesome\Cache\Model\Cache;
 use Awesome\Framework\Model\Http\TemplateRenderer;
 
 class LayoutHandler extends \Awesome\Framework\Model\Handler\AbstractHandler
 {
     /**
-     * @var PageXmlParser $pageXmlParser
+     * @var LayoutXmlParser $layoutXmlParser
      */
-    private $pageXmlParser;
+    private $layoutXmlParser;
 
     /**
      * @var string $view
@@ -24,7 +24,7 @@ class LayoutHandler extends \Awesome\Framework\Model\Handler\AbstractHandler
      */
     function __construct()
     {
-        $this->pageXmlParser = new PageXmlParser();
+        $this->layoutXmlParser = new LayoutXmlParser();
         parent::__construct();
     }
 
@@ -38,7 +38,7 @@ class LayoutHandler extends \Awesome\Framework\Model\Handler\AbstractHandler
         $handle = $this->parse($handle);
 
         if (!$pageContent = $this->cache->get(Cache::FULL_PAGE_CACHE_KEY, $handle)) {
-            $structure = $this->pageXmlParser->setView($this->view)
+            $structure = $this->layoutXmlParser->setView($this->view)
                 ->get($handle);
 
             $templateRenderer = new TemplateRenderer($handle, $this->view, $structure['body']['children']);
@@ -59,7 +59,7 @@ class LayoutHandler extends \Awesome\Framework\Model\Handler\AbstractHandler
     {
         $handle = $this->parse($handle);
 
-        return in_array($handle, $this->pageXmlParser->getHandlesForView($this->view));
+        return in_array($handle, $this->layoutXmlParser->getHandlesForView($this->view));
     }
 
     /**
