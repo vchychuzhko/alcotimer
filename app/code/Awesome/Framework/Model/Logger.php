@@ -1,15 +1,17 @@
 <?php
 
-namespace Awesome\Logger\Model;
+namespace Awesome\Framework\Model;
 
-class LogWriter
+use Awesome\Framework\Model\Date;
+
+class Logger
 {
     private const LOG_DIRECTORY = '/var/log';
     private const EXCEPTION_LOG_FILE = 'exception.log';
     private const VISITOR_LOG_FILE = 'visitor.log';
 
     /**
-     * @var \Awesome\Framework\Model\Date $date
+     * @var Date $date
      */
     private $date;
 
@@ -18,7 +20,7 @@ class LogWriter
      */
     public function __construct()
     {
-        $this->date = new \Awesome\Framework\Model\Date();
+        $this->date = new Date();
     }
 
     /**

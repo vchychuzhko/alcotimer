@@ -2,7 +2,7 @@
 
 namespace Awesome\Framework\App;
 
-use Awesome\Logger\Model\LogWriter;
+use Awesome\Framework\Model\Logger;
 use Awesome\Maintenance\Model\Maintenance;
 use Awesome\Framework\Model\Config;
 use Awesome\Framework\Handler\LayoutHandler;
@@ -18,7 +18,7 @@ class Http implements \Awesome\Framework\Model\AppInterface
     public const WEB_ROOT_CONFIG = 'web/web_root_is_pub';
 
     /**
-     * @var LogWriter
+     * @var Logger
      */
     private $logWriter;
 
@@ -42,7 +42,7 @@ class Http implements \Awesome\Framework\Model\AppInterface
      */
     public function __construct()
     {
-        $this->logWriter = new LogWriter();
+        $this->logWriter = new Logger();
         $this->maintenance = new Maintenance();
         $this->layoutHandler = new LayoutHandler();
         $this->config = new Config();
@@ -92,7 +92,7 @@ class Http implements \Awesome\Framework\Model\AppInterface
         } else {
             $uri = $this->getRequestUri();
 
-            if ($uri === '') {
+            if ($uri === '/') {
                 $uri = $this->getHomepageHandle();
             }
             $handle = $this->layoutHandler->parse($uri);
@@ -112,7 +112,7 @@ class Http implements \Awesome\Framework\Model\AppInterface
      */
     private function getRequestUri()
     {
-        return (string) strtok(trim($_SERVER['REQUEST_URI'], '/'), '?');
+        return parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?: '/';
     }
 
     /**
