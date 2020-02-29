@@ -30,8 +30,7 @@ class LayoutHandler extends \Awesome\Framework\Model\Handler\AbstractHandler
 
     /**
      * Render the page according to XML handle.
-     * @param string $handle
-     * @return string
+     * @inheritDoc
      */
     public function process($handle)
     {

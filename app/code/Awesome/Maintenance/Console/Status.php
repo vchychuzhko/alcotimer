@@ -2,6 +2,7 @@
 
 namespace Awesome\Maintenance\Console;
 
+use Awesome\Framework\Model\Cli\Output;
 use Awesome\Maintenance\Model\Maintenance;
 
 class Status extends \Awesome\Framework\Model\Cli\AbstractCommand
@@ -38,9 +39,12 @@ class Status extends \Awesome\Framework\Model\Cli\AbstractCommand
         $state = $this->maintenance->getStatus();
 
         if ($state['enabled']) {
-            $allowedIPs = implode(', ', $state['allowed_ips'] ?? []);
-            $status = 'Maintenance mode is enabled.'
-                . ($allowedIPs ? ("\n" . 'Allowed IP addresses: ' . $output->colourText($allowedIPs, 'brown')) : '');
+            $status = 'Maintenance mode is enabled.';
+
+            if ($state['allowed_ips']) {
+                $allowedIPs = implode(', ', $state['allowed_ips']);
+                $status .= "\n" . 'Allowed IP addresses: ' . $output->colourText($allowedIPs, Output::BROWN);
+            }
         }
 
         $output->writeln($status);

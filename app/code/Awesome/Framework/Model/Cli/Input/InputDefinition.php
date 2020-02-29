@@ -42,7 +42,7 @@ class InputDefinition
     private $hasArrayArgument = false;
 
     /**
-     * Set command description, override if already set.
+     * Set command description, overrides if already set.
      * @param string $description
      * @return $this
      */
@@ -63,8 +63,13 @@ class InputDefinition
      * @return $this
      * @throws \LogicException
      */
-    public function addOption($name, $shortcut = null, $type = self::OPTION_OPTIONAL, $description = '', $default = true)
-    {
+    public function addOption(
+        $name,
+        $shortcut = null,
+        $type = self::OPTION_OPTIONAL,
+        $description = '',
+        $default = true
+    ) {
         if ($shortcut) {
             if (isset($this->shortcuts[$shortcut])) {
                 throw new \LogicException(sprintf('An option with shortcut "%s" already exists.', $shortcut));
@@ -96,18 +101,16 @@ class InputDefinition
             throw new \LogicException('Argument cannot be added after array argument.');
         }
 
-        if ($type === self::ARGUMENT_ARRAY) {
-            if (!empty($this->arguments)) {
-                throw new \LogicException('Array argument cannot be used along with other arguments.');
-            }
-            $this->hasArrayArgument = true;
+        if ($type !== self::ARGUMENT_OPTIONAL && $this->lastArgumentOptional) {
+            throw new \LogicException('Cannot add required or array argument after optional one.');
         }
 
-        if ($type !== self::ARGUMENT_OPTIONAL) {
-            if ($this->lastArgumentOptional) {
-                throw new \LogicException('Cannot add non-optional argument after optional one.');
-            }
+        if ($type === self::ARGUMENT_OPTIONAL) {
             $this->lastArgumentOptional = true;
+        }
+
+        if ($type === self::ARGUMENT_ARRAY) {
+            $this->hasArrayArgument = true;
         }
 
         $this->arguments[$name] = [

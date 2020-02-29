@@ -40,17 +40,6 @@ abstract class AbstractXmlParser
     abstract protected function parse($node);
 
     /**
-     * Check if string is a boolean "true", otherwise return false.
-     * Not case sensitive.
-     * @param string $string
-     * @return bool
-     */
-    protected function stringBooleanCheck($string)
-    {
-        return strtolower($string) === 'true';
-    }
-
-    /**
      * Get attribute value from the provided XML node.
      * @param \SimpleXMLElement $node
      * @param string $attribute
@@ -59,5 +48,16 @@ abstract class AbstractXmlParser
     protected function getNodeAttribute($node, $attribute = 'name')
     {
         return (string) $node[$attribute];
+    }
+
+    /**
+     * Check if string is a boolean "true", otherwise return false.
+     * Not case sensitive.
+     * @param string $string
+     * @return bool
+     */
+    protected function stringBooleanCheck($string)
+    {
+        return strtolower($string) === 'true';
     }
 }

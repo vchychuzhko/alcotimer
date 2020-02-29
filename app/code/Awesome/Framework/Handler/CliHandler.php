@@ -28,19 +28,15 @@ class CliHandler extends \Awesome\Framework\Model\Handler\AbstractHandler
     }
 
     /**
+     * Get responsible class by requested handle.
      * @inheritDoc
      */
     public function process($handle)
     {
-        $className = '';
         $handle = $this->parse($handle);
+        $handles = $this->cliXmlParser->getHandlesClasses();
 
-        if ($this->exist($handle)) {
-            $handles = $this->cliXmlParser->getHandlesClasses();
-            $className = $handles[$handle];
-        }
-
-        return $className;
+        return $handles[$handle] ?? '';
     }
 
     /**
@@ -85,19 +81,13 @@ class CliHandler extends \Awesome\Framework\Model\Handler\AbstractHandler
         @list($namespace, $command) = explode(':', $handle);
         $consoleCommands = $this->cliXmlParser->getHandles();
 
-        if ($command) {
-            foreach ($consoleCommands as $consoleCommand) {
-                [$commandNamespace, $commandCommand] = explode(':', $consoleCommand);
+        foreach ($consoleCommands as $consoleCommand) {
+            list($commandNamespace, $commandCommand) = explode(':', $consoleCommand);
 
-                if (strpos($commandNamespace, $namespace) === 0 && strpos($commandCommand, $command) === 0) {
-                    $possibleCandidates[] = $commandNamespace . ':' . $commandCommand;
-                }
-            }
-        } elseif (!$strict) {
-            foreach ($consoleCommands as $consoleCommand) {
-                if (strpos($consoleCommand, $namespace) === 0) {
-                    $possibleCandidates[] = $consoleCommand;
-                }
+            if (strpos($commandNamespace, $namespace) === 0
+                && (($command && strpos($commandCommand, $command) === 0) || !$strict)
+            ) {
+                $possibleCandidates[] = $consoleCommand;
             }
         }
 
@@ -166,8 +156,7 @@ class CliHandler extends \Awesome\Framework\Model\Handler\AbstractHandler
                 ) {
                     throw new \LogicException(sprintf('Required argument "%s" was not provided', $argumentName));
                 } elseif ($argumentData['type'] === InputDefinition::ARGUMENT_ARRAY) {
-                    $arguments[$argumentName] = $collectedArguments;
-                    break;
+                    $arguments[$argumentName] = array_slice($collectedArguments, $position - 1);
                 } elseif (isset($collectedArguments[$position])) {
                     $arguments[$argumentName] = $collectedArguments[$position];
                 }

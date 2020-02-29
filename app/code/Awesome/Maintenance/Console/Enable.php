@@ -3,6 +3,7 @@
 namespace Awesome\Maintenance\Console;
 
 use Awesome\Framework\Model\Cli\Input\InputDefinition;
+use Awesome\Framework\Model\Cli\Output;
 use Awesome\Maintenance\Model\Maintenance;
 use Awesome\Framework\Validator\IpValidator;
 
@@ -52,7 +53,7 @@ class Enable extends \Awesome\Framework\Model\Cli\AbstractCommand
             $output->writeln('Maintenance mode was enabled.');
         } else {
             $output->write('Provided IP addresses are not valid, please, check them and try again: ');
-            $output->writeln($output->colourText(implode(', ', $this->validator->getInvalidItems()), 'brown'));
+            $output->writeln($output->colourText(implode(', ', $this->validator->getInvalidItems()), Output::BROWN));
             $output->writeln('Use -f/--force option if you want to proceed anyway.');
         }
     }

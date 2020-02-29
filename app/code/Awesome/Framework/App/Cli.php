@@ -60,7 +60,11 @@ class Cli implements \Awesome\Framework\Model\AppInterface
             } else {
                 $candidates = $this->cliHandler->getPossibleCandidates($command, false);
                 $this->output->writeln(
-                    $this->output->colourText('Command "' . $command . '" is not defined.', 'white', 'red')
+                    $this->output->colourText(
+                        sprintf('Command "%s" is not defined.', $command),
+                        Output::WHITE,
+                        Output::RED_BG
+                    )
                 );
 
                 if ($candidates) {
@@ -68,8 +72,10 @@ class Cli implements \Awesome\Framework\Model\AppInterface
                     $this->output->writeln('Did you mean one of these?', 2);
 
                     foreach ($candidates as $candidate) {
-                        $this->output->writeln($this->output->colourText($candidate, 'brown'), 4);
+                        $this->output->writeln($this->output->colourText($candidate, Output::BROWN), 4);
                     }
+                } else {
+                    $this->output->writeln(sprintf('Try running help, using only "%s" option.', '-h'));
                 }
             }
         } else {

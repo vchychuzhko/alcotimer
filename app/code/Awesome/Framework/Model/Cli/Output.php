@@ -5,42 +5,42 @@ namespace Awesome\Framework\Model\Cli;
 class Output
 {
     /**
-     * More info here: https://joshtronic.com/2013/09/02/how-to-use-colors-in-command-line-output
-     * @var array $colours
+     * Foreground and background CLI colour constants.
+     * More info here: https://misc.flogisoft.com/bash/tip_colors_and_formatting
      */
-    private $colours = [
-        'black' => '0;30',
-        'dark-grey' => '1;30',
-        'red' => '0;31',
-        'light-red' => '1;31',
-        'green' => '0;32',
-        'light-green' => '1;32',
-        'brown' => '0;33',
-        'yellow' => '1;33',
-        'blue' => '0;34',
-        'light-blue' => '1;34',
-        'magenta' => '0;35',
-        'light-magenta' => '1;35',
-        'cyan' => '0;36',
-        'light-cyan' => '1;36',
-        'light-grey' => '0;37',
-        'white' => '1;37'
-    ];
+    public const BLACK = '30';
+    public const DARK_GREY = '90';
+    public const RED = '31';
+    public const LIGHT_RED = '91';
+    public const GREEN = '32';
+    public const LIGHT_GREEN = '92';
+    public const BROWN = '33';
+    public const YELLOW = '93';
+    public const BLUE = '34';
+    public const LIGHT_BLUE = '94';
+    public const MAGENTA = '35';
+    public const LIGHT_MAGENTA = '95';
+    public const CYAN = '36';
+    public const LIGHT_CYAN = '96';
+    public const LIGHT_GREY = '37';
+    public const WHITE = '97';
 
-    /**
-     * More info here: https://joshtronic.com/2013/09/02/how-to-use-colors-in-command-line-output
-     * @var array $backgroundColours
-     */
-    private $backgroundColours = [
-        'black' => '40',
-        'red' => '41',
-        'green' => '42',
-        'yellow' => '43',
-        'blue' => '44',
-        'magenta' => '45',
-        'cyan' => '46',
-        'light-grey' => '47'
-    ];
+    public const BLACK_BG = '40';
+    public const DARK_GRAY_BG = '100';
+    public const RED_BG = '41';
+    public const LIGHT_RED_BG = '101';
+    public const GREEN_BG = '42';
+    public const LIGHT_GREEN_BG = '102';
+    public const YELLOW_BG = '43';
+    public const LIGHT_YELLOW_BG = '103';
+    public const BLUE_BG = '44';
+    public const LIGHT_BLUE_BG = '104';
+    public const MAGENTA_BG = '45';
+    public const LIGHT_MAGENTA_BG = '105';
+    public const CYAN_BG = '46';
+    public const LIGHT_CYAN_BG = '106';
+    public const LIGHT_GREY_BG = '47';
+    public const WHITE_BG = '107';
 
     /**
      * @var bool $mute
@@ -104,7 +104,8 @@ class Output
      * @param int $width
      * @return $this
      */
-    public function progress($done, $total, $info = '', $width = 50) {
+    public function progress($done, $total, $info = '', $width = 50)
+    {
         //@TODO: Update to handle several progress bars at the same time (ProgressFactory?)
         $percentage = floor(($done * 100) / $total);
         $bar = floor(($width * $percentage) / 100);
@@ -122,17 +123,13 @@ class Output
      * @param string $backgroundColour
      * @return string
      */
-    public function colourText($text, $colour = 'green', $backgroundColour = '') {
-        //@TODO: move all colours to constants
-        if (DS !== '\\' && isset($this->colours[$colour])) {
-            $background = '';
+    public function colourText($text, $colour = self::GREEN, $backgroundColour = null)
+    {
+       if (DS !== '\\') {
+            $backgroundColour = $backgroundColour ? ';' . $backgroundColour : '';
 
-            if ($backgroundColour && isset($this->backgroundColours[$backgroundColour])) {
-                $background = ';' . $this->backgroundColours[$backgroundColour];
-            }
-
-            $text = "\033[" . $this->colours[$colour] . $background . "m" . $text . "\033[0m";
-        }
+            $text = "\e[" . $colour . $backgroundColour . "m" . $text . "\e[0m";
+       }
 
         return $text;
     }
