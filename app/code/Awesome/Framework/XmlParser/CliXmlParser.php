@@ -10,19 +10,15 @@ class CliXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
 {
     private const CLI_XML_PATH_PATTERN = '/*/*/etc/cli.xml';
     private const CLI_HANDLES_CACHE_TAG = 'cli-handles';
-    private const DEFAULT_HANDLE = 'default';
+    private const DEFAULT_HANDLE = 'help:show';
 
     /**
-     * Return data for AbstractCommand in case there is no requested command.
      * @inheritDoc
      */
     public function get($handle)
     {
-        if ($handle === '') {
-            $handle = self::DEFAULT_HANDLE;
-        }
-
         if (!$commandData = $this->cache->get(Cache::CLI_CACHE_KEY, $handle)) {
+            //@TODO: remove caching for CLI commands
             $commandList = $this->getHandlesClasses();
             $definition = new InputDefinition();
 
@@ -32,16 +28,21 @@ class CliXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
                 $definition = $commandClass::configure($definition);
 
                 $commandData = array_replace_recursive(['class' => $commandClass], $definition->getDefinition());
-            } elseif ($handle === self::DEFAULT_HANDLE) {
-                $definition = AbstractCommand::configure($definition);
-
-                $commandData = $definition->getDefinition();
             }
 
             $this->cache->save(Cache::CLI_CACHE_KEY, $handle, $commandData);
         }
 
         return $commandData;
+    }
+
+    /**
+     * Return structure data for AbstractCommand.
+     * @return array
+     */
+    public function getDefault()
+    {
+        return $this->get(self::DEFAULT_HANDLE);
     }
 
     /**
@@ -75,7 +76,7 @@ class CliXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
                 }
             }
 
-            $this->cache->save(Cache::CLI_CACHE_KEY, self::CLI_HANDLES_CACHE_TAG, $handles);
+            $this->cache->save(Cache::CLI_CACHE_KEY, self::CLI_HANDLES_CACHE_TAG, ksort($handles));
         }
 
         return $handles;

@@ -63,7 +63,7 @@ class Output
     }
 
     /**
-     * Output the text with new line.
+     * Output the text with a new line.
      * @param string $text
      * @param int $indent
      * @return $this

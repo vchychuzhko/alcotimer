@@ -34,8 +34,8 @@ class Enable extends \Awesome\Framework\Model\Cli\AbstractCommand
     public static function configure($definition)
     {
         return parent::configure($definition)
-            ->setDescription('Enable maintenance mode with list of allowed ids.')
-            ->addOption('force', 'f', InputDefinition::OPTION_OPTIONAL, 'Force maintenance mode enabling')
+            ->setDescription('Enable maintenance mode with a list of allowed ids')
+            ->addOption('force', 'f', InputDefinition::OPTION_OPTIONAL, 'Ignore IP validation')
             ->addArgument('ips', InputDefinition::ARGUMENT_ARRAY, 'List of IP addresses to exclude');
     }
 
@@ -47,7 +47,7 @@ class Enable extends \Awesome\Framework\Model\Cli\AbstractCommand
     {
         $allowedIPs = $input->getArgument('ips');
 
-        if ($this->validator->validItems($allowedIPs) || $input->getOption('force')) {
+        if ($input->getOption('force') || $this->validator->validItems($allowedIPs)) {
             $this->maintenance->enable($allowedIPs);
 
             $output->writeln('Maintenance mode was enabled.');

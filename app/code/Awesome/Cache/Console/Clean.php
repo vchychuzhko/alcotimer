@@ -20,6 +20,15 @@ class Clean extends \Awesome\Framework\Model\Cli\AbstractCommand
     }
 
     /**
+     * @inheritDoc
+     */
+    public static function configure($definition)
+    {
+        return parent::configure($definition)
+            ->setDescription('Flush application cache');
+    }
+
+    /**
      * Clean XML cache files.
      * @inheritDoc
      */

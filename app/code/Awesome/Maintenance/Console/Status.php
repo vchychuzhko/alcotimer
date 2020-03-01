@@ -26,7 +26,7 @@ class Status extends \Awesome\Framework\Model\Cli\AbstractCommand
     public static function configure($definition)
     {
         return parent::configure($definition)
-            ->setDescription('View current state of maintenance.');
+            ->setDescription('View current state of maintenance');
     }
 
     /**

@@ -16,10 +16,10 @@ abstract class AbstractCommand
      */
     public static function configure($definition)
     {
-        return $definition->addOption('help', 'h', InputDefinition::OPTION_OPTIONAL, 'Display this help message')
-            ->addOption('quiet', 'q', InputDefinition::OPTION_OPTIONAL, 'Do not output any message')
-            ->addOption('version', 'v', InputDefinition::OPTION_OPTIONAL, 'Display this application version')
-            ->addOption('no-interaction', 'n', InputDefinition::OPTION_OPTIONAL, 'Do not ask any interactive questions');
+        return $definition->addOption('help', 'h', InputDefinition::OPTION_OPTIONAL, 'Display help message')
+            ->addOption('quiet', 'q', InputDefinition::OPTION_OPTIONAL, 'Do not output anything')
+            ->addOption('version', 'v', InputDefinition::OPTION_OPTIONAL, 'Display application version')
+            ->addOption('no-interaction', 'n', InputDefinition::OPTION_OPTIONAL, 'Do not ask any interactive question');
     }
 
     /**

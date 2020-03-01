@@ -14,15 +14,13 @@ try {
 }
 
 try {
-    $application = new \Awesome\Framework\App\Cli();
-    $application->run();
+    $app = new \Awesome\Framework\App\Cli();
+    $app->run();
+} catch (\LogicException $e) {
+    exit(1);
 } catch (\Exception $e) {
-    while ($e) {
-        echo $e->getMessage();
-        echo "\n";
-        echo $e->getTraceAsString();
-        echo "\n\n";
-        $e = $e->getPrevious();
-    }
+    echo $e->getMessage();
+    echo "\n";
+    echo $e->getTraceAsString();
     exit(1);
 }

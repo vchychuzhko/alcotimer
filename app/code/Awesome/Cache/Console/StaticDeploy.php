@@ -26,7 +26,8 @@ class StaticDeploy extends \Awesome\Framework\Model\Cli\AbstractCommand
     public static function configure($definition)
     {
         return parent::configure($definition)
-            ->addArgument('view', InputDefinition::ARGUMENT_OPTIONAL, 'Generate static only for specified view');
+            ->setDescription('Generate static files (assets)')
+            ->addArgument('view', InputDefinition::ARGUMENT_OPTIONAL, 'Generate static only for a specified view');
     }
 
     /**

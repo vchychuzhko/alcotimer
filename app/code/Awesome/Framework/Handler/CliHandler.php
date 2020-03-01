@@ -2,6 +2,7 @@
 
 namespace Awesome\Framework\Handler;
 
+use Awesome\Framework\Exception\NoSuchEntityException;
 use Awesome\Framework\Model\Cli\Input;
 use Awesome\Framework\Model\Cli\Input\InputDefinition;
 use Awesome\Framework\XmlParser\CliXmlParser;
@@ -36,7 +37,7 @@ class CliHandler extends \Awesome\Framework\Model\Handler\AbstractHandler
         $handle = $this->parse($handle);
         $handles = $this->cliXmlParser->getHandlesClasses();
 
-        return $handles[$handle] ?? '';
+        return $handles[$handle] ?? null;
     }
 
     /**
@@ -46,9 +47,14 @@ class CliHandler extends \Awesome\Framework\Model\Handler\AbstractHandler
      */
     public function exist($handle)
     {
-        $handle = $this->parse($handle);
+        $exist = false;
 
-        return in_array($handle, $this->cliXmlParser->getHandles());
+        if ($handle) {
+            $handle = $this->parse($handle);
+            $exist = in_array($handle, $this->cliXmlParser->getHandles());
+        }
+
+        return $exist;
     }
 
     /**
@@ -98,56 +104,59 @@ class CliHandler extends \Awesome\Framework\Model\Handler\AbstractHandler
      * Parse console input command, options and arguments.
      * @return Input
      * @throws \LogicException
+     * @throws NoSuchEntityException
      */
     public function parseInput()
     {
-        $args = $_SERVER['argv'] ?? [];
-        $command = '';
+        $argv = $_SERVER['argv'];
+        $command = null;
         $options = [];
         $arguments = [];
 
-        if (isset($args[1]) && strpos($args[1], '-') !== 0) {
-            $command = $this->parse($args[1]);
+        if (isset($argv[1]) && strpos($argv[1], '-') !== 0) {
+            $command = $this->parse($argv[1]);
+            unset($argv[1]);
         }
-        $exist = $this->exist($command);
+
+        if ($command) {
+            if (!$this->exist($command)) {
+                throw new NoSuchEntityException(sprintf('Command "%s" is not defined.', $command), $command);
+            }
+            $commandData = $this->cliXmlParser->get($command);
+        } else {
+            $commandData = $this->cliXmlParser->getDefault();
+        }
+        $commandOptions = $commandData['options'];
+        $commandArguments = $commandData['arguments'];
+        $commandShortcuts = $commandData['shortcuts'];
+
         $collectedArguments = [];
         $argumentCount = 0;
 
-        $commandData = $this->cliXmlParser->get($command);
-        $commandOptions = $commandData['options'] ?? [];
-        $commandArguments = $commandData['arguments'] ?? [];
-        $commandShortcuts = $commandData['shortcuts'] ?? [];
-
-        foreach (array_slice($args, 2) as $arg) {
+        foreach (array_slice($argv, 1) as $arg) {
             if (strpos($arg, '--') === 0) {
                 @list($option, $value) = explode('=', str_replace_first('--', '', $arg));
-                $default = true;
 
-                if ($exist || $commandOptions) {
-                    if (!isset($commandOptions[$option])) {
-                        throw new \LogicException(sprintf('Unknown option "%s"', $option));
-                    }
-                    $default = $commandOptions[$option]['default'];
+                if (!isset($commandOptions[$option])) {
+                    throw new \LogicException(sprintf('Unknown option "%s"', $option));
                 }
-                $options[$option] = $value ?: $default;
+                $options[$option] = $value ?: $commandOptions[$option]['default'];
             } elseif (strpos($arg, '-') === 0) {
                 $shortcuts = substr($arg, 1);
 
-                if ($exist || $commandShortcuts) {
-                    foreach (str_split($shortcuts) as $shortcut) {
-                        if (!isset($commandShortcuts[$shortcut])) {
-                            throw new \LogicException(sprintf('Unknown shortcut "%s" provided', $shortcut));
-                        }
-                        $option = $commandShortcuts[$shortcut];
-                        $options[$option] = $commandOptions[$option]['default'];
+                foreach (str_split($shortcuts) as $shortcut) {
+                    if (!isset($commandShortcuts[$shortcut])) {
+                        throw new \LogicException(sprintf('Unknown shortcut "%s"', $shortcut));
                     }
+                    $option = $commandShortcuts[$shortcut];
+                    $options[$option] = $commandOptions[$option]['default'];
                 }
             } else {
                 $collectedArguments[++$argumentCount] = $arg;
             }
         }
 
-        if ($exist || $commandArguments) {
+        if ($commandArguments) {
             foreach ($commandArguments as $argumentName => $argumentData) {
                 $position = $argumentData['position'];
 

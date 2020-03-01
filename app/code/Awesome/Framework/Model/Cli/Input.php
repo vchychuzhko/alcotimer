@@ -131,7 +131,7 @@ class Input
     }
 
     /**
-     * Get requested command.
+     * Get input command.
      * @return string
      */
     public function getCommand()
@@ -143,14 +143,14 @@ class Input
      * Get input option.
      * Return all collected options if no name is specified.
      * @param string $optionName
-     * @return string|array
+     * @return string|array|null
      */
     public function getOption($optionName = '')
     {
-        if ($optionName) {
-            $option = $this->options[$optionName] ?? '';
-        } else {
+        if ($optionName === '') {
             $option = $this->options;
+        } else {
+            $option = $this->options[$optionName] ?? null;
         }
 
         return $option;
@@ -160,14 +160,14 @@ class Input
      * Get input argument.
      * Return all collected arguments if no name is specified.
      * @param string $argumentName
-     * @return string|array
+     * @return string|array|null
      */
     public function getArgument($argumentName = '')
     {
-        if ($argumentName) {
-            $argument = $this->arguments[$argumentName] ?? '';
-        } else {
+        if ($argumentName === '') {
             $argument = $this->arguments;
+        } else {
+            $argument = $this->arguments[$argumentName] ?? null;
         }
 
         return $argument;
