@@ -75,8 +75,9 @@ class CliXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
                     }
                 }
             }
+            ksort($handles);
 
-            $this->cache->save(Cache::CLI_CACHE_KEY, self::CLI_HANDLES_CACHE_TAG, ksort($handles));
+            $this->cache->save(Cache::CLI_CACHE_KEY, self::CLI_HANDLES_CACHE_TAG, $handles);
         }
 
         return $handles;
