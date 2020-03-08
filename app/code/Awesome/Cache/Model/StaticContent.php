@@ -3,6 +3,7 @@
 namespace Awesome\Cache\Model;
 
 use Awesome\Framework\App\Http;
+use Awesome\Framework\Model\Config;
 
 class StaticContent
 {
@@ -13,7 +14,7 @@ class StaticContent
     private const PUB_FOLDER_TRIGGER = '{@pubDir}';
 
     /**
-     * @var \Awesome\Framework\Model\Config $config
+     * @var Config $config
      */
     private $config;
 
@@ -22,7 +23,7 @@ class StaticContent
      */
     public function __construct()
     {
-        $this->config = new \Awesome\Framework\Model\Config();
+        $this->config = new Config();
     }
 
     /**
