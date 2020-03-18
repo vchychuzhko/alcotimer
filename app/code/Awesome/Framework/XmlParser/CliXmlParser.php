@@ -2,42 +2,52 @@
 
 namespace Awesome\Framework\XmlParser;
 
-use Awesome\Cache\Model\Cache;
 use Awesome\Framework\Model\Cli\AbstractCommand;
 use Awesome\Framework\Model\Cli\Input\InputDefinition;
 
 class CliXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
 {
     private const CLI_XML_PATH_PATTERN = '/*/*/etc/cli.xml';
-    private const CLI_HANDLES_CACHE_TAG = 'cli-handles';
     private const DEFAULT_HANDLE = 'help:show';
+
+    /**
+     * @var array $commands
+     */
+    private $commands;
+
+    /**
+     * @var array $disabledCommands
+     */
+    private $disabledCommands;
+
+    /**
+     * @var array $commandsData
+     */
+    private $commandsData;
 
     /**
      * @inheritDoc
      */
     public function get($handle)
     {
-        if (!$commandData = $this->cache->get(Cache::CLI_CACHE_KEY, $handle)) {
-            //@TODO: remove caching for CLI commands
+        if (!isset($this->commandsData[$handle])) {
             $commandList = $this->getHandlesClasses();
-            $definition = new InputDefinition();
 
             if (isset($commandList[$handle])) {
+                $definition = new InputDefinition();
                 /** @var AbstractCommand $commandClass */
                 $commandClass = $commandList[$handle];
                 $definition = $commandClass::configure($definition);
 
-                $commandData = array_replace_recursive(['class' => $commandClass], $definition->getDefinition());
+                $this->commandsData[$handle] = array_replace_recursive(['class' => $commandClass], $definition->getDefinition());
             }
-
-            $this->cache->save(Cache::CLI_CACHE_KEY, $handle, $commandData);
         }
 
-        return $commandData;
+        return $this->commandsData[$handle] ?? null;
     }
 
     /**
-     * Return structure data for AbstractCommand.
+     * Return default structure data applicable for all commands inherited from AbstractCommand.
      * @return array
      */
     public function getDefault()
@@ -54,33 +64,43 @@ class CliXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
     }
 
     /**
-     * Get all available handles with their responsible classes.
-     * If includeDisabled is true, return also disabled commands.
+     * Get available handles with their responsible classes.
+     * If includeDisabled is true, return also for disabled commands.
      * @param bool $includeDisabled
      * @return array
      */
     public function getHandlesClasses($includeDisabled = false)
     {
-        if (!$handles = $this->cache->get(Cache::CLI_CACHE_KEY, self::CLI_HANDLES_CACHE_TAG)) {
+        if ($this->commands === null) {
+            $this->commands = [];
+            $this->disabledCommands= [];
+
             foreach (glob(APP_DIR . self::CLI_XML_PATH_PATTERN) as $cliXmlFile) {
                 $cliData = simplexml_load_file($cliXmlFile);
                 $parsedData = $this->parse($cliData);
 
                 foreach ($parsedData as $commandName => $command) {
-                    if (!$command['disabled'] || $includeDisabled) {
-                        if (isset($handles[$commandName])) {
-                            throw new \LogicException(sprintf('Command "%s" is already defined.', $commandName));
-                        }
-                        $handles[$commandName] = $command['class'];
+                    if (isset($this->commands[$commandName]) || isset($this->disabledCommands[$commandName])) {
+                        throw new \LogicException(sprintf('Command "%s" is already defined', $commandName));
+                    }
+
+                    if (!$command['disabled']) {
+                        $this->commands[$commandName] = $command['class'];
+                    } else {
+                        $this->disabledCommands[$commandName] = $command['class'];
                     }
                 }
             }
-            ksort($handles);
+            ksort($this->commands);
+            ksort($this->disabledCommands);
+        }
+        $commands = $this->commands;
 
-            $this->cache->save(Cache::CLI_CACHE_KEY, self::CLI_HANDLES_CACHE_TAG, $handles);
+        if ($includeDisabled) {
+            $commands = array_merge($commands, $this->disabledCommands);
         }
 
-        return $handles;
+        return $commands;
     }
 
     /**

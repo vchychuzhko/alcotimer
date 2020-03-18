@@ -41,9 +41,7 @@ class CliHandler extends \Awesome\Framework\Model\Handler\AbstractHandler
     }
 
     /**
-     * Check if requested page handle exists.
-     * @param string $handle
-     * @return bool
+     * @inheritDoc
      */
     public function exist($handle)
     {

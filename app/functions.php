@@ -113,12 +113,13 @@ if (!function_exists('rrmdir')) {
  * Based on https://stackoverflow.com/a/35105800
  * @param string $dir
  * @param string $filter
- * @param array $results
  * @return array
  */
 if (!function_exists('rscandir')) {
-    function rscandir($directory, $filter = '', &$results = [])
+    function rscandir($directory, $filter = '')
     {
+        $results = [];
+
         foreach (scandir($directory) as $object) {
             $path = realpath($directory . '/' . $object);
 
@@ -127,7 +128,7 @@ if (!function_exists('rscandir')) {
                     $results[] = $path;
                 }
             } elseif ($object !== '.' && $object !== '..') {
-                rscandir($path, $filter, $results);
+                $results = array_merge($results, rscandir($path, $filter));
             }
         }
 

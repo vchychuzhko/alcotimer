@@ -5,7 +5,6 @@ namespace Awesome\Framework\Console;
 use Awesome\Framework\Model\Cli\Input\InputDefinition;
 use Awesome\Framework\Model\Cli\Output;
 use Awesome\Framework\XmlParser\CliXmlParser;
-use http\Params;
 
 class Help extends \Awesome\Framework\Model\Cli\AbstractCommand
 {
@@ -15,7 +14,7 @@ class Help extends \Awesome\Framework\Model\Cli\AbstractCommand
     private $cliXmlParser;
 
     /**
-     * ShowHelp constructor.
+     * Help constructor.
      */
     public function __construct()
     {
@@ -166,7 +165,7 @@ class Help extends \Awesome\Framework\Model\Cli\AbstractCommand
     }
 
     /**
-     * Display list of available commands.
+     * Display commands list.
      * @param array $commands
      * @param Output $output
      * @param bool $newLine
@@ -176,7 +175,8 @@ class Help extends \Awesome\Framework\Model\Cli\AbstractCommand
         if ($commands) {
             $output->writeln($output->colourText('Available commands:', Output::BROWN));
             $padding = max(array_map(function ($name) {
-                return strlen($name);
+                list($unused, $command) = explode(':', $name);
+                return strlen($command);
             }, $commands));
             $lastNamespace = null;
 
@@ -190,7 +190,7 @@ class Help extends \Awesome\Framework\Model\Cli\AbstractCommand
                 $lastNamespace = $namespace;
 
                 $output->writeln(
-                    str_pad($output->colourText($command), $padding + 2) . $commandData['description'],
+                    $output->colourText(str_pad($command, $padding + 2)) . $commandData['description'],
                     2
                 );
             }

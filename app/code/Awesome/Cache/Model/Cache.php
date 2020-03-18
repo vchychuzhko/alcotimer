@@ -6,7 +6,6 @@ class Cache
 {
     private const CACHE_DIR = '/var/cache';
     public const ETC_CACHE_KEY = 'etc';
-    public const CLI_CACHE_KEY = 'cli';
     public const LAYOUT_CACHE_KEY = 'layout';
     public const FULL_PAGE_CACHE_KEY = 'full-page';
 
