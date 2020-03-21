@@ -69,11 +69,27 @@ class TemplateRenderer
     }
 
     /**
+     * Render element template.
+     * @param Template $element
+     * @return string
+     */
+    public function renderElement($element)
+    {
+        $fileName = $this->getTemplateFileName($element->getTemplate());
+
+        ob_start();
+        extract(['block' => $element]);
+        include $fileName;
+
+        return ob_get_clean();
+    }
+
+    /**
      * Parse template XML path to a valid filesystem path.
      * @param string $template
      * @return string
      */
-    public function resolveTemplatePath($template)
+    private function getTemplateFileName($template)
     {
         @list($module, $file) = explode('::', $template);
         $path = $module;
@@ -110,7 +126,7 @@ class TemplateRenderer
 
     /**
      * Check if requested element has container type.
-     * @param $element
+     * @param array $element
      * @return bool
      */
     private function isContainer($element)

@@ -72,14 +72,11 @@ class Template
      */
     public function toHtml()
     {
-        ob_start();
-        include $this->renderer->resolveTemplatePath($this->template);
-
-        return ob_get_clean();
+        return $this->renderer->renderElement($this);
     }
 
     /**
-     * Get child block.
+     * Get child element.
      * Return all children if no name is specified.
      * @param string $childName
      * @return string
@@ -142,18 +139,27 @@ class Template
      * @param string $file
      * @return string
      */
-    protected function getPubUrl($file = '')
+    private function getPubUrl($file = '')
     {
         return ($this->config->get(Http::WEB_ROOT_CONFIG) ? '' : '/pub') . $file;
     }
 
     /**
-     * Get current block name.
+     * Get element name.
      * @return string
      */
     public function getNameInLayout()
     {
-        return $this->name ?: '';
+        return $this->name;
+    }
+
+    /**
+     * Get element template.
+     * @return string
+     */
+    public function getTemplate()
+    {
+        return $this->template;
     }
 
     /**

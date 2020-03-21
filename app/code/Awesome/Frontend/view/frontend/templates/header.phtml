@@ -1,8 +1,8 @@
-<?php /** @var \Awesome\Framework\Block\Template $this */ ?>
+<?php /** @var \Awesome\Framework\Block\Template $block */ ?>
 <header>
-    <?= $this->getChildHtml(''); ?>
+    <?= $block->getChildHtml(''); ?>
     <div class="logo-container">
-        <img src="<?= $this->getMediaUrl('images/logo.png'); ?>" alt="AlcoTimer logo" class="no-select"/>
+        <img src="<?= $block->getMediaUrl('images/logo.png'); ?>" alt="AlcoTimer logo" class="no-select"/>
         <!-- @TODO: move logo path to some kind of config -->
     </div>
 </header>

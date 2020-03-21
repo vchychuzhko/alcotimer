@@ -1,11 +1,11 @@
-<?php /** @var \Awesome\Framework\Block\Html $this */ ?>
+<?php /** @var \Awesome\Framework\Block\Html $block */ ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <?= $this->getChildHtml('head'); ?>
+    <?= $block->getChildHtml('head'); ?>
 </head>
-<body class="<?= $this->getBodyClass(); ?>">
-    <?= $this->getChildHtml(); ?>
+<body class="<?= $block->getBodyClass(); ?>">
+    <?= $block->getChildHtml(); ?>
     <script type="application/javascript">
         jQuery(function () {
             $('body').base({});
