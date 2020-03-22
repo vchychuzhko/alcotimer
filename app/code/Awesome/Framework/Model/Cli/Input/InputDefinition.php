@@ -6,6 +6,7 @@ class InputDefinition
 {
     public const OPTION_OPTIONAL = 1;
     public const OPTION_REQUIRED = 2;
+    public const OPTION_ARRAY = 3;
 
     public const ARGUMENT_OPTIONAL = 1;
     public const ARGUMENT_REQUIRED = 2;
@@ -71,8 +72,12 @@ class InputDefinition
         $default = true
     ) {
         if ($shortcut) {
+            if ($type === self::OPTION_ARRAY) {
+                throw new \LogicException(sprintf('Array option "%s" cannot have shortcut', $name));
+            }
+
             if (isset($this->shortcuts[$shortcut])) {
-                throw new \LogicException(sprintf('An option with shortcut "%s" already exists.', $shortcut));
+                throw new \LogicException(sprintf('An option with shortcut "%s" already exists', $shortcut));
             }
             $this->shortcuts[$shortcut] = $name;
         }
@@ -98,11 +103,11 @@ class InputDefinition
     public function addArgument($name, $type = self::ARGUMENT_OPTIONAL, $description = '')
     {
         if ($this->hasArrayArgument) {
-            throw new \LogicException('Argument cannot be added after array argument.');
+            throw new \LogicException('Argument cannot be added after array argument');
         }
 
         if ($type !== self::ARGUMENT_OPTIONAL && $this->lastArgumentOptional) {
-            throw new \LogicException('Cannot add required or array argument after optional one.');
+            throw new \LogicException('Cannot add required or array argument after optional one');
         }
 
         if ($type === self::ARGUMENT_OPTIONAL) {
@@ -137,7 +142,7 @@ class InputDefinition
     }
 
     /**
-     * Clean-up all collected command data.
+     * Reset collected command data.
      * @return $this
      */
     public function reset()

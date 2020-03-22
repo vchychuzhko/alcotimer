@@ -17,9 +17,9 @@ abstract class AbstractCommand
     public static function configure($definition)
     {
         return $definition->addOption('help', 'h', InputDefinition::OPTION_OPTIONAL, 'Display help message')
+            ->addOption('no-interaction', 'n', InputDefinition::OPTION_OPTIONAL, 'Do not ask any interactive question')
             ->addOption('quiet', 'q', InputDefinition::OPTION_OPTIONAL, 'Do not output anything')
-            ->addOption('version', 'v', InputDefinition::OPTION_OPTIONAL, 'Display application version')
-            ->addOption('no-interaction', 'n', InputDefinition::OPTION_OPTIONAL, 'Do not ask any interactive question');
+            ->addOption('version', 'v', InputDefinition::OPTION_OPTIONAL, 'Display application version');
     }
 
     /**

@@ -150,7 +150,16 @@ class CliHandler extends \Awesome\Framework\Model\Handler\AbstractHandler
                 if (!isset($commandOptions[$option])) {
                     throw new \RuntimeException(sprintf('Unknown option "%s"', $option));
                 }
-                $options[$option] = $value ?: $commandOptions[$option]['default'];
+                $value = $value ?: $commandOptions[$option]['default'];
+
+                if ($commandOptions[$option]['type'] === InputDefinition::OPTION_ARRAY) {
+                    if (!isset($options[$option])) {
+                        $options[$option] = [];
+                    }
+                    $options[$option][] = $value;
+                } else {
+                    $options[$option] = $value;
+                }
             } elseif (strpos($arg, '-') === 0) {
                 $shortcuts = substr($arg, 1);
 
@@ -163,6 +172,16 @@ class CliHandler extends \Awesome\Framework\Model\Handler\AbstractHandler
                 }
             } else {
                 $collectedArguments[$argumentPosition++] = $arg;
+            }
+        }
+
+        if ($commandOptions) {
+            foreach ($commandOptions as $optionName => $optionData) {
+                if ($optionData['type'] === InputDefinition::OPTION_REQUIRED
+                    && !isset($options[$optionName])
+                ) {
+                    throw new \RuntimeException(sprintf('Required option "%s" was not provided', $optionName));
+                }
             }
         }
 

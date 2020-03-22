@@ -58,22 +58,15 @@ class Input
      * Prompt user confirmation.
      * @param string $prompt
      * @param array $confirmOptions
-     * @param int $tries
      * @return bool
      */
-    public function confirm($prompt, $confirmOptions = ['y', 'yes'], $tries = 2)
+    public function confirm($prompt, $confirmOptions = ['y', 'yes'])
     {
         $confirm = true;
 
         if ($this->interactive) {
-            $confirm = false;
-            $try = 1;
-
-            while ($try <= $tries && !$confirm) {
-                $answer = $this->read($prompt);
-                $confirm = in_array($answer, $confirmOptions);
-                $try++;
-            }
+            $answer = $this->read($prompt);
+            $confirm = in_array($answer, $confirmOptions);
         }
 
         return $confirm;
@@ -83,25 +76,21 @@ class Input
      * Prompt user to select one of the provided options.
      * @param string $prompt
      * @param array $options
-     * @param int $tries
      * @return string
      */
-    public function choice($prompt, $options, $tries = 2)
+    public function choice($prompt, $options)
     {
-        $choice = '';
+        $choice = null;
 
         if ($this->interactive && $options) {
             foreach ($options as $optionKey => $option) {
                 $prompt .= "\n" . $optionKey . ': ' . $option;
             }
             $prompt .= "\n" . 'Your choice: ';
-            $try = 1;
-            $chose = false;
+            $answer = $this->read($prompt);
 
-            while ($try <= $tries && !$chose) {
-                $choice = $this->read($prompt);
-                $chose = in_array($choice, array_keys($options));
-                $try++;
+            if (in_array($answer, array_keys($options))) {
+                $choice = $answer;
             }
         }
 
