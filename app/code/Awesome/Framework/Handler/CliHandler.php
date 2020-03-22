@@ -2,7 +2,6 @@
 
 namespace Awesome\Framework\Handler;
 
-use Awesome\Framework\Exception\NoSuchEntityException;
 use Awesome\Framework\Model\Cli\Input;
 use Awesome\Framework\Model\Cli\Input\InputDefinition;
 use Awesome\Framework\XmlParser\CliXmlParser;
@@ -13,6 +12,11 @@ class CliHandler extends \Awesome\Framework\Model\Handler\AbstractHandler
      * @var CliXmlParser $cliXmlParser
      */
     private $cliXmlParser;
+
+    /**
+     * @var string $command
+     */
+    private $command;
 
     /**
      * @var array $parsedHandles
@@ -99,44 +103,52 @@ class CliHandler extends \Awesome\Framework\Model\Handler\AbstractHandler
     }
 
     /**
+     * Get input command.
+     * @return string
+     */
+    public function getCommand()
+    {
+        if (!$this->command) {
+            $argv = $_SERVER['argv'];
+
+            if (isset($argv[1]) && strpos($argv[1], '-') !== 0) {
+                $this->command = $this->parse($argv[1]);
+            }
+        }
+
+        return $this->command;
+    }
+
+    /**
      * Parse console input command, options and arguments.
      * @return Input
      * @throws \LogicException
-     * @throws NoSuchEntityException
+     * @throws \RuntimeException
      */
     public function parseInput()
     {
         $argv = $_SERVER['argv'];
-        $command = null;
         $options = [];
         $arguments = [];
+        $collectedArguments = [];
+        $argumentPosition = 1;
 
-        if (isset($argv[1]) && strpos($argv[1], '-') !== 0) {
-            $command = $this->parse($argv[1]);
+        if ($command = $this->getCommand()) {
             unset($argv[1]);
-        }
-
-        if ($command) {
-            if (!$this->exist($command)) {
-                throw new NoSuchEntityException(sprintf('Command "%s" is not defined.', $command), $command);
-            }
             $commandData = $this->cliXmlParser->get($command);
         } else {
             $commandData = $this->cliXmlParser->getDefault();
         }
         $commandOptions = $commandData['options'];
-        $commandArguments = $commandData['arguments'];
         $commandShortcuts = $commandData['shortcuts'];
-
-        $collectedArguments = [];
-        $argumentCount = 0;
+        $commandArguments = $commandData['arguments'];
 
         foreach (array_slice($argv, 1) as $arg) {
             if (strpos($arg, '--') === 0) {
                 @list($option, $value) = explode('=', str_replace_first('--', '', $arg));
 
                 if (!isset($commandOptions[$option])) {
-                    throw new \LogicException(sprintf('Unknown option "%s"', $option));
+                    throw new \RuntimeException(sprintf('Unknown option "%s"', $option));
                 }
                 $options[$option] = $value ?: $commandOptions[$option]['default'];
             } elseif (strpos($arg, '-') === 0) {
@@ -144,13 +156,13 @@ class CliHandler extends \Awesome\Framework\Model\Handler\AbstractHandler
 
                 foreach (str_split($shortcuts) as $shortcut) {
                     if (!isset($commandShortcuts[$shortcut])) {
-                        throw new \LogicException(sprintf('Unknown shortcut "%s"', $shortcut));
+                        throw new \RuntimeException(sprintf('Unknown shortcut "%s"', $shortcut));
                     }
                     $option = $commandShortcuts[$shortcut];
                     $options[$option] = $commandOptions[$option]['default'];
                 }
             } else {
-                $collectedArguments[++$argumentCount] = $arg;
+                $collectedArguments[$argumentPosition++] = $arg;
             }
         }
 
@@ -161,7 +173,7 @@ class CliHandler extends \Awesome\Framework\Model\Handler\AbstractHandler
                 if ($argumentData['type'] === InputDefinition::ARGUMENT_REQUIRED
                     && !isset($collectedArguments[$position])
                 ) {
-                    throw new \LogicException(sprintf('Required argument "%s" was not provided', $argumentName));
+                    throw new \RuntimeException(sprintf('Required argument "%s" was not provided', $argumentName));
                 } elseif ($argumentData['type'] === InputDefinition::ARGUMENT_ARRAY) {
                     $arguments[$argumentName] = array_slice($collectedArguments, $position - 1);
                 } elseif (isset($collectedArguments[$position])) {

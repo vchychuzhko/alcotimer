@@ -27,6 +27,7 @@ class CliXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
 
     /**
      * @inheritDoc
+     * @throws \LogicException
      */
     public function get($handle)
     {
@@ -49,6 +50,7 @@ class CliXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
     /**
      * Return default structure data applicable for all commands inherited from AbstractCommand.
      * @return array
+     * @throws \LogicException
      */
     public function getDefault()
     {
@@ -57,6 +59,7 @@ class CliXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
 
     /**
      * @inheritDoc
+     * @throws \LogicException
      */
     public function getHandles()
     {
@@ -68,6 +71,7 @@ class CliXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
      * If includeDisabled is true, return also for disabled commands.
      * @param bool $includeDisabled
      * @return array
+     * @throws \LogicException
      */
     public function getHandlesClasses($includeDisabled = false)
     {
@@ -118,7 +122,7 @@ class CliXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
                 if (isset($parsedNode[$commandName])) {
                     throw new \LogicException(sprintf('Command "%s" is defined twice in one file.', $commandName));
                 }
-                $class = '\\' . ltrim($this->getNodeAttribute($command, 'class'), '\\');
+                $class = ltrim($this->getNodeAttribute($command, 'class'), '\\');
 
                 if (!$class) {
                     throw new \LogicException(sprintf('Class is not specified for "%s" command.', $commandName));
@@ -126,7 +130,7 @@ class CliXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
                 $disabled = $this->stringBooleanCheck($this->getNodeAttribute($command, 'disabled'));
 
                 $parsedNode[$commandName] = [
-                    'class' => $class,
+                    'class' => '\\' . $class,
                     'disabled' => $disabled
                 ];
             }

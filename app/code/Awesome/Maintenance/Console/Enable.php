@@ -42,6 +42,7 @@ class Enable extends \Awesome\Framework\Model\Cli\AbstractCommand
     /**
      * Enable maintenance mode.
      * @inheritDoc
+     * @throws \RuntimeException
      */
     public function execute($input, $output)
     {
@@ -55,6 +56,8 @@ class Enable extends \Awesome\Framework\Model\Cli\AbstractCommand
             $output->write('Provided IP addresses are not valid, please, check them and try again: ');
             $output->writeln($output->colourText(implode(', ', $this->validator->getInvalidItems()), Output::BROWN));
             $output->writeln('Use -f/--force option if you want to proceed anyway.');
+
+            throw new \RuntimeException('IP address validation failed');
         }
     }
 }

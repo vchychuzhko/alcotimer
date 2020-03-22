@@ -34,6 +34,7 @@ class Help extends \Awesome\Framework\Model\Cli\AbstractCommand
     /**
      * Show help for the application or command if specified.
      * @inheritDoc
+     * @throws \LogicException
      */
     public function execute($input, $output)
     {
@@ -61,6 +62,7 @@ class Help extends \Awesome\Framework\Model\Cli\AbstractCommand
      * Display help for specified command.
      * @param string $command
      * @param Output $output
+     * @throws \LogicException
      */
     private function showCommandHelp($command, $output)
     {
@@ -169,6 +171,7 @@ class Help extends \Awesome\Framework\Model\Cli\AbstractCommand
      * @param array $commands
      * @param Output $output
      * @param bool $newLine
+     * @throws \LogicException
      */
     private function processCommands($commands, $output, $newLine = false)
     {
