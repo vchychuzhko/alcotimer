@@ -11,7 +11,6 @@
 
         /**
          * Constructor
-         * @private
          */
         _create: function () {
             this.initBindings();

@@ -21,7 +21,11 @@
                 $menu.toggleClass('active');
             }.bind(this));
 
-            $menu.on('menu.closeMenu', function () {
+            $(document).on('menu.open', function () {
+                $menu.addClass('active');
+            }.bind(this));
+
+            $(document).on('menu.close', function () {
                 $menu.removeClass('active');
             }.bind(this));
         },

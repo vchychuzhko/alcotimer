@@ -28,7 +28,7 @@
                 });
 
                 setTimeout(function () {
-                    $('.menu').trigger('menu.closeMenu');
+                    $(document).trigger('menu.close');
                 }, 200);
             }.bind(this));
 

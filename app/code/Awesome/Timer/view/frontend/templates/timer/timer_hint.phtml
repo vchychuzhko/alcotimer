@@ -1,0 +1,21 @@
+<?php /** @var \Awesome\Framework\Block\Template $block */ ?>
+<div class="timer-hint">
+    <div class="hint-content">
+        <h2 class="hint-title">Hint for newcomers!</h2>
+        <p>Rules are simple: when the time is over, you have to drink.</p>
+        <p>Big red button in the center will start or stop the timer. Circular slider will help you to set up the time. And "Random" button.. will give you a random time left.</p>
+        <p>Time interval can be configured in the menu, see the left-top corner of the page.</p>
+    </div>
+</div>
+<script type="application/javascript">
+    let shown = localStorage.getItem('timerHintShown');
+
+    jQuery(function () {
+        $('.timer-hint').popup({
+            delayOnPageLoad: 500,
+            triggerSelector: '.hint-button-container .hint-button',
+            openOnPageLoad: !shown,
+        });
+    });
+    localStorage.setItem('timerHintShown', 'true');
+</script>

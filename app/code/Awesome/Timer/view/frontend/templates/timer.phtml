@@ -23,21 +23,3 @@
         </div>
     </div>
 </div>
-<script>
-//    @TODO: temporary hint functionality, should be updated and removed
-    function showX() {
-        jQuery('.menu').removeClass('active');
-        jQuery('.hint').show();
-    }
-
-    function hideX() {
-        jQuery('.hint').hide();
-        localStorage.setItem('hint', 'true');
-    }
-
-    let shown = localStorage.getItem('hint');
-
-    if (!shown) {
-        showX();
-    }
-</script>

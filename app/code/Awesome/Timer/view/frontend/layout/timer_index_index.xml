@@ -8,22 +8,30 @@
         <lib src="lib/goldfire/howler.min.js"/>
         <script src="Awesome_Ui::radial-slider.js"/>
         <script src="Awesome_Ui::range-slider.js"/>
+        <script src="Awesome_Ui::popup.js"/>
         <script src="Awesome_Timer::settings.js"/>
         <script src="Awesome_Timer::timer.js"/>
+        <css src="Awesome_Timer::hint.css"/>
         <css src="Awesome_Timer::timer.css"/>
         <css src="Awesome_Ui::radial-slider.css"/>
         <css src="Awesome_Ui::range-slider.css"/>
+        <css src="Awesome_Ui::popup.css"/>
     </head>
     <body>
         <referenceBlock name="menu">
-            <block name="settings" class="Awesome\Framework\Block\Template" template="Awesome_Timer::menu/settings.phtml"/>
+            <block name="timer.settings" class="Awesome\Framework\Block\Template" template="Awesome_Timer::menu/settings.phtml"/>
         </referenceBlock>
         <referenceContainer name="page-wrapper">
             <block name="timer.content"
                    class="Awesome\Framework\Block\Template"
                    template="Awesome_Timer::timer.phtml"
-                   sortOrder="5"
-            />
+                   sortOrder="5"/>
+        </referenceContainer>
+        <referenceContainer name="popup-init-section">
+            <block name="timer.hint"
+                   class="Awesome\Framework\Block\Template"
+                   template="Awesome_Timer::timer/timer_hint.phtml"
+                   sortOrder="9"/>
         </referenceContainer>
         <referenceContainer name="js-init-section">
             <block name="timer-init" class="Awesome\Timer\Block\Timer" template="Awesome_Timer::timer/timer_init.phtml"/>
