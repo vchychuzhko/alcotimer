@@ -6,7 +6,7 @@
         options: {
             defaultTime: 9,
             radialContainerSelector: '.radial-container',
-            sound: '/pub/media/audio/alert_sound.mp3'
+            sound: ''
         },
 
         /**
@@ -191,11 +191,17 @@
             this.setTime(this.currentTime);
             this.stop();
 
-            let sound = new Howl({
-                src: [this.options.sound]
-            });
+            if (this.options.sound) {
+                let sound = new Howl({
+                    src: [this.options.sound]
+                });
 
-            sound.play();
+                sound.play();
+            } else {
+                $(document.trigger('message.show', {
+                    message: 'It time to start!.'
+                }))
+            }
         },
 
         /**
@@ -243,7 +249,7 @@
          */
         setTime: function(timeInSeconds, updateSlider = true) {
             let time = this.secondsToTime(timeInSeconds),
-                $timeContainer = $('.timer-button-container .timer-button-title');
+                $timeContainer = $('.timer-button-container .timer-time');
 
             $timeContainer.text(time).toggle(!(this.hideRandomTime && this.randomTime));
             //@TODO: temporary place for displaying the time

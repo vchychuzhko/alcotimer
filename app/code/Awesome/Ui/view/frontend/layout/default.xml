@@ -4,6 +4,7 @@
     <head>
         <script src="Awesome_Ui::menu.js"/>
         <script src="Awesome_Ui::message.js"/>
+        <script src="Awesome_Ui::copy.js"/>
         <css src="Awesome_Ui::menu.css"/>
         <css src="Awesome_Ui::message.css"/>
     </head>

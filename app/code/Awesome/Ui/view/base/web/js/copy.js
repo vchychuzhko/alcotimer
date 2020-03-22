@@ -1,5 +1,5 @@
 ;(function ($) {
-    $.widget('awesome.base', {
+    $.widget('awesome.copy', {
         options: {
             copyTextSelector: '.copy-on-click',
             showMessage: 1
@@ -33,8 +33,8 @@
             document.execCommand('copy');
             $temp.remove();
 
-            if (this.showMessage) {
-                $body.trigger('message.showMessage', {
+            if (this.options.showMessage) {
+                $(document).trigger('message.show', {
                     message: 'Copied to the clipboard!'
                 });
             }

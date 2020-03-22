@@ -23,7 +23,7 @@
             $(this.element).on('click', '.apply-button', function () {
                 this.applySettings();
                 this.saveSettings();
-                $('body').trigger('message.showMessage', {
+                $(document).trigger('message.show', {
                     message: 'Settings were applied!'
                 });
 
@@ -34,7 +34,7 @@
 
             $(this.element).on('click', '.reset-button', function () {
                 this.resetSettings();
-                $('body').trigger('message.showMessage', {
+                $(document).trigger('message.show', {
                     message: 'Settings were reset to default ones.'
                 });
             }.bind(this));
