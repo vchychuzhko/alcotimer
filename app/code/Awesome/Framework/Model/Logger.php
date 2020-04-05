@@ -3,6 +3,7 @@
 namespace Awesome\Framework\Model;
 
 use Awesome\Framework\Model\Date;
+use Awesome\Framework\Model\Http\Request;
 
 class Logger
 {
@@ -40,13 +41,14 @@ class Logger
 
     /**
      * Log visited pages.
+     * @param Request $request
      * @return $this
      */
-    public function logVisitor()
+    public function logVisitor($request)
     {
         $this->write(
             self::VISITOR_LOG_FILE,
-            $_SERVER['REMOTE_ADDR'] . ' - http://alcotimer.xyz' . $_SERVER['REQUEST_URI']
+            $request->getUserIPAddress() . ' - ' . $request->getUrl()
         );
 
         return $this;

@@ -2,10 +2,11 @@
 
 namespace Awesome\Framework\App;
 
+use Awesome\Framework\Handler\LayoutHandler;
+use Awesome\Framework\Model\Config;
+use Awesome\Framework\Model\Http\Request;
 use Awesome\Framework\Model\Logger;
 use Awesome\Maintenance\Model\Maintenance;
-use Awesome\Framework\Model\Config;
-use Awesome\Framework\Handler\LayoutHandler;
 
 class Http implements \Awesome\Framework\Model\AppInterface
 {
@@ -38,6 +39,11 @@ class Http implements \Awesome\Framework\Model\AppInterface
     private $config;
 
     /**
+     * @var Request $request
+     */
+    private $request;
+
+    /**
      * App constructor.
      */
     public function __construct()
@@ -54,7 +60,8 @@ class Http implements \Awesome\Framework\Model\AppInterface
      */
     public function run()
     {
-        $this->logWriter->logVisitor();
+        $this->request = $this->layoutHandler->parseRequest();
+        $this->logWriter->logVisitor($this->request);
 
         if (!$this->isMaintenance()) {
             $pageView = $this->resolveView();
@@ -75,6 +82,7 @@ class Http implements \Awesome\Framework\Model\AppInterface
      */
     private function resolveView()
     {
+        // @TODO: temporary, should be updated to resolve adminhtml view
         return self::FRONTEND_VIEW;
     }
 
@@ -84,18 +92,18 @@ class Http implements \Awesome\Framework\Model\AppInterface
      */
     private function resolveHandle()
     {
-        $redirectStatus = (string) ($_SERVER['REDIRECT_STATUS'] ?? '');
+        $redirectStatus = $this->request->getRedirectStatusCode();
 
-        if ($redirectStatus === '403' && $this->showForbiddenPage()) {
+        if ($redirectStatus === 403 && $this->showForbiddenPage()) {
             $handle = 'forbidden';
             http_response_code(403);
         } else {
-            $uri = $this->getRequestUri();
+            $path = $this->request->getPath();
 
-            if ($uri === '/') {
-                $uri = $this->getHomepageHandle();
+            if ($path === '/') {
+                $path = $this->getHomepageHandle();
             }
-            $handle = $this->layoutHandler->parse($uri);
+            $handle = $this->layoutHandler->parse($path);
 
             if (!$this->layoutHandler->exist($handle)) {
                 $handle = 'notfound';
@@ -107,21 +115,12 @@ class Http implements \Awesome\Framework\Model\AppInterface
     }
 
     /**
-     * Return requested URI path.
-     * @return string
-     */
-    private function getRequestUri()
-    {
-        return parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?: '/';
-    }
-
-    /**
-     * Check if maintenance mode is active for current IP.
+     * Check if maintenance mode is active for user IP address.
      * @return bool
      */
     private function isMaintenance()
     {
-        $ip = $_SERVER['REMOTE_ADDR'];
+        $ip = $this->request->getUserIPAddress();
 
         return $this->maintenance->isMaintenance($ip);
     }

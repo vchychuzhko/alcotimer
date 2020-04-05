@@ -2,10 +2,11 @@
 
 namespace Awesome\Framework\Handler;
 
-use Awesome\Framework\Block\Html;
-use Awesome\Framework\XmlParser\LayoutXmlParser;
 use Awesome\Cache\Model\Cache;
+use Awesome\Framework\Block\Html;
+use Awesome\Framework\Model\Http\Request;
 use Awesome\Framework\Model\Http\TemplateRenderer;
+use Awesome\Framework\XmlParser\LayoutXmlParser;
 
 class LayoutHandler extends \Awesome\Framework\Model\Handler\AbstractHandler
 {
@@ -87,5 +88,31 @@ class LayoutHandler extends \Awesome\Framework\Model\Handler\AbstractHandler
         $this->view = $view;
 
         return $this;
+    }
+
+    /**
+     * Parse http request.
+     * @return Request
+     */
+    public function parseRequest()
+    {
+        $scheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] === 443
+            ? Request::SCHEME_HTTPS
+            : Request::SCHEME_HTTP;
+        $url = $scheme . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+        $method = $_SERVER['REQUEST_METHOD'];
+        $parameters = [];
+        $redirectStatus = $_SERVER['REDIRECT_STATUS'] ?? null;
+        $userIPAddress = $_SERVER['REMOTE_ADDR'];
+
+        if ($_GET) {
+            $parameters = array_merge($parameters, $_GET);
+        }
+
+        if ($_POST) {
+            $parameters = array_merge($parameters, $_POST);
+        }
+
+        return new Request($url, $method, $parameters, $redirectStatus, $userIPAddress);
     }
 }
