@@ -25,9 +25,9 @@ return [
             'sound' => 'audio/football_sound.mp3' // path example - audio/file.mp3, must be in 'media' folder
         ],
         'settings' => [
-            'default_min_value' => 2,
-            'default_max_value' => 10,
             'hide_random_time' => 1,
+            'max_time' => 10,
+            'min_time' => 2,
             'show_loader' => 1
         ],
         'random_range' => [
