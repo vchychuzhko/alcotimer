@@ -1,18 +1,9 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="../../Console/Schema/console_command.xsd">
+        xsi:noNamespaceSchemaLocation="../../Framework/Schema/console_command.xsd">
     <namespace name="maintenance">
-        <command name="enable" class="Awesome\Maintenance\Console\Enable">
-            <option name="allowed_ips">
-                <description><![CDATA[--ip=<ip_address> - Allowed ip for maintenance mode.]]></description>
-            </option>
-            <description><![CDATA[Enable maintenance mode with list of allowed ids.]]></description>
-        </command>
-        <command name="disable" class="Awesome\Maintenance\Console\Disable">
-            <description><![CDATA[Disable maintenance mode.]]></description>
-        </command>
-        <command name="status" class="Awesome\Maintenance\Console\Status">
-            <description><![CDATA[View current state of maintenance.]]></description>
-        </command>
+        <command name="enable" class="Awesome\Maintenance\Console\Enable"/>
+        <command name="disable" class="Awesome\Maintenance\Console\Disable"/>
+        <command name="status" class="Awesome\Maintenance\Console\Status"/>
     </namespace>
 </config>

@@ -17,6 +17,7 @@ class Cache
      */
     public function get($key, $tag = '')
     {
+        //@TODO: Possibly, rework it according to Symfony, with save callback
         $cache = $this->readCacheFile($key);
 
         if ($tag) {

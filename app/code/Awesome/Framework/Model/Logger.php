@@ -1,14 +1,28 @@
 <?php
 
-namespace Awesome\Logger\Model;
+namespace Awesome\Framework\Model;
 
-class LogWriter
+use Awesome\Framework\Model\Date;
+use Awesome\Framework\Model\Http\Request;
+
+class Logger
 {
     private const LOG_DIRECTORY = '/var/log';
     private const EXCEPTION_LOG_FILE = 'exception.log';
     private const VISITOR_LOG_FILE = 'visitor.log';
-    private const CURRENT_TIMEZONE = 'Europe/Kiev';
-    private const TIME_FORMAT = 'Y-m-d H:i:s';
+
+    /**
+     * @var Date $date
+     */
+    private $date;
+
+    /**
+     * LogWriter constructor.
+     */
+    public function __construct()
+    {
+        $this->date = new Date();
+    }
 
     /**
      * Write an error to a log file.
@@ -27,13 +41,14 @@ class LogWriter
 
     /**
      * Log visited pages.
+     * @param Request $request
      * @return $this
      */
-    public function logVisitor()
+    public function logVisitor($request)
     {
         $this->write(
             self::VISITOR_LOG_FILE,
-            $_SERVER['REMOTE_ADDR'] . ' - http://alcotimer.xyz' . $_SERVER['REQUEST_URI']
+            $request->getUserIPAddress() . ' - ' . $request->getUrl()
         );
 
         return $this;
@@ -53,27 +68,10 @@ class LogWriter
 
         file_put_contents(
             BP . self::LOG_DIRECTORY . '/' . $logFile,
-            $this->getCurrentTime() . ': ' . $message . "\n",
+            $this->date->getCurrentTime() . ': ' . $message . "\n",
             FILE_APPEND
         );
 
         return $this;
-    }
-
-    /**
-     * Prepare datetime according to the current timezone as a string.
-     * @return string
-     */
-    private function getCurrentTime()
-    {
-        try {
-            $date = new \DateTime('now', new \DateTimeZone(self::CURRENT_TIMEZONE));
-            $time = $date->format(self::TIME_FORMAT);
-        } catch (\Exception $e) {
-            date_default_timezone_set(self::CURRENT_TIMEZONE);
-            $time = date(self::TIME_FORMAT);
-        }
-
-        return $time;
     }
 }

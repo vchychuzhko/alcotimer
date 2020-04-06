@@ -1,25 +1,19 @@
 <?php
 
-if (PHP_MAJOR_VERSION < 7 && PHP_MINOR_VERSION < 1) {
-    echo 'PHP version of 7.1 or higher is required.';
-    exit(1);
-}
-
-define('DS', DIRECTORY_SEPARATOR);
-define('BP', str_replace(DS, '/', dirname(__DIR__)));
-define('APP_DIR', BP . '/app/code');
-require_once('functions.php');
+spl_autoload_register('autoload');
 
 /**
- * Function to load classes by provided namespace.
- * @param string $classNamespace
+ * Function to load classes by provided class name.
+ * @param string $className
+ * @throws \Exception
  */
-function __autoload($classNamespace)
+function autoload($className)
 {
-    $path = '';
+    $file = APP_DIR . '/' . str_replace('\\', '/', ltrim($className, '\\')) . '.php';
 
-    foreach (explode('\\', $classNamespace) as $pathItem) {
-        $path .= '/' . $pathItem;
+    if (!file_exists($file)) {
+        throw new \Exception('File for "'. $className . '" class does not exist.');
     }
-    require_once(APP_DIR . $path . '.php');
+
+    require_once $file;
 }

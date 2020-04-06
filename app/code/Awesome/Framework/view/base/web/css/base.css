@@ -3,6 +3,10 @@
     padding: 0;
 }
 
+.noscroll {
+    overflow: hidden;
+}
+
 a {
     color: inherit;
     opacity: 0.9;

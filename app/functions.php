@@ -2,7 +2,7 @@
 /**
  * Get first key in array.
  * Based on https://www.php.net/manual/en/function.array-key-first.php
- * Can be removed for PHP 7.3
+ * A polyfill for PHP versions below 7.3
  * @param array $array
  * @return mixed
  */
@@ -14,6 +14,33 @@ if (!function_exists('array_key_first')) {
         }
 
         return null;
+    }
+}
+
+/**
+ * Get element in a multidimensional array by a specified key.
+ * Based on https://www.php.net/manual/en/function.array-walk-recursive.php#114574
+ * @param array $array
+ * @param string $elementKeyToGet
+ * @return mixed
+ */
+if (!function_exists('array_get_by_key_recursive')) {
+    function array_get_by_key_recursive($array, $elementKeyToGet)
+    {
+        $element = null;
+
+        foreach ($array as $key => $value) {
+            if ($key === $elementKeyToGet) {
+                $element = $value;
+                break;
+            } elseif (is_array($value)) {
+                if ($element = array_get_by_key_recursive($value, $elementKeyToGet)) {
+                    break;
+                }
+            }
+        }
+
+        return $element;
     }
 }
 
@@ -56,25 +83,6 @@ if (!function_exists('array_remove_by_key_recursive')) {
 }
 
 /**
- * Remove element in a multidimensional array by a specified value.
- * Based on https://www.php.net/manual/en/function.array-walk-recursive.php#114574
- * @param array $array
- * @param string $elementValueToRemove
- */
-if (!function_exists('array_remove_by_value_recursive')) {
-    function array_remove_by_value_recursive(&$array, $elementValueToRemove)
-    {
-        foreach ($array as $key => $value) {
-            if ($value === $elementValueToRemove) {
-                unset($array[$key]);
-            } elseif (is_array($value)) {
-                array_remove_by_value_recursive($array[$key], $elementValueToRemove);
-            }
-        }
-    }
-}
-
-/**
  * Remove directory recursively.
  * Based on https://www.php.net/manual/en/function.rmdir.php#117354
  * @param string $dir
@@ -105,12 +113,13 @@ if (!function_exists('rrmdir')) {
  * Based on https://stackoverflow.com/a/35105800
  * @param string $dir
  * @param string $filter
- * @param array $results
  * @return array
  */
 if (!function_exists('rscandir')) {
-    function rscandir($directory, $filter = '', &$results = [])
+    function rscandir($directory, $filter = '')
     {
+        $results = [];
+
         foreach (scandir($directory) as $object) {
             $path = realpath($directory . '/' . $object);
 
@@ -119,7 +128,7 @@ if (!function_exists('rscandir')) {
                     $results[] = $path;
                 }
             } elseif ($object !== '.' && $object !== '..') {
-                rscandir($path, $filter, $results);
+                $results = array_merge($results, rscandir($path, $filter));
             }
         }
 

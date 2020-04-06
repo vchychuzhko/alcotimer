@@ -11,7 +11,7 @@
          * Init event listeners
          */
         initBindings: function () {
-            $('body').on('message.showMessage', this.showMessage.bind(this));
+            $(document).on('message.show', this.showMessage.bind(this));
         },
 
         /**

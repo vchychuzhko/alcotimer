@@ -1,15 +1,21 @@
 <?php
 
-namespace Awesome\Framework\Model\XmlParser;
+namespace Awesome\Framework\XmlParser;
 
-use Awesome\Framework\Model\App;
+use Awesome\Framework\App\Http;
 use Awesome\Cache\Model\Cache;
+use Awesome\Framework\Block\Template\Container;
 
-class PageXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
+class LayoutXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
 {
-    private const DEFAULT_PAGE_XML_PATH_PATTERN = '/*/*/view/%v/layout/default.xml';
-    private const PAGE_XML_PATH_PATTERN = '/*/*/view/%v/layout/%h.xml';
-    private const PAGE_HANDLES_CACHE_TAG = 'page-handles';
+    private const DEFAULT_LAYOUT_XML_PATH_PATTERN = '/*/*/view/%s/layout/default.xml';
+    private const LAYOUT_XML_PATH_PATTERN = '/*/*/view/%s/layout/%s.xml';
+    private const LAYOUT_HANDLES_CACHE_TAG = 'layout-handles';
+
+    /**
+     * @var string $view
+     */
+    private $view;
 
     /**
      * @var array $collectedAssets
@@ -36,69 +42,63 @@ class PageXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
     private $referencesToRemove = [];
 
     /**
-     * Collect page structure according to the requested handle.
-     * @param string $handle
-     * @param string $view
-     * @return array
+     * @inheritDoc
      */
-    public function retrievePageStructure($handle, $view)
+    public function get($handle)
     {
-        if (!$pageStructure = $this->cache->get(Cache::LAYOUT_CACHE_KEY, $handle)) {
-            $defaultPattern = APP_DIR . str_replace('%v', $view, self::DEFAULT_PAGE_XML_PATH_PATTERN);
+        if (!$layoutStructure = $this->cache->get(Cache::LAYOUT_CACHE_KEY, $handle)) {
+            $defaultPattern = APP_DIR . sprintf(self::DEFAULT_LAYOUT_XML_PATH_PATTERN, $this->view);
 
             foreach (glob($defaultPattern) as $defaultXmlFile) {
-                $pageData = simplexml_load_file($defaultXmlFile);
+                $layoutData = simplexml_load_file($defaultXmlFile);
 
-                $parsedData = $this->parsePageNode($pageData);
-                $pageStructure = array_replace_recursive($pageStructure, $parsedData);
+                $parsedData = $this->parse($layoutData);
+                $layoutStructure = array_replace_recursive($layoutStructure, $parsedData);
             }
 
-            $pattern = APP_DIR . str_replace('%v', $view, self::PAGE_XML_PATH_PATTERN);
-            $pattern = str_replace('%h', $handle, $pattern);
+            $pattern = APP_DIR . sprintf(self::LAYOUT_XML_PATH_PATTERN, $this->view, $handle);
 
-            foreach (glob($pattern) as $pageXmlFile) {
-                $pageData = simplexml_load_file($pageXmlFile);
+            foreach (glob($pattern) as $layoutXmlFile) {
+                $layoutData = simplexml_load_file($layoutXmlFile);
 
-                $parsedData = $this->parsePageNode($pageData);
-                $pageStructure = array_replace_recursive($pageStructure, $parsedData);
+                $parsedData = $this->parse($layoutData);
+                $layoutStructure = array_replace_recursive($layoutStructure, $parsedData);
             }
 
             $this->filterRemovedAssets();
             //@TODO: Add check for minify/merge enabled and replace links
-            $pageStructure['head'] = array_merge($pageStructure['head'], $this->collectedAssets);
+            $layoutStructure['head'] = array_merge($layoutStructure['head'], $this->collectedAssets);
 
-            $this->applyReferences($pageStructure['body']);
-            $this->applySortOrder($pageStructure['body']);
+            $this->applyReferences($layoutStructure['body']);
+            $this->applySortOrder($layoutStructure['body']);
+            //@TODO: add validation for duplicating elements
 
-            $this->cache->save(Cache::LAYOUT_CACHE_KEY, $handle, $pageStructure);
+            $this->cache->save(Cache::LAYOUT_CACHE_KEY, $handle, $layoutStructure);
         }
 
-        return $pageStructure;
+        return $layoutStructure;
     }
 
     /**
-     * Check if requested page handle exist.
-     * @param string $handle
+     * Get all available page layout handles for a specified view.
      * @param string $view
-     * @return bool
-     */
-    public function handleExist($handle, $view)
-    {
-        return in_array($handle, $this->collectHandles($view));
-    }
-
-    /**
-     * Retrieve all available page handles for a specific view.
-     * Return all of handles if view is not specified.
-     * @param string $requestedView
      * @return array
      */
-    private function collectHandles($requestedView = '')
+    public function getHandlesForView($view)
     {
-        if (!$handles = $this->cache->get(Cache::LAYOUT_CACHE_KEY, self::PAGE_HANDLES_CACHE_TAG)) {
-            foreach ([App::FRONTEND_VIEW, App::BACKEND_VIEW, App::BASE_VIEW] as $view) {
-                $pattern = APP_DIR . str_replace('%v', $view, self::PAGE_XML_PATH_PATTERN);
-                $pattern = str_replace('%h', '*', $pattern);
+        $handles = $this->getHandles();
+
+        return $handles[$view] ?? [];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getHandles()
+    {
+        if (!$handles = $this->cache->get(Cache::LAYOUT_CACHE_KEY, self::LAYOUT_HANDLES_CACHE_TAG)) {
+            foreach ([Http::FRONTEND_VIEW, Http::BACKEND_VIEW] as $view) {
+                $pattern = APP_DIR . sprintf(self::LAYOUT_XML_PATH_PATTERN, $view, '*');
                 $collectedHandles = [];
 
                 foreach (glob($pattern) as $collectedHandle) {
@@ -111,26 +111,20 @@ class PageXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
                 $handles[$view] = array_unique($collectedHandles);
             }
 
-            $this->cache->save(Cache::LAYOUT_CACHE_KEY, self::PAGE_HANDLES_CACHE_TAG, $handles);
-        }
-
-        if ($requestedView) {
-            $handles = $handles[$requestedView] ?? [];
+            $this->cache->save(Cache::LAYOUT_CACHE_KEY, self::LAYOUT_HANDLES_CACHE_TAG, $handles);
         }
 
         return $handles;
     }
 
     /**
-     * Convert page XML node into array.
-     * @param \SimpleXMLElement $pageNode
-     * @return array
+     * @inheritDoc
      */
-    private function parsePageNode($pageNode)
+    protected function parse($node)
     {
         $parsedNode = [];
 
-        foreach ($pageNode->children() as $rootNode) {
+        foreach ($node->children() as $rootNode) {
             if ($rootNode->getName() === 'head') {
                 $parsedNode['head'] = $this->parseHeadNode($rootNode);
             }
@@ -144,7 +138,19 @@ class PageXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
     }
 
     /**
-     * Parse head part of XML page node.
+     * Set current page layout view.
+     * @param string $view
+     * @return $this
+     */
+    public function setView($view)
+    {
+        $this->view = $view;
+
+        return $this;
+    }
+
+    /**
+     * Parse head part of XML layout node.
      * @param \SimpleXMLElement $headNode
      * @return array
      */
@@ -160,16 +166,17 @@ class PageXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
                 case 'keywords':
                     $parsedHeadNode[$childName] = (string) $child;
                     break;
+                    //@TODO: move above attributes to Head block, they should not be defined in XML
                 case 'favicon':
-                    $parsedHeadNode[$childName] = (string) $child['src'];
+                    $parsedHeadNode[$childName] = $this->getNodeAttribute($child, 'src');
                     break;
                 case 'lib':
                 case 'script':
                 case 'css':
-                    $this->collectedAssets[$childName][] = (string) $child['src'];
+                    $this->collectedAssets[$childName][] = $this->getNodeAttribute($child, 'src');
                     break;
                 case 'remove':
-                    $this->assetsToRemove[] = (string) $child['src'];
+                    $this->assetsToRemove[] = $this->getNodeAttribute($child, 'src');
                     break;
             }
         }
@@ -178,17 +185,7 @@ class PageXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
     }
 
     /**
-     * Filter collected assets according to remove references.
-     */
-    private function filterRemovedAssets()
-    {
-        foreach ($this->assetsToRemove as $asset) {
-            array_remove_by_value_recursive($this->collectedAssets, $asset);
-        }
-    }
-
-    /**
-     * Parse body part of XML page node.
+     * Parse body part of XML layout node.
      * @param \SimpleXMLElement $bodyNode
      * @return array
      */
@@ -200,7 +197,7 @@ class PageXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
 
         foreach ($bodyNode->children() as $bodyItem) {
             if ($parsedItem = $this->parseBodyItem($bodyItem)) {
-                $parsedBodyNode['children'][(string)$bodyItem['name']] = $parsedItem;
+                $parsedBodyNode['children'][$this->getNodeAttribute($bodyItem)] = $parsedItem;
             }
         }
 
@@ -219,62 +216,63 @@ class PageXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
         switch ($itemNode->getName()) {
             case 'block':
                 $parsedItemNode = [
-                    'name' => (string) $itemNode['name'],
-                    'class' => (string) $itemNode['class'],
-                    'template' => (string) $itemNode['template'],
+                    'name' => $this->getNodeAttribute($itemNode),
+                    'class' => $this->getNodeAttribute($itemNode, 'class'),
+                    'template' => $this->getNodeAttribute($itemNode, 'template'),
                     'children' => []
                 ];
 
-                if ($sortOrder = (string) $itemNode['sortOrder']) {
+                if ($sortOrder = $this->getNodeAttribute($itemNode, 'sortOrder')) {
                     $parsedItemNode['sortOrder'] = $sortOrder;
                 }
 
                 foreach ($itemNode->children() as $child) {
-                    $parsedItemNode['children'][(string) $child['name']] = $this->parseBodyItem($child);
+                    $parsedItemNode['children'][$this->getNodeAttribute($child)] = $this->parseBodyItem($child);
                 }
                 break;
             case 'container':
                 $parsedItemNode = [
-                    'name' => (string) $itemNode['name'],
-                    'class' => ((string) $itemNode['class']) ?: \Awesome\Framework\Block\Template\Container::class,
-                    'template' => (string) $itemNode['template'],
-                    'children' => []
+                    'name' => $this->getNodeAttribute($itemNode),
+                    'class' => ($this->getNodeAttribute($itemNode, 'class')) ?: Container::class,
+                    'template' => $this->getNodeAttribute($itemNode, 'template'),
+                    'children' => [],
+                    'containerData' => []
                 ];
 
-                if ($htmlTag = (string) $itemNode['htmlTag']) {
+                if ($htmlTag = $this->getNodeAttribute($itemNode, 'htmlTag')) {
                     $parsedItemNode['containerData'] = [
                         'htmlTag' => $htmlTag,
-                        'htmlClass' => (string) $itemNode['htmlClass'],
-                        'htmlId' => (string) $itemNode['htmlId']
+                        'htmlClass' => $this->getNodeAttribute($itemNode, 'htmlClass'),
+                        'htmlId' => $this->getNodeAttribute($itemNode, 'htmlId')
                     ];
                 }
 
-                if ($sortOrder = (string) $itemNode['sortOrder']) {
+                if ($sortOrder = $this->getNodeAttribute($itemNode, 'sortOrder')) {
                     $parsedItemNode['sortOrder'] = $sortOrder;
                 }
 
                 foreach ($itemNode->children() as $child) {
-                    $parsedItemNode['children'][(string) $child['name']] = $this->parseBodyItem($child);
+                    $parsedItemNode['children'][$this->getNodeAttribute($child)] = $this->parseBodyItem($child);
                 }
                 break;
             case 'referenceBlock':
             case 'referenceContainer':
-                if ($this->stringBooleanCheck((string) $itemNode['remove'])) {
-                    $this->referencesToRemove[] = (string) $itemNode['name'];
+                if ($this->stringBooleanCheck($this->getNodeAttribute($itemNode, 'remove'))) {
+                    $this->referencesToRemove[] = $this->getNodeAttribute($itemNode);
                 } else {
                     $reference = [
                         'children' => []
                     ];
 
-                    if ($sortOrder = (string) $itemNode['sortOrder']) {
+                    if ($sortOrder = $this->getNodeAttribute($itemNode, 'sortOrder')) {
                         $reference['sortOrder'] = $sortOrder;
                     }
 
                     foreach ($itemNode->children() as $child) {
-                        $reference['children'][(string) $child['name']] = $this->parseBodyItem($child);
+                        $reference['children'][$this->getNodeAttribute($child)] = $this->parseBodyItem($child);
                     }
                     $this->references[] = [
-                        'name' => (string) $itemNode['name'],
+                        'name' => $this->getNodeAttribute($itemNode),
                         'data' => $reference
                     ];
                 }
@@ -285,7 +283,21 @@ class PageXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
     }
 
     /**
-     * Apply reference updates to a parsed page.
+     * Filter collected assets according to remove references.
+     */
+    private function filterRemovedAssets()
+    {
+        foreach ($this->assetsToRemove as $assetToRemove) {
+            foreach ($this->collectedAssets as $assetsType => $assets) {
+                if (($index = array_search($assetToRemove, $assets)) !== false) {
+                    unset($this->collectedAssets[$assetsType][$index]);
+                }
+            }
+        }
+    }
+
+    /**
+     * Apply reference updates to a parsed layout.
      * @param array $bodyStructure
      * @return array
      */
@@ -306,7 +318,7 @@ class PageXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
     }
 
     /**
-     * Apply sort order rules to a parsed page.
+     * Apply sort order rules to a parsed layout.
      * @param array $blockStructure
      * @return array
      */

@@ -1,11 +1,10 @@
-<?php /** @var \Awesome\Framework\Block\Template $this */ ?>
+<?php /** @var \Awesome\Framework\Block\Template $block */ ?>
 <div class="content">
     <div class="timer-container">
         <div class="timer-wrapper radial-container">
             <div class="timer-button-container">
                 <button class="timer-button" type="button" name="start-stop" value="Start/Stop">
-                    <span class="time-value no-select">15:30</span>
-                    <span class="timer-button-title no-select" style="display: block; bottom: 0; position: absolute; left: 50%; transform: translateX(-50%)"></span>
+                    <span class="timer-time no-select" style="display: block; bottom: 0; position: absolute; left: 50%; transform: translateX(-50%)"></span>
                 </button>
             </div>
             <div class="radial-slider">
@@ -23,21 +22,3 @@
         </div>
     </div>
 </div>
-<script>
-//    @TODO: temporary hint functionality, should be updated and removed
-    function showX() {
-        jQuery('.menu').removeClass('active');
-        jQuery('.hint').show();
-    }
-
-    function hideX() {
-        jQuery('.hint').hide();
-        localStorage.setItem('hint', 'true');
-    }
-
-    let shown = localStorage.getItem('hint');
-
-    if (!shown) {
-        showX();
-    }
-</script>

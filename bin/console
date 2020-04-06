@@ -6,12 +6,21 @@ if (PHP_SAPI !== 'cli') {
     exit(1);
 }
 
-require_once(__DIR__ . '/../app/autoload.php');
+try {
+    require_once __DIR__ . '/../app/bootstrap.php';
+} catch (\Exception $e) {
+    echo 'Autoload error: ' . $e->getMessage();
+    exit(1);
+}
 
 try {
-    $console = new \Awesome\Console\Model\Console();
-    $console->run();
-} catch (\Throwable $t) {
-    echo 'Error occurred: ' . $t->getMessage();
+    $app = new \Awesome\Framework\App\Cli();
+    $app->run();
+} catch (\LogicException | \RuntimeException $e) {
+    exit(1);
+} catch (\Exception $e) {
+    echo $e->getMessage();
+    echo "\n";
+    echo $e->getTraceAsString();
     exit(1);
 }

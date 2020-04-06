@@ -4,7 +4,7 @@ namespace Awesome\Maintenance\Console;
 
 use Awesome\Maintenance\Model\Maintenance;
 
-class Disable extends \Awesome\Console\Model\AbstractCommand
+class Disable extends \Awesome\Framework\Model\Cli\AbstractCommand
 {
     /**
      * @var Maintenance $maintenance
@@ -12,7 +12,7 @@ class Disable extends \Awesome\Console\Model\AbstractCommand
     private $maintenance;
 
     /**
-     * Disable constructor.
+     * Maintenance Disable constructor.
      */
     public function __construct()
     {
@@ -20,13 +20,22 @@ class Disable extends \Awesome\Console\Model\AbstractCommand
     }
 
     /**
+     * @inheritDoc
+     */
+    public static function configure($definition)
+    {
+        return parent::configure($definition)
+            ->setDescription('Disable maintenance mode');
+    }
+
+    /**
      * Disable maintenance mode.
      * @inheritDoc
      */
-    public function execute($args = [])
+    public function execute($input, $output)
     {
         $this->maintenance->disable();
 
-        return $this->colourText('Maintenance mode was disabled.');
+        $output->writeln('Maintenance mode was disabled.');
     }
 }

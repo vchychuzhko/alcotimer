@@ -12,6 +12,16 @@ class Head extends \Awesome\Framework\Block\Template
     protected $headData;
 
     /**
+     * Head constructor.
+     * @inheritDoc
+     */
+    public function __construct($renderer, $name, $template = null, $children = [])
+    {
+        $this->headData = $children;
+        parent::__construct($renderer, $name, $template);
+    }
+
+    /**
      * Get page title.
      * @return string
      */
@@ -56,7 +66,7 @@ class Head extends \Awesome\Framework\Block\Template
         $libs = $this->getHeadData('lib') ?? [];
 
         foreach ($libs as $index => $lib) {
-            $libs[$index] = $this->resolveAssetsPath($lib, 'lib');
+            $libs[$index] = $this->resolveAssetPath($lib, 'lib');
         }
 
         return $libs;
@@ -68,10 +78,10 @@ class Head extends \Awesome\Framework\Block\Template
      */
     public function getScripts()
     {
-        $scripts = $this->getHeadData('script') ?? [];
+        $scripts = $this->getHeadData('script') ?: [];
 
         foreach ($scripts as $index => $script) {
-            $scripts[$index] = $this->resolveAssetsPath($script, 'js');
+            $scripts[$index] = $this->resolveAssetPath($script, 'js');
         }
 
         return $scripts;
@@ -83,25 +93,13 @@ class Head extends \Awesome\Framework\Block\Template
      */
     public function getStyles()
     {
-        $styles = $this->getHeadData('css') ?? [];
+        $styles = $this->getHeadData('css') ?: [];
 
         foreach ($styles as $index => $style) {
-            $styles[$index] = $this->resolveAssetsPath($style, 'css');
+            $styles[$index] = $this->resolveAssetPath($style, 'css');
         }
 
         return $styles;
-    }
-
-    /**
-     * Set html head data.
-     * @param array $headData
-     * @return $this
-     */
-    public function setHeadData($headData)
-    {
-        $this->headData = $headData;
-
-        return $this;
     }
 
     /**
@@ -127,7 +125,7 @@ class Head extends \Awesome\Framework\Block\Template
      * @param string $type
      * @return string
      */
-    private function resolveAssetsPath($path, $type)
+    private function resolveAssetPath($path, $type)
     {
         if (strpos($path, '//') === false) {
             @list($module, $file) = explode('::', $path);
@@ -135,7 +133,7 @@ class Head extends \Awesome\Framework\Block\Template
             if (isset($file)) {
                 $path = $module . '/' . $type . '/' . $file;
             }
-            $path = $this->getStaticUrl($this->view . '/' . $path);
+            $path = $this->getStaticUrl($this->renderer->getView() . '/' . $path);
         }
 
         return $path;

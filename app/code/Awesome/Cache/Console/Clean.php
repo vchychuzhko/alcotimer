@@ -2,10 +2,12 @@
 
 namespace Awesome\Cache\Console;
 
-class Clean extends \Awesome\Console\Model\AbstractCommand
+use Awesome\Cache\Model\Cache;
+
+class Clean extends \Awesome\Framework\Model\Cli\AbstractCommand
 {
     /**
-     * @var \Awesome\Cache\Model\Cache $cache
+     * @var Cache $cache
      */
     private $cache;
 
@@ -14,17 +16,27 @@ class Clean extends \Awesome\Console\Model\AbstractCommand
      */
     function __construct()
     {
-        $this->cache = new \Awesome\Cache\Model\Cache();
+        $this->cache = new Cache();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public static function configure($definition)
+    {
+        return parent::configure($definition)
+            ->setDescription('Flush application cache');
     }
 
     /**
      * Clean XML cache files.
      * @inheritDoc
      */
-    public function execute($args = [])
+    public function execute($input, $output)
     {
         $this->cache->remove();
+        //@TODO: Add cache type argument
 
-        return 'Cache was cleaned.';
+        $output->writeln('Cache was cleaned.');
     }
 }

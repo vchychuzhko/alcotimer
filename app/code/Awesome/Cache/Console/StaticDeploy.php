@@ -2,30 +2,47 @@
 
 namespace Awesome\Cache\Console;
 
-class StaticDeploy extends \Awesome\Console\Model\AbstractCommand
+use Awesome\Cache\Model\StaticContent;
+use Awesome\Framework\Model\Cli\Input\InputDefinition;
+
+class StaticDeploy extends \Awesome\Framework\Model\Cli\AbstractCommand
 {
     /**
-     * @var \Awesome\Cache\Model\StaticContent $staticContent
+     * @var StaticContent $staticContent
      */
     private $staticContent;
 
     /**
      * StaticDeploy constructor.
      */
-    function __construct()
+    public function __construct()
     {
-        $this->staticContent = new \Awesome\Cache\Model\StaticContent();
+        $this->staticContent = new StaticContent();
     }
 
     /**
-     * Regenerate static files.
      * @inheritDoc
      */
-    public function execute($args = [])
+    public static function configure($definition)
     {
-        $this->staticContent->deploy();
-        //@TODO: implement view parameters
+        return parent::configure($definition)
+            ->setDescription('Generate static files (assets)')
+            ->addArgument('view', InputDefinition::ARGUMENT_OPTIONAL, 'Generate static only for a specified view');
+    }
 
-        return 'Static content was deployed.';
+    /**
+     * Generate static files.
+     * @inheritDoc
+     */
+    public function execute($input, $output)
+    {
+        $view = $input->getArgument('view') ?: '';
+        $this->staticContent->deploy($view);
+
+        if ($view) {
+            $output->writeln(sprintf('Static content was deployed for "%s" view.', $view));
+        } else {
+            $output->writeln('Static content was deployed for all views.');
+        }
     }
 }

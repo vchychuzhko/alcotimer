@@ -32,6 +32,7 @@
 
             $(this.element).on('mousedown touchstart', '.range-controls', function (event) {
                 this.isDragging = true;
+                this.draggingController = $(event.target);
 
                 $.each([$minRange, $maxRange], function (index, controller) {
                     $(controller).css({'z-index': 4});
@@ -43,12 +44,11 @@
                 this.isDragging = false;
             }.bind(this));
 
-            $(this.element).on('mousemove touchmove', function (event) {
+            $(document).on('mousemove touchmove', function (event) {
                 if (this.isDragging) {
                     try {
                         let touch = event.originalEvent.touches ? event.originalEvent.touches[0] : undefined,
                             pos = event.pageX || touch.pageX,
-                            $event = $(event.target),
                             $container =  $(this.element).find('.range-controls'),
                             containerLeft = $container.offset().left,
                             containerRight = containerLeft + this.containerWidth,
@@ -62,7 +62,7 @@
                             newPos = 100;
                         }
 
-                        this.setControllerPosition($event, newPos, true);
+                        this.setControllerPosition(this.draggingController, newPos, true);
                     } catch (e) {
                         //do nothing, touch error happened
                     }

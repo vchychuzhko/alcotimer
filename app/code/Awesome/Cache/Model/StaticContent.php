@@ -2,18 +2,19 @@
 
 namespace Awesome\Cache\Model;
 
-use Awesome\Framework\Model\App;
+use Awesome\Framework\App\Http;
+use Awesome\Framework\Model\Config;
 
 class StaticContent
 {
+    private const STATIC_FOLDER_PATH = '/pub/static/';
     private const DEPLOYED_VERSION_FILE = '/pub/static/deployed_version.txt';
-    private const PUB_FOLDER_TRIGGER = '{@pubDir}';
-    private const STATIC_FOLDER_PATH = '/pub/static';
     private const ASSETS_FOLDER_PATH_PATTERN = '/*/*/view/%v/web/%a';
     private const JS_LIB_PATH_PATTERN = '/lib/*/*.js';
+    private const PUB_FOLDER_TRIGGER = '{@pubDir}';
 
     /**
-     * @var \Awesome\Framework\Model\Config $config
+     * @var Config $config
      */
     private $config;
 
@@ -22,7 +23,7 @@ class StaticContent
      */
     public function __construct()
     {
-        $this->config = new \Awesome\Framework\Model\Config();
+        $this->config = new Config();
     }
 
     /**
@@ -36,7 +37,7 @@ class StaticContent
         if ($view) {
             $this->processView($view);
         } else {
-            foreach ([App::FRONTEND_VIEW, App::BACKEND_VIEW] as $view) {
+            foreach ([Http::FRONTEND_VIEW, Http::BACKEND_VIEW] as $view) {
                 $this->processView($view);
             }
         }
@@ -53,8 +54,8 @@ class StaticContent
      */
     private function processView($view)
     {
-        if (!file_exists(BP . self::STATIC_FOLDER_PATH . '/' . $view)) {
-            mkdir(BP . self::STATIC_FOLDER_PATH . '/' . $view);
+        if (!file_exists(BP . self::STATIC_FOLDER_PATH . $view)) {
+            mkdir(BP . self::STATIC_FOLDER_PATH . $view);
         }
 
         $this->removeStatic($view);
@@ -65,13 +66,13 @@ class StaticContent
     }
 
     /**
-     * Remove all static files related to needed view, including directory.
+     * Remove all static files related to requested view, including directory.
      * @param string $view
      * @return $this
      */
     private function removeStatic($view)
     {
-        rrmdir(BP . self::STATIC_FOLDER_PATH . '/' . $view);
+        rrmdir(BP . self::STATIC_FOLDER_PATH . $view);
 
         return $this;
     }
@@ -83,9 +84,9 @@ class StaticContent
      */
     private function generateAssets($view)
     {
-        $staticFolder = BP . self::STATIC_FOLDER_PATH . '/' . $view;
+        $staticFolder = BP . self::STATIC_FOLDER_PATH . $view;
         $viewPath = str_replace('%v', $view, self::ASSETS_FOLDER_PATH_PATTERN);
-        $baseViewPath = str_replace('%v', App::BASE_VIEW, self::ASSETS_FOLDER_PATH_PATTERN);
+        $baseViewPath = str_replace('%v', Http::BASE_VIEW, self::ASSETS_FOLDER_PATH_PATTERN);
         $assets = [
             'css_base' => str_replace('%a', 'css', $baseViewPath),
             'css_view' => str_replace('%a', 'css', $viewPath),
@@ -122,7 +123,7 @@ class StaticContent
      */
     private function processLibs($view)
     {
-        $staticFolder = BP . self::STATIC_FOLDER_PATH . '/' . $view;
+        $staticFolder = BP . self::STATIC_FOLDER_PATH . $view;
 
         $libFiles = glob(BP . self::JS_LIB_PATH_PATTERN);
         $libFiles = $this->filterMinifiedFiles($libFiles);
@@ -138,7 +139,7 @@ class StaticContent
     }
 
     /**
-     * Retrieve file name by the whole path.
+     * Retrieve relative path and file name from absolute path.
      * @param string $path
      * @param bool $isLib
      * @return array
@@ -172,13 +173,13 @@ class StaticContent
      */
     private function parsePubDirPath($content)
     {
-        $pubPath = $this->config->get(App::WEB_ROOT_CONFIG) ? '/' : '/pub/';
+        $pubPath = $this->config->get(Http::WEB_ROOT_CONFIG) ? '/' : '/pub/';
 
         return str_replace(self::PUB_FOLDER_TRIGGER, $pubPath, $content);
     }
 
     /**
-     * Generate new deployed version and save it.
+     * Generate static deployed version and save it.
      * @return $this
      */
     public function generateDeployedVersion()
@@ -199,7 +200,7 @@ class StaticContent
     }
 
     /**
-     * Check and remove files which have minified versions.
+     * Filter files which have minified versions.
      * @param array $files
      * @return array
      */
