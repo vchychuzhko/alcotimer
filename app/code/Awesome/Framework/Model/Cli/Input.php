@@ -30,7 +30,7 @@ class Input
      * @param array $options
      * @param array $arguments
      */
-    public function __construct($command, $options, $arguments)
+    public function __construct($command, $options = [], $arguments = [])
     {
         $this->command = $command;
         $this->options = $options;

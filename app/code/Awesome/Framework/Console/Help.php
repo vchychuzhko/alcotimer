@@ -2,23 +2,24 @@
 
 namespace Awesome\Framework\Console;
 
+use Awesome\Framework\Handler\CommandHandler;
 use Awesome\Framework\Model\Cli\Input\InputDefinition;
 use Awesome\Framework\Model\Cli\Output;
-use Awesome\Framework\XmlParser\CliXmlParser;
+use Awesome\Framework\XmlParser\CommandXmlParser;
 
 class Help extends \Awesome\Framework\Model\Cli\AbstractCommand
 {
     /**
-     * @var CliXmlParser $xmlParser
+     * @var CommandXmlParser $commandXmlParser
      */
-    private $cliXmlParser;
+    private $commandXmlParser;
 
     /**
      * Help constructor.
      */
     public function __construct()
     {
-        $this->cliXmlParser = new CliXmlParser();
+        $this->commandXmlParser = new CommandXmlParser();
     }
 
     /**
@@ -41,14 +42,14 @@ class Help extends \Awesome\Framework\Model\Cli\AbstractCommand
         if ($command = $input->getArgument('command') ?: $input->getCommand()) {
             $this->showCommandHelp($command, $output);
         } else {
-            $commandData = $this->cliXmlParser->getDefault();
-            $commands = $this->cliXmlParser->getHandles();
+            $commandData = $this->commandXmlParser->get(CommandHandler::DEFAULT_COMMAND);
+            $commands = $this->commandXmlParser->getHandles();
 
             $output->writeln($output->colourText('Usage:', Output::BROWN));
             $output->writeln('command [options] [arguments]', 2);
             $output->writeln();
 
-            $this->processOptions($commandData['options'], $output, !empty($commands));
+            $this->processOptions($commandData['options'], $output, true);
 
             if ($commands) {
                 $this->processCommands($commands, $output);
@@ -66,7 +67,7 @@ class Help extends \Awesome\Framework\Model\Cli\AbstractCommand
      */
     private function showCommandHelp($command, $output)
     {
-        if ($commandData = $this->cliXmlParser->get($command)) {
+        if ($commandData = $this->commandXmlParser->get($command)) {
             $options = $commandData['options'];
             $argumentsString = '';
 
@@ -178,14 +179,14 @@ class Help extends \Awesome\Framework\Model\Cli\AbstractCommand
         if ($commands) {
             $output->writeln($output->colourText('Available commands:', Output::BROWN));
             $padding = max(array_map(function ($name) {
-                list($unused, $command) = explode(':', $name);
+                [$unused, $command] = explode(':', $name);
                 return strlen($command);
             }, $commands));
             $lastNamespace = null;
 
             foreach ($commands as $name) {
-                list($namespace, $command) = explode(':', $name);
-                $commandData = $this->cliXmlParser->get($name);
+                [$namespace, $command] = explode(':', $name);
+                $commandData = $this->commandXmlParser->get($name);
 
                 if ($namespace !== $lastNamespace) {
                     $output->writeln($output->colourText($namespace, Output::BROWN), 1);

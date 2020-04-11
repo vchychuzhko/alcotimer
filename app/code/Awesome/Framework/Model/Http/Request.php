@@ -98,24 +98,6 @@ class Request
     }
 
     /**
-     * Get request method.
-     * @return string
-     */
-    public function getMethod()
-    {
-        return $this->method;
-    }
-
-    /**
-     * Get request redirect status code.
-     * @return int|null
-     */
-    public function getRedirectStatusCode()
-    {
-        return $this->redirectStatus;
-    }
-
-    /**
      * Check if request was performed via secure connection.
      * @return bool
      */
@@ -124,6 +106,15 @@ class Request
         $scheme = $this->getScheme();
 
         return $scheme === self::SCHEME_HTTPS;
+    }
+
+    /**
+     * Get request method.
+     * @return string
+     */
+    public function getMethod()
+    {
+        return $this->method;
     }
 
     /**
@@ -143,6 +134,15 @@ class Request
     public function getParams()
     {
         return $this->parameters;
+    }
+
+    /**
+     * Get request redirect status code.
+     * @return int|null
+     */
+    public function getRedirectStatusCode()
+    {
+        return $this->redirectStatus;
     }
 
     /**

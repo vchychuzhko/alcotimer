@@ -5,10 +5,9 @@ namespace Awesome\Framework\XmlParser;
 use Awesome\Framework\Model\Cli\AbstractCommand;
 use Awesome\Framework\Model\Cli\Input\InputDefinition;
 
-class CliXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
+class CommandXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
 {
     private const CLI_XML_PATH_PATTERN = '/*/*/etc/cli.xml';
-    private const DEFAULT_HANDLE = 'help:show';
 
     /**
      * @var array $commands
@@ -45,16 +44,6 @@ class CliXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
         }
 
         return $this->commandsData[$handle] ?? null;
-    }
-
-    /**
-     * Return default structure data applicable for all commands inherited from AbstractCommand.
-     * @return array
-     * @throws \LogicException
-     */
-    public function getDefault()
-    {
-        return $this->get(self::DEFAULT_HANDLE);
     }
 
     /**

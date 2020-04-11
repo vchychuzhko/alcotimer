@@ -60,8 +60,8 @@ class Http implements \Awesome\Framework\Model\AppInterface
      */
     public function run()
     {
-        $this->request = $this->layoutHandler->parseRequest();
-        $this->logWriter->logVisitor($this->request);
+        $request = $this->getRequest();
+        $this->logWriter->logVisitor($request);
 
         if (!$this->isMaintenance()) {
             $pageView = $this->resolveView();
@@ -92,13 +92,13 @@ class Http implements \Awesome\Framework\Model\AppInterface
      */
     private function resolveHandle()
     {
-        $redirectStatus = $this->request->getRedirectStatusCode();
+        $redirectStatus = $this->getRequest()->getRedirectStatusCode();
 
         if ($redirectStatus === 403 && $this->showForbiddenPage()) {
             $handle = 'forbidden';
             http_response_code(403);
         } else {
-            $path = $this->request->getPath();
+            $path = $this->getRequest()->getPath();
 
             if ($path === '/') {
                 $path = $this->getHomepageHandle();
@@ -120,7 +120,7 @@ class Http implements \Awesome\Framework\Model\AppInterface
      */
     private function isMaintenance()
     {
-        $ip = $this->request->getUserIPAddress();
+        $ip = $this->getRequest()->getUserIPAddress();
 
         return $this->maintenance->isMaintenance($ip);
     }
@@ -141,5 +141,36 @@ class Http implements \Awesome\Framework\Model\AppInterface
     private function getHomepageHandle()
     {
         return (string) $this->config->get(self::HOMEPAGE_HANDLE_CONFIG);
+    }
+
+    /**
+     * Parse and return http request.
+     * @return Request
+     */
+    private function getRequest()
+    {
+        if (!$this->request) {
+            $scheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] === 443
+                ? Request::SCHEME_HTTPS
+                : Request::SCHEME_HTTP;
+            $url = $scheme . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+            $method = $_SERVER['REQUEST_METHOD'];
+            $parameters = [];
+            $redirectStatus = $_SERVER['REDIRECT_STATUS'] ?? null;
+            $userIPAddress = $_SERVER['REMOTE_ADDR'];
+
+            if ($_GET) {
+                $parameters = array_merge($parameters, $_GET);
+            }
+
+            if ($_POST) {
+                $parameters = array_merge($parameters, $_POST);
+            }
+            // @TODO: add cookies parsing
+
+            $this->request = new Request($url, $method, $parameters, $redirectStatus, $userIPAddress);
+        }
+
+        return $this->request;
     }
 }

@@ -4,7 +4,7 @@ namespace Awesome\Framework\Model;
 
 interface AppInterface
 {
-    public const VERSION = '0.3.0';
+    public const VERSION = '0.3.1';
 
     /**
      * Run the application.

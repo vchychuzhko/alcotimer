@@ -3,17 +3,18 @@
 namespace Awesome\Framework\App;
 
 use Awesome\Framework\Console\Help;
-use Awesome\Framework\Handler\CliHandler;
+use Awesome\Framework\Handler\CommandHandler;
 use Awesome\Framework\Model\Cli\AbstractCommand;
 use Awesome\Framework\Model\Cli\Input;
+use Awesome\Framework\Model\Cli\Input\InputDefinition;
 use Awesome\Framework\Model\Cli\Output;
 
 class Cli implements \Awesome\Framework\Model\AppInterface
 {
     /**
-     * @var CliHandler $cliHandler
+     * @var CommandHandler $commandHandler
      */
-    private $cliHandler;
+    private $commandHandler;
 
     /**
      * @var Help $help
@@ -35,7 +36,7 @@ class Cli implements \Awesome\Framework\Model\AppInterface
      */
     public function __construct()
     {
-        $this->cliHandler = new CliHandler();
+        $this->commandHandler = new CommandHandler();
         $this->help = new Help();
         $this->output = new Output();
     }
@@ -48,14 +49,13 @@ class Cli implements \Awesome\Framework\Model\AppInterface
      */
     public function run()
     {
-        $command = $this->cliHandler->getCommand();
+        $command = $this->getInput()->getCommand();
 
-        if ($command && !$this->cliHandler->exist($command)) {
+        if ($command && !$this->commandHandler->exist($command)) {
             $e = new \RuntimeException(sprintf('Command "%s" is not defined', $command));
-            $this->displayError($e);
+            $this->displayException($e);
 
-            if ($candidates = $this->cliHandler->getPossibleCandidates($command, false)) {
-                $this->output->writeln();
+            if ($candidates = $this->commandHandler->getPossibleCandidates($command, false)) {
                 $this->output->writeln('Did you mean one of these?', 2);
 
                 foreach ($candidates as $candidate) {
@@ -69,59 +69,53 @@ class Cli implements \Awesome\Framework\Model\AppInterface
         }
 
         try {
-            $this->input = $this->cliHandler->parseInput();
-
             if ($this->isQuiet()) {
                 $this->output->mute();
             }
 
             if ($this->isNonInteractive()) {
-                $this->input->disableInteraction();
+                $this->getInput()->disableInteraction();
             }
 
             if ($this->showVersion()) {
                 $this->showAppCliTitle();
             } elseif ($this->showCommandHelp()) {
-                $this->help->execute($this->input, $this->output);
-            } elseif ($command && $className = $this->cliHandler->process($command)) {
+                $this->help->execute($this->getInput(), $this->output);
+            } elseif ($command && $className = $this->commandHandler->getCommandClass($command)) {
                 /** @var AbstractCommand $consoleClass */
                 $consoleClass = new $className();
-                $consoleClass->execute($this->input, $this->output);
+                $consoleClass->execute($this->getInput(), $this->output);
             } else {
                 $this->showAppCliTitle();
                 $this->output->writeln();
-                $this->help->execute($this->input, $this->output);
+                $this->help->execute($this->getInput(), $this->output);
             }
         } catch (\LogicException | \RuntimeException $e) {
-            $this->displayError($e);
+            $this->displayException($e);
 
             throw $e;
         }
     }
 
     /**
-     * Display formatted error message.
+     * Display formatted exception message.
      * @param \Exception $e
      */
-    private function displayError($e)
+    private function displayException($e)
     {
         if ($length = strlen($e->getMessage())) {
             $this->output->writeln();
             $this->output->writeln($this->output->colourText(str_repeat(' ', $length + 4), Output::WHITE, Output::RED_BG));
-            $this->output->writeln(
-                $this->output->colourText(
-                    str_repeat(' ', 1) . str_pad(get_class($e) . ':', $length + 3),
-                    Output::WHITE,
-                    Output::RED_BG
-                )
-            );
-            $this->output->writeln(
-                $this->output->colourText(
-                    str_repeat(' ', 2) . str_pad($e->getMessage(), $length + 2),
-                    Output::WHITE,
-                    Output::RED_BG
-                )
-            );
+            $this->output->writeln($this->output->colourText(
+                str_repeat(' ', 1) . str_pad(get_class($e) . ':', $length + 3),
+                Output::WHITE,
+                Output::RED_BG
+            ));
+            $this->output->writeln($this->output->colourText(
+                str_repeat(' ', 2) . str_pad($e->getMessage(), $length + 2),
+                Output::WHITE,
+                Output::RED_BG
+            ));
             $this->output->writeln($this->output->colourText(str_repeat(' ', $length + 4), Output::WHITE, Output::RED_BG));
             $this->output->writeln();
         }
@@ -133,7 +127,7 @@ class Cli implements \Awesome\Framework\Model\AppInterface
      */
     private function isQuiet()
     {
-        return $this->input->getOption('quiet');
+        return $this->getInput()->getOption('quiet');
     }
 
     /**
@@ -142,7 +136,7 @@ class Cli implements \Awesome\Framework\Model\AppInterface
      */
     private function isNonInteractive()
     {
-        return $this->input->getOption('no-interaction');
+        return $this->getInput()->getOption('no-interaction');
     }
 
     /**
@@ -151,7 +145,7 @@ class Cli implements \Awesome\Framework\Model\AppInterface
      */
     private function showVersion()
     {
-        return $this->input->getOption('version');
+        return $this->getInput()->getOption('version');
     }
 
     /**
@@ -160,7 +154,8 @@ class Cli implements \Awesome\Framework\Model\AppInterface
      */
     private function showCommandHelp()
     {
-        return $this->input->getOption('help') && ($this->input->getCommand() || $this->input->getArgument('command'));
+        return $this->getInput()->getOption('help')
+            && ($this->getInput()->getCommand() || $this->getInput()->getArgument('command'));
     }
 
     /**
@@ -169,5 +164,98 @@ class Cli implements \Awesome\Framework\Model\AppInterface
     private function showAppCliTitle()
     {
         $this->output->writeln('AlcoTimer CLI ' . $this->output->colourText(self::VERSION));
+    }
+
+    /**
+     * Parse and return console input.
+     * @return Input
+     */
+    private function getInput()
+    {
+        if (!$this->input) {
+            $argv = $_SERVER['argv'];
+            $command = null;
+
+            if (isset($argv[1]) && strpos($argv[1], '-') !== 0) {
+                $command = $this->commandHandler->parse($argv[1]);
+                unset($argv[1]);
+            }
+
+            if ($command && !$this->commandHandler->exist($command)) {
+                $this->input = new Input($command);
+            } else {
+                $options = [];
+                $arguments = [];
+                $collectedArguments = [];
+                $argumentPosition = 1;
+
+                $commandData = $this->commandHandler->process((string) $command);
+                $commandOptions = $commandData['options'];
+                $commandShortcuts = $commandData['shortcuts'];
+                $commandArguments = $commandData['arguments'];
+
+                foreach (array_slice($argv, 1) as $arg) {
+                    if (strpos($arg, '--') === 0) {
+                        @list($option, $value) = explode('=', str_replace_first('--', '', $arg));
+
+                        if (!isset($commandOptions[$option])) {
+                            throw new \RuntimeException(sprintf('Unknown option "%s"', $option));
+                        }
+                        $value = $value ?: $commandOptions[$option]['default'];
+
+                        if ($commandOptions[$option]['type'] === InputDefinition::OPTION_ARRAY) {
+                            if (!isset($options[$option])) {
+                                $options[$option] = [];
+                            }
+                            $options[$option][] = $value;
+                        } else {
+                            $options[$option] = $value;
+                        }
+                    } elseif (strpos($arg, '-') === 0) {
+                        $shortcuts = substr($arg, 1);
+
+                        foreach (str_split($shortcuts) as $shortcut) {
+                            if (!isset($commandShortcuts[$shortcut])) {
+                                throw new \RuntimeException(sprintf('Unknown shortcut "%s"', $shortcut));
+                            }
+                            $option = $commandShortcuts[$shortcut];
+                            $options[$option] = $commandOptions[$option]['default'];
+                        }
+                    } else {
+                        $collectedArguments[$argumentPosition++] = $arg;
+                    }
+                }
+
+                if ($commandOptions) {
+                    foreach ($commandOptions as $optionName => $optionData) {
+                        if ($optionData['type'] === InputDefinition::OPTION_REQUIRED && !isset($options[$optionName])) {
+                            throw new \RuntimeException(sprintf('Required option "%s" was not provided', $optionName));
+                        }
+                    }
+                }
+
+                if ($commandArguments) {
+                    foreach ($commandArguments as $argumentName => $argumentData) {
+                        $position = $argumentData['position'];
+
+                        if ($argumentData['type'] === InputDefinition::ARGUMENT_REQUIRED
+                            && !isset($collectedArguments[$position])
+                        ) {
+                            throw new \RuntimeException(sprintf('Required argument "%s" was not provided', $argumentName));
+                        } elseif ($argumentData['type'] === InputDefinition::ARGUMENT_ARRAY) {
+                            $arguments[$argumentName] = array_slice($collectedArguments, $position - 1);
+                        } elseif (isset($collectedArguments[$position])) {
+                            $arguments[$argumentName] = $collectedArguments[$position];
+                        }
+                    }
+                } else {
+                    $arguments = $collectedArguments;
+                }
+
+                $this->input = new Input($command, $options, $arguments);
+            }
+        }
+
+        return $this->input;
     }
 }
