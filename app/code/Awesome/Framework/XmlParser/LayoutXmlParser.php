@@ -2,8 +2,8 @@
 
 namespace Awesome\Framework\XmlParser;
 
-use Awesome\Framework\App\Http;
 use Awesome\Cache\Model\Cache;
+use Awesome\Framework\App\Http;
 use Awesome\Framework\Block\Template\Container;
 
 class LayoutXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
@@ -47,24 +47,25 @@ class LayoutXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlPars
     public function get($handle)
     {
         if (!$layoutStructure = $this->cache->get(Cache::LAYOUT_CACHE_KEY, $handle)) {
-            $defaultPattern = APP_DIR . sprintf(self::DEFAULT_LAYOUT_XML_PATH_PATTERN, $this->view);
+            $layoutStructure = [];
+            $defaultPattern = sprintf(self::DEFAULT_LAYOUT_XML_PATH_PATTERN, '{' . Http::BASE_VIEW . ',' . $this->view . '}');
 
-            foreach (glob($defaultPattern) as $defaultXmlFile) {
+            foreach (glob(APP_DIR . $defaultPattern, GLOB_BRACE) as $defaultXmlFile) {
                 $layoutData = simplexml_load_file($defaultXmlFile);
 
                 $parsedData = $this->parse($layoutData);
                 $layoutStructure = array_replace_recursive($layoutStructure, $parsedData);
             }
+            $pattern = sprintf(self::LAYOUT_XML_PATH_PATTERN, '{' . Http::BASE_VIEW . ',' . $this->view . '}', $handle);
 
-            $pattern = APP_DIR . sprintf(self::LAYOUT_XML_PATH_PATTERN, $this->view, $handle);
-
-            foreach (glob($pattern) as $layoutXmlFile) {
+            foreach (glob(APP_DIR . $pattern, GLOB_BRACE) as $layoutXmlFile) {
                 $layoutData = simplexml_load_file($layoutXmlFile);
 
                 $parsedData = $this->parse($layoutData);
                 $layoutStructure = array_replace_recursive($layoutStructure, $parsedData);
             }
 
+            // @TODO: add check if no layout data is found
             $this->filterRemovedAssets();
             //@TODO: Add check for minify/merge enabled and replace links
             $layoutStructure['head'] = array_merge($layoutStructure['head'], $this->collectedAssets);
@@ -98,14 +99,11 @@ class LayoutXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlPars
     {
         if (!$handles = $this->cache->get(Cache::LAYOUT_CACHE_KEY, self::LAYOUT_HANDLES_CACHE_TAG)) {
             foreach ([Http::FRONTEND_VIEW, Http::BACKEND_VIEW] as $view) {
-                $pattern = APP_DIR . sprintf(self::LAYOUT_XML_PATH_PATTERN, $view, '*');
+                $pattern = sprintf(self::LAYOUT_XML_PATH_PATTERN, $view, '*_*_*');
                 $collectedHandles = [];
 
-                foreach (glob($pattern) as $collectedHandle) {
-                    $collectedHandle = explode('/', $collectedHandle);
-                    $collectedHandle = str_replace('.xml', '', end($collectedHandle));
-
-                    $collectedHandles[] = $collectedHandle;
+                foreach (glob(APP_DIR . $pattern) as $collectedHandle) {
+                    $collectedHandles[] = basename($collectedHandle, '.xml');
                 }
 
                 $handles[$view] = array_unique($collectedHandles);
@@ -320,13 +318,10 @@ class LayoutXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlPars
     /**
      * Apply sort order rules to a parsed layout.
      * @param array $blockStructure
-     * @return array
      */
     private function applySortOrder(&$blockStructure)
     {
-        $children = $blockStructure['children'] ?? [];
-
-        if ($children) {
+        if ($children = $blockStructure['children'] ?? []) {
             uasort(
                 $blockStructure['children'],
                 function ($a, $b)
@@ -344,10 +339,8 @@ class LayoutXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlPars
             );
 
             foreach ($children as $childName => $child) {
-                $blockStructure['children'][$childName] = $this->applySortOrder($child);
+                $this->applySortOrder($blockStructure['children'][$childName]);
             }
         }
-
-        return $blockStructure;
     }
 }

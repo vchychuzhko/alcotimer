@@ -17,8 +17,10 @@ class Date
             $date = new \DateTime('now', new \DateTimeZone(self::TIMEZONE));
             $time = $date->format(self::TIME_FORMAT);
         } catch (\Exception $e) {
+            $currentTimeZone = date_default_timezone_get();
             date_default_timezone_set(self::TIMEZONE);
             $time = date(self::TIME_FORMAT);
+            date_default_timezone_set($currentTimeZone);
         }
 
         return $time;

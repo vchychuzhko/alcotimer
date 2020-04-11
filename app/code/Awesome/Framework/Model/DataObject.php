@@ -7,7 +7,16 @@ class DataObject
     /**
      * @var array $data
      */
-    protected $data = [];
+    protected $data;
+
+    /**
+     * DataObject constructor.
+     * @param array $data
+     */
+    public function __construct($data = [])
+    {
+        $this->data = $data;
+    }
 
     /**
      * DataObject data getter.
