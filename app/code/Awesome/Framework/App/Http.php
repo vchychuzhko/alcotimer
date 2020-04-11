@@ -156,6 +156,7 @@ class Http implements \Awesome\Framework\Model\AppInterface
             $url = $scheme . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             $method = $_SERVER['REQUEST_METHOD'];
             $parameters = [];
+            $cookies = [];
             $redirectStatus = $_SERVER['REDIRECT_STATUS'] ?? null;
             $userIPAddress = $_SERVER['REMOTE_ADDR'];
 
@@ -166,9 +167,12 @@ class Http implements \Awesome\Framework\Model\AppInterface
             if ($_POST) {
                 $parameters = array_merge($parameters, $_POST);
             }
-            // @TODO: add cookies parsing
 
-            $this->request = new Request($url, $method, $parameters, $redirectStatus, $userIPAddress);
+            if ($_COOKIE) {
+                $cookies = $_COOKIE;
+            }
+
+            $this->request = new Request($url, $method, $parameters, $cookies, $redirectStatus, $userIPAddress);
         }
 
         return $this->request;

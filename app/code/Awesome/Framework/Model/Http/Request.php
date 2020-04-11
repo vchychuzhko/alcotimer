@@ -30,6 +30,11 @@ class Request
     private $parameters;
 
     /**
+     * @var array $cookies
+     */
+    private $cookies;
+
+    /**
      * @var int|null $redirectStatus
      */
     private $redirectStatus;
@@ -44,6 +49,7 @@ class Request
      * @param string $url
      * @param string $method
      * @param array $parameters
+     * @param array $cookies
      * @param int|null $redirectStatus
      * @param string|null $userIPAddress
      */
@@ -51,12 +57,14 @@ class Request
         $url,
         $method = self::HTTP_METHOD_GET,
         $parameters = [],
+        $cookies = [],
         $redirectStatus = null,
         $userIPAddress = null
     ) {
         $this->url = $url;
         $this->method = $method;
         $this->parameters = $parameters;
+        $this->cookies = $cookies;
         $this->redirectStatus = $redirectStatus;
         $this->userIPAddress = $userIPAddress;
     }
@@ -119,21 +127,36 @@ class Request
 
     /**
      * Get request parameter.
+     * Return all parameters if no key is specified.
      * @param string $key
-     * @return string|null
+     * @return string|array|null
      */
-    public function getParam($key)
+    public function getParam($key = '')
     {
-        return $this->parameters[$key] ?? null;
+        if ($key === '') {
+            $param = $this->parameters[$key] ?? null;
+        } else {
+            $param = $this->parameters;
+        }
+
+        return $param;
     }
 
     /**
-     * Return all request parameters.
-     * @return array
+     * Get request cookie.
+     * Return all cookies if no key is specified.
+     * @param string $key
+     * @return string|array|null
      */
-    public function getParams()
+    public function getCookie($key = '')
     {
-        return $this->parameters;
+        if ($key === '') {
+            $cookie = $this->cookies[$key] ?? null;
+        } else {
+            $cookie = $this->cookies;
+        }
+
+        return $cookie;
     }
 
     /**
