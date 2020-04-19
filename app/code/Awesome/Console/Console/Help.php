@@ -1,13 +1,13 @@
 <?php
 
-namespace Awesome\Framework\Console;
+namespace Awesome\Console\Console;
 
-use Awesome\Framework\Handler\CommandHandler;
-use Awesome\Framework\Model\Cli\Input\InputDefinition;
-use Awesome\Framework\Model\Cli\Output;
-use Awesome\Framework\XmlParser\CommandXmlParser;
+use Awesome\Console\Model\Cli;
+use Awesome\Console\Model\Cli\Input\InputDefinition;
+use Awesome\Console\Model\Cli\Output;
+use Awesome\Console\Model\XmlParser\Command as CommandXmlParser;
 
-class Help extends \Awesome\Framework\Model\Cli\AbstractCommand
+class Help extends \Awesome\Console\Model\Cli\AbstractCommand
 {
     /**
      * @var CommandXmlParser $commandXmlParser
@@ -42,8 +42,8 @@ class Help extends \Awesome\Framework\Model\Cli\AbstractCommand
         if ($command = $input->getArgument('command') ?: $input->getCommand()) {
             $this->showCommandHelp($command, $output);
         } else {
-            $commandData = $this->commandXmlParser->get(CommandHandler::DEFAULT_COMMAND);
-            $commands = $this->commandXmlParser->getHandles();
+            $commandData = $this->commandXmlParser->get(Cli::DEFAULT_COMMAND);
+            $commands = $this->commandXmlParser->getCommands();
 
             $output->writeln($output->colourText('Usage:', Output::BROWN));
             $output->writeln('command [options] [arguments]', 2);

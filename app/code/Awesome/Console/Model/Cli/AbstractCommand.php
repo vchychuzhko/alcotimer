@@ -1,10 +1,10 @@
 <?php
 
-namespace Awesome\Framework\Model\Cli;
+namespace Awesome\Console\Model\Cli;
 
-use Awesome\Framework\Model\Cli\Input;
-use Awesome\Framework\Model\Cli\Input\InputDefinition;
-use Awesome\Framework\Model\Cli\Output;
+use Awesome\Console\Model\Cli\Input;
+use Awesome\Console\Model\Cli\Input\InputDefinition;
+use Awesome\Console\Model\Cli\Output;
 
 abstract class AbstractCommand
 {

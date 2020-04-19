@@ -1,6 +1,6 @@
 <?php
 
-namespace Awesome\Framework\Model\Cli\Input;
+namespace Awesome\Console\Model\Cli\Input;
 
 class InputDefinition
 {

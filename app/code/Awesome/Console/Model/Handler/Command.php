@@ -1,13 +1,12 @@
 <?php
 
-namespace Awesome\Framework\Handler;
+namespace Awesome\Console\Model\Handler;
 
-use Awesome\Framework\XmlParser\CommandXmlParser;
+use Awesome\Console\Model\Cli;
+use Awesome\Console\Model\XmlParser\Command as CommandXmlParser;
 
-class CommandHandler extends \Awesome\Framework\Model\Handler\AbstractHandler
+class Command
 {
-    public const DEFAULT_COMMAND = 'help:show';
-
     /**
      * @var CommandXmlParser $commandXmlParser
      */
@@ -19,52 +18,57 @@ class CommandHandler extends \Awesome\Framework\Model\Handler\AbstractHandler
     private $parsedHandles = [];
 
     /**
-     * CliHandler constructor.
+     * CommandHandler constructor.
      */
     function __construct()
     {
-        parent::__construct();
         $this->commandXmlParser = new CommandXmlParser();
     }
 
     /**
-     * Get responsible class by requested handle.
-     * @inheritDoc
+     * Get command data according to requested command name.
+     * Return data for default command if no name is provided.
+     * @param string $commandName
+     * @return array
      */
-    public function process($handle)
+    public function process($commandName)
     {
-        if ($handle === '') {
-            $commandData = $this->commandXmlParser->get(self::DEFAULT_COMMAND);
+        if ($commandName === '') {
+            $commandData = $this->commandXmlParser->get(Cli::DEFAULT_COMMAND);
         } else {
-            $commandData = $this->commandXmlParser->get($handle);
+            $commandData = $this->commandXmlParser->get($commandName);
         }
 
         return $commandData;
     }
 
     /**
-     * @inheritDoc
+     * Check if requested command exists.
+     * @param string $commandName
+     * @return bool
      */
-    public function exist($handle)
+    public function exist($commandName)
     {
         $exist = false;
 
-        if ($handle) {
-            $handle = $this->parse($handle);
-            $exist = in_array($handle, $this->commandXmlParser->getHandles());
+        if ($commandName) {
+            $commandName = $this->parse($commandName);
+            $exist = in_array($commandName, $this->commandXmlParser->getCommands());
         }
 
         return $exist;
     }
 
     /**
-     * @inheritDoc
+     * Parse requested command name in to a full name.
+     * @param string $handle
+     * @return string
      */
     public function parse($handle)
     {
         if (!isset($this->parsedHandles[$handle])) {
             $this->parsedHandles[$handle] = $handle;
-            $possibleMatches = $this->getPossibleCandidates($handle);
+            $possibleMatches = $this->getAlternatives($handle);
 
             if (count($possibleMatches) === 1) {
                 $this->parsedHandles[$handle] = $possibleMatches[0];
@@ -82,23 +86,23 @@ class CommandHandler extends \Awesome\Framework\Model\Handler\AbstractHandler
     public function getCommandClass($command)
     {
         $command = $this->parse($command);
-        $handles = $this->commandXmlParser->getHandlesClasses();
+        $handles = $this->commandXmlParser->getCommandsClasses();
 
         return $handles[$command] ?? null;
     }
 
     /**
-     * Get possible variants of the requested handle.
-     * If strict is true, do not return candidates in case command is not full.
+     * Get possible alternatives of the requested command name.
+     * If strict is true, both parts of command name will be required.
      * @param string $handle
      * @param bool $strict
      * @return array
      */
-    public function getPossibleCandidates($handle, $strict = true)
+    public function getAlternatives($handle, $strict = true)
     {
         $possibleCandidates = [];
         @list($namespace, $command) = explode(':', $handle);
-        $consoleCommands = $this->commandXmlParser->getHandles();
+        $consoleCommands = $this->commandXmlParser->getCommands();
 
         foreach ($consoleCommands as $consoleCommand) {
             [$commandNamespace, $commandCommand] = explode(':', $consoleCommand);

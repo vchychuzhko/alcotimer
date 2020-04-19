@@ -4,7 +4,7 @@ namespace Awesome\Cache\Console;
 
 use Awesome\Cache\Model\Cache;
 
-class Clean extends \Awesome\Framework\Model\Cli\AbstractCommand
+class Clean extends \Awesome\Console\Model\Cli\AbstractCommand
 {
     /**
      * @var Cache $cache

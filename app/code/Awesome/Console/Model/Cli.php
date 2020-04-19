@@ -1,16 +1,19 @@
 <?php
 
-namespace Awesome\Framework\App;
+namespace Awesome\Console\Model;
 
-use Awesome\Framework\Console\Help;
-use Awesome\Framework\Handler\CommandHandler;
-use Awesome\Framework\Model\Cli\AbstractCommand;
-use Awesome\Framework\Model\Cli\Input;
-use Awesome\Framework\Model\Cli\Input\InputDefinition;
-use Awesome\Framework\Model\Cli\Output;
+use Awesome\Console\Console\Help;
+use Awesome\Console\Model\Cli\AbstractCommand;
+use Awesome\Console\Model\Cli\Input;
+use Awesome\Console\Model\Cli\Input\InputDefinition;
+use Awesome\Console\Model\Cli\Output;
+use Awesome\Console\Model\Handler\Command as CommandHandler;
 
-class Cli implements \Awesome\Framework\Model\AppInterface
+class Cli
 {
+    public const VERSION = '0.3.1';
+    public const DEFAULT_COMMAND = 'help:show';
+
     /**
      * @var CommandHandler $commandHandler
      */
@@ -55,7 +58,7 @@ class Cli implements \Awesome\Framework\Model\AppInterface
             $e = new \RuntimeException(sprintf('Command "%s" is not defined', $command));
             $this->displayException($e);
 
-            if ($candidates = $this->commandHandler->getPossibleCandidates($command, false)) {
+            if ($candidates = $this->commandHandler->getAlternatives($command, false)) {
                 $this->output->writeln('Did you mean one of these?', 2);
 
                 foreach ($candidates as $candidate) {

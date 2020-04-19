@@ -2,10 +2,10 @@
 
 namespace Awesome\Maintenance\Console;
 
-use Awesome\Framework\Model\Cli\Output;
+use Awesome\Console\Model\Cli\Output;
 use Awesome\Maintenance\Model\Maintenance;
 
-class Status extends \Awesome\Framework\Model\Cli\AbstractCommand
+class Status extends \Awesome\Console\Model\Cli\AbstractCommand
 {
     /**
      * @var Maintenance $maintenance

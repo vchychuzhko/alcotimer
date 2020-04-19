@@ -2,12 +2,12 @@
 
 namespace Awesome\Maintenance\Console;
 
-use Awesome\Framework\Model\Cli\Input\InputDefinition;
-use Awesome\Framework\Model\Cli\Output;
-use Awesome\Maintenance\Model\Maintenance;
+use Awesome\Console\Model\Cli\Input\InputDefinition;
+use Awesome\Console\Model\Cli\Output;
 use Awesome\Framework\Validator\IpValidator;
+use Awesome\Maintenance\Model\Maintenance;
 
-class Enable extends \Awesome\Framework\Model\Cli\AbstractCommand
+class Enable extends \Awesome\Console\Model\Cli\AbstractCommand
 {
     /**
      * @var Maintenance $maintenance

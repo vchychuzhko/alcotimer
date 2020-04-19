@@ -1,6 +1,6 @@
 <?php
 
-namespace Awesome\Framework\Model\Cli;
+namespace Awesome\Console\Model\Cli;
 
 class Input
 {

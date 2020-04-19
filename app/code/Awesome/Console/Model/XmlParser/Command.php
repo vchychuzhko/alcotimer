@@ -1,11 +1,11 @@
 <?php
 
-namespace Awesome\Framework\XmlParser;
+namespace Awesome\Console\Model\XmlParser;
 
-use Awesome\Framework\Model\Cli\AbstractCommand;
-use Awesome\Framework\Model\Cli\Input\InputDefinition;
+use Awesome\Console\Model\Cli\AbstractCommand;
+use Awesome\Console\Model\Cli\Input\InputDefinition;
 
-class CommandXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
+class Command
 {
     private const CLI_XML_PATH_PATTERN = '/*/*/etc/cli.xml';
 
@@ -25,44 +25,47 @@ class CommandXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlPar
     private $commandsData;
 
     /**
-     * @inheritDoc
+     * Get command data according to the requested command name.
+     * @param string $commandName
+     * @return array
      * @throws \LogicException
      */
-    public function get($handle)
+    public function get($commandName)
     {
-        if (!isset($this->commandsData[$handle])) {
-            $commandList = $this->getHandlesClasses();
+        if (!isset($this->commandsData[$commandName])) {
+            $commandList = $this->getCommandsClasses();
 
-            if (isset($commandList[$handle])) {
+            if (isset($commandList[$commandName])) {
                 $definition = new InputDefinition();
                 /** @var AbstractCommand $commandClass */
-                $commandClass = $commandList[$handle];
+                $commandClass = $commandList[$commandName];
                 $definition = $commandClass::configure($definition);
 
-                $this->commandsData[$handle] = array_replace_recursive(['class' => $commandClass], $definition->getDefinition());
+                $this->commandsData[$commandName] = array_replace_recursive(['class' => $commandClass], $definition->getDefinition());
             }
         }
 
-        return $this->commandsData[$handle] ?? null;
+        return $this->commandsData[$commandName] ?? null;
     }
 
     /**
-     * @inheritDoc
+     * Get all available commands.
+     * @return array
      * @throws \LogicException
      */
-    public function getHandles()
+    public function getCommands()
     {
-        return array_keys($this->getHandlesClasses());
+        return array_keys($this->getCommandsClasses());
     }
 
     /**
-     * Get available handles with their responsible classes.
-     * If includeDisabled is true, return also for disabled commands.
+     * Get available commands with their responsible classes.
+     * If includeDisabled is true, return also disabled commands.
      * @param bool $includeDisabled
      * @return array
      * @throws \LogicException
      */
-    public function getHandlesClasses($includeDisabled = false)
+    public function getCommandsClasses($includeDisabled = false)
     {
         if ($this->commands === null) {
             $this->commands = [];
@@ -97,7 +100,9 @@ class CommandXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlPar
     }
 
     /**
-     * @inheritDoc
+     * Convert XML command node into data array.
+     * @param \SimpleXMLElement $node
+     * @return array
      * @throws \LogicException
      */
     protected function parse($node)
@@ -106,17 +111,17 @@ class CommandXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlPar
 
         foreach ($node->children() as $namespace) {
             foreach ($namespace->children() as $command) {
-                $commandName = $this->getNodeAttribute($namespace) . ':' . $this->getNodeAttribute($command);
+                $commandName = (string) $namespace['name'] . ':' . (string) $command['name'];
 
                 if (isset($parsedNode[$commandName])) {
                     throw new \LogicException(sprintf('Command "%s" is defined twice in one file.', $commandName));
                 }
-                $class = ltrim($this->getNodeAttribute($command, 'class'), '\\');
+                $class = ltrim((string) $command['class'], '\\');
 
                 if (!$class) {
                     throw new \LogicException(sprintf('Class is not specified for "%s" command.', $commandName));
                 }
-                $disabled = $this->stringBooleanCheck($this->getNodeAttribute($command, 'disabled'));
+                $disabled = strtolower((string) $command['disabled']) === 'true';
 
                 $parsedNode[$commandName] = [
                     'class' => '\\' . $class,

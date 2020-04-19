@@ -4,7 +4,7 @@ namespace Awesome\Maintenance\Console;
 
 use Awesome\Maintenance\Model\Maintenance;
 
-class Disable extends \Awesome\Framework\Model\Cli\AbstractCommand
+class Disable extends \Awesome\Console\Model\Cli\AbstractCommand
 {
     /**
      * @var Maintenance $maintenance

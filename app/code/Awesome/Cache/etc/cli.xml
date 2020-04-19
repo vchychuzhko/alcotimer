@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="../../Framework/Schema/console_command.xsd">
+        xsi:noNamespaceSchemaLocation="../../Console/Schema/console_command.xsd">
     <namespace name="cache">
         <command name="clean" class="Awesome\Cache\Console\Clean"/>
     </namespace>

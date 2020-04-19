@@ -3,9 +3,9 @@
 namespace Awesome\Cache\Console;
 
 use Awesome\Cache\Model\StaticContent;
-use Awesome\Framework\Model\Cli\Input\InputDefinition;
+use Awesome\Console\Model\Cli\Input\InputDefinition;
 
-class StaticDeploy extends \Awesome\Framework\Model\Cli\AbstractCommand
+class StaticDeploy extends \Awesome\Console\Model\Cli\AbstractCommand
 {
     /**
      * @var StaticContent $staticContent
