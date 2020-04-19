@@ -1,6 +1,6 @@
 <?php
 
-namespace Awesome\Framework\Model\XmlParser;
+namespace Awesome\Framework\Model;
 
 use Awesome\Cache\Model\Cache;
 
@@ -59,5 +59,34 @@ abstract class AbstractXmlParser
     protected function stringBooleanCheck($string)
     {
         return strtolower($string) === 'true';
+    }
+
+    /**
+     * Apply sort order rules to a parsed node element.
+     * Recursively by default.
+     * @param array $nodeElement
+     * @param bool $recursive
+     */
+    protected function applySortOrder(&$nodeElement, $recursive = true)
+    {
+        if (is_array($nodeElement)) {
+            uasort($nodeElement, function ($a, $b) {
+                $a = $a['sortOrder'] ?? -1;
+                $b = $b['sortOrder'] ?? -1;
+                $compare = $a <=> $b;
+
+                if ($a < 0 || $b < 0) {
+                    $compare = 0;
+                }
+
+                return $compare;
+            });
+
+            if ($recursive) {
+                foreach ($nodeElement as $index => $unused) {
+                    $this->applySortOrder($nodeElement[$index]);
+                }
+            }
+        }
     }
 }

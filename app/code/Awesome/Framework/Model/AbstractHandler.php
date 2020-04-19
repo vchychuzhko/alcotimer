@@ -1,6 +1,6 @@
 <?php
 
-namespace Awesome\Framework\Model\Handler;
+namespace Awesome\Framework\Model;
 
 use Awesome\Cache\Model\Cache;
 

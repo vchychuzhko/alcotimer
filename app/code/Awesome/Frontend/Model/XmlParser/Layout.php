@@ -6,7 +6,7 @@ use Awesome\Cache\Model\Cache;
 use Awesome\Framework\Model\Http;
 use Awesome\Frontend\Block\Template\Container;
 
-class Layout extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
+class Layout extends \Awesome\Framework\Model\AbstractXmlParser
 {
     private const DEFAULT_LAYOUT_XML_PATH_PATTERN = '/*/*/view/%s/layout/default.xml';
     private const LAYOUT_XML_PATH_PATTERN = '/*/*/view/%s/layout/%s.xml';
@@ -309,37 +309,6 @@ class Layout extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
 
         foreach ($this->referencesToRemove as $referenceToRemove) {
             array_remove_by_key_recursive($bodyStructure, $referenceToRemove);
-        }
-
-        return $bodyStructure;
-    }
-
-    /**
-     * Apply sort order rules to a parsed layout.
-     * @param array $blockStructure
-     */
-    private function applySortOrder(&$blockStructure)
-    {
-        if ($children = $blockStructure['children'] ?? []) {
-            uasort(
-                $blockStructure['children'],
-                function ($a, $b)
-                {
-                    $a = $a['sortOrder'] ?? -1;
-                    $b = $b['sortOrder'] ?? -1;
-                    $compare = $a <=> $b;
-
-                    if ($a < 0 || $b < 0) {
-                        $compare = 0;
-                    }
-
-                    return $compare;
-                }
-            );
-
-            foreach ($children as $childName => $child) {
-                $this->applySortOrder($blockStructure['children'][$childName]);
-            }
         }
     }
 }

@@ -5,7 +5,7 @@ namespace Awesome\Framework\Console;
 use Awesome\Console\Model\Cli\Input\InputDefinition;
 use Awesome\Console\Model\Cli\Output;
 use Awesome\Framework\Model\Maintenance;
-use Awesome\Framework\Validator\IpValidator;
+use Awesome\Framework\Model\Validator\IpAddress as IpAddressValidator;
 
 class MaintenanceEnable extends \Awesome\Console\Model\Cli\AbstractCommand
 {
@@ -15,7 +15,7 @@ class MaintenanceEnable extends \Awesome\Console\Model\Cli\AbstractCommand
     private $maintenance;
 
     /**
-     * @var IpValidator $validator
+     * @var IpAddressValidator $validator
      */
     private $validator;
 
@@ -25,7 +25,7 @@ class MaintenanceEnable extends \Awesome\Console\Model\Cli\AbstractCommand
     public function __construct()
     {
         $this->maintenance = new Maintenance();
-        $this->validator = new IpValidator();
+        $this->validator = new IpAddressValidator();
     }
 
     /**

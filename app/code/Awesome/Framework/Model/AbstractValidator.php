@@ -1,6 +1,6 @@
 <?php
 
-namespace Awesome\Framework\Model\Validator;
+namespace Awesome\Framework\Model;
 
 abstract class AbstractValidator
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace Awesome\Framework\Validator;
+namespace Awesome\Framework\Model\Validator;
 
-class IpValidator extends \Awesome\Framework\Model\Validator\AbstractValidator
+class IpAddress extends \Awesome\Framework\Model\AbstractValidator
 {
     /**
      * @inheritDoc

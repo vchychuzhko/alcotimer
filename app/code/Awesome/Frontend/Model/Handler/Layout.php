@@ -7,7 +7,7 @@ use Awesome\Frontend\Block\Root;
 use Awesome\Frontend\Model\TemplateRenderer;
 use Awesome\Frontend\Model\XmlParser\Layout as LayoutXmlParser;
 
-class Layout extends \Awesome\Framework\Model\Handler\AbstractHandler
+class Layout extends \Awesome\Framework\Model\AbstractHandler
 {
     /**
      * @var LayoutXmlParser $layoutXmlParser

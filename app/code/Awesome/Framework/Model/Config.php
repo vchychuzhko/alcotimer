@@ -14,34 +14,32 @@ class Config
 
     /**
      * Get config value by path.
-     * Default value will be returned if no corresponding config is found.
      * @param string $path
-     * @param mixed|null $defaultValue
      * @return mixed
      */
-    public function get($path, $defaultValue = null)
+    public function get($path)
     {
-        $config = $defaultValue;
+        $value = null;
 
         if ($this->pathExist($path)) {
             $pathParts = $this->parseConfigPath($path);
-            $config = $this->getConfig();
+            $value = $this->getConfig();
 
             foreach($pathParts as $pathPart) {
-                $config = $config[$pathPart];
+                $value = $value[$pathPart];
             }
         }
 
-        return $config;
+        return $value;
     }
 
     /**
      * Set config value by path.
-     * @param string $key
-     * @param mixed|null $value
+     * @param string $path
+     * @param mixed $value
      * @return $this
      */
-    public function set($key, $value)
+    public function set($path, $value)
     {
         //@TODO: Implement config set functionality
 

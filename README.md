@@ -11,6 +11,6 @@ php bin/console help:show
 
 ### Requirements
 * Apache 2.4 or higher
-* PHP 7.1 or higher.  
+* PHP 7.1 or higher  
 
 ###### Started as a web equivalent of [Android app](https://bitbucket.org/vchychuzhko/alcotimer)
