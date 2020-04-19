@@ -1,10 +1,10 @@
 <?php
 
-namespace Awesome\Framework\Model\Http;
+namespace Awesome\Frontend\Model;
 
-use Awesome\Framework\App\Http;
-use Awesome\Framework\Block\Template;
-use Awesome\Framework\Block\Template\Container;
+use Awesome\Framework\Model\Http;
+use Awesome\Frontend\Block\Template;
+use Awesome\Frontend\Block\Template\Container;
 
 class TemplateRenderer
 {
@@ -75,11 +75,25 @@ class TemplateRenderer
      */
     public function renderElement($element)
     {
-        $fileName = $this->getTemplateFileName($element->getTemplate());
+        $template = $element->getTemplate();
+        $fileName = $this->getTemplateFileName($template);
+
+        if (!file_exists($fileName)) {
+            throw new \LogicException(
+                sprintf('Template "%s" is not found for "%s" element', $template, $element->getNameInLayout())
+            );
+        }
 
         ob_start();
-        extract(['block' => $element]);
-        include $fileName;
+
+        try {
+            extract(['block' => $element]);
+            include $fileName;
+        } catch (\Exception $e) {
+            ob_end_clean();
+
+            throw $e;
+        }
 
         return ob_get_clean();
     }

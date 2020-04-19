@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:noNamespaceSchemaLocation="../../../../Framework/Schema/page_layout.xsd">
+      xsi:noNamespaceSchemaLocation="../../../../Frontend/Schema/page_layout.xsd">
     <head>
         <title><![CDATA[AlcoTimer]]></title>
         <description><![CDATA[Web App for people, who would like to make drinking process become really challenging.]]></description>
@@ -19,17 +19,17 @@
     </head>
     <body>
         <referenceBlock name="menu">
-            <block name="timer.settings" class="Awesome\Framework\Block\Template" template="Awesome_Timer::menu/settings.phtml"/>
+            <block name="timer.settings" class="Awesome\Frontend\Block\Template" template="Awesome_Timer::menu/settings.phtml"/>
         </referenceBlock>
         <referenceContainer name="page-wrapper">
             <block name="timer.content"
-                   class="Awesome\Framework\Block\Template"
+                   class="Awesome\Frontend\Block\Template"
                    template="Awesome_Timer::timer.phtml"
                    sortOrder="5"/>
         </referenceContainer>
         <referenceContainer name="popup-init-section">
             <block name="timer.hint"
-                   class="Awesome\Framework\Block\Template"
+                   class="Awesome\Frontend\Block\Template"
                    template="Awesome_Timer::timer/timer_hint.phtml"
                    sortOrder="9"/>
         </referenceContainer>

@@ -2,7 +2,7 @@
 
 namespace Awesome\Timer\Block;
 
-class Timer extends \Awesome\Framework\Block\Template
+class Timer extends \Awesome\Frontend\Block\Template
 {
     public const TIMER_CONFIG_PATH = 'timer_config';
 
@@ -50,6 +50,7 @@ class Timer extends \Awesome\Framework\Block\Template
      */
     private  function processConfig($config)
     {
+        //@TODO: rework this somehow
         foreach ($config as $configKey => $configValue) {
             unset($config[$configKey]);
             $config[$this->camelCase($configKey)] = $configValue;

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="../../Console/Schema/console_command.xsd">
-    <namespace name="cache">
-        <command name="clean" class="Awesome\Cache\Console\Clean"/>
+    <namespace name="static">
+        <command name="deploy" class="Awesome\Frontend\Console\StaticDeploy"/>
     </namespace>
 </config>

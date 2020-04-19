@@ -1,12 +1,12 @@
 <?php
 
-namespace Awesome\Framework\XmlParser;
+namespace Awesome\Frontend\Model\XmlParser;
 
 use Awesome\Cache\Model\Cache;
-use Awesome\Framework\App\Http;
-use Awesome\Framework\Block\Template\Container;
+use Awesome\Framework\Model\Http;
+use Awesome\Frontend\Block\Template\Container;
 
-class LayoutXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
+class Layout extends \Awesome\Framework\Model\XmlParser\AbstractXmlParser
 {
     private const DEFAULT_LAYOUT_XML_PATH_PATTERN = '/*/*/view/%s/layout/default.xml';
     private const LAYOUT_XML_PATH_PATTERN = '/*/*/view/%s/layout/%s.xml';
@@ -297,7 +297,6 @@ class LayoutXmlParser extends \Awesome\Framework\Model\XmlParser\AbstractXmlPars
     /**
      * Apply reference updates to a parsed layout.
      * @param array $bodyStructure
-     * @return array
      */
     private function applyReferences(&$bodyStructure)
     {

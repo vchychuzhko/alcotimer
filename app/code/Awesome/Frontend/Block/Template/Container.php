@@ -1,13 +1,13 @@
 <?php
 
-namespace Awesome\Framework\Block\Template;
+namespace Awesome\Frontend\Block\Template;
 
-class Container extends \Awesome\Framework\Block\Template
+class Container extends \Awesome\Frontend\Block\Template
 {
     /**
      * @inheritDoc
      */
-    protected $template = 'Awesome_Framework::template/container.phtml';
+    protected $template = 'Awesome_Frontend::template/container.phtml';
 
     /**
      * @var string $htmlTag

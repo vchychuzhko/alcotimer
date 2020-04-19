@@ -1,15 +1,17 @@
 <?php
 
-namespace Awesome\Framework\App;
+namespace Awesome\Framework\Model;
 
-use Awesome\Framework\Handler\LayoutHandler;
+use Awesome\Frontend\Model\Handler\Layout as LayoutHandler;
 use Awesome\Framework\Model\Config;
 use Awesome\Framework\Model\Http\Request;
 use Awesome\Framework\Model\Logger;
 use Awesome\Maintenance\Model\Maintenance;
 
-class Http implements \Awesome\Framework\Model\AppInterface
+class Http
 {
+    public const VERSION = '0.3.1';
+
     public const FRONTEND_VIEW = 'frontend';
     public const BACKEND_VIEW = 'adminhtml';
     public const BASE_VIEW = 'base';

@@ -1,13 +1,13 @@
 <?php
 
-namespace Awesome\Framework\Handler;
+namespace Awesome\Frontend\Model\Handler;
 
 use Awesome\Cache\Model\Cache;
-use Awesome\Framework\Block\Html;
-use Awesome\Framework\Model\Http\TemplateRenderer;
-use Awesome\Framework\XmlParser\LayoutXmlParser;
+use Awesome\Frontend\Block\Root;
+use Awesome\Frontend\Model\TemplateRenderer;
+use Awesome\Frontend\Model\XmlParser\Layout as LayoutXmlParser;
 
-class LayoutHandler extends \Awesome\Framework\Model\Handler\AbstractHandler
+class Layout extends \Awesome\Framework\Model\Handler\AbstractHandler
 {
     /**
      * @var LayoutXmlParser $layoutXmlParser
@@ -41,7 +41,7 @@ class LayoutHandler extends \Awesome\Framework\Model\Handler\AbstractHandler
                 ->get($handle);
 
             $templateRenderer = new TemplateRenderer($handle, $this->view, $structure['body']['children']);
-            $html = new Html($templateRenderer, 'root', null, $structure);
+            $html = new Root($templateRenderer, 'root', null, $structure);
 
             $pageContent = $html->toHtml();
 

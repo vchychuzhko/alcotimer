@@ -2,7 +2,7 @@
 
 namespace Awesome\Frontend\Block\Error;
 
-class NotFound extends \Awesome\Framework\Block\Template implements \Awesome\Frontend\Block\ErrorBlockInterface
+class NotFound extends \Awesome\Frontend\Block\Template implements \Awesome\Frontend\Block\ErrorInterface
 {
     /**
      * @inheritDoc

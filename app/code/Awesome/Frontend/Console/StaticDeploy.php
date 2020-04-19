@@ -1,9 +1,9 @@
 <?php
 
-namespace Awesome\Cache\Console;
+namespace Awesome\Frontend\Console;
 
-use Awesome\Cache\Model\StaticContent;
 use Awesome\Console\Model\Cli\Input\InputDefinition;
+use Awesome\Frontend\Model\StaticContent;
 
 class StaticDeploy extends \Awesome\Console\Model\Cli\AbstractCommand
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace Awesome\Cache\Model;
+namespace Awesome\Frontend\Model;
 
-use Awesome\Framework\App\Http;
+use Awesome\Framework\Model\Http;
 use Awesome\Framework\Model\Config;
 
 class StaticContent

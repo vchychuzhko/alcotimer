@@ -1,15 +1,15 @@
 <?php
 
-namespace Awesome\Framework\Block;
+namespace Awesome\Frontend\Block;
 
-use Awesome\Framework\Block\Html\Head;
+use Awesome\Frontend\Block\Html\Head;
 
-class Html extends \Awesome\Framework\Block\Template
+class Root extends \Awesome\Frontend\Block\Template
 {
     /**
      * @inheritDoc
      */
-    protected $template = 'Awesome_Framework::html.phtml';
+    protected $template = 'Awesome_Frontend::root.phtml';
 
     /**
      * @var Head $headTemplate
@@ -17,13 +17,13 @@ class Html extends \Awesome\Framework\Block\Template
     private $headTemplate;
 
     /**
-     * Html constructor.
+     * Root constructor.
      * @inheritDoc
      */
     public function __construct($renderer, $name, $template = null, $children = [])
     {
-        $this->headTemplate = new Head($renderer, 'head', null, $children['head']);
         parent::__construct($renderer, $name, $template, array_keys($children['body']['children']));
+        $this->headTemplate = new Head($renderer, 'head', null, $children['head']);
     }
 
     /**

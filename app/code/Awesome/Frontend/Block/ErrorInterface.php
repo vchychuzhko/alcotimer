@@ -2,7 +2,7 @@
 
 namespace Awesome\Frontend\Block;
 
-interface ErrorBlockInterface
+interface ErrorInterface
 {
     /**
      * Get error page title.

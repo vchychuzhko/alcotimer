@@ -1,11 +1,11 @@
 <?php
 
-namespace Awesome\Framework\Block;
+namespace Awesome\Frontend\Block;
 
-use Awesome\Cache\Model\StaticContent;
 use Awesome\Framework\Model\Config;
-use Awesome\Framework\Model\Http\TemplateRenderer;
-use Awesome\Framework\App\Http;
+use Awesome\Framework\Model\Http;
+use Awesome\Frontend\Model\StaticContent;
+use Awesome\Frontend\Model\TemplateRenderer;
 
 class Template
 {

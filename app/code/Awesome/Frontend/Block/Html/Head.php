@@ -1,10 +1,10 @@
 <?php
 
-namespace Awesome\Framework\Block\Html;
+namespace Awesome\Frontend\Block\Html;
 
-class Head extends \Awesome\Framework\Block\Template
+class Head extends \Awesome\Frontend\Block\Template
 {
-    protected $template = 'Awesome_Framework::html/head.phtml';
+    protected $template = 'Awesome_Frontend::html/head.phtml';
 
     /**
      * @var array $headData
@@ -17,8 +17,8 @@ class Head extends \Awesome\Framework\Block\Template
      */
     public function __construct($renderer, $name, $template = null, $children = [])
     {
-        $this->headData = $children;
         parent::__construct($renderer, $name, $template);
+        $this->headData = $children;
     }
 
     /**
