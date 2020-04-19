@@ -6,7 +6,7 @@ use Awesome\Frontend\Model\Handler\Layout as LayoutHandler;
 use Awesome\Framework\Model\Config;
 use Awesome\Framework\Model\Http\Request;
 use Awesome\Framework\Model\Logger;
-use Awesome\Maintenance\Model\Maintenance;
+use Awesome\Framework\Model\Maintenance;
 
 class Http
 {

@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="../../Console/Schema/console_command.xsd">
+    <namespace name="maintenance">
+        <command name="enable" class="Awesome\Framework\Console\MaintenanceEnable"/>
+        <command name="disable" class="Awesome\Framework\Console\MaintenanceDisable"/>
+        <command name="status" class="Awesome\Framework\Console\MaintenanceStatus"/>
+    </namespace>
+</config>

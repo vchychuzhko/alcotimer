@@ -1,13 +1,13 @@
 <?php
 
-namespace Awesome\Maintenance\Console;
+namespace Awesome\Framework\Console;
 
 use Awesome\Console\Model\Cli\Input\InputDefinition;
 use Awesome\Console\Model\Cli\Output;
+use Awesome\Framework\Model\Maintenance;
 use Awesome\Framework\Validator\IpValidator;
-use Awesome\Maintenance\Model\Maintenance;
 
-class Enable extends \Awesome\Console\Model\Cli\AbstractCommand
+class MaintenanceEnable extends \Awesome\Console\Model\Cli\AbstractCommand
 {
     /**
      * @var Maintenance $maintenance

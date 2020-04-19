@@ -1,11 +1,11 @@
 <?php
 
-namespace Awesome\Maintenance\Console;
+namespace Awesome\Framework\Console;
 
 use Awesome\Console\Model\Cli\Output;
-use Awesome\Maintenance\Model\Maintenance;
+use Awesome\Framework\Model\Maintenance;
 
-class Status extends \Awesome\Console\Model\Cli\AbstractCommand
+class MaintenanceStatus extends \Awesome\Console\Model\Cli\AbstractCommand
 {
     /**
      * @var Maintenance $maintenance

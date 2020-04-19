@@ -1,10 +1,10 @@
 <?php
 
-namespace Awesome\Maintenance\Console;
+namespace Awesome\Framework\Console;
 
-use Awesome\Maintenance\Model\Maintenance;
+use Awesome\Framework\Model\Maintenance;
 
-class Disable extends \Awesome\Console\Model\Cli\AbstractCommand
+class MaintenanceDisable extends \Awesome\Console\Model\Cli\AbstractCommand
 {
     /**
      * @var Maintenance $maintenance

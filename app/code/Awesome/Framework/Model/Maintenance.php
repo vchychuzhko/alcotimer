@@ -1,6 +1,6 @@
 <?php
 
-namespace Awesome\Maintenance\Model;
+namespace Awesome\Framework\Model;
 
 class Maintenance
 {
