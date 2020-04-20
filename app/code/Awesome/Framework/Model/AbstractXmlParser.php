@@ -71,12 +71,13 @@ abstract class AbstractXmlParser
     {
         if (is_array($nodeElement)) {
             uasort($nodeElement, function ($a, $b) {
-                $a = $a['sortOrder'] ?? -1;
-                $b = $b['sortOrder'] ?? -1;
-                $compare = $a <=> $b;
+                $a = $a['sortOrder'] ?? null;
+                $b = $b['sortOrder'] ?? null;
 
-                if ($a < 0 || $b < 0) {
+                if ($a === null || $b === null) {
                     $compare = 0;
+                } else {
+                    $compare = $a <=> $b;
                 }
 
                 return $compare;

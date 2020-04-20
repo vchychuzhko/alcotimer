@@ -22,7 +22,7 @@ class Command
     /**
      * @var array $commandsData
      */
-    private $commandsData;
+    private $commandsData = [];
 
     /**
      * Get command data according to the requested command name.
@@ -110,8 +110,15 @@ class Command
         $parsedNode = [];
 
         foreach ($node->children() as $namespace) {
+            if (!$namespaceName = (string) $namespace['name']) {
+                throw new \LogicException(sprintf('Name attribute is not specified for namespace.'));
+            }
+
             foreach ($namespace->children() as $command) {
-                $commandName = (string) $namespace['name'] . ':' . (string) $command['name'];
+                if (!$commandName = (string) $command['name']) {
+                    throw new \LogicException(sprintf('Name attribute is not specified for "%s" namespace command.', $namespaceName));
+                }
+                $commandName = $namespaceName . ':' . (string) $command['name'];
 
                 if (isset($parsedNode[$commandName])) {
                     throw new \LogicException(sprintf('Command "%s" is defined twice in one file.', $commandName));
