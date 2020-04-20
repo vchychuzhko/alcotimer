@@ -46,7 +46,6 @@ class Cli
 
     /**
      * Run the CLI application.
-     * @inheritDoc
      * @throws \LogicException
      * @throws \RuntimeException
      */

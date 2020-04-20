@@ -3,6 +3,7 @@
 namespace Awesome\Frontend\Model\XmlParser;
 
 use Awesome\Cache\Model\Cache;
+use Awesome\Framework\Helper\DataHelper;
 use Awesome\Framework\Model\Http;
 use Awesome\Frontend\Block\Template\Container;
 
@@ -304,11 +305,11 @@ class Layout extends \Awesome\Framework\Model\AbstractXmlParser
             $referenceName = $reference['name'];
             $referenceData = $reference['data'];
 
-            array_update_by_key_recursive($bodyStructure, $referenceName, $referenceData);
+            DataHelper::arrayReplaceByKeyRecursive($bodyStructure, $referenceName, $referenceData);
         }
 
         foreach ($this->referencesToRemove as $referenceToRemove) {
-            array_remove_by_key_recursive($bodyStructure, $referenceToRemove);
+            DataHelper::arrayRemoveByKeyRecursive($bodyStructure, $referenceToRemove);
         }
     }
 }

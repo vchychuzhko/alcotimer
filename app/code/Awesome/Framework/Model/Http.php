@@ -2,11 +2,11 @@
 
 namespace Awesome\Framework\Model;
 
-use Awesome\Frontend\Model\Handler\Layout as LayoutHandler;
 use Awesome\Framework\Model\Config;
 use Awesome\Framework\Model\Http\Request;
 use Awesome\Framework\Model\Logger;
 use Awesome\Framework\Model\Maintenance;
+use Awesome\Frontend\Model\Handler\Layout as LayoutHandler;
 
 class Http
 {
@@ -21,9 +21,9 @@ class Http
     public const WEB_ROOT_CONFIG = 'web/web_root_is_pub';
 
     /**
-     * @var Logger
+     * @var Logger $logger
      */
-    private $logWriter;
+    private $logger;
 
     /**
      * @var Maintenance $maintenance
@@ -46,11 +46,11 @@ class Http
     private $request;
 
     /**
-     * App constructor.
+     * Http app constructor.
      */
     public function __construct()
     {
-        $this->logWriter = new Logger();
+        $this->logger = new Logger();
         $this->maintenance = new Maintenance();
         $this->layoutHandler = new LayoutHandler();
         $this->config = new Config();
@@ -58,12 +58,11 @@ class Http
 
     /**
      * Run the web application.
-     * @inheritDoc
      */
     public function run()
     {
         $request = $this->getRequest();
-        $this->logWriter->logVisitor($request);
+        $this->logger->logVisitor($request);
 
         if (!$this->isMaintenance()) {
             $pageView = $this->resolveView();

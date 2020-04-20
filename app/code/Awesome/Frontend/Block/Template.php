@@ -161,16 +161,4 @@ class Template
     {
         return $this->template;
     }
-
-    /**
-     * Converts snake_case string to camelCase.
-     * @param string $string
-     * @param string $separator
-     * @return string
-     */
-    protected function camelCase($string, $separator = '_')
-    {
-        //@TODO: move this to another place (Config?)
-        return str_replace($separator, '', lcfirst(ucwords($string, $separator)));
-    }
 }

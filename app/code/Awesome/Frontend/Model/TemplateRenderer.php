@@ -2,6 +2,7 @@
 
 namespace Awesome\Frontend\Model;
 
+use Awesome\Framework\Helper\DataHelper;
 use Awesome\Framework\Model\Http;
 use Awesome\Frontend\Block\Template;
 use Awesome\Frontend\Block\Template\Container;
@@ -46,7 +47,7 @@ class TemplateRenderer
     {
         $html = '';
 
-        if ($element = array_get_by_key_recursive($this->structure, $nameInLayout)) {
+        if ($element = DataHelper::arrayGetByKeyRecursive($this->structure, $nameInLayout)) {
             $className = $element['class'];
 
             /** @var Template $templateClass */

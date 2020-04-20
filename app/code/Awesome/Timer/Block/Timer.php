@@ -2,6 +2,8 @@
 
 namespace Awesome\Timer\Block;
 
+use Awesome\Framework\Helper\DataHelper;
+
 class Timer extends \Awesome\Frontend\Block\Template
 {
     public const TIMER_CONFIG_PATH = 'timer_config';
@@ -53,7 +55,7 @@ class Timer extends \Awesome\Frontend\Block\Template
         //@TODO: rework this somehow
         foreach ($config as $configKey => $configValue) {
             unset($config[$configKey]);
-            $config[$this->camelCase($configKey)] = $configValue;
+            $config[DataHelper::camelCase($configKey)] = $configValue;
         }
 
         return json_encode($config);

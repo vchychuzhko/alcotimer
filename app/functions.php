@@ -18,71 +18,6 @@ if (!function_exists('array_key_first')) {
 }
 
 /**
- * Get element in a multidimensional array by a specified key.
- * Based on https://www.php.net/manual/en/function.array-walk-recursive.php#114574
- * @param array $array
- * @param string $elementKeyToGet
- * @return mixed
- */
-if (!function_exists('array_get_by_key_recursive')) {
-    function array_get_by_key_recursive($array, $elementKeyToGet)
-    {
-        $element = null;
-
-        foreach ($array as $key => $value) {
-            if ($key === $elementKeyToGet) {
-                $element = $value;
-                break;
-            } elseif (is_array($value)) {
-                if ($element = array_get_by_key_recursive($value, $elementKeyToGet)) {
-                    break;
-                }
-            }
-        }
-
-        return $element;
-    }
-}
-
-/**
- * Update element in a multidimensional array by a specified key.
- * Based on https://www.php.net/manual/en/function.array-walk-recursive.php#114574
- * @param array $array
- * @param string $elementKeyToRemove
- */
-if (!function_exists('array_update_by_key_recursive')) {
-    function array_update_by_key_recursive(&$array, $elementKeyToUpdate, $newValue)
-    {
-        foreach ($array as $key => $value) {
-            if ($key === $elementKeyToUpdate) {
-                $array[$key] = array_replace_recursive($array[$key], $newValue);
-            } elseif (is_array($value)) {
-                array_update_by_key_recursive($array[$key], $elementKeyToUpdate, $newValue);
-            }
-        }
-    }
-}
-
-/**
- * Remove element in a multidimensional array by a specified key.
- * Based on https://www.php.net/manual/en/function.array-walk-recursive.php#114574
- * @param array $array
- * @param string $elementKeyToRemove
- */
-if (!function_exists('array_remove_by_key_recursive')) {
-    function array_remove_by_key_recursive(&$array, $elementKeyToRemove)
-    {
-        foreach ($array as $key => $value) {
-            if ($key === $elementKeyToRemove) {
-                unset($array[$key]);
-            } elseif (is_array($value)) {
-                array_remove_by_key_recursive($array[$key], $elementKeyToRemove);
-            }
-        }
-    }
-}
-
-/**
  * Remove directory recursively.
  * Based on https://www.php.net/manual/en/function.rmdir.php#117354
  * @param string $dir
@@ -150,7 +85,7 @@ if (!function_exists('str_replace_first')) {
         $pos = strpos($subject, $search);
 
         if ($pos !== false) {
-            return substr_replace($subject, $replace, $pos, strlen($search));
+            $subject = substr_replace($subject, $replace, $pos, strlen($search));
         }
 
         return $subject;
