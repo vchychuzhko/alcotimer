@@ -2,9 +2,9 @@
 ############################################
 ## enable rewrites
 
-    #Options +FollowSymLinks
-    Options +SymLinksIfOwnerMatch
-    # Server requirements - https://wiki.ukraine.com.ua/hosting:htaccess:unsupported-optionsrequirements
+    RewriteRule ^(.*)\/$ /$1 [L,R]
+
+    Options +FollowSymLinks
     RewriteEngine on
 
 ############################################
