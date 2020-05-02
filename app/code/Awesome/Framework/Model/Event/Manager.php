@@ -28,7 +28,7 @@ class Manager
      */
     public function dispatch($eventName, $data = [])
     {
-        if ($observers = $this->eventXmlParser->get($eventName)) {
+        if ($observers = $this->eventXmlParser->getObservers($eventName)) {
             $event = new Event(array_merge(['event_name' => $eventName], $data));
 
             foreach ($observers as $observer) {

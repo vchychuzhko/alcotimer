@@ -11,7 +11,7 @@ class DataHelper
      * @param string $elementKeyToGet
      * @return mixed
      */
-    static public function arrayGetByKeyRecursive($array, $elementKeyToGet)
+    public static function arrayGetByKeyRecursive($array, $elementKeyToGet)
     {
         $element = null;
 
@@ -36,7 +36,7 @@ class DataHelper
      * @param string $elementKeyToUpdate
      * @param mixed $newValue
      */
-    static public function arrayReplaceByKeyRecursive(&$array, $elementKeyToUpdate, $newValue)
+    public static function arrayReplaceByKeyRecursive(&$array, $elementKeyToUpdate, $newValue)
     {
         foreach ($array as $key => $value) {
             if ($key === $elementKeyToUpdate) {
@@ -57,7 +57,7 @@ class DataHelper
      * @param array $array
      * @param string $elementKeyToRemove
      */
-    static public function arrayRemoveByKeyRecursive(&$array, $elementKeyToRemove)
+    public static function arrayRemoveByKeyRecursive(&$array, $elementKeyToRemove)
     {
         foreach ($array as $key => $value) {
             if ($key === $elementKeyToRemove) {
@@ -73,7 +73,7 @@ class DataHelper
      * @param string $string
      * @return string
      */
-    static public function underscore($string)
+    public static function underscore($string)
     {
         return strtolower(trim(preg_replace('/([A-Z]|[0-9]+)/', "_$1", $string), '_'));
     }
@@ -84,7 +84,7 @@ class DataHelper
      * @param string $separator
      * @return string
      */
-    static public function camelCase($string, $separator = '_')
+    public static function camelCase($string, $separator = '_')
     {
         return str_replace($separator, '', lcfirst(ucwords($string, $separator)));
     }
