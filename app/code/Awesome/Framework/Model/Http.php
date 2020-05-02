@@ -3,10 +3,12 @@
 namespace Awesome\Framework\Model;
 
 use Awesome\Framework\Model\Config;
+use Awesome\Framework\Model\Event\Manager as EventManager;
 use Awesome\Framework\Model\Http\Request;
+use Awesome\Framework\Model\Http\Response;
+use Awesome\Framework\Model\Http\Router;
 use Awesome\Framework\Model\Logger;
 use Awesome\Framework\Model\Maintenance;
-use Awesome\Frontend\Model\Handler\Layout as LayoutHandler;
 
 class Http
 {
@@ -17,7 +19,6 @@ class Http
     public const BASE_VIEW = 'base';
 
     public const SHOW_FORBIDDEN_CONFIG = 'web/show_forbidden';
-    public const HOMEPAGE_HANDLE_CONFIG = 'web/homepage';
     public const WEB_ROOT_CONFIG = 'web/web_root_is_pub';
 
     /**
@@ -31,14 +32,14 @@ class Http
     private $maintenance;
 
     /**
-     * @var LayoutHandler $layoutHandler
-     */
-    private $layoutHandler;
-
-    /**
      * @var Config $config
      */
     private $config;
+
+    /**
+     * @var EventManager $eventManager
+     */
+    private $eventManager;
 
     /**
      * @var Request $request
@@ -52,8 +53,8 @@ class Http
     {
         $this->logger = new Logger();
         $this->maintenance = new Maintenance();
-        $this->layoutHandler = new LayoutHandler();
         $this->config = new Config();
+        $this->eventManager = new EventManager();
     }
 
     /**
@@ -65,16 +66,39 @@ class Http
         $this->logger->logVisitor($request);
 
         if (!$this->isMaintenance()) {
-            $pageView = $this->resolveView();
-            $this->layoutHandler->setView($pageView);
+            $redirectStatus = $request->getRedirectStatusCode();
 
-            $pageHandle = $this->resolveHandle();
-            $response = $this->layoutHandler->process($pageHandle);
+            if ($redirectStatus === Response::FORBIDDEN_STATUS_CODE && $this->showForbiddenPage()) {
+                $forbiddenRenderer = new \Awesome\Frontend\Model\Action\LayoutRenderer('forbidden_index_index', self::FRONTEND_VIEW);
+                $response = $forbiddenRenderer->execute($request);
+                $response->setStatusCode(Response::FORBIDDEN_STATUS_CODE);
+                // @TODO: add native http error page displaying
+            } else {
+                $view = $this->resolveView();
+                $router = new Router($view);
+                $this->eventManager->dispatch(
+                    'http_frontend_action',
+                    ['request' => $request, 'router' => $router]
+                );
+
+                if ($action = $router->getAction()) {
+                    $response = $action->execute($request);
+                } else {
+                    $notFoundRenderer = new \Awesome\Frontend\Model\Action\LayoutRenderer('notfound_index_index', self::FRONTEND_VIEW);
+                    $response = $notFoundRenderer->execute($request);
+                    $response->setStatusCode(Response::NOTFOUND_STATUS_CODE);
+                    // @TODO: add native http error page displaying
+                }
+            }
         } else {
-            $response = $this->maintenance->getMaintenancePage();
+            $response = new Response(
+                $this->maintenance->getMaintenancePage(),
+                Response::SERVICE_UNAVAILABLE_STATUS_CODE,
+                ['Content-Type' => 'text/html']
+            );
         }
 
-        echo $response;
+        $response->proceed();
     }
 
     /**
@@ -85,34 +109,6 @@ class Http
     {
         // @TODO: temporary, should be updated to resolve adminhtml view
         return self::FRONTEND_VIEW;
-    }
-
-    /**
-     * Resolve page handle by requested URL.
-     * @return string
-     */
-    private function resolveHandle()
-    {
-        $redirectStatus = $this->getRequest()->getRedirectStatusCode();
-
-        if ($redirectStatus === 403 && $this->showForbiddenPage()) {
-            $handle = 'forbidden';
-            http_response_code(403);
-        } else {
-            $path = $this->getRequest()->getPath();
-
-            if ($path === '/') {
-                $path = $this->getHomepageHandle();
-            }
-            $handle = $this->layoutHandler->parse($path);
-
-            if (!$this->layoutHandler->exist($handle)) {
-                $handle = 'notfound';
-                http_response_code(404);
-            }
-        }
-
-        return $handle;
     }
 
     /**
@@ -133,15 +129,6 @@ class Http
     private function showForbiddenPage()
     {
         return (bool) $this->config->get(self::SHOW_FORBIDDEN_CONFIG);
-    }
-
-    /**
-     * Return current homepage handle.
-     * @return string
-     */
-    private function getHomepageHandle()
-    {
-        return (string) $this->config->get(self::HOMEPAGE_HANDLE_CONFIG);
     }
 
     /**
