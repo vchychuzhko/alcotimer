@@ -51,9 +51,9 @@ class Cli
      */
     public function run()
     {
-        $command = $this->getInput()->getCommand();
+        $input = $this->getInput();
 
-        if ($command && !$this->commandHandler->exist($command)) {
+        if (($command = $input->getCommand()) && !$this->commandHandler->commandExist($command)) {
             $e = new \RuntimeException(sprintf('Command "%s" is not defined', $command));
             $this->displayException($e);
 
@@ -76,21 +76,21 @@ class Cli
             }
 
             if ($this->isNonInteractive()) {
-                $this->getInput()->disableInteraction();
+                $input->disableInteraction();
             }
 
             if ($this->showVersion()) {
                 $this->showAppCliTitle();
             } elseif ($this->showCommandHelp()) {
-                $this->help->execute($this->getInput(), $this->output);
+                $this->help->execute($input, $this->output);
             } elseif ($command && $className = $this->commandHandler->getCommandClass($command)) {
                 /** @var AbstractCommand $consoleClass */
                 $consoleClass = new $className();
-                $consoleClass->execute($this->getInput(), $this->output);
+                $consoleClass->execute($input, $this->output);
             } else {
                 $this->showAppCliTitle();
                 $this->output->writeln();
-                $this->help->execute($this->getInput(), $this->output);
+                $this->help->execute($input, $this->output);
             }
         } catch (\LogicException | \RuntimeException $e) {
             $this->displayException($e);
@@ -169,7 +169,7 @@ class Cli
     }
 
     /**
-     * Parse and return console input.
+     * Parse and get console input.
      * @return Input
      */
     private function getInput()
@@ -179,11 +179,11 @@ class Cli
             $command = null;
 
             if (isset($argv[1]) && strpos($argv[1], '-') !== 0) {
-                $command = $this->commandHandler->parse($argv[1]);
+                $command = $this->commandHandler->parseCommand($argv[1]);
                 unset($argv[1]);
             }
 
-            if ($command && !$this->commandHandler->exist($command)) {
+            if ($command && !$this->commandHandler->commandExist($command)) {
                 $this->input = new Input($command);
             } else {
                 $options = [];
@@ -191,7 +191,7 @@ class Cli
                 $collectedArguments = [];
                 $argumentPosition = 1;
 
-                $commandData = $this->commandHandler->process((string) $command);
+                $commandData = $this->commandHandler->getCommandData($command ?: self::DEFAULT_COMMAND);
                 $commandOptions = $commandData['options'];
                 $commandShortcuts = $commandData['shortcuts'];
                 $commandArguments = $commandData['arguments'];

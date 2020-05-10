@@ -2,7 +2,8 @@
 
 namespace Awesome\Console\Model\Handler;
 
-use Awesome\Console\Model\Cli;
+use Awesome\Console\Model\Cli\AbstractCommand;
+use Awesome\Console\Model\Cli\Input\InputDefinition;
 use Awesome\Console\Model\XmlParser\Command as CommandXmlParser;
 
 class Command
@@ -13,9 +14,9 @@ class Command
     private $commandXmlParser;
 
     /**
-     * @var array $parsedHandles
+     * @var array $parsedCommands
      */
-    private $parsedHandles = [];
+    private $parsedCommands = [];
 
     /**
      * CommandHandler constructor.
@@ -26,20 +27,33 @@ class Command
     }
 
     /**
-     * Get command data according to requested command name.
-     * Return data for default command if no name is provided.
+     * Get command data for requested command name.
      * @param string $commandName
      * @return array
      */
-    public function process($commandName)
+    public function getCommandData($commandName)
     {
-        if ($commandName === '') {
-            $commandData = $this->commandXmlParser->get(Cli::DEFAULT_COMMAND);
-        } else {
-            $commandData = $this->commandXmlParser->get($commandName);
+        $commandData = null;
+
+        if ($commandClass = $this->getCommandClass($commandName)) {
+            $definition = new InputDefinition();
+            /** @var AbstractCommand $commandClass */
+            $definition = $commandClass::configure($definition);
+
+            $commandData = array_replace_recursive($definition->getDefinition(), ['class' => $commandClass]);
         }
 
         return $commandData;
+    }
+
+    /**
+     * Get all available commands.
+     * @return array
+     * @throws \LogicException
+     */
+    public function getCommands()
+    {
+        return array_keys($this->commandXmlParser->getCommandsClasses());
     }
 
     /**
@@ -47,48 +61,41 @@ class Command
      * @param string $commandName
      * @return bool
      */
-    public function exist($commandName)
+    public function commandExist($commandName)
     {
-        $exist = false;
-
-        if ($commandName) {
-            $commandName = $this->parse($commandName);
-            $exist = in_array($commandName, $this->commandXmlParser->getCommands());
-        }
-
-        return $exist;
+        return in_array($commandName, $this->getCommands());
     }
 
     /**
-     * Parse requested command name in to a full name.
-     * @param string $handle
+     * Parse requested command name into a full name.
+     * @param string $commandName
      * @return string
      */
-    public function parse($handle)
+    public function parseCommand($commandName)
     {
-        if (!isset($this->parsedHandles[$handle])) {
-            $this->parsedHandles[$handle] = $handle;
-            $possibleMatches = $this->getAlternatives($handle);
+        if (!isset($this->parsedHandles[$commandName])) {
+            $this->parsedCommands[$commandName] = $commandName;
+            $possibleMatches = $this->getAlternatives($commandName);
 
             if (count($possibleMatches) === 1) {
-                $this->parsedHandles[$handle] = $possibleMatches[0];
+                $this->parsedCommands[$commandName] = reset($possibleMatches);
             }
         }
 
-        return $this->parsedHandles[$handle];
+        return $this->parsedCommands[$commandName];
     }
 
     /**
-     * Get command class name.
-     * @param string $command
+     * Get command class according to the requested command name.
+     * @param string $commandName
      * @return string
+     * @throws \LogicException
      */
-    public function getCommandClass($command)
+    public function getCommandClass($commandName)
     {
-        $command = $this->parse($command);
-        $handles = $this->commandXmlParser->getCommandsClasses();
+        $commandClasses = $this->commandXmlParser->getCommandsClasses();
 
-        return $handles[$command] ?? null;
+        return $commandClasses[$commandName] ?? null;
     }
 
     /**
@@ -102,10 +109,10 @@ class Command
     {
         $possibleCandidates = [];
         @list($namespace, $command) = explode(':', $handle);
-        $consoleCommands = $this->commandXmlParser->getCommands();
+        $consoleCommands = $this->getCommands();
 
         foreach ($consoleCommands as $consoleCommand) {
-            [$commandNamespace, $commandCommand] = explode(':', $consoleCommand);
+            list($commandNamespace, $commandCommand) = explode(':', $consoleCommand);
 
             if (strpos($commandNamespace, $namespace) === 0
                 && (($command && strpos($commandCommand, $command) === 0) || !$strict)

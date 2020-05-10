@@ -2,114 +2,56 @@
 
 namespace Awesome\Console\Model\XmlParser;
 
-use Awesome\Console\Model\Cli\AbstractCommand;
-use Awesome\Console\Model\Cli\Input\InputDefinition;
-
 class Command
 {
     private const CLI_XML_PATH_PATTERN = '/*/*/etc/cli.xml';
 
     /**
-     * @var array $commands
+     * @var array $commandsClasses
      */
-    private $commands;
-
-    /**
-     * @var array $disabledCommands
-     */
-    private $disabledCommands;
-
-    /**
-     * @var array $commandsData
-     */
-    private $commandsData = [];
-
-    /**
-     * Get command data according to the requested command name.
-     * @param string $commandName
-     * @return array
-     * @throws \LogicException
-     */
-    public function get($commandName)
-    {
-        if (!isset($this->commandsData[$commandName])) {
-            $commandList = $this->getCommandsClasses();
-
-            if (isset($commandList[$commandName])) {
-                $definition = new InputDefinition();
-                /** @var AbstractCommand $commandClass */
-                $commandClass = $commandList[$commandName];
-                $definition = $commandClass::configure($definition);
-
-                $this->commandsData[$commandName] = array_replace_recursive(['class' => $commandClass], $definition->getDefinition());
-            }
-        }
-
-        return $this->commandsData[$commandName] ?? null;
-    }
-
-    /**
-     * Get all available commands.
-     * @return array
-     * @throws \LogicException
-     */
-    public function getCommands()
-    {
-        return array_keys($this->getCommandsClasses());
-    }
+    private $commandsClasses;
 
     /**
      * Get available commands with their responsible classes.
-     * If includeDisabled is true, return also disabled commands.
-     * @param bool $includeDisabled
      * @return array
      * @throws \LogicException
      */
-    public function getCommandsClasses($includeDisabled = false)
+    public function getCommandsClasses()
     {
-        if ($this->commands === null) {
-            $this->commands = [];
-            $this->disabledCommands= [];
+        if ($this->commandsClasses === null) {
+            $this->commandsClasses = [];
 
             foreach (glob(APP_DIR . self::CLI_XML_PATH_PATTERN) as $cliXmlFile) {
                 $cliData = simplexml_load_file($cliXmlFile);
                 $parsedData = $this->parse($cliData);
 
                 foreach ($parsedData as $commandName => $command) {
-                    if (isset($this->commands[$commandName]) || isset($this->disabledCommands[$commandName])) {
+                    if (isset($this->commands[$commandName])) {
                         throw new \LogicException(sprintf('Command "%s" is already defined', $commandName));
                     }
 
                     if (!$command['disabled']) {
-                        $this->commands[$commandName] = $command['class'];
-                    } else {
-                        $this->disabledCommands[$commandName] = $command['class'];
+                        $this->commandsClasses[$commandName] = $command['class'];
                     }
                 }
             }
-            ksort($this->commands);
-            ksort($this->disabledCommands);
-        }
-        $commands = $this->commands;
-
-        if ($includeDisabled) {
-            $commands = array_merge($commands, $this->disabledCommands);
+            ksort($this->commandsClasses);
         }
 
-        return $commands;
+        return $this->commandsClasses;
     }
 
     /**
      * Convert XML command node into data array.
-     * @param \SimpleXMLElement $node
+     * @param \SimpleXMLElement $commandNode
      * @return array
      * @throws \LogicException
      */
-    protected function parse($node)
+    private function parse($commandNode)
     {
         $parsedNode = [];
 
-        foreach ($node->children() as $namespace) {
+        foreach ($commandNode->children() as $namespace) {
             if (!$namespaceName = (string) $namespace['name']) {
                 throw new \LogicException(sprintf('Name attribute is not specified for namespace.'));
             }

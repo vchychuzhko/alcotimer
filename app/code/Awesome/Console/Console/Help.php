@@ -5,21 +5,21 @@ namespace Awesome\Console\Console;
 use Awesome\Console\Model\Cli;
 use Awesome\Console\Model\Cli\Input\InputDefinition;
 use Awesome\Console\Model\Cli\Output;
-use Awesome\Console\Model\XmlParser\Command as CommandXmlParser;
+use Awesome\Console\Model\Handler\Command as CommandHandler;
 
 class Help extends \Awesome\Console\Model\Cli\AbstractCommand
 {
     /**
-     * @var CommandXmlParser $commandXmlParser
+     * @var CommandHandler $commandHandler
      */
-    private $commandXmlParser;
+    private $commandHandler;
 
     /**
      * Help constructor.
      */
     public function __construct()
     {
-        $this->commandXmlParser = new CommandXmlParser();
+        $this->commandHandler = new CommandHandler();
     }
 
     /**
@@ -42,8 +42,8 @@ class Help extends \Awesome\Console\Model\Cli\AbstractCommand
         if ($command = $input->getArgument('command') ?: $input->getCommand()) {
             $this->showCommandHelp($command, $output);
         } else {
-            $commandData = $this->commandXmlParser->get(Cli::DEFAULT_COMMAND);
-            $commands = $this->commandXmlParser->getCommands();
+            $commandData = $this->commandHandler->getCommandData(Cli::DEFAULT_COMMAND);
+            $commands = $this->commandHandler->getCommands();
 
             $output->writeln($output->colourText('Usage:', Output::BROWN));
             $output->writeln('command [options] [arguments]', 2);
@@ -67,7 +67,7 @@ class Help extends \Awesome\Console\Model\Cli\AbstractCommand
      */
     private function showCommandHelp($command, $output)
     {
-        if ($commandData = $this->commandXmlParser->get($command)) {
+        if ($commandData = $this->commandHandler->getCommandData($command)) {
             $options = $commandData['options'];
             $argumentsString = '';
 
@@ -186,7 +186,7 @@ class Help extends \Awesome\Console\Model\Cli\AbstractCommand
 
             foreach ($commands as $name) {
                 [$namespace, $command] = explode(':', $name);
-                $commandData = $this->commandXmlParser->get($name);
+                $commandData = $this->commandHandler->getCommandData($name);
 
                 if ($namespace !== $lastNamespace) {
                     $output->writeln($output->colourText($namespace, Output::BROWN), 1);
