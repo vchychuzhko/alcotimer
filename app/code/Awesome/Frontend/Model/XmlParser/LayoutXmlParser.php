@@ -8,24 +8,16 @@ use Awesome\Framework\Model\Http;
 use Awesome\Framework\Helper\XmlParsingHelper;
 use Awesome\Frontend\Block\Template\Container;
 
-class Layout
+class LayoutXmlParser
 {
     private const DEFAULT_LAYOUT_XML_PATH_PATTERN = '/*/*/view/%s/layout/default.xml';
     private const LAYOUT_XML_PATH_PATTERN = '/*/*/view/%s/layout/%s.xml';
-    private const LAYOUT_HANDLES_CACHE_TAG = 'layout-handles';
+    private const PAGE_HANDLES_CACHE_TAG_PREFIX = 'page-handles_';
 
     /**
      * @var Cache $cache
      */
-    protected $cache;
-
-    /**
-     * Layout constructor.
-     */
-    function __construct()
-    {
-        $this->cache = new Cache();
-    }
+    private $cache;
 
     /**
      * @var array $collectedAssets
@@ -50,6 +42,14 @@ class Layout
      * @var array $referencesToRemove
      */
     private $referencesToRemove = [];
+
+    /**
+     * LayoutXmlParser constructor.
+     */
+    function __construct()
+    {
+        $this->cache = new Cache();
+    }
 
     /**
      * Get layout structure for requested handle for a specified view.
@@ -80,12 +80,12 @@ class Layout
 
             // @TODO: add check if no layout data is found
             $this->filterRemovedAssets();
-            //@TODO: Add check for minify/merge enabled and replace links
+            // @TODO: Add check for minify/merge enabled and replace links
             $layoutStructure['head'] = array_merge($layoutStructure['head'], $this->collectedAssets);
 
             $this->applyReferences($layoutStructure['body']);
             XmlParsingHelper::applySortOrder($layoutStructure['body']);
-            //@TODO: add validation for duplicating elements
+            // @TODO: add validation for duplicating elements
 
             $this->cache->save(Cache::LAYOUT_CACHE_KEY, $handle, $layoutStructure);
         }
@@ -94,36 +94,22 @@ class Layout
     }
 
     /**
-     * Get available page layout handles for a specified view.
+     * Get available page layout handles for specified view.
      * @param string $view
      * @return array
      */
-    public function getHandlesForView($view)
+    public function getPageHandles($view)
     {
-        $handles = $this->getPageHandles();
+        if (!$handles = $this->cache->get(Cache::LAYOUT_CACHE_KEY, self::PAGE_HANDLES_CACHE_TAG_PREFIX . $view)) {
+            $pattern = sprintf(self::LAYOUT_XML_PATH_PATTERN, $view, '*_*_*');
+            $handles = [];
 
-        return $handles[$view] ?? [];
-    }
-
-    /**
-     * Get available page layout handles.
-     * @return array
-     */
-    public function getPageHandles()
-    {
-        if (!$handles = $this->cache->get(Cache::LAYOUT_CACHE_KEY, self::LAYOUT_HANDLES_CACHE_TAG)) {
-            foreach ([Http::FRONTEND_VIEW, Http::BACKEND_VIEW] as $view) {
-                $pattern = sprintf(self::LAYOUT_XML_PATH_PATTERN, $view, '*_*_*');
-                $collectedHandles = [];
-
-                foreach (glob(APP_DIR . $pattern) as $collectedHandle) {
-                    $collectedHandles[] = basename($collectedHandle, '.xml');
-                }
-
-                $handles[$view] = array_unique($collectedHandles);
+            foreach (glob(APP_DIR . $pattern) as $collectedHandle) {
+                $handles[] = basename($collectedHandle, '.xml');
             }
+            $handles = array_unique($handles);
 
-            $this->cache->save(Cache::LAYOUT_CACHE_KEY, self::LAYOUT_HANDLES_CACHE_TAG, $handles);
+            $this->cache->save(Cache::LAYOUT_CACHE_KEY, self::PAGE_HANDLES_CACHE_TAG_PREFIX . $view, $handles);
         }
 
         return $handles;
@@ -220,7 +206,7 @@ class Layout
                 $parsedItemNode = [
                     'name' => XmlParsingHelper::getNodeAttribute($itemNode),
                     'class' => XmlParsingHelper::getNodeAttribute($itemNode, 'class'),
-                    'template' => XmlParsingHelper::getNodeAttribute($itemNode, 'template'),
+                    'template' => XmlParsingHelper::getNodeAttribute($itemNode, 'template') ?: null,
                     'children' => []
                 ];
 
@@ -236,7 +222,7 @@ class Layout
                 $parsedItemNode = [
                     'name' => XmlParsingHelper::getNodeAttribute($itemNode),
                     'class' => (XmlParsingHelper::getNodeAttribute($itemNode, 'class')) ?: Container::class,
-                    'template' => XmlParsingHelper::getNodeAttribute($itemNode, 'template'),
+                    'template' => XmlParsingHelper::getNodeAttribute($itemNode, 'template') ?: null,
                     'children' => [],
                     'containerData' => []
                 ];

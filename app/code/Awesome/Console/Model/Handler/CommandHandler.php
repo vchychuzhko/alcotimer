@@ -4,9 +4,9 @@ namespace Awesome\Console\Model\Handler;
 
 use Awesome\Console\Model\Cli\AbstractCommand;
 use Awesome\Console\Model\Cli\Input\InputDefinition;
-use Awesome\Console\Model\XmlParser\Command as CommandXmlParser;
+use Awesome\Console\Model\XmlParser\CommandXmlParser;
 
-class Command
+class CommandHandler
 {
     /**
      * @var CommandXmlParser $commandXmlParser

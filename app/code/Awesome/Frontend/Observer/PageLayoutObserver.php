@@ -6,9 +6,9 @@ use Awesome\Framework\Model\Config;
 use Awesome\Framework\Model\Http\Request;
 use Awesome\Framework\Model\Http\Router;
 use Awesome\Frontend\Model\Action\LayoutRenderer;
-use Awesome\Frontend\Model\XmlParser\Layout as LayoutXmlParser;
+use Awesome\Frontend\Model\XmlParser\LayoutXmlParser;
 
-class Layout implements \Awesome\Framework\Model\Event\ObserverInterface
+class PageLayoutObserver implements \Awesome\Framework\Model\Event\ObserverInterface
 {
     public const HOMEPAGE_HANDLE_CONFIG = 'web/homepage';
 

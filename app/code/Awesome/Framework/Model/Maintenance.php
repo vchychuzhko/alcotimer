@@ -56,11 +56,12 @@ class Maintenance
 
     /**
      * Check if maintenance mode is currently enabled.
-     * IP address can be specified.
+     * User IP address can be specified.
      * @param string $ip
      * @return bool
      */
-    public function isMaintenance($ip = '') {
+    public function isMaintenance($ip = '')
+    {
         $state = $this->getStatus();
 
         return $state['enabled'] && !in_array($ip, $state['allowed_ips']);

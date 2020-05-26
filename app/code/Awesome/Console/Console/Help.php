@@ -5,7 +5,7 @@ namespace Awesome\Console\Console;
 use Awesome\Console\Model\Cli;
 use Awesome\Console\Model\Cli\Input\InputDefinition;
 use Awesome\Console\Model\Cli\Output;
-use Awesome\Console\Model\Handler\Command as CommandHandler;
+use Awesome\Console\Model\Handler\CommandHandler;
 
 class Help extends \Awesome\Console\Model\Cli\AbstractCommand
 {

@@ -46,6 +46,6 @@ class Root extends \Awesome\Frontend\Block\Template
      */
     public function getBodyClass()
     {
-        return str_replace('_', '-', str_replace('-', '', $this->renderer->getHandle()));
+        return str_replace(['-', '_'], ['', '-'], $this->renderer->getHandle());
     }
 }

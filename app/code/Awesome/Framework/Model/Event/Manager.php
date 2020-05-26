@@ -4,7 +4,7 @@ namespace Awesome\Framework\Model\Event;
 
 use Awesome\Framework\Model\Event;
 use Awesome\Framework\Model\Event\ObserverInterface;
-use Awesome\Framework\Model\XmlParser\Event as EventXmlParser;
+use Awesome\Framework\Model\XmlParser\EventXmlParser;
 
 class Manager
 {
@@ -25,6 +25,7 @@ class Manager
      * Fire event with calling all related observers.
      * @param string $eventName
      * @param array $data
+     * @throws \LogicException
      */
     public function dispatch($eventName, $data = [])
     {
@@ -34,6 +35,10 @@ class Manager
             foreach ($observers as $observer) {
                 /** @var ObserverInterface $observer */
                 $observer = new $observer();
+
+                if (!($observer instanceof ObserverInterface)) {
+                    throw new \LogicException(sprintf('Observer "%s" does not implement ObserverInterface', get_class($observer)));
+                }
                 $observer->execute($event);
             }
         }

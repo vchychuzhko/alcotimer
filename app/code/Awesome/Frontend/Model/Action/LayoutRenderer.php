@@ -6,7 +6,7 @@ use Awesome\Cache\Model\Cache;
 use Awesome\Frontend\Block\Root;
 use Awesome\Frontend\Model\Http\HtmlResponse;
 use Awesome\Frontend\Model\TemplateRenderer;
-use Awesome\Frontend\Model\XmlParser\Layout as LayoutXmlParser;
+use Awesome\Frontend\Model\XmlParser\LayoutXmlParser;
 
 class LayoutRenderer implements \Awesome\Framework\Model\ActionInterface
 {

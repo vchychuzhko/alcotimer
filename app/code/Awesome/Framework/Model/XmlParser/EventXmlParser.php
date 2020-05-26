@@ -6,7 +6,7 @@ use Awesome\Cache\Model\Cache;
 use Awesome\Framework\Helper\DataHelper;
 use Awesome\Framework\Helper\XmlParsingHelper;
 
-class Event
+class EventXmlParser
 {
     private const EVENTS_XML_PATH_PATTERN = '/*/*/etc/events.xml';
     private const EVENTS_CACHE_TAG = 'events';
@@ -54,35 +54,35 @@ class Event
      */
     public function getEventsData()
     {
-        if (!$observers = $this->cache->get(Cache::ETC_CACHE_KEY, self::EVENTS_CACHE_TAG)) {
-            $observers = [];
+        if (!$eventsData = $this->cache->get(Cache::ETC_CACHE_KEY, self::EVENTS_CACHE_TAG)) {
+            $eventsData = [];
 
             foreach (glob(APP_DIR . self::EVENTS_XML_PATH_PATTERN) as $eventsXmlFile) {
-                $eventsData = simplexml_load_file($eventsXmlFile);
-                $parsedData = $this->parse($eventsData);
+                $collectedEventsData = simplexml_load_file($eventsXmlFile);
+                $parsedData = $this->parse($collectedEventsData);
 
                 foreach ($parsedData as $eventName => $eventObservers) {
                     if ($eventObservers) {
-                        $observers[$eventName] = $observers[$eventName] ?? [];
+                        $eventsData[$eventName] = $eventsData[$eventName] ?? [];
 
                         foreach ($eventObservers as $observerName => $observer) {
-                            if (DataHelper::arrayGetByKeyRecursive($observers, $observerName)) {
-                                throw new \LogicException(sprintf('Observer with "%s" name is already defined', $eventName));
+                            if (DataHelper::arrayGetByKeyRecursive($eventsData, $observerName)) {
+                                throw new \LogicException(sprintf('Observer with "%s" name is already defined', $observerName));
                             }
 
                             if (!$observer['disabled']) {
-                                $observers[$eventName][$observerName] = $observer['class'];
+                                $eventsData[$eventName][$observerName] = $observer['class'];
                             }
                         }
                     }
                 }
             }
-            XmlParsingHelper::applySortOrder($observers);
+            XmlParsingHelper::applySortOrder($eventsData);
 
-            $this->cache->save(Cache::ETC_CACHE_KEY, self::EVENTS_CACHE_TAG, $observers);
+            $this->cache->save(Cache::ETC_CACHE_KEY, self::EVENTS_CACHE_TAG, $eventsData);
         }
 
-        return $observers;
+        return $eventsData;
     }
 
     /**

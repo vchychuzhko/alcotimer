@@ -2,7 +2,7 @@
 
 namespace Awesome\Console\Model\XmlParser;
 
-class Command
+class CommandXmlParser
 {
     private const CLI_XML_PATH_PATTERN = '/*/*/etc/cli.xml';
 

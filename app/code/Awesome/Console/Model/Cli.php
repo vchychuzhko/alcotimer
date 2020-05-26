@@ -7,7 +7,7 @@ use Awesome\Console\Model\Cli\AbstractCommand;
 use Awesome\Console\Model\Cli\Input;
 use Awesome\Console\Model\Cli\Input\InputDefinition;
 use Awesome\Console\Model\Cli\Output;
-use Awesome\Console\Model\Handler\Command as CommandHandler;
+use Awesome\Console\Model\Handler\CommandHandler;
 
 class Cli
 {
