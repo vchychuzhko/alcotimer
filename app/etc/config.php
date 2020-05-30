@@ -1,10 +1,10 @@
 <?php /** General configuration file */
 return [
+    'show_forbidden' => 0, // if 0, 404 will be shown instead
     'support_email_address' => '',
+    'web_root_is_pub' => 1, // 0 for project root
     'web' => [
-        'web_root_is_pub' => 1, // 0 for project root
-        'homepage' => 'timer',
-        'show_forbidden' => 0,
+        'homepage' => 'timer_index_index',
         'js' => [
             'minify' => 0,
             'merge' => 0

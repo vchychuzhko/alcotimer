@@ -48,7 +48,7 @@ class Logger
     {
         $this->write(
             self::VISITOR_LOG_FILE,
-            $request->getUserIPAddress() . ' - ' . $request->getUrl()
+            $request->getUserIp() . ' - ' . $request->getUrl()
         );
 
         return $this;

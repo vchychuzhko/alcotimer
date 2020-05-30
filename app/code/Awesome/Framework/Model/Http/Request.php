@@ -2,9 +2,17 @@
 
 namespace Awesome\Framework\Model\Http;
 
-class Request
+/**
+ * Class Request
+ * @method string getFullActionName()
+ * @method string getUserIp()
+ * @method string getView()
+ * @package Awesome\Framework\Model\Http
+ */
+class Request extends \Awesome\Framework\Model\DataObject
 {
-    public const HTTP_STATUS_OK = 200;
+    public const FORBIDDEN_REDIRECT_CODE = 403;
+    public const NOTFOUND_REDIRECT_CODE = 404;
 
     public const HTTP_METHOD_GET = 'GET';
     public const HTTP_METHOD_POST = 'POST';
@@ -35,14 +43,9 @@ class Request
     private $cookies;
 
     /**
-     * @var int|null $redirectStatus
+     * @var int|null $redirectStatusCode
      */
-    private $redirectStatus;
-
-    /**
-     * @var string|null $userIPAddress
-     */
-    private $userIPAddress;
+    private $redirectStatusCode;
 
     /**
      * Request constructor.
@@ -50,23 +53,23 @@ class Request
      * @param string $method
      * @param array $parameters
      * @param array $cookies
-     * @param int|null $redirectStatus
-     * @param string|null $userIPAddress
+     * @param int|null $redirectStatusCode
+     * @param array $data
      */
     public function __construct(
         $url,
         $method = self::HTTP_METHOD_GET,
         $parameters = [],
         $cookies = [],
-        $redirectStatus = null,
-        $userIPAddress = null
+        $redirectStatusCode = null,
+        $data = []
     ) {
+        parent::__construct($data, true);
         $this->url = $url;
         $this->method = $method;
         $this->parameters = $parameters;
         $this->cookies = $cookies;
-        $this->redirectStatus = $redirectStatus;
-        $this->userIPAddress = $userIPAddress;
+        $this->redirectStatusCode = $redirectStatusCode;
     }
 
     /**
@@ -76,6 +79,15 @@ class Request
     public function getUrl()
     {
         return $this->url;
+    }
+
+    /**
+     * Get URL scheme protocol.
+     * @return string
+     */
+    private function getScheme()
+    {
+        return parse_url($this->url, PHP_URL_SCHEME);
     }
 
     /**
@@ -97,23 +109,12 @@ class Request
     }
 
     /**
-     * Get URL path.
-     * @return string
-     */
-    private function getScheme()
-    {
-        return parse_url($this->url, PHP_URL_SCHEME);
-    }
-
-    /**
      * Check if request was performed via secure connection.
      * @return bool
      */
     public function isSecure()
     {
-        $scheme = $this->getScheme();
-
-        return $scheme === self::SCHEME_HTTPS;
+        return $this->getScheme() === self::SCHEME_HTTPS;
     }
 
     /**
@@ -134,9 +135,9 @@ class Request
     public function getParam($key = '')
     {
         if ($key === '') {
-            $param = $this->parameters[$key] ?? null;
-        } else {
             $param = $this->parameters;
+        } else {
+            $param = $this->parameters[$key] ?? null;
         }
 
         return $param;
@@ -151,9 +152,9 @@ class Request
     public function getCookie($key = '')
     {
         if ($key === '') {
-            $cookie = $this->cookies[$key] ?? null;
-        } else {
             $cookie = $this->cookies;
+        } else {
+            $cookie = $this->cookies[$key] ?? null;
         }
 
         return $cookie;
@@ -165,15 +166,6 @@ class Request
      */
     public function getRedirectStatusCode()
     {
-        return $this->redirectStatus;
-    }
-
-    /**
-     * Get user IP address.
-     * @return string|null
-     */
-    public function getUserIPAddress()
-    {
-        return $this->userIPAddress;
+        return $this->redirectStatusCode;
     }
 }

@@ -18,8 +18,10 @@ class Http
     public const BACKEND_VIEW = 'adminhtml';
     public const BASE_VIEW = 'base';
 
-    public const SHOW_FORBIDDEN_CONFIG = 'web/show_forbidden';
-    public const WEB_ROOT_CONFIG = 'web/web_root_is_pub';
+    public const SHOW_FORBIDDEN_CONFIG = 'show_forbidden';
+    public const WEB_ROOT_CONFIG = 'web_root_is_pub';
+
+    public const ROOT_ACTION_NAME = 'index_index_index';
 
     /**
      * @var Logger $logger
@@ -67,48 +69,31 @@ class Http
 
         if (!$this->isMaintenance()) {
             $redirectStatus = $request->getRedirectStatusCode();
+            $router = new Router();
 
-            if ($redirectStatus === Response::FORBIDDEN_STATUS_CODE && $this->showForbiddenPage()) {
-                $forbiddenRenderer = new \Awesome\Frontend\Model\Action\LayoutRenderer('forbidden_index_index', self::FRONTEND_VIEW);
-                $response = $forbiddenRenderer->execute($request);
-                $response->setStatusCode(Response::FORBIDDEN_STATUS_CODE);
-                // @TODO: add native http error page displaying
+            $this->eventManager->dispatch(
+                'http_frontend_action',
+                ['request' => $request, 'router' => $router]
+            );
+
+            if ($action = $router->getAction()) {
+                $response = $action->execute($request);
+            } elseif ($redirectStatus === Request::FORBIDDEN_REDIRECT_CODE && $this->showForbiddenPage()) {
+                $response = new Response('', Response::FORBIDDEN_STATUS_CODE);
             } else {
-                $view = $this->resolveView();
-                $router = new Router($view);
-                $this->eventManager->dispatch(
-                    'http_frontend_action',
-                    ['request' => $request, 'router' => $router]
-                );
-
-                if ($action = $router->getAction()) {
-                    $response = $action->execute($request);
-                } else {
-                    $notFoundRenderer = new \Awesome\Frontend\Model\Action\LayoutRenderer('notfound_index_index', self::FRONTEND_VIEW);
-                    $response = $notFoundRenderer->execute($request);
-                    $response->setStatusCode(Response::NOTFOUND_STATUS_CODE);
-                    // @TODO: add native http error page displaying
-                }
+                $response = new Response('', Response::NOTFOUND_STATUS_CODE);
             }
         } else {
+            // @TODO: get request 'accept' header and return error page according to needed type
             $response = new Response(
                 $this->maintenance->getMaintenancePage(),
                 Response::SERVICE_UNAVAILABLE_STATUS_CODE,
                 ['Content-Type' => 'text/html']
             );
         }
+        // @TODO: add try {...} catch and 500 status returning for exceptions
 
         $response->proceed();
-    }
-
-    /**
-     * Resolve page view by requested URL.
-     * @return string
-     */
-    private function resolveView()
-    {
-        // @TODO: temporary, should be updated to resolve adminhtml view
-        return self::FRONTEND_VIEW;
     }
 
     /**
@@ -117,7 +102,7 @@ class Http
      */
     private function isMaintenance()
     {
-        $ip = $this->getRequest()->getUserIPAddress();
+        $ip = $this->getRequest()->getUserIp();
 
         return $this->maintenance->isMaintenance($ip);
     }
@@ -146,7 +131,9 @@ class Http
             $parameters = [];
             $cookies = [];
             $redirectStatus = $_SERVER['REDIRECT_STATUS'] ?? null;
-            $userIPAddress = $_SERVER['REMOTE_ADDR'];
+            $fullActionName = $this->parseFullActionName($url);
+            $userIp = $_SERVER['REMOTE_ADDR'];
+            $view = $this->parseView($url);
 
             if ($_GET) {
                 $parameters = array_merge($parameters, $_GET);
@@ -160,9 +147,39 @@ class Http
                 $cookies = $_COOKIE;
             }
 
-            $this->request = new Request($url, $method, $parameters, $cookies, $redirectStatus, $userIPAddress);
+            $this->request = new Request($url, $method, $parameters, $cookies, $redirectStatus, [
+                'full_action_name' => $fullActionName,
+                'user_ip' => $userIp,
+                'view' => $view
+            ]);
         }
 
         return $this->request;
+    }
+
+    /**
+     * Parse requested URL into a valid action name.
+     * Name should consists of three parts, missing ones will be added as 'index'.
+     * @param string $url
+     * @return string
+     */
+    private function parseFullActionName($url)
+    {
+        $parts = explode('_', str_replace('/', '_', trim(parse_url($url, PHP_URL_PATH), '/')));
+
+        return $parts[0]
+            ? ($parts[0] . '_' . ($parts[1] ?? 'index') . '_' . ($parts[2] ?? 'index'))
+            : self::ROOT_ACTION_NAME;
+    }
+
+    /**
+     * Resolve page view by requested URL.
+     * @param string $url
+     * @return string
+     */
+    private function parseView($url)
+    {
+        // @TODO: update to resolve adminhtml view
+        return self::FRONTEND_VIEW;
     }
 }

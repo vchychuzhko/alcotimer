@@ -12,20 +12,6 @@ class Router
     private $actions = [];
 
     /**
-     * @var string $view
-     */
-    private $view;
-
-    /**
-     * Router constructor.
-     * @param string $view
-     */
-    public function __construct($view)
-    {
-        $this->view = $view;
-    }
-
-    /**
      * Add action to list.
      * @param ActionInterface $action
      * @return $this
@@ -44,14 +30,5 @@ class Router
     public function getAction()
     {
         return reset($this->actions);
-    }
-
-    /**
-     * Get requested view.
-     * @return string
-     */
-    public function getView()
-    {
-        return $this->view;
     }
 }

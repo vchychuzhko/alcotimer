@@ -12,12 +12,19 @@ class DataObject
     protected $data;
 
     /**
+     * @var bool $readOnly
+     */
+    private $readOnly;
+
+    /**
      * DataObject constructor.
      * @param array $data
+     * @param bool $readOnly
      */
-    public function __construct($data = [])
+    public function __construct($data = [], $readOnly = false)
     {
         $this->data = $data;
+        $this->readOnly = $readOnly;
     }
 
     /**
@@ -53,10 +60,12 @@ class DataObject
      */
     public function setData($key, $value = null)
     {
-        if ($key === (array) $key) {
-            $this->data = $key;
-        } else {
-            $this->data[$key] = $value;
+        if (!$this->readOnly) {
+            if ($key === (array) $key) {
+                $this->data = $key;
+            } else {
+                $this->data[$key] = $value;
+            }
         }
 
         return $this;
@@ -69,7 +78,7 @@ class DataObject
      * @param string $method
      * @param array $args
      * @return mixed
-     * @throws \Exception
+     * @throws \LogicException
      */
     public function __call($method, $args)
     {
@@ -85,8 +94,6 @@ class DataObject
                 return $this->setData($key, $value);
         }
 
-        throw new \Exception(
-            'Invalid method ' . get_class($this) . '::' . $method
-        );
+        throw new \LogicException(sprintf('Invalid method %s::%s', get_class($this), $method));
     }
 }
