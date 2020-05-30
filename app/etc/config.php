@@ -1,5 +1,6 @@
 <?php /** General configuration file */
 return [
+    'developer_mode' => 0,
     'show_forbidden' => 0, // if 0, 404 will be shown instead
     'support_email_address' => '',
     'web_root_is_pub' => 1, // 0 for project root

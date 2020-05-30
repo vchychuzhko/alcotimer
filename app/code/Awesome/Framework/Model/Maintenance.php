@@ -5,7 +5,9 @@ namespace Awesome\Framework\Model;
 class Maintenance
 {
     public const MAINTENANCE_FILE = '/var/maintenance.flag';
+
     public const MAINTENANCE_PAGE_PATH = '/pub/pages/maintenance.html';
+    public const INTERNALERROR_PAGE_PATH = '/pub/pages/internal_error.html';
 
     /**
      * Enable maintenance mode.
@@ -73,6 +75,15 @@ class Maintenance
      */
     public function getMaintenancePage()
     {
-        return file_get_contents(BP . Maintenance::MAINTENANCE_PAGE_PATH);
+        return file_get_contents(BP . self::MAINTENANCE_PAGE_PATH);
+    }
+
+    /**
+     * Get internal error page.
+     * @return string
+     */
+    public function getInternalErrorPage()
+    {
+        return file_get_contents(BP . self::INTERNALERROR_PAGE_PATH);
     }
 }

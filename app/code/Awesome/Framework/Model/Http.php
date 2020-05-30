@@ -18,6 +18,7 @@ class Http
     public const BACKEND_VIEW = 'adminhtml';
     public const BASE_VIEW = 'base';
 
+    public const APP_MODE_CONFIG = 'developer_mode';
     public const SHOW_FORBIDDEN_CONFIG = 'show_forbidden';
     public const WEB_ROOT_CONFIG = 'web_root_is_pub';
 
@@ -64,34 +65,44 @@ class Http
      */
     public function run()
     {
-        $request = $this->getRequest();
-        $this->logger->logVisitor($request);
+        try {
+            $request = $this->getRequest();
+            $this->logger->logVisitor($request);
 
-        if (!$this->isMaintenance()) {
-            $redirectStatus = $request->getRedirectStatusCode();
-            $router = new Router();
+            if (!$this->isMaintenance()) {
+                $redirectStatus = $request->getRedirectStatusCode();
+                $router = new Router();
 
-            $this->eventManager->dispatch(
-                'http_frontend_action',
-                ['request' => $request, 'router' => $router]
-            );
+                $this->eventManager->dispatch(
+                    'http_frontend_action',
+                    ['request' => $request, 'router' => $router]
+                );
 
-            if ($action = $router->getAction()) {
-                $response = $action->execute($request);
-            } elseif ($redirectStatus === Request::FORBIDDEN_REDIRECT_CODE && $this->showForbiddenPage()) {
-                $response = new Response('', Response::FORBIDDEN_STATUS_CODE);
+                if ($action = $router->getAction()) {
+                    $response = $action->execute($request);
+                } elseif ($redirectStatus === Request::FORBIDDEN_REDIRECT_CODE && $this->showForbiddenPage()) {
+                    $response = new Response('', Response::FORBIDDEN_STATUS_CODE);
+                } else {
+                    $response = new Response('', Response::NOTFOUND_STATUS_CODE);
+                }
             } else {
-                $response = new Response('', Response::NOTFOUND_STATUS_CODE);
+                // @TODO: get request 'accept' header and return error page according to needed type
+                $response = new Response(
+                    $this->maintenance->getMaintenancePage(),
+                    Response::SERVICE_UNAVAILABLE_STATUS_CODE,
+                    ['Content-Type' => 'text/html']
+                );
             }
-        } else {
-            // @TODO: get request 'accept' header and return error page according to needed type
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage() . "\n" . $e->getTraceAsString();
+            $this->logger->error($errorMessage);
+
             $response = new Response(
-                $this->maintenance->getMaintenancePage(),
-                Response::SERVICE_UNAVAILABLE_STATUS_CODE,
+                $this->isDeveloperMode() ? $errorMessage : $this->maintenance->getInternalErrorPage(),
+                Response::INTERNAL_ERROR_STATUS_CODE,
                 ['Content-Type' => 'text/html']
             );
         }
-        // @TODO: add try {...} catch and 500 status returning for exceptions
 
         $response->proceed();
     }
@@ -105,6 +116,15 @@ class Http
         $ip = $this->getRequest()->getUserIp();
 
         return $this->maintenance->isMaintenance($ip);
+    }
+
+    /**
+     * Check if app is in developer mode.
+     * @return bool
+     */
+    private function isDeveloperMode()
+    {
+        return (bool) $this->config->get(self::APP_MODE_CONFIG);
     }
 
     /**
