@@ -116,6 +116,18 @@ class Template extends\Awesome\Framework\Model\DataObject
     }
 
     /**
+     * Return URI path to for file in the media folder by its root-relative path.
+     * @param string $file
+     * @return string
+     */
+    public function getMediaFileUrl($file)
+    {
+        $mediaRelativePath = preg_replace('/^(\/?(pub)?)?\/?media\//', '', $file);
+
+        return $this->getMediaUrl($mediaRelativePath);
+    }
+
+    /**
      * Return URI path for file in the static folder.
      * If file is not specified, return static folder URI path.
      * @param string $file

@@ -62,15 +62,17 @@ class LayoutXmlParser
      * Get layout structure for requested handle for a specified view.
      * @param string $handle
      * @param string $view
+     * @param array $handles
      * @return array
      */
-    public function getLayoutStructure($handle, $view)
+    public function getLayoutStructure($handle, $view, $handles = [])
     {
         if (!$layoutStructure = $this->cache->get(Cache::LAYOUT_CACHE_KEY, $handle)) {
+            $handles = $handles ?: [$handle];
             $pattern = sprintf(
                 self::LAYOUT_XML_PATH_PATTERN,
                 '{' . Http::BASE_VIEW . ',' . $view . '}',
-                '{' . self::DEFAULT_HANDLE_NAME . ',' . $handle . '}'
+                '{' . self::DEFAULT_HANDLE_NAME . ',' . implode(',', $handles) . '}'
             );
             $head = [];
             $body = [];

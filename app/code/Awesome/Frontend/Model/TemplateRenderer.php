@@ -14,6 +14,11 @@ class TemplateRenderer
     private $handle;
 
     /**
+     * @var string $handle
+     */
+    private $handles;
+
+    /**
      * @var string $view
      */
     private $view;
@@ -24,14 +29,16 @@ class TemplateRenderer
     private $structure;
 
     /**
-     * PageRenderer constructor.
+     * TemplateRenderer constructor.
      * @param string $handle
      * @param string $view
      * @param array $structure
+     * @param array $handles
      */
-    public function __construct($handle, $view, $structure)
+    public function __construct($handle, $view, $structure, $handles = [])
     {
         $this->handle = $handle;
+        $this->handles = $handles ?: [$handle];
         $this->view = $view;
         $this->structure = $structure;
     }
@@ -118,12 +125,21 @@ class TemplateRenderer
     }
 
     /**
-     * Get current page handle.
+     * Get main page handle.
      * @return string
      */
     public function getHandle()
     {
         return $this->handle;
+    }
+
+    /**
+     * Get all handles assigned for current page.
+     * @return array
+     */
+    public function getHandles()
+    {
+        return $this->handles;
     }
 
     /**

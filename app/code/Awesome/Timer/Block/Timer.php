@@ -39,7 +39,7 @@ class Timer extends \Awesome\Frontend\Block\Template
         $timerConfig = $this->config->get(self::TIMER_CONFIG_PATH . '/timer') ?: [];
 
         if (isset($timerConfig['sound'])) {
-            $timerConfig['sound'] = $this->getMediaUrl($timerConfig['sound']);
+            $timerConfig['sound'] = $this->getMediaFileUrl($timerConfig['sound']);
         }
 
         return $this->processConfig($timerConfig);

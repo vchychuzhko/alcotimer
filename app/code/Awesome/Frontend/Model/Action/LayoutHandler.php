@@ -49,9 +49,15 @@ class LayoutHandler implements \Awesome\Framework\Model\ActionInterface
      */
     public function execute($request)
     {
-        $handle = $this->isHomepage($request) ? $this->getHomepageHandle() : $request->getFullActionName();
+        $handle = $request->getFullActionName();
         $view = $request->getView();
         $status = Response::SUCCESS_STATUS_CODE;
+        $handles = [];
+
+        if ($this->isHomepage($request)) {
+            $handles[] = $handle;
+            $handle = $this->getHomepageHandle();
+        }
 
         if (!$this->handleExist($handle, $view)) {
             $redirectStatus = $request->getRedirectStatusCode();
@@ -64,10 +70,11 @@ class LayoutHandler implements \Awesome\Framework\Model\ActionInterface
                 $status = Response::NOTFOUND_STATUS_CODE;
             }
         }
+        $handles[] = $handle;
 
         if (!$pageContent = $this->cache->get(Cache::FULL_PAGE_CACHE_KEY, $handle . '_' . $view)) {
-            $structure = $this->layoutXmlParser->getLayoutStructure($handle, $view);
-            $templateRenderer = new TemplateRenderer($handle, $view, $structure);
+            $structure = $this->layoutXmlParser->getLayoutStructure($handle, $view, $handles);
+            $templateRenderer = new TemplateRenderer($handle, $view, $structure, $handles);
 
             $pageContent = $templateRenderer->render('root');
 
