@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:noNamespaceSchemaLocation="../../../../Framework/Schema/page_layout.xsd">
+      xsi:noNamespaceSchemaLocation="../../../../Frontend/Schema/page_layout.xsd">
     <head>
         <title><![CDATA[Not Found]]></title>
         <css src="Awesome_Frontend::pages/errors.css"/>

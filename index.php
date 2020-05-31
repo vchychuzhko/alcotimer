@@ -14,5 +14,5 @@ HTML;
     exit(1);
 }
 
-$app = new \Awesome\Framework\App\Http();
+$app = new \Awesome\Framework\Model\Http();
 $app->run();

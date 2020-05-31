@@ -14,7 +14,7 @@ try {
 }
 
 try {
-    $app = new \Awesome\Framework\App\Cli();
+    $app = new \Awesome\Console\Model\Cli();
     $app->run();
 } catch (\LogicException | \RuntimeException $e) {
     exit(1);

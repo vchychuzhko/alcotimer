@@ -2,9 +2,17 @@
 
 namespace Awesome\Framework\Model\Http;
 
-class Request
+/**
+ * Class Request
+ * @method string getFullActionName()
+ * @method string getUserIp()
+ * @method string getView()
+ * @package Awesome\Framework\Model\Http
+ */
+class Request extends \Awesome\Framework\Model\DataObject
 {
-    public const HTTP_STATUS_OK = 200;
+    public const FORBIDDEN_REDIRECT_CODE = 403;
+    public const NOTFOUND_REDIRECT_CODE = 404;
 
     public const HTTP_METHOD_GET = 'GET';
     public const HTTP_METHOD_POST = 'POST';
@@ -30,35 +38,38 @@ class Request
     private $parameters;
 
     /**
-     * @var int|null $redirectStatus
+     * @var array $cookies
      */
-    private $redirectStatus;
+    private $cookies;
 
     /**
-     * @var string|null $userIPAddress
+     * @var int|null $redirectStatusCode
      */
-    private $userIPAddress;
+    private $redirectStatusCode;
 
     /**
      * Request constructor.
      * @param string $url
      * @param string $method
      * @param array $parameters
-     * @param int|null $redirectStatus
-     * @param string|null $userIPAddress
+     * @param array $cookies
+     * @param int|null $redirectStatusCode
+     * @param array $data
      */
     public function __construct(
         $url,
         $method = self::HTTP_METHOD_GET,
         $parameters = [],
-        $redirectStatus = null,
-        $userIPAddress = null
+        $cookies = [],
+        $redirectStatusCode = null,
+        $data = []
     ) {
+        parent::__construct($data, true);
         $this->url = $url;
         $this->method = $method;
         $this->parameters = $parameters;
-        $this->redirectStatus = $redirectStatus;
-        $this->userIPAddress = $userIPAddress;
+        $this->cookies = $cookies;
+        $this->redirectStatusCode = $redirectStatusCode;
     }
 
     /**
@@ -68,6 +79,15 @@ class Request
     public function getUrl()
     {
         return $this->url;
+    }
+
+    /**
+     * Get URL scheme protocol.
+     * @return string
+     */
+    private function getScheme()
+    {
+        return parse_url($this->url, PHP_URL_SCHEME);
     }
 
     /**
@@ -89,12 +109,12 @@ class Request
     }
 
     /**
-     * Get URL path.
-     * @return string
+     * Check if request was performed via secure connection.
+     * @return bool
      */
-    private function getScheme()
+    public function isSecure()
     {
-        return parse_url($this->url, PHP_URL_SCHEME);
+        return $this->getScheme() === self::SCHEME_HTTPS;
     }
 
     /**
@@ -107,50 +127,45 @@ class Request
     }
 
     /**
+     * Get request parameter.
+     * Return all parameters if no key is specified.
+     * @param string $key
+     * @return string|array|null
+     */
+    public function getParam($key = '')
+    {
+        if ($key === '') {
+            $param = $this->parameters;
+        } else {
+            $param = $this->parameters[$key] ?? null;
+        }
+
+        return $param;
+    }
+
+    /**
+     * Get request cookie.
+     * Return all cookies if no key is specified.
+     * @param string $key
+     * @return string|array|null
+     */
+    public function getCookie($key = '')
+    {
+        if ($key === '') {
+            $cookie = $this->cookies;
+        } else {
+            $cookie = $this->cookies[$key] ?? null;
+        }
+
+        return $cookie;
+    }
+
+    /**
      * Get request redirect status code.
      * @return int|null
      */
     public function getRedirectStatusCode()
     {
-        return $this->redirectStatus;
-    }
-
-    /**
-     * Check if request was performed via secure connection.
-     * @return bool
-     */
-    public function isSecure()
-    {
-        $scheme = $this->getScheme();
-
-        return $scheme === self::SCHEME_HTTPS;
-    }
-
-    /**
-     * Get request parameter.
-     * @param string $key
-     * @return string|null
-     */
-    public function getParam($key)
-    {
-        return $this->parameters[$key] ?? null;
-    }
-
-    /**
-     * Return all request parameters.
-     * @return array
-     */
-    public function getParams()
-    {
-        return $this->parameters;
-    }
-
-    /**
-     * Get user IP address.
-     * @return string|null
-     */
-    public function getUserIPAddress()
-    {
-        return $this->userIPAddress;
+        return $this->redirectStatusCode;
     }
 }

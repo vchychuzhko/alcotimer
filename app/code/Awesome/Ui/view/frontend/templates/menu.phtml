@@ -4,16 +4,21 @@
     <div class="menu-list">
         <div class="title">
             <h2>AlcoMenu</h2>
-            <p style="text-align: right;font-size: 14px;"><?= \Awesome\Framework\Model\AppInterface::VERSION; ?> open beta</p>
+            <p style="text-align: right;font-size: 14px;"><?= \Awesome\Framework\Model\Http::VERSION; ?> open beta</p>
             <!-- @TODO: temporary public versing -->
         </div>
         <?= $block->getChildHtml('timer.settings'); ?>
         <div class="contact-us">
             <p>Face any bug or have new ideas?</p>
             <p>Send us an email:
-                <a href="mailto:<?= $supportEmailAddress; ?>?subject = AlcoTimer" class="mail-address word-break copy-on-click">
+                <a href="mailto:<?= $supportEmailAddress; ?>?subject = AlcoTimer" class="mail-address word-break">
                     <?= $supportEmailAddress; ?>
                 </a>
+                <script type="application/javascript">
+                    jQuery(function () {
+                        $('.mail-address').copy({});
+                    });
+                </script>
             </p>
         </div>
     </div>

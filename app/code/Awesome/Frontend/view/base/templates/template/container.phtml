@@ -1,0 +1,10 @@
+<?php /** @var \Awesome\Frontend\Block\Template\Container $block */ ?>
+<?php if ($tag = $block->getHtmlTag()): ?>
+    <<?= $tag; ?>
+        <?= ($class = $block->getHtmlClass()) ? 'class="' . $class . '"' : ''; ?>
+        <?= ($id = $block->getHtmlId()) ? 'id="' . $id . '"' : ''; ?>>
+        <?= $block->getChildHtml(); ?>
+    </<?= $tag; ?>>
+<?php else: ?>
+    <?= $block->getChildHtml(); ?>
+<?php endif; ?>

@@ -1,8 +1,13 @@
-<?php /** @var \Awesome\Framework\Block\Template $block */ ?>
+<?php /** @var \Awesome\Frontend\Block\Html\Header $block */ ?>
 <header>
     <?= $block->getChildHtml(''); ?>
     <div class="logo-container">
-        <img src="<?= $block->getMediaUrl('images/logo.png'); ?>" alt="AlcoTimer logo" class="no-select"/>
-        <!-- @TODO: move logo path to some kind of config -->
+        <?php if (!$isHomepage = $block->isHomepage()): ?>
+            <a href="/">
+        <?php endif; ?>
+                <img src="<?= $block->getLogo(); ?>" alt="AlcoTimer logo" class="no-select"/>
+        <?php if (!$isHomepage): ?>
+            </a>
+        <?php endif; ?>
     </div>
 </header>

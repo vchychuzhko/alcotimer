@@ -2,7 +2,9 @@
 
 namespace Awesome\Timer\Block;
 
-class Timer extends \Awesome\Framework\Block\Template
+use Awesome\Framework\Helper\DataHelper;
+
+class Timer extends \Awesome\Frontend\Block\Template
 {
     public const TIMER_CONFIG_PATH = 'timer_config';
 
@@ -37,7 +39,7 @@ class Timer extends \Awesome\Framework\Block\Template
         $timerConfig = $this->config->get(self::TIMER_CONFIG_PATH . '/timer') ?: [];
 
         if (isset($timerConfig['sound'])) {
-            $timerConfig['sound'] = $this->getMediaUrl($timerConfig['sound']);
+            $timerConfig['sound'] = $this->getMediaFileUrl($timerConfig['sound']);
         }
 
         return $this->processConfig($timerConfig);
@@ -50,9 +52,10 @@ class Timer extends \Awesome\Framework\Block\Template
      */
     private  function processConfig($config)
     {
+        //@TODO: rework this somehow
         foreach ($config as $configKey => $configValue) {
             unset($config[$configKey]);
-            $config[$this->camelCase($configKey)] = $configValue;
+            $config[DataHelper::camelCase($configKey)] = $configValue;
         }
 
         return json_encode($config);

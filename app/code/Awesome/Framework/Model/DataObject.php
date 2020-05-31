@@ -2,12 +2,30 @@
 
 namespace Awesome\Framework\Model;
 
+use Awesome\Framework\Helper\DataHelper;
+
 class DataObject
 {
     /**
      * @var array $data
      */
-    protected $data = [];
+    protected $data;
+
+    /**
+     * @var bool $readOnly
+     */
+    private $readOnly;
+
+    /**
+     * DataObject constructor.
+     * @param array $data
+     * @param bool $readOnly
+     */
+    public function __construct($data = [], $readOnly = false)
+    {
+        $this->data = $data;
+        $this->readOnly = $readOnly;
+    }
 
     /**
      * DataObject data getter.
@@ -42,10 +60,12 @@ class DataObject
      */
     public function setData($key, $value = null)
     {
-        if ($key === (array) $key) {
-            $this->data = $key;
-        } else {
-            $this->data[$key] = $value;
+        if (!$this->readOnly) {
+            if ($key === (array) $key) {
+                $this->data = $key;
+            } else {
+                $this->data[$key] = $value;
+            }
         }
 
         return $this;
@@ -58,48 +78,22 @@ class DataObject
      * @param string $method
      * @param array $args
      * @return mixed
-     * @throws \Exception
+     * @throws \LogicException
      */
     public function __call($method, $args)
     {
         switch (substr($method, 0, 3)) {
             case 'get':
-                $key = $this->underscore(substr($method, 3));
+                $key = DataHelper::underscore(substr($method, 3));
 
                 return $this->getData($key);
             case 'set':
-                $key = $this->underscore(substr($method, 3));
+                $key = DataHelper::underscore(substr($method, 3));
                 $value = isset($args[0]) ? $args[0] : null;
 
                 return $this->setData($key, $value);
         }
 
-        throw new \Exception(
-            'Invalid method ' . get_class($this) . '::' . $method
-        );
-    }
-
-    /**
-     * Converts camelCase to snake_case for setters and getters.
-     * $this->getMyField() === $this->getData('my_field')
-     *
-     * @param string $string
-     * @return string
-     */
-    protected function underscore($string)
-    {
-        return strtolower(trim(preg_replace('/([A-Z]|[0-9]+)/', "_$1", $string), '_'));
-    }
-
-    /**
-     * Converts snake_case to camelCase for js widget configurations.
-     *
-     * @param string $string
-     * @param string $separator
-     * @return string
-     */
-    protected function camelCase($string, $separator = '_')
-    {
-        return str_replace($separator, '', lcfirst(ucwords($string, $separator)));
+        throw new \LogicException(sprintf('Invalid method %s::%s', get_class($this), $method));
     }
 }

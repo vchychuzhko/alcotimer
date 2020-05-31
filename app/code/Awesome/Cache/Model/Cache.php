@@ -10,7 +10,8 @@ class Cache
     public const FULL_PAGE_CACHE_KEY = 'full-page';
 
     /**
-     * Retrieve cache by key.
+     * Retrieve cache by key and tag.
+     * If tag is not provided, all data related to the key will be returned.
      * @param string $key
      * @param string $tag
      * @return mixed
@@ -20,10 +21,10 @@ class Cache
         //@TODO: Possibly, rework it according to Symfony, with save callback
         $cache = $this->readCacheFile($key);
 
-        if ($tag) {
-            $data = $cache[$tag] ?? [];
-        } else {
+        if ($tag === '') {
             $data = $cache;
+        } else {
+            $data = $cache[$tag] ?? null;
         }
 
         return $data;

@@ -2,7 +2,7 @@
 
 namespace Awesome\Ui\Block;
 
-class Menu extends \Awesome\Framework\Block\Template
+class Menu extends \Awesome\Frontend\Block\Template
 {
     private const SUPPORT_EMAIL_CONFIG = 'support_email_address';
     //@TODO: move this to future Contact module

@@ -1,10 +1,12 @@
 <?php /** General configuration file */
 return [
+    'developer_mode' => 0,
+    'show_forbidden' => 0, // if 0, 404 will be shown instead
     'support_email_address' => '',
+    'web_root_is_pub' => 1, // 0 for project root
     'web' => [
-        'web_root_is_pub' => 1, // 0 for project root
-        'homepage' => 'timer',
-        'show_forbidden' => 0,
+        'homepage' => 'timer_index_index',
+        'logo_path' => 'pub/media/images/logo.png',
         'js' => [
             'minify' => 0,
             'merge' => 0
@@ -22,7 +24,7 @@ return [
     'timer_config' => [
         'timer' => [
             'default_time' => 8,
-            'sound' => 'audio/football_sound.mp3' // path example - audio/file.mp3, must be in 'media' folder
+            'sound' => 'pub/media/audio/football_sound.mp3'
         ],
         'settings' => [
             'hide_random_time' => 1,
