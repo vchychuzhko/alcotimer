@@ -1,7 +1,8 @@
 ;(function ($) {
     $.widget('awesome.copy', {
         options: {
-            copyTextSelector: '.copy-on-click',
+            copyTextSelector: '',
+            copyTriggerSelector: '',
             showMessage: 1
         },
 
@@ -16,7 +17,11 @@
          * Init event listeners
          */
         initBindings: function () {
-            $(this.options.copyTextSelector).on('click', this.copyText.bind(this));
+            let $trigger = !this.options.copyTriggerSelector || $(this.element).is(this.options.copyTriggerSelector)
+                ? $(this.element)
+                : $(this.element).find(this.options.copyTriggerSelector);
+
+            $trigger.on('click', this.copyText.bind(this));
         },
 
         /**
@@ -26,10 +31,13 @@
         copyText: function (event) {
             event.preventDefault();
             let $temp = $('<input>'),
-                $body = $('body');
+                $body = $('body'),
+                $text = !this.options.copyTextSelector || $(this.element).is(this.options.copyTextSelector)
+                    ? $(this.element)
+                    : $(this.element).find(this.options.copyTextSelector);
 
             $body.append($temp);
-            $temp.val($(event.target).text()).select();
+            $temp.val($text.text()).select();
             document.execCommand('copy');
             $temp.remove();
 

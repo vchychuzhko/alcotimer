@@ -2,9 +2,9 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="../../../../Frontend/Schema/page_layout.xsd">
     <head>
+        <script src="Awesome_Ui::copy.js"/>
         <script src="Awesome_Ui::menu.js"/>
         <script src="Awesome_Ui::message.js"/>
-        <script src="Awesome_Ui::copy.js"/>
         <css src="Awesome_Ui::menu.css"/>
         <css src="Awesome_Ui::message.css"/>
     </head>

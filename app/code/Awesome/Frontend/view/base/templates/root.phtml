@@ -5,11 +5,6 @@
     <?= $block->getChildHtml('head'); ?>
 </head>
 <body class="<?= $block->getBodyClass(); ?>">
-    <?= $block->getChildHtml(); ?>
-    <script type="application/javascript">
-        jQuery(function () {
-            $(document).copy({});
-        });
-    </script>
+    <?= $block->getChildHtml('body'); ?>
 </body>
 </html>

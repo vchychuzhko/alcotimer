@@ -101,6 +101,12 @@ class LayoutXmlParser
                 'data' => array_merge($head, $this->collectedAssets)
             ];
 
+            $body = [
+                'name' => 'body',
+                'class' => Container::class,
+                'template' => null,
+                'children' => $body
+            ];
             $this->applyReferences($body);
             XmlParsingHelper::applySortOrder($body);
 
@@ -109,7 +115,10 @@ class LayoutXmlParser
                     'name' => 'root',
                     'class' => Root::class,
                     'template' => null,
-                    'children' => array_merge(['head' => $head], $body)
+                    'children' => [
+                        'head' => $head,
+                        'body' => $body
+                    ]
                 ]
             ];
 
