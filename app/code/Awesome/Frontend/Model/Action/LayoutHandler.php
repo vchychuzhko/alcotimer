@@ -7,12 +7,11 @@ use Awesome\Framework\Model\Config;
 use Awesome\Framework\Model\Http;
 use Awesome\Framework\Model\Http\Request;
 use Awesome\Framework\Model\Http\Response;
-use Awesome\Frontend\Block\Root;
 use Awesome\Frontend\Model\Http\HtmlResponse;
 use Awesome\Frontend\Model\TemplateRenderer;
 use Awesome\Frontend\Model\XmlParser\LayoutXmlParser;
 
-class LayoutRenderer implements \Awesome\Framework\Model\ActionInterface
+class LayoutHandler implements \Awesome\Framework\Model\ActionInterface
 {
     public const HOMEPAGE_HANDLE_CONFIG = 'web/homepage';
 
@@ -66,14 +65,11 @@ class LayoutRenderer implements \Awesome\Framework\Model\ActionInterface
             }
         }
 
-        // @TODO: Move rendering part to a separate object
         if (!$pageContent = $this->cache->get(Cache::FULL_PAGE_CACHE_KEY, $handle . '_' . $view)) {
             $structure = $this->layoutXmlParser->getLayoutStructure($handle, $view);
+            $templateRenderer = new TemplateRenderer($handle, $view, $structure);
 
-            $templateRenderer = new TemplateRenderer($handle, $view, $structure['body']['children']);
-            $root = new Root($templateRenderer, 'root', null, $structure);
-
-            $pageContent = $root->toHtml();
+            $pageContent = $templateRenderer->render('root');
 
             $this->cache->save(Cache::FULL_PAGE_CACHE_KEY, $handle . '_' . $view, $pageContent);
         }

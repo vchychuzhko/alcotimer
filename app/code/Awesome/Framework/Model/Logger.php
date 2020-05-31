@@ -26,14 +26,14 @@ class Logger
 
     /**
      * Write an error to a log file.
-     * @param string $errorMessage
+     * @param \Exception $e
      * @return $this
      */
-    public function error($errorMessage)
+    public function error($e)
     {
         $this->write(
             self::EXCEPTION_LOG_FILE,
-            $errorMessage
+            get_class($e) . ': ' . $e->getMessage() . "\n" . $e->getTraceAsString()
         );
 
         return $this;

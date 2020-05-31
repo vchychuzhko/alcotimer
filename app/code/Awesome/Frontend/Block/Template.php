@@ -7,7 +7,7 @@ use Awesome\Framework\Model\Http;
 use Awesome\Frontend\Model\StaticContent;
 use Awesome\Frontend\Model\TemplateRenderer;
 
-class Template
+class Template extends\Awesome\Framework\Model\DataObject
 {
     /**
      * @var TemplateRenderer $renderer
@@ -55,9 +55,11 @@ class Template
      * @param string $name
      * @param string|null $template
      * @param array $children
+     * @param array $data
      */
-    public function __construct($renderer, $name, $template = null, $children = [])
+    public function __construct($renderer, $name, $template = null, $children = [], $data = [])
     {
+        parent::__construct($data, true);
         $this->renderer = $renderer;
         $this->name = $name;
         $this->template = $template ?: $this->template;

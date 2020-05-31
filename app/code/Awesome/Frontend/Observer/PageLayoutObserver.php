@@ -3,7 +3,7 @@
 namespace Awesome\Frontend\Observer;
 
 use Awesome\Framework\Model\Http\Router;
-use Awesome\Frontend\Model\Action\LayoutRenderer;
+use Awesome\Frontend\Model\Action\LayoutHandler;
 
 class PageLayoutObserver implements \Awesome\Framework\Model\Event\ObserverInterface
 {
@@ -15,6 +15,6 @@ class PageLayoutObserver implements \Awesome\Framework\Model\Event\ObserverInter
     {
         /** @var Router $router */
         $router = $event->getRouter();
-        $router->addAction(new LayoutRenderer());
+        $router->addAction(new LayoutHandler());
     }
 }

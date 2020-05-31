@@ -5,7 +5,6 @@ namespace Awesome\Frontend\Model;
 use Awesome\Framework\Helper\DataHelper;
 use Awesome\Framework\Model\Http;
 use Awesome\Frontend\Block\Template;
-use Awesome\Frontend\Block\Template\Container;
 
 class TemplateRenderer
 {
@@ -55,13 +54,9 @@ class TemplateRenderer
                 $this,
                 $nameInLayout,
                 $element['template'],
-                array_keys($element['children'])
+                array_keys($element['children']),
+                $element['data'] ?? []
             );
-
-            if ($this->isContainer($element) && $element['containerData']) {
-                /** @var Container $templateClass */
-                $templateClass->setContainerTagData($element['containerData']);
-            }
 
             $html = $templateClass->toHtml();
         }
@@ -73,6 +68,8 @@ class TemplateRenderer
      * Render element template.
      * @param Template $element
      * @return string
+     * @throws \LogicException
+     * @throws \RuntimeException
      */
     public function renderElement($element)
     {
@@ -84,13 +81,12 @@ class TemplateRenderer
                 sprintf('Template "%s" is not found for "%s" element', $template, $element->getNameInLayout())
             );
         }
-
         ob_start();
 
         try {
             extract(['block' => $element]);
             include $fileName;
-        } catch (\Exception $e) {
+        } catch (\LogicException | \RuntimeException $e) {
             ob_end_clean();
 
             throw $e;
@@ -137,15 +133,5 @@ class TemplateRenderer
     public function getView()
     {
         return $this->view;
-    }
-
-    /**
-     * Check if requested element has container type.
-     * @param array $element
-     * @return bool
-     */
-    private function isContainer($element)
-    {
-        return is_a($element['class'], Container::class, true);
     }
 }

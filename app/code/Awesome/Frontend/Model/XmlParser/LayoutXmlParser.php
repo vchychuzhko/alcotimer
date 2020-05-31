@@ -6,11 +6,13 @@ use Awesome\Cache\Model\Cache;
 use Awesome\Framework\Helper\DataHelper;
 use Awesome\Framework\Model\Http;
 use Awesome\Framework\Helper\XmlParsingHelper;
+use Awesome\Frontend\Block\Html\Head;
+use Awesome\Frontend\Block\Root;
 use Awesome\Frontend\Block\Template\Container;
 
 class LayoutXmlParser
 {
-    private const DEFAULT_LAYOUT_XML_PATH_PATTERN = '/*/*/view/%s/layout/default.xml';
+    private const DEFAULT_HANDLE_NAME = 'default';
     private const LAYOUT_XML_PATH_PATTERN = '/*/*/view/%s/layout/%s.xml';
     private const PAGE_HANDLES_CACHE_TAG_PREFIX = 'page-handles_';
 
@@ -18,6 +20,11 @@ class LayoutXmlParser
      * @var Cache $cache
      */
     private $cache;
+
+    /**
+     * @var array $processedElements
+     */
+    private $processedElements = [];
 
     /**
      * @var array $collectedAssets
@@ -60,32 +67,49 @@ class LayoutXmlParser
     public function getLayoutStructure($handle, $view)
     {
         if (!$layoutStructure = $this->cache->get(Cache::LAYOUT_CACHE_KEY, $handle)) {
-            $layoutStructure = [];
-            $defaultPattern = sprintf(self::DEFAULT_LAYOUT_XML_PATH_PATTERN, '{' . Http::BASE_VIEW . ',' . $view . '}');
-
-            foreach (glob(APP_DIR . $defaultPattern, GLOB_BRACE) as $defaultXmlFile) {
-                $layoutData = simplexml_load_file($defaultXmlFile);
-
-                $parsedData = $this->parse($layoutData);
-                $layoutStructure = array_replace_recursive($layoutStructure, $parsedData);
-            }
-            $pattern = sprintf(self::LAYOUT_XML_PATH_PATTERN, '{' . Http::BASE_VIEW . ',' . $view . '}', $handle);
+            $pattern = sprintf(
+                self::LAYOUT_XML_PATH_PATTERN,
+                '{' . Http::BASE_VIEW . ',' . $view . '}',
+                '{' . self::DEFAULT_HANDLE_NAME . ',' . $handle . '}'
+            );
+            $head = [];
+            $body = [];
 
             foreach (glob(APP_DIR . $pattern, GLOB_BRACE) as $layoutXmlFile) {
                 $layoutData = simplexml_load_file($layoutXmlFile);
 
-                $parsedData = $this->parse($layoutData);
-                $layoutStructure = array_replace_recursive($layoutStructure, $parsedData);
+                foreach ($layoutData->children() as $rootNode) {
+                    if ($rootNode->getName() === 'head') {
+                        $head = array_replace_recursive($head, $this->parseHeadNode($rootNode));
+                    }
+
+                    if ($rootNode->getName() === 'body') {
+                        $body = array_replace_recursive($body, $this->parseBodyNode($rootNode));
+                    }
+                }
             }
 
-            // @TODO: add check if no layout data is found
-            $this->filterRemovedAssets();
             // @TODO: Add check for minify/merge enabled and replace links
-            $layoutStructure['head'] = array_merge($layoutStructure['head'], $this->collectedAssets);
+            $this->filterRemovedAssets();
+            $head = [
+                'name' => 'head',
+                'class' => Head::class,
+                'template' => null,
+                'children' => [],
+                'data' => array_merge($head, $this->collectedAssets)
+            ];
 
-            $this->applyReferences($layoutStructure['body']);
-            XmlParsingHelper::applySortOrder($layoutStructure['body']);
-            // @TODO: add validation for duplicating elements
+            $this->applyReferences($body);
+            XmlParsingHelper::applySortOrder($body);
+
+            $layoutStructure = [
+                'root' => [
+                    'name' => 'root',
+                    'class' => Root::class,
+                    'template' => null,
+                    'children' => array_merge(['head' => $head], $body)
+                ]
+            ];
 
             $this->cache->save(Cache::LAYOUT_CACHE_KEY, $handle, $layoutStructure);
         }
@@ -116,35 +140,13 @@ class LayoutXmlParser
     }
 
     /**
-     * Parse page layout node.
-     * @param \SimpleXMLElement $pageNode
-     * @return array
-     */
-    private function parse($pageNode)
-    {
-        $parsedNode = [];
-
-        foreach ($pageNode->children() as $rootNode) {
-            if ($rootNode->getName() === 'head') {
-                $parsedNode['head'] = $this->parseHeadNode($rootNode);
-            }
-
-            if ($rootNode->getName() === 'body') {
-                $parsedNode['body'] = $this->parseBodyNode($rootNode);
-            }
-        }
-
-        return $parsedNode;
-    }
-
-    /**
      * Parse head part of XML layout node.
      * @param \SimpleXMLElement $headNode
      * @return array
      */
     private function parseHeadNode($headNode)
     {
-        $parsedHeadNode = [];
+        $data = [];
 
         //@TODO: Implement 'async' loading option
         foreach ($headNode->children() as $child) {
@@ -152,11 +154,11 @@ class LayoutXmlParser
                 case 'title':
                 case 'description':
                 case 'keywords':
-                    $parsedHeadNode[$childName] = (string) $child;
+                    $data[$childName] = (string) $child;
                     break;
-                    //@TODO: move above attributes to Head block, they should not be defined in XML
+                    //@TODO: Move above attributes to page-related config, they should not be defined in XML
                 case 'favicon':
-                    $parsedHeadNode[$childName] = XmlParsingHelper::getNodeAttribute($child, 'src');
+                    $data[$childName] = XmlParsingHelper::getNodeAttribute($child, 'src');
                     break;
                 case 'lib':
                 case 'script':
@@ -169,7 +171,7 @@ class LayoutXmlParser
             }
         }
 
-        return $parsedHeadNode;
+        return $data;
     }
 
     /**
@@ -179,32 +181,32 @@ class LayoutXmlParser
      */
     private function parseBodyNode($bodyNode)
     {
-        $parsedBodyNode = [
-            'children' => []
-        ];
+        $body = [];
 
         foreach ($bodyNode->children() as $bodyItem) {
             if ($parsedItem = $this->parseBodyItem($bodyItem)) {
-                $parsedBodyNode['children'][XmlParsingHelper::getNodeAttribute($bodyItem)] = $parsedItem;
+                $body[XmlParsingHelper::getNodeAttribute($bodyItem)] = $parsedItem;
             }
         }
 
-        return $parsedBodyNode;
+        return $body;
     }
 
     /**
      * Parse block, container or reference items.
      * @param \SimpleXMLElement $itemNode
      * @return array
+     * @throws \LogicException
      */
     private function parseBodyItem($itemNode)
     {
         $parsedItemNode = [];
+        $itemName = XmlParsingHelper::getNodeAttribute($itemNode);
 
         switch ($itemNode->getName()) {
             case 'block':
                 $parsedItemNode = [
-                    'name' => XmlParsingHelper::getNodeAttribute($itemNode),
+                    'name' => $itemName,
                     'class' => XmlParsingHelper::getNodeAttribute($itemNode, 'class'),
                     'template' => XmlParsingHelper::getNodeAttribute($itemNode, 'template') ?: null,
                     'children' => []
@@ -217,21 +219,25 @@ class LayoutXmlParser
                 foreach ($itemNode->children() as $child) {
                     $parsedItemNode['children'][XmlParsingHelper::getNodeAttribute($child)] = $this->parseBodyItem($child);
                 }
+
+                if (in_array($itemName, $this->processedElements)) {
+                    throw new \LogicException(sprintf('"%s" element is declared twice', $itemName));
+                }
+                $this->processedElements[] = $itemName;
                 break;
             case 'container':
                 $parsedItemNode = [
-                    'name' => XmlParsingHelper::getNodeAttribute($itemNode),
-                    'class' => (XmlParsingHelper::getNodeAttribute($itemNode, 'class')) ?: Container::class,
-                    'template' => XmlParsingHelper::getNodeAttribute($itemNode, 'template') ?: null,
-                    'children' => [],
-                    'containerData' => []
+                    'name' => $itemName,
+                    'class' => Container::class,
+                    'template' => null,
+                    'children' => []
                 ];
 
                 if ($htmlTag = XmlParsingHelper::getNodeAttribute($itemNode, 'htmlTag')) {
-                    $parsedItemNode['containerData'] = [
-                        'htmlTag' => $htmlTag,
-                        'htmlClass' => XmlParsingHelper::getNodeAttribute($itemNode, 'htmlClass'),
-                        'htmlId' => XmlParsingHelper::getNodeAttribute($itemNode, 'htmlId')
+                    $parsedItemNode['data'] = [
+                        'html_tag' => $htmlTag,
+                        'html_class' => XmlParsingHelper::getNodeAttribute($itemNode, 'htmlClass'),
+                        'html_id' => XmlParsingHelper::getNodeAttribute($itemNode, 'htmlId')
                     ];
                 }
 
@@ -242,11 +248,16 @@ class LayoutXmlParser
                 foreach ($itemNode->children() as $child) {
                     $parsedItemNode['children'][XmlParsingHelper::getNodeAttribute($child)] = $this->parseBodyItem($child);
                 }
+
+                if (in_array($itemName, $this->processedElements)) {
+                    throw new \LogicException(sprintf('"%s" element is declared twice', $itemName));
+                }
+                $this->processedElements[] = $itemName;
                 break;
             case 'referenceBlock':
             case 'referenceContainer':
                 if (XmlParsingHelper::stringBooleanCheck(XmlParsingHelper::getNodeAttribute($itemNode, 'remove'))) {
-                    $this->referencesToRemove[] = XmlParsingHelper::getNodeAttribute($itemNode);
+                    $this->referencesToRemove[] = $itemName;
                 } else {
                     $reference = [
                         'children' => []
@@ -260,7 +271,7 @@ class LayoutXmlParser
                         $reference['children'][XmlParsingHelper::getNodeAttribute($child)] = $this->parseBodyItem($child);
                     }
                     $this->references[] = [
-                        'name' => XmlParsingHelper::getNodeAttribute($itemNode),
+                        'name' => $itemName,
                         'data' => $reference
                     ];
                 }
@@ -291,10 +302,7 @@ class LayoutXmlParser
     private function applyReferences(&$bodyStructure)
     {
         foreach ($this->references as $reference) {
-            $referenceName = $reference['name'];
-            $referenceData = $reference['data'];
-
-            DataHelper::arrayReplaceByKeyRecursive($bodyStructure, $referenceName, $referenceData);
+            DataHelper::arrayReplaceByKeyRecursive($bodyStructure, $reference['name'], $reference['data']);
         }
 
         foreach ($this->referencesToRemove as $referenceToRemove) {

@@ -85,7 +85,6 @@
             <xs:element ref="referenceContainer" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
         <xs:attribute name="name" type="xs:string" use="required"/>
-        <!-- @TODO: Add ability to add class and id only in case tag is specified -->
         <xs:attribute name="htmlTag" type="xs:string"/>
         <xs:attribute name="htmlClass" type="xs:string"/>
         <xs:attribute name="htmlId" type="xs:string"/>

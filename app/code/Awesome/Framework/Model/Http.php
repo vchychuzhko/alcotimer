@@ -94,11 +94,12 @@ class Http
                 );
             }
         } catch (\Exception $e) {
-            $errorMessage = $e->getMessage() . "\n" . $e->getTraceAsString();
-            $this->logger->error($errorMessage);
+            $this->logger->error($e);
 
             $response = new Response(
-                $this->isDeveloperMode() ? $errorMessage : $this->maintenance->getInternalErrorPage(),
+                $this->isDeveloperMode()
+                    ? '<pre>' . get_class($e) . ': ' . $e->getMessage() . "\n" . $e->getTraceAsString() . '</pre>'
+                    : $this->maintenance->getInternalErrorPage(),
                 Response::INTERNAL_ERROR_STATUS_CODE,
                 ['Content-Type' => 'text/html']
             );
