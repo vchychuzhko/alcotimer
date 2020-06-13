@@ -7,7 +7,6 @@ namespace Awesome\Framework\Model\Http;
  * @method string getFullActionName()
  * @method string getUserIp()
  * @method string getView()
- * @package Awesome\Framework\Model\Http
  */
 class Request extends \Awesome\Framework\Model\DataObject
 {

@@ -2,8 +2,6 @@
 
 namespace Awesome\Framework\Model\Http;
 
-use Awesome\Framework\Model\Processor\JsonProcessor;
-
 class Response
 {
     const SUCCESS_STATUS_CODE = 200;
@@ -88,28 +86,38 @@ class Response
 
     /**
      * Add header to response.
-     * If $replace is true, existing header with the same name will be overwritten.
+     * By default, existing header with the same name will be overwritten.
      * @param string $name
      * @param string $value
      * @param bool $replace
      * @return $this
+     * @throws \RuntimeException
      */
-    public function addHeader($name, $value, $replace = false)
+    public function addHeader($name, $value, $replace = true)
     {
-        if ($replace || !isset($this->headers[$name])) {
-            $this->headers[$name] = $value;
+        if (isset($this->headers[$name]) && !$replace) {
+            throw new \RuntimeException(sprintf('Header "%s" is already set', $name));
         }
+        $this->headers[$name] = $value;
 
         return $this;
     }
 
     /**
-     * Get response headers.
-     * @return array
+     * Get response header.
+     * Return all headers if no key is specified.
+     * @param string $key
+     * @return string|array|null
      */
-    public function getHeaders()
+    public function getHeader($key = '')
     {
-        return $this->headers;
+        if ($key === '') {
+            $header = $this->headers;
+        } else {
+            $header = $this->headers[$key] ?? null;
+        }
+
+        return $header;
     }
 
     /**
