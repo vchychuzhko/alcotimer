@@ -75,8 +75,7 @@ class TemplateRenderer
      * Render element template.
      * @param Template $element
      * @return string
-     * @throws \LogicException
-     * @throws \RuntimeException
+     * @throws \Exception
      */
     public function renderElement($element)
     {
@@ -93,7 +92,7 @@ class TemplateRenderer
         try {
             extract(['block' => $element]);
             include $fileName;
-        } catch (\LogicException | \RuntimeException $e) {
+        } catch (\Exception $e) {
             ob_end_clean();
 
             throw $e;
