@@ -2,7 +2,7 @@
 
 namespace Awesome\Framework\Model\Validator;
 
-class IpAddress extends \Awesome\Framework\Model\AbstractValidator
+class IpValidator extends \Awesome\Framework\Model\AbstractValidator
 {
     /**
      * @inheritDoc

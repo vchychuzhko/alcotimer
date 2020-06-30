@@ -60,7 +60,7 @@ abstract class AbstractValidator
     }
 
     /**
-     * Reset invalid items.
+     * Remove stored invalid items.
      * @return $this
      */
     public function reset()

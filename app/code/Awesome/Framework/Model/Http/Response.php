@@ -4,11 +4,11 @@ namespace Awesome\Framework\Model\Http;
 
 class Response
 {
-    const SUCCESS_STATUS_CODE = 200;
-    const FORBIDDEN_STATUS_CODE = 403;
-    const NOTFOUND_STATUS_CODE = 404;
-    const INTERNAL_ERROR_STATUS_CODE = 500;
-    const SERVICE_UNAVAILABLE_STATUS_CODE = 503;
+    public const SUCCESS_STATUS_CODE = 200;
+    public const FORBIDDEN_STATUS_CODE = 403;
+    public const NOTFOUND_STATUS_CODE = 404;
+    public const INTERNAL_ERROR_STATUS_CODE = 500;
+    public const SERVICE_UNAVAILABLE_STATUS_CODE = 503;
 
     /**
      * @var string $content

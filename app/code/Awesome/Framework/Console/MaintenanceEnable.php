@@ -5,7 +5,7 @@ namespace Awesome\Framework\Console;
 use Awesome\Console\Model\Cli\Input\InputDefinition;
 use Awesome\Console\Model\Cli\Output;
 use Awesome\Framework\Model\Maintenance;
-use Awesome\Framework\Model\Validator\IpAddress as IpAddressValidator;
+use Awesome\Framework\Model\Validator\IpValidator;
 
 class MaintenanceEnable extends \Awesome\Console\Model\Cli\AbstractCommand
 {
@@ -15,7 +15,7 @@ class MaintenanceEnable extends \Awesome\Console\Model\Cli\AbstractCommand
     private $maintenance;
 
     /**
-     * @var IpAddressValidator $validator
+     * @var IpValidator $validator
      */
     private $validator;
 
@@ -25,7 +25,7 @@ class MaintenanceEnable extends \Awesome\Console\Model\Cli\AbstractCommand
     public function __construct()
     {
         $this->maintenance = new Maintenance();
-        $this->validator = new IpAddressValidator();
+        $this->validator = new IpValidator();
     }
 
     /**
@@ -34,8 +34,8 @@ class MaintenanceEnable extends \Awesome\Console\Model\Cli\AbstractCommand
     public static function configure($definition)
     {
         return parent::configure($definition)
-            ->setDescription('Enable maintenance mode with a list of allowed ids')
-            ->addOption('force', 'f', InputDefinition::OPTION_OPTIONAL, 'Ignore IP validation')
+            ->setDescription('Enable maintenance mode with a list of allowed IPs')
+            ->addOption('force', 'f', InputDefinition::OPTION_OPTIONAL, 'Skip IP validation')
             ->addArgument('ips', InputDefinition::ARGUMENT_ARRAY, 'List of IP addresses to exclude');
     }
 

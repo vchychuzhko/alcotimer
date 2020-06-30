@@ -3,7 +3,7 @@
 namespace Awesome\Framework\Model;
 
 use Awesome\Framework\Model\Config;
-use Awesome\Framework\Model\Event\Manager as EventManager;
+use Awesome\Framework\Model\Event\EventManager;
 use Awesome\Framework\Model\Http\Request;
 use Awesome\Framework\Model\Http\Response;
 use Awesome\Framework\Model\Http\Router;

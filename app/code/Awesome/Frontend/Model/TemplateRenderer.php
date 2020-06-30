@@ -80,7 +80,7 @@ class TemplateRenderer
     public function renderElement($element)
     {
         $template = $element->getTemplate();
-        $fileName = $this->getTemplateFileName($template);
+        $fileName = $this->getTemplateFile($template);
 
         if (!file_exists($fileName)) {
             throw new \LogicException(
@@ -102,11 +102,11 @@ class TemplateRenderer
     }
 
     /**
-     * Parse template XML path to a valid filesystem path.
+     * Convert template XML path to a valid filesystem path.
      * @param string $template
      * @return string
      */
-    private function getTemplateFileName($template)
+    private function getTemplateFile($template)
     {
         @list($module, $file) = explode('::', $template);
         $path = $module;

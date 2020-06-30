@@ -6,7 +6,7 @@ use Awesome\Framework\Model\Event;
 use Awesome\Framework\Model\Event\ObserverInterface;
 use Awesome\Framework\Model\XmlParser\EventXmlParser;
 
-class Manager
+class EventManager
 {
     /**
      * @var EventXmlParser $eventXmlParser
@@ -30,7 +30,7 @@ class Manager
     public function dispatch($eventName, $data = [])
     {
         if ($observers = $this->eventXmlParser->getObservers($eventName)) {
-            $event = new Event(array_merge(['event_name' => $eventName], $data));
+            $event = new Event($eventName, $data);
 
             foreach ($observers as $observer) {
                 /** @var ObserverInterface $observer */
