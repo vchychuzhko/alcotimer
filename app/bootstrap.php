@@ -2,8 +2,11 @@
 /**
  * Environment initialization.
  */
-if (PHP_MAJOR_VERSION < 7 && PHP_MINOR_VERSION < 1) {
-    if (PHP_SAPI == 'cli') {
+error_reporting(E_ALL & ~E_DEPRECATED);
+#ini_set('display_errors', 1);
+
+if (PHP_VERSION_ID < 70100) { // check for 7.1.0 compatibility
+    if (PHP_SAPI === 'cli') {
         echo 'Application requires PHP 7.1 or later.';
     } else {
         echo <<<HTML
