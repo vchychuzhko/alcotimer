@@ -6,6 +6,7 @@ use Awesome\Framework\Model\Config;
 use Awesome\Framework\Model\Event\EventManager;
 use Awesome\Framework\Model\Http\Request;
 use Awesome\Framework\Model\Http\Response;
+use Awesome\Framework\Model\Http\Response\HtmlResponse;
 use Awesome\Framework\Model\Http\Router;
 use Awesome\Framework\Model\Logger;
 use Awesome\Framework\Model\Maintenance;
@@ -87,21 +88,19 @@ class Http
                 }
             } else {
                 // @TODO: get request 'accept' header and return error page according to needed type
-                $response = new Response(
+                $response = new HtmlResponse(
                     $this->maintenance->getMaintenancePage(),
-                    Response::SERVICE_UNAVAILABLE_STATUS_CODE,
-                    ['Content-Type' => 'text/html']
+                    Response::SERVICE_UNAVAILABLE_STATUS_CODE
                 );
             }
         } catch (\Exception $e) {
             $this->logger->error($e);
 
-            $response = new Response(
+            $response = new HtmlResponse(
                 $this->isDeveloperMode()
                     ? '<pre>' . get_class($e) . ': ' . $e->getMessage() . "\n" . $e->getTraceAsString() . '</pre>'
                     : $this->maintenance->getInternalErrorPage(),
-                Response::INTERNAL_ERROR_STATUS_CODE,
-                ['Content-Type' => 'text/html']
+                Response::INTERNAL_ERROR_STATUS_CODE
             );
         }
 

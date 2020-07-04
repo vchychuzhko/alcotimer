@@ -1,6 +1,6 @@
 <?php
 
-namespace Awesome\Frontend\Model\Http;
+namespace Awesome\Framework\Model\Http\Response;
 
 class HtmlResponse extends \Awesome\Framework\Model\Http\Response
 {

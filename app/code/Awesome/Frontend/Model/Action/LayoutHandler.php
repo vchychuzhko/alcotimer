@@ -7,7 +7,7 @@ use Awesome\Framework\Model\Config;
 use Awesome\Framework\Model\Http;
 use Awesome\Framework\Model\Http\Request;
 use Awesome\Framework\Model\Http\Response;
-use Awesome\Frontend\Model\Http\HtmlResponse;
+use Awesome\Framework\Model\Http\Response\HtmlResponse;
 use Awesome\Frontend\Model\TemplateRenderer;
 use Awesome\Frontend\Model\XmlParser\LayoutXmlParser;
 
@@ -36,7 +36,7 @@ class LayoutHandler implements \Awesome\Framework\Model\ActionInterface
     /**
      * LayoutHandler constructor.
      */
-    function __construct()
+    public function __construct()
     {
         $this->cache = new Cache();
         $this->config = new Config();
