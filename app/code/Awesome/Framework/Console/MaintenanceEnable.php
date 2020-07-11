@@ -15,17 +15,19 @@ class MaintenanceEnable extends \Awesome\Console\Model\Cli\AbstractCommand
     private $maintenance;
 
     /**
-     * @var IpValidator $validator
+     * @var IpValidator $ipValidator
      */
-    private $validator;
+    private $ipValidator;
 
     /**
      * Maintenance Enable constructor.
+     * @param Maintenance $maintenance
+     * @param IpValidator $ipValidator
      */
-    public function __construct()
+    public function __construct(Maintenance $maintenance, IpValidator $ipValidator)
     {
-        $this->maintenance = new Maintenance();
-        $this->validator = new IpValidator();
+        $this->maintenance = $maintenance;
+        $this->ipValidator = $ipValidator;
     }
 
     /**
@@ -48,13 +50,13 @@ class MaintenanceEnable extends \Awesome\Console\Model\Cli\AbstractCommand
     {
         $allowedIPs = $input->getArgument('ips');
 
-        if ($input->getOption('force') || $this->validator->validItems($allowedIPs)) {
+        if ($input->getOption('force') || $this->ipValidator->validItems($allowedIPs)) {
             $this->maintenance->enable($allowedIPs);
 
             $output->writeln('Maintenance mode was enabled.');
         } else {
             $output->write('Provided IP addresses are not valid, please, check them and try again: ');
-            $output->writeln($output->colourText(implode(', ', $this->validator->getInvalidItems()), Output::BROWN));
+            $output->writeln($output->colourText(implode(', ', $this->ipValidator->getInvalidItems()), Output::BROWN));
             $output->writeln('Use -f/--force option if you want to proceed anyway.');
 
             throw new \RuntimeException('IP address validation failed');

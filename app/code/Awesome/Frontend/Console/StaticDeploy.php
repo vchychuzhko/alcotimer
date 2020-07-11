@@ -14,10 +14,11 @@ class StaticDeploy extends \Awesome\Console\Model\Cli\AbstractCommand
 
     /**
      * StaticDeploy constructor.
+     * @param StaticContent $staticContent
      */
-    public function __construct()
+    public function __construct(StaticContent $staticContent)
     {
-        $this->staticContent = new StaticContent();
+        $this->staticContent = $staticContent;
     }
 
     /**

@@ -13,10 +13,11 @@ class Clean extends \Awesome\Console\Model\Cli\AbstractCommand
 
     /**
      * Clean constructor.
+     * @param Cache $cache
      */
-    function __construct()
+    public function __construct(Cache $cache)
     {
-        $this->cache = new Cache();
+        $this->cache = $cache;
     }
 
     /**

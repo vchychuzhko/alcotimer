@@ -14,10 +14,11 @@ class MaintenanceStatus extends \Awesome\Console\Model\Cli\AbstractCommand
 
     /**
      * Maintenance Status constructor.
+     * @param Maintenance $maintenance
      */
-    public function __construct()
+    public function __construct(Maintenance $maintenance)
     {
-        $this->maintenance = new Maintenance();
+        $this->maintenance = $maintenance;
     }
 
     /**
