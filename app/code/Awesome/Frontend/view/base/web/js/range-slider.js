@@ -1,9 +1,9 @@
 ;(function ($) {
     $.widget('awesome.rangeSlider', {
         options: {
-            difference: 2,
-            minValue: 5,
-            maxValue: 20
+            difference: 1,
+            minValue: 1,
+            maxValue: 15
         },
 
         /**
