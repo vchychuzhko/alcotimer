@@ -35,17 +35,24 @@ class LayoutHandler implements \Awesome\Framework\Model\ActionInterface
 
     /**
      * LayoutHandler constructor.
+     * @param Cache $cache
+     * @param Config $config
+     * @param LayoutXmlParser $layoutXmlParser
      */
-    public function __construct()
-    {
-        $this->cache = new Cache();
-        $this->config = new Config();
-        $this->layoutXmlParser = new LayoutXmlParser();
+    public function __construct(
+        Cache $cache,
+        Config $config,
+        LayoutXmlParser $layoutXmlParser
+    ) {
+        $this->cache = $cache;
+        $this->config = $config;
+        $this->layoutXmlParser = $layoutXmlParser;
     }
 
     /**
      * Render html page according to request path and view.
      * @inheritDoc
+     * @throws \Exception
      */
     public function execute($request)
     {

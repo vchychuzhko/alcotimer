@@ -2,8 +2,22 @@
 
 namespace Awesome\Framework\Model;
 
-final class Invoker extends \Awesome\Framework\Model\Singleton
+use Awesome\Framework\Model\SingletonInterface;
+
+final class Invoker implements \Awesome\Framework\Model\SingletonInterface
 {
+    /**
+     * @var array $instances
+     */
+    private static $instances = [];
+
+    /**
+     * Invoker constructor.
+     */
+    private function __construct() {
+        self::$instances[self::class] = $this;
+    }
+
     /**
      * Get requested class instance.
      * Only object-like parameters are allowed in class constructors.
@@ -15,9 +29,7 @@ final class Invoker extends \Awesome\Framework\Model\Singleton
     {
         $id = ltrim($id, '\\');
 
-        if (is_a($id, Singleton::class, true)) {
-            $object = $id::getInstance();
-        } else {
+        if (!$object = self::$instances[$id] ?? null) {
             $reflectionClass = new \ReflectionClass($id);
             $arguments = [];
 
@@ -33,10 +45,26 @@ final class Invoker extends \Awesome\Framework\Model\Singleton
                     $arguments[] = $this->get($type->getName());
                 }
             }
-
             $object = new $id(...$arguments);
+
+            if ($object instanceof SingletonInterface) {
+                self::$instances[$id] = $object;
+            }
         }
 
         return $object;
+    }
+
+    /**
+     * Get DIContainer instance.
+     * @return $this
+     */
+    public static function getInstance()
+    {
+        if (!isset(self::$instances[self::class])) {
+            self::$instances[self::class] = new self();
+        }
+
+        return self::$instances[self::class];
     }
 }

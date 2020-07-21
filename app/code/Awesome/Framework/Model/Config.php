@@ -2,7 +2,7 @@
 
 namespace Awesome\Framework\Model;
 
-class Config
+class Config implements \Awesome\Framework\Model\SingletonInterface
 {
     private const CONFIG_FILE_PATH = '/app/etc/config.php';
     private const CONFIG_PATH_DELIMITER = '/';

@@ -8,7 +8,7 @@ namespace Awesome\Framework\Model\Http;
  * @method string getUserIp()
  * @method string getView()
  */
-class Request extends \Awesome\Framework\Model\DataObject
+class Request extends \Awesome\Framework\Model\DataObject implements \Awesome\Framework\Model\SingletonInterface
 {
     public const FORBIDDEN_REDIRECT_CODE = 403;
     public const NOTFOUND_REDIRECT_CODE = 404;

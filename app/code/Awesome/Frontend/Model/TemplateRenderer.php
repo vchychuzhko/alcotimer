@@ -38,9 +38,9 @@ class TemplateRenderer
     public function __construct($handle, $view, $structure, $handles = [])
     {
         $this->handle = $handle;
-        $this->handles = $handles ?: [$handle];
         $this->view = $view;
         $this->structure = $structure;
+        $this->handles = $handles ?: [$handle];
     }
 
     /**
@@ -48,6 +48,7 @@ class TemplateRenderer
      * Return empty string in case element is not found.
      * @param string $nameInLayout
      * @return string
+     * @throws \Exception
      */
     public function render($nameInLayout)
     {

@@ -3,6 +3,7 @@
 namespace Awesome\Framework\Model\Http;
 
 use Awesome\Framework\Model\ActionInterface;
+use Awesome\Framework\Model\Invoker;
 
 class Router
 {
@@ -12,8 +13,22 @@ class Router
     private $actions = [];
 
     /**
-     * Add action to list.
-     * @param ActionInterface $action
+     * @var Invoker $invoker
+     */
+    private $invoker;
+
+    /**
+     * Router constructor.
+     * @param Invoker $invoker
+     */
+    public function __construct(Invoker $invoker)
+    {
+        $this->invoker = $invoker;
+    }
+
+    /**
+     * Add action classname to list.
+     * @param string $action
      * @return $this
      */
     public function addAction($action)
@@ -25,10 +40,19 @@ class Router
 
     /**
      * Get action with the highest priority.
-     * @return ActionInterface
+     * @return ActionInterface|null
+     * @throws \Exception
      */
     public function getAction()
     {
-        return reset($this->actions);
+        if ($action = reset($this->actions)) {
+            $action = $this->invoker->get($action);
+
+            if (!($action instanceof ActionInterface)) {
+                throw new \LogicException(sprintf('Action "%s" does not implement ActionInterface', get_class($action)));
+            }
+        }
+
+        return $action ?: null;
     }
 }

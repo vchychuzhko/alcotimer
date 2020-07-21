@@ -18,10 +18,11 @@ class Logger
 
     /**
      * LogWriter constructor.
+     * @param Date $date
      */
-    public function __construct()
+    public function __construct(Date $date)
     {
-        $this->date = new Date();
+        $this->date = $date;
     }
 
     /**

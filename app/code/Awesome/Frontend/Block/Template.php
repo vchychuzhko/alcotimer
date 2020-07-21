@@ -4,6 +4,7 @@ namespace Awesome\Frontend\Block;
 
 use Awesome\Framework\Model\Config;
 use Awesome\Framework\Model\Http;
+use Awesome\Framework\Model\Invoker;
 use Awesome\Frontend\Model\StaticContent;
 use Awesome\Frontend\Model\TemplateRenderer;
 
@@ -64,13 +65,14 @@ class Template extends\Awesome\Framework\Model\DataObject
         $this->name = $name;
         $this->template = $template ?: $this->template;
         $this->children = $children;
-        $this->staticContent = new StaticContent();
-        $this->config = new Config();
+        $this->staticContent = Invoker::getInstance()->get(StaticContent::class);
+        $this->config = Invoker::getInstance()->get(Config::class);
     }
 
     /**
      * Render template.
      * @return string
+     * @throws \Exception
      */
     public function toHtml()
     {
@@ -92,8 +94,8 @@ class Template extends\Awesome\Framework\Model\DataObject
                 $childHtml = $this->renderer->render($childName);
             }
         } else {
-            foreach ($this->children as $childName) {
-                $childHtml .= $this->renderer->render($childName);
+            foreach ($this->children as $child) {
+                $childHtml .= $this->renderer->render($child);
             }
         }
 

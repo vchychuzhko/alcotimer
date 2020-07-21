@@ -73,7 +73,7 @@ class DataObject
 
     /**
      * Set/Get attribute wrapper.
-     * vendor/magento/framework/DataObject.php - L381
+     * Based on vendor/magento/framework/DataObject.php - L381
      *
      * @param string $method
      * @param array $args
@@ -89,7 +89,7 @@ class DataObject
                 return $this->getData($key);
             case 'set':
                 $key = DataHelper::underscore(substr($method, 3));
-                $value = isset($args[0]) ? $args[0] : null;
+                $value = $args[0] ?? null;
 
                 return $this->setData($key, $value);
         }

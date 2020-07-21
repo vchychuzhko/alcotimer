@@ -20,10 +20,11 @@ class StaticContent
 
     /**
      * App constructor.
+     * @param Config $config
      */
-    public function __construct()
+    public function __construct(Config $config)
     {
-        $this->config = new Config();
+        $this->config = $config;
     }
 
     /**
@@ -41,7 +42,6 @@ class StaticContent
                 $this->processView($view);
             }
         }
-
         $this->generateDeployedVersion();
 
         return $this;

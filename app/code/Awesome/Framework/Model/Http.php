@@ -26,6 +26,11 @@ class Http
     public const ROOT_ACTION_NAME = 'index_index_index';
 
     /**
+     * @var Request $request
+     */
+    private $request;
+
+    /**
      * @var Logger $logger
      */
     private $logger;
@@ -46,19 +51,30 @@ class Http
     private $eventManager;
 
     /**
-     * @var Request $request
+     * @var Router $router
      */
-    private $request;
+    private $router;
 
     /**
      * Http app constructor.
+     * @param Logger $logger
+     * @param Maintenance $maintenance
+     * @param Config $config
+     * @param EventManager $eventManager
+     * @param Router $router
      */
-    public function __construct()
-    {
-        $this->logger = new Logger();
-        $this->maintenance = new Maintenance();
-        $this->config = new Config();
-        $this->eventManager = new EventManager();
+    public function __construct(
+        Logger $logger,
+        Maintenance $maintenance,
+        Config $config,
+        EventManager $eventManager,
+        Router $router
+    ) {
+        $this->logger = $logger;
+        $this->maintenance = $maintenance;
+        $this->config = $config;
+        $this->eventManager = $eventManager;
+        $this->router = $router;
     }
 
     /**
@@ -72,14 +88,13 @@ class Http
 
             if (!$this->isMaintenance()) {
                 $redirectStatus = $request->getRedirectStatusCode();
-                $router = new Router();
 
                 $this->eventManager->dispatch(
                     'http_frontend_action',
-                    ['request' => $request, 'router' => $router]
+                    ['request' => $request, 'router' => $this->router]
                 );
 
-                if ($action = $router->getAction()) {
+                if ($action = $this->router->getAction()) {
                     $response = $action->execute($request);
                 } elseif ($redirectStatus === Request::FORBIDDEN_REDIRECT_CODE && $this->showForbiddenPage()) {
                     $response = new Response('', Response::FORBIDDEN_STATUS_CODE);
@@ -139,6 +154,7 @@ class Http
     /**
      * Parse and return http request.
      * @return Request
+     * @throws \Exception
      */
     private function getRequest()
     {

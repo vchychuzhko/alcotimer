@@ -15,6 +15,6 @@ class PageLayoutObserver implements \Awesome\Framework\Model\Event\ObserverInter
     {
         /** @var Router $router */
         $router = $event->getRouter();
-        $router->addAction(new LayoutHandler());
+        $router->addAction(LayoutHandler::class);
     }
 }

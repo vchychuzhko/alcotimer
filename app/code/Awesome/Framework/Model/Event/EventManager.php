@@ -15,10 +15,11 @@ class EventManager
 
     /**
      * EventManager constructor.
+     * @param EventXmlParser $eventXmlParser
      */
-    public function __construct()
+    public function __construct(EventXmlParser $eventXmlParser)
     {
-        $this->eventXmlParser = new EventXmlParser();
+        $this->eventXmlParser = $eventXmlParser;
     }
 
     /**

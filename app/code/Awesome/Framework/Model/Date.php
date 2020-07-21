@@ -2,7 +2,7 @@
 
 namespace Awesome\Framework\Model;
 
-class Date
+class Date implements \Awesome\Framework\Model\SingletonInterface
 {
     private const TIMEZONE = 'Europe/Kiev';
     private const TIME_FORMAT = 'Y-m-d H:i:s';
