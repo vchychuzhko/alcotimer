@@ -1,7 +1,7 @@
 <?php /** General configuration file */
 return [
-    'developer_mode' => 0,
-    'show_forbidden' => 0, // if 0, 404 will be shown instead
+    'developer_mode' => 0, // Note: this will show all errors and exceptions in the frontend
+    'show_forbidden' => 0, // NotFound response will be returned instead
     'support_email_address' => '',
     'web_root_is_pub' => 1, // 0 for project root
     'web' => [

@@ -19,7 +19,7 @@ class Http
     public const BACKEND_VIEW = 'adminhtml';
     public const BASE_VIEW = 'base';
 
-    public const APP_MODE_CONFIG = 'developer_mode';
+    public const DEVELOPER_MODE_CONFIG = 'developer_mode';
     public const SHOW_FORBIDDEN_CONFIG = 'show_forbidden';
     public const WEB_ROOT_CONFIG = 'web_root_is_pub';
 
@@ -139,7 +139,7 @@ class Http
      */
     private function isDeveloperMode()
     {
-        return (bool) $this->config->get(self::APP_MODE_CONFIG);
+        return (bool) $this->config->get(self::DEVELOPER_MODE_CONFIG);
     }
 
     /**
