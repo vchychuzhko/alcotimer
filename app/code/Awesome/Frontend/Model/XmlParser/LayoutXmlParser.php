@@ -2,7 +2,6 @@
 
 namespace Awesome\Frontend\Model\XmlParser;
 
-use Awesome\Cache\Model\Cache;
 use Awesome\Framework\Helper\DataHelper;
 use Awesome\Framework\Model\Http;
 use Awesome\Framework\Helper\XmlParsingHelper;
@@ -14,12 +13,6 @@ class LayoutXmlParser
 {
     private const DEFAULT_HANDLE_NAME = 'default';
     private const LAYOUT_XML_PATH_PATTERN = '/*/*/view/%s/layout/%s.xml';
-    private const PAGE_HANDLES_CACHE_TAG_PREFIX = 'page-handles_';
-
-    /**
-     * @var Cache $cache
-     */
-    private $cache;
 
     /**
      * @var array $processedElements
@@ -51,14 +44,6 @@ class LayoutXmlParser
     private $referencesToRemove = [];
 
     /**
-     * LayoutXmlParser constructor.
-     */
-    function __construct()
-    {
-        $this->cache = new Cache();
-    }
-
-    /**
      * Get layout structure for requested handle for a specified view.
      * @param string $handle
      * @param string $view
@@ -67,65 +52,59 @@ class LayoutXmlParser
      */
     public function getLayoutStructure($handle, $view, $handles = [])
     {
-        if (!$layoutStructure = $this->cache->get(Cache::LAYOUT_CACHE_KEY, $handle)) {
-            $handles = $handles ?: [$handle];
-            $pattern = sprintf(
-                self::LAYOUT_XML_PATH_PATTERN,
-                '{' . Http::BASE_VIEW . ',' . $view . '}',
-                '{' . self::DEFAULT_HANDLE_NAME . ',' . implode(',', $handles) . '}'
-            );
-            $head = [];
-            $body = [];
+        $handles = $handles ?: [$handle];
+        $pattern = sprintf(
+            self::LAYOUT_XML_PATH_PATTERN,
+            '{' . Http::BASE_VIEW . ',' . $view . '}',
+            '{' . self::DEFAULT_HANDLE_NAME . ',' . implode(',', $handles) . '}'
+        );
+        $head = [];
+        $body = [];
 
-            foreach (glob(APP_DIR . $pattern, GLOB_BRACE) as $layoutXmlFile) {
-                $layoutData = simplexml_load_file($layoutXmlFile);
+        foreach (glob(APP_DIR . $pattern, GLOB_BRACE) as $layoutXmlFile) {
+            $layoutData = simplexml_load_file($layoutXmlFile);
 
-                foreach ($layoutData->children() as $rootNode) {
-                    if ($rootNode->getName() === 'head') {
-                        $head = array_replace_recursive($head, $this->parseHeadNode($rootNode));
-                    }
+            foreach ($layoutData->children() as $rootNode) {
+                if ($rootNode->getName() === 'head') {
+                    $head = array_replace_recursive($head, $this->parseHeadNode($rootNode));
+                }
 
-                    if ($rootNode->getName() === 'body') {
-                        $body = array_replace_recursive($body, $this->parseBodyNode($rootNode));
-                    }
+                if ($rootNode->getName() === 'body') {
+                    $body = array_replace_recursive($body, $this->parseBodyNode($rootNode));
                 }
             }
-
-            // @TODO: Add check for minify/merge enabled and replace links
-            $this->filterRemovedAssets();
-            $head = [
-                'name' => 'head',
-                'class' => Head::class,
-                'template' => null,
-                'children' => [],
-                'data' => array_merge($head, $this->collectedAssets)
-            ];
-
-            $body = [
-                'name' => 'body',
-                'class' => Container::class,
-                'template' => null,
-                'children' => $body
-            ];
-            $this->applyReferences($body);
-            XmlParsingHelper::applySortOrder($body);
-
-            $layoutStructure = [
-                'root' => [
-                    'name' => 'root',
-                    'class' => Root::class,
-                    'template' => null,
-                    'children' => [
-                        'head' => $head,
-                        'body' => $body
-                    ]
-                ]
-            ];
-
-            $this->cache->save(Cache::LAYOUT_CACHE_KEY, $handle, $layoutStructure);
         }
 
-        return $layoutStructure;
+        // @TODO: Add check for minify/merge enabled and replace links
+        $this->filterRemovedAssets();
+        $head = [
+            'name' => 'head',
+            'class' => Head::class,
+            'template' => null,
+            'children' => [],
+            'data' => array_merge($head, $this->collectedAssets)
+        ];
+
+        $body = [
+            'name' => 'body',
+            'class' => Container::class,
+            'template' => null,
+            'children' => $body
+        ];
+        $this->applyReferences($body);
+        XmlParsingHelper::applySortOrder($body);
+
+        return [
+            'root' => [
+                'name' => 'root',
+                'class' => Root::class,
+                'template' => null,
+                'children' => [
+                    'head' => $head,
+                    'body' => $body
+                ]
+            ]
+        ];
     }
 
     /**
@@ -135,19 +114,13 @@ class LayoutXmlParser
      */
     public function getPageHandles($view)
     {
-        if (!$handles = $this->cache->get(Cache::LAYOUT_CACHE_KEY, self::PAGE_HANDLES_CACHE_TAG_PREFIX . $view)) {
-            $pattern = sprintf(self::LAYOUT_XML_PATH_PATTERN, $view, '*_*_*');
-            $handles = [];
+        $pattern = sprintf(self::LAYOUT_XML_PATH_PATTERN, $view, '*_*_*');
+        $handles = [];
 
-            foreach (glob(APP_DIR . $pattern) as $collectedHandle) {
-                $handles[] = basename($collectedHandle, '.xml');
-            }
-            $handles = array_unique($handles);
-
-            $this->cache->save(Cache::LAYOUT_CACHE_KEY, self::PAGE_HANDLES_CACHE_TAG_PREFIX . $view, $handles);
+        foreach (glob(APP_DIR . $pattern) as $collectedHandle) {
+            $handles[] = basename($collectedHandle, '.xml');
         }
-
-        return $handles;
+        return array_unique($handles);
     }
 
     /**
@@ -267,7 +240,7 @@ class LayoutXmlParser
                 break;
             case 'referenceBlock':
             case 'referenceContainer':
-                if (XmlParsingHelper::stringBooleanCheck(XmlParsingHelper::getNodeAttribute($itemNode, 'remove'))) {
+                if (XmlParsingHelper::isAttributeBooleanTrue($itemNode, 'remove')) {
                     $this->referencesToRemove[] = $itemName;
                 } else {
                     $reference = [

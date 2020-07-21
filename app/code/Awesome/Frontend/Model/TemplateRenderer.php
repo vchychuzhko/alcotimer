@@ -80,14 +80,7 @@ class TemplateRenderer
      */
     public function renderElement($element)
     {
-        $template = $element->getTemplate();
-        $fileName = $this->getTemplateFile($template);
-
-        if (!file_exists($fileName)) {
-            throw new \LogicException(
-                sprintf('Template "%s" is not found for "%s" element', $template, $element->getNameInLayout())
-            );
-        }
+        $fileName = $this->getTemplateFile($element->getTemplate());
         ob_start();
 
         try {
@@ -106,6 +99,7 @@ class TemplateRenderer
      * Convert template XML path to a valid filesystem path.
      * @param string $template
      * @return string
+     * @throws \LogicException
      */
     private function getTemplateFile($template)
     {
@@ -120,8 +114,15 @@ class TemplateRenderer
                 $path = str_replace('/view/' . $this->view, '/view/' . Http::BASE_VIEW, $path);
             }
         }
+        $path = APP_DIR . $path;
 
-        return APP_DIR . $path;
+        if (!file_exists($path)) {
+            throw new \LogicException(
+                sprintf('Template file "%s" was not found', $template)
+            );
+        }
+
+        return $path;
     }
 
     /**

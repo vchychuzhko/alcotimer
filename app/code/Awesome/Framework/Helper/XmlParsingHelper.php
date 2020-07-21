@@ -6,6 +6,7 @@ class XmlParsingHelper
 {
     /**
      * Get attribute value from the provided XML node.
+     * Process "name" attribute by default.
      * @param \SimpleXMLElement $node
      * @param string $attribute
      * @return string
@@ -16,12 +17,24 @@ class XmlParsingHelper
     }
 
     /**
+     * Check if node attribute is a boolean "true".
+     * Process "disabled" attribute by default.
+     * @param \SimpleXMLElement $node
+     * @param string $attribute
+     * @return bool
+     */
+    public static function isAttributeBooleanTrue($node, $attribute = 'disabled')
+    {
+        return self::isBooleanTrue(self::getNodeAttribute($node, $attribute));
+    }
+
+    /**
      * Check if string is a boolean "true", otherwise return false.
      * Not case sensitive.
      * @param string $string
      * @return bool
      */
-    public static function stringBooleanCheck($string)
+    public static function isBooleanTrue($string)
     {
         return strtolower($string) === 'true';
     }

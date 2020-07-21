@@ -18,6 +18,8 @@ class LayoutHandler implements \Awesome\Framework\Model\ActionInterface
     public const FORBIDDEN_PAGE_HANDLE = 'forbidden_index_index';
     public const NOTFOUND_PAGE_HANDLE = 'notfound_index_index';
 
+    private const PAGE_HANDLES_CACHE_TAG_PREFIX = 'page-handles_';
+
     /**
      * @var Cache $cache
      */
@@ -80,7 +82,11 @@ class LayoutHandler implements \Awesome\Framework\Model\ActionInterface
         $handles[] = $handle;
 
         if (!$pageContent = $this->cache->get(Cache::FULL_PAGE_CACHE_KEY, $handle . '_' . $view)) {
-            $structure = $this->layoutXmlParser->getLayoutStructure($handle, $view, $handles);
+            if (!$structure = $this->cache->get(Cache::LAYOUT_CACHE_KEY, $handle)) {
+                $structure = $this->layoutXmlParser->getLayoutStructure($handle, $view, $handles);
+
+                $this->cache->save(Cache::LAYOUT_CACHE_KEY, $handle, $structure);
+            }
             $templateRenderer = new TemplateRenderer($handle, $view, $structure, $handles);
 
             $pageContent = $templateRenderer->render('root');
@@ -89,6 +95,22 @@ class LayoutHandler implements \Awesome\Framework\Model\ActionInterface
         }
 
         return new HtmlResponse($pageContent, $status);
+    }
+
+    /**
+     * Get page layout handles.
+     * @param string $view
+     * @return array
+     */
+    public function getPageHandles($view)
+    {
+        if (!$handles = $this->cache->get(Cache::LAYOUT_CACHE_KEY, self::PAGE_HANDLES_CACHE_TAG_PREFIX . $view)) {
+            $handles = $this->layoutXmlParser->getPageHandles($view);
+
+            $this->cache->save(Cache::LAYOUT_CACHE_KEY, self::PAGE_HANDLES_CACHE_TAG_PREFIX . $view, $handles);
+        }
+
+        return $handles;
     }
 
     /**
@@ -118,7 +140,7 @@ class LayoutHandler implements \Awesome\Framework\Model\ActionInterface
      */
     private function handleExist($handle, $view)
     {
-        return in_array($handle, $this->layoutXmlParser->getPageHandles($view))
+        return in_array($handle, $this->getPageHandles($view))
             && !in_array($handle, $this->getSystemHandles());
     }
 

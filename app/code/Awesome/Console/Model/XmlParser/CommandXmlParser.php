@@ -2,6 +2,8 @@
 
 namespace Awesome\Console\Model\XmlParser;
 
+use Awesome\Framework\Helper\XmlParsingHelper;
+
 class CommandXmlParser
 {
     private const CLI_XML_PATH_PATTERN = '/*/*/etc/cli.xml';
@@ -53,27 +55,28 @@ class CommandXmlParser
 
         foreach ($commandNode->children() as $namespace) {
             if (!$namespaceName = (string) $namespace['name']) {
-                throw new \LogicException(sprintf('Name attribute is not specified for namespace.'));
+                throw new \LogicException(sprintf('Name attribute is not specified for namespace'));
             }
 
             foreach ($namespace->children() as $command) {
-                if (!$commandName = (string) $command['name']) {
-                    throw new \LogicException(sprintf('Name attribute is not specified for "%s" namespace command.', $namespaceName));
+                if (!$commandName = XmlParsingHelper::getNodeAttribute($command)) {
+                    throw new \LogicException(sprintf('Name attribute is not specified for "%s" namespace command', $namespaceName));
                 }
-                $commandName = $namespaceName . ':' . (string) $command['name'];
+                $commandName = $namespaceName . ':' . $commandName;
 
                 if (isset($parsedNode[$commandName])) {
-                    throw new \LogicException(sprintf('Command "%s" is defined twice in one file.', $commandName));
+                    throw new \LogicException(sprintf('Command "%s" is defined twice in one file', $commandName));
                 }
-                $class = ltrim((string) $command['class'], '\\');
+                $class = XmlParsingHelper::getNodeAttribute($command, 'class');
 
                 if (!$class) {
-                    throw new \LogicException(sprintf('Class is not specified for "%s" command.', $commandName));
+                    throw new \LogicException(sprintf('Class is not specified for "%s" command', $commandName));
                 }
-                $disabled = strtolower((string) $command['disabled']) === 'true';
+                $class = ltrim($class, '\\');
+                $disabled = XmlParsingHelper::isAttributeBooleanTrue($command);
 
                 $parsedNode[$commandName] = [
-                    'class' => '\\' . $class,
+                    'class' => $class,
                     'disabled' => $disabled
                 ];
             }
