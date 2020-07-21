@@ -9,7 +9,7 @@ class HtmlResponse extends \Awesome\Framework\Model\Http\Response
      */
     public function proceed()
     {
-        $this->addHeader('Content-Type', 'text/html');
+        $this->setHeader('Content-Type', 'text/html');
 
         parent::proceed();
     }

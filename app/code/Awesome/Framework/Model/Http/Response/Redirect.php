@@ -29,7 +29,7 @@ class Redirect extends \Awesome\Framework\Model\Http\Response
      */
     public function proceed()
     {
-        $this->addHeader('Location', $this->redirectUrl);
+        $this->setHeader('Location', $this->redirectUrl);
 
         parent::proceed();
         exit();

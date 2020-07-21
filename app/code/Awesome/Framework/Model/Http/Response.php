@@ -85,19 +85,14 @@ class Response
     }
 
     /**
-     * Add header to response.
-     * By default, existing header with the same name will be overwritten.
+     * Set header to response.
+     * Existing header with the same name will be overwritten.
      * @param string $name
      * @param string $value
-     * @param bool $replace
      * @return $this
-     * @throws \RuntimeException
      */
-    public function addHeader($name, $value, $replace = true)
+    public function setHeader($name, $value)
     {
-        if (isset($this->headers[$name]) && !$replace) {
-            throw new \RuntimeException(sprintf('Header "%s" is already set', $name));
-        }
         $this->headers[$name] = $value;
 
         return $this;
