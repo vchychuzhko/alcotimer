@@ -12,7 +12,7 @@ use Awesome\Framework\Model\Invoker;
 
 class Cli
 {
-    public const VERSION = '0.3.1';
+    public const VERSION = '0.4.0';
     public const DEFAULT_COMMAND = 'help:show';
 
     /**

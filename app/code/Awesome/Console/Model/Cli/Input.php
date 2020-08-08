@@ -66,7 +66,7 @@ class Input
 
         if ($this->interactive) {
             $answer = $this->read($prompt);
-            $confirm = in_array($answer, $confirmOptions);
+            $confirm = in_array($answer, $confirmOptions, true);
         }
 
         return $confirm;
@@ -89,7 +89,7 @@ class Input
             $prompt .= "\n" . 'Your choice: ';
             $answer = $this->read($prompt);
 
-            if (in_array($answer, array_keys($options))) {
+            if (array_key_exists($answer, $options)) {
                 $choice = $answer;
             }
         }

@@ -64,7 +64,7 @@ class CommandHandler
      */
     public function commandExist($commandName)
     {
-        return in_array($commandName, $this->getCommands());
+        return in_array($commandName, $this->getCommands(), true);
     }
 
     /**
