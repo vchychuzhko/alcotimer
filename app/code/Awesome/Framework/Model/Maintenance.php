@@ -66,7 +66,7 @@ class Maintenance
     {
         $state = $this->getStatus();
 
-        return $state['enabled'] && !in_array($ip, $state['allowed_ips']);
+        return $state['enabled'] && !in_array($ip, $state['allowed_ips'], true);
     }
 
     /**

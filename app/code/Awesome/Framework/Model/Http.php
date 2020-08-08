@@ -154,7 +154,6 @@ class Http
     /**
      * Parse and return http request.
      * @return Request
-     * @throws \Exception
      */
     private function getRequest()
     {

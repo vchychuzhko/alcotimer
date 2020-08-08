@@ -90,7 +90,7 @@ class Template extends\Awesome\Framework\Model\DataObject
         $childHtml = '';
 
         if ($childName) {
-            if (in_array($childName, $this->children)) {
+            if (in_array($childName, $this->children, true)) {
                 $childHtml = $this->renderer->render($childName);
             }
         } else {

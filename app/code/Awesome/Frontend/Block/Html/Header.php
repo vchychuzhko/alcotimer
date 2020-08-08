@@ -23,6 +23,6 @@ class Header extends \Awesome\Frontend\Block\Template
      */
     public function isHomepage()
     {
-        return in_array(Http::ROOT_ACTION_NAME, $this->renderer->getHandles());
+        return in_array(Http::ROOT_ACTION_NAME, $this->renderer->getHandles(), true);
     }
 }

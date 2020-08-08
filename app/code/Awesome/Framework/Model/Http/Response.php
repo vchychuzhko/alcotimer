@@ -99,20 +99,22 @@ class Response
     }
 
     /**
-     * Get response header.
-     * Return all headers if no key is specified.
+     * Get response header by key.
      * @param string $key
-     * @return string|array|null
+     * @return string|null
      */
-    public function getHeader($key = '')
+    public function getHeader($key)
     {
-        if ($key === '') {
-            $header = $this->headers;
-        } else {
-            $header = $this->headers[$key] ?? null;
-        }
+        return $this->headers[$key] ?? null;
+    }
 
-        return $header;
+    /**
+     * Get all response headers.
+     * @return array
+     */
+    public function getHeaders()
+    {
+        return $this->headers;
     }
 
     /**
