@@ -55,7 +55,7 @@ class Logger
 
         file_put_contents(
             BP . self::LOG_DIRECTORY . '/' . $logFile,
-            DateHelper::getCurrentTime() . ': ' . $message . "\n",
+            '[' . DateHelper::getCurrentTime() . '] ' . $message . "\n",
             FILE_APPEND
         );
 

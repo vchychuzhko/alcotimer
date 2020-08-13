@@ -16,6 +16,20 @@
     margin: 20px 0;
 }
 
+.timer-hint .hint-content .hint-confirm-button {
+    background-color: #fff;
+    border: 1px solid #000;
+    border-radius: 20px;
+    cursor: pointer;
+    display: block;
+    padding: 10px 20px;
+    margin: auto;
+}
+
+.timer-hint .hint-content .hint-confirm-button:hover {
+    background-color: #f5f5dc;
+}
+
 .hint-button-container {
     text-align: center;
 }
@@ -30,5 +44,5 @@
 }
 
 .hint-button-container .hint-button:hover {
-    background: #f5f5dc;
+    background-color: #f5f5dc;
 }

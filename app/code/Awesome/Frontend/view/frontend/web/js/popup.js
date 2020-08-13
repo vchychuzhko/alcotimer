@@ -2,12 +2,17 @@
     $.widget('awesome.popup', {
         options: {
             closeOnEsc: true,
+            confirmButtonSelector: null,
             delayOnPageLoad: 0,
             hideOriginal: true,
             openOnPageLoad: false,
             triggerSelector: null,
-            showOverlay: true
         },
+
+        /**
+         * Initialized popup window
+         */
+        popup: null,
 
         /**
          * Constructor
@@ -30,20 +35,20 @@
             if (this.options.triggerSelector) {
                 $(this.options.triggerSelector).on('click', this.open.bind(this));
             }
+
+            if (this.options.confirmButtonSelector) {
+                this.popup.on('click', this.options.confirmButtonSelector, this.close.bind(this));
+            }
         },
 
         /**
-         * Prepare popup element
+         * Prepare popup window
          */
         preparePopup: function () {
             if (this.options.hideOriginal) {
                 $(this.element).hide();
             }
             this.popup = $('<div class="popup-container" style="display: none;"></div>');
-
-            if (this.options.showOverlay) {
-                this.popup.addClass('has-overlay');
-            }
 
             let $window = $('<div class="popup-window"></div>'),
                 $content = $('<div class="popup-content"></div>'),
@@ -81,9 +86,7 @@
         open: function () {
             this.popup.fadeIn();
 
-            if (this.options.showOverlay) {
-                $('body').addClass('noscroll');
-            }
+            $('body').addClass('noscroll');
 
             if (this.options.closeOnEsc) {
                 $(document).on('keydown.popup', function (event) {
@@ -93,6 +96,7 @@
                     }
                 }.bind(this));
             }
+            $(this.element).trigger('popup.open');
         },
 
         /**
@@ -101,9 +105,9 @@
         close: function () {
             this.popup.fadeOut();
 
-            if (this.options.showOverlay) {
-                $('body').removeClass('noscroll');
-            }
+            $('body').removeClass('noscroll');
+
+            $(this.element).trigger('popup.close');
         }
     });
 })(jQuery);

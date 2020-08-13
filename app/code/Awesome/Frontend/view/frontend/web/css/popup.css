@@ -1,27 +1,21 @@
 .popup-container {
-    align-items: center;
-    display: flex;
-    justify-content: center;
-    left: 50%;
-    position: fixed;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 99;
-}
-
-.popup-container.has-overlay {
     background: rgba(0, 0, 0, 0.7);
     bottom: 0;
+    display: block;
     left: 0;
+    overflow-y: auto;
+    position: fixed;
     right: 0;
     top: 0;
     transform: none;
+    z-index: 99;
 }
 
 .popup-container .popup-window {
     max-width: 80%;
     position: relative;
     width: 600px;
+    margin: 5rem auto;
 }
 
 .popup-container .popup-window .popup-close_button {
@@ -58,8 +52,6 @@
 
 .popup-container .popup-window .popup-content {
     background: #fff;
-    max-height: 80vh;
-    overflow: hidden;
     overflow-y: auto;
     position: relative;
     z-index: 1;
