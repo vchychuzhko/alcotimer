@@ -204,8 +204,8 @@ class LayoutXmlParser
                     $parsedItemNode['children'][XmlParsingHelper::getNodeAttribute($child)] = $this->parseBodyItem($child);
                 }
 
-                if (in_array($itemName, $this->processedElements)) {
-                    throw new \LogicException(sprintf('"%s" element is declared twice', $itemName));
+                if (in_array($itemName, $this->processedElements, true)) {
+                    throw new \LogicException(sprintf('"%s" block is declared twice', $itemName));
                 }
                 $this->processedElements[] = $itemName;
                 break;
@@ -233,8 +233,8 @@ class LayoutXmlParser
                     $parsedItemNode['children'][XmlParsingHelper::getNodeAttribute($child)] = $this->parseBodyItem($child);
                 }
 
-                if (in_array($itemName, $this->processedElements)) {
-                    throw new \LogicException(sprintf('"%s" element is declared twice', $itemName));
+                if (in_array($itemName, $this->processedElements, true)) {
+                    throw new \LogicException(sprintf('"%s" container is declared twice', $itemName));
                 }
                 $this->processedElements[] = $itemName;
                 break;

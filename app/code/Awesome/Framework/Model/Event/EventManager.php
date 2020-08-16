@@ -5,6 +5,7 @@ namespace Awesome\Framework\Model\Event;
 use Awesome\Cache\Model\Cache;
 use Awesome\Framework\Model\Event;
 use Awesome\Framework\Model\Event\ObserverInterface;
+use Awesome\Framework\Model\Invoker;
 use Awesome\Framework\Model\XmlParser\EventXmlParser;
 
 class EventManager
@@ -22,21 +23,31 @@ class EventManager
     private $eventXmlParser;
 
     /**
+     * @var Invoker $invoker
+     */
+    private $invoker;
+
+    /**
      * EventManager constructor.
      * @param Cache $cache
      * @param EventXmlParser $eventXmlParser
+     * @param Invoker $invoker
      */
-    public function __construct(Cache $cache, EventXmlParser $eventXmlParser)
-    {
+    public function __construct(
+        Cache $cache,
+        EventXmlParser $eventXmlParser,
+        Invoker $invoker
+    ) {
         $this->cache = $cache;
         $this->eventXmlParser = $eventXmlParser;
+        $this->invoker = $invoker;
     }
 
     /**
      * Fire event with calling all related observers.
      * @param string $eventName
      * @param array $data
-     * @throws \LogicException
+     * @throws \Exception
      */
     public function dispatch($eventName, $data = [])
     {
@@ -45,10 +56,12 @@ class EventManager
 
             foreach ($observers as $observer) {
                 /** @var ObserverInterface $observer */
-                $observer = new $observer();
+                $observer = $this->invoker->get($observer);
 
                 if (!($observer instanceof ObserverInterface)) {
-                    throw new \LogicException(sprintf('Observer "%s" does not implement ObserverInterface', get_class($observer)));
+                    throw new \LogicException(
+                        sprintf('Observer "%s" does not implement ObserverInterface', get_class($observer))
+                    );
                 }
                 $observer->execute($event);
             }
@@ -65,7 +78,7 @@ class EventManager
     {
         $eventsData = $this->getEventsData();
 
-        return $eventsData[$eventName] ?? null;
+        return $eventsData[$eventName] ?? [];
     }
 
     /**

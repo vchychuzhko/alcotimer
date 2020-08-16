@@ -13,7 +13,7 @@ use Awesome\Framework\Model\Maintenance;
 
 class Http
 {
-    public const VERSION = '0.3.1';
+    public const VERSION = '0.4.0';
 
     public const FRONTEND_VIEW = 'frontend';
     public const BACKEND_VIEW = 'adminhtml';
@@ -200,7 +200,7 @@ class Http
      */
     private function parseFullActionName($url)
     {
-        $parts = explode('_', str_replace('/', '_', trim(parse_url($url, PHP_URL_PATH), '/')));
+        $parts = explode('/', str_replace('_', '-', trim(parse_url($url, PHP_URL_PATH), '/')));
 
         return $parts[0]
             ? ($parts[0] . '_' . ($parts[1] ?? 'index') . '_' . ($parts[2] ?? 'index'))

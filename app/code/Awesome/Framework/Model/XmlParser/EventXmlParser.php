@@ -19,19 +19,18 @@ class EventXmlParser
         $eventsData = [];
 
         foreach (glob(APP_DIR . self::EVENTS_XML_PATH_PATTERN) as $eventsXmlFile) {
-            $collectedEventsData = simplexml_load_file($eventsXmlFile);
-            $parsedData = $this->parse($collectedEventsData);
+            $parsedData = $this->parse($eventsXmlFile);
 
             foreach ($parsedData as $eventName => $eventObservers) {
                 if ($eventObservers) {
                     $eventsData[$eventName] = $eventsData[$eventName] ?? [];
 
                     foreach ($eventObservers as $observerName => $observer) {
-                        if (DataHelper::arrayGetByKeyRecursive($eventsData, $observerName)) {
-                            throw new \LogicException(sprintf('Observer with "%s" name is already defined', $observerName));
-                        }
-
                         if (!$observer['disabled']) {
+                            if (DataHelper::arrayGetByKeyRecursive($eventsData, $observerName)) {
+                                throw new \LogicException(sprintf('Observer with "%s" name is already defined', $observerName));
+                            }
+
                             $eventsData[$eventName][$observerName] = $observer['class'];
                         }
                     }
@@ -44,18 +43,19 @@ class EventXmlParser
     }
 
     /**
-     * Parse event node.
-     * @param \SimpleXMLElement $eventNode
+     * Parse events XML file.
+     * @param string $eventsXmlFile
      * @return array
      * @throws \LogicException
      */
-    private function parse($eventNode)
+    private function parse($eventsXmlFile)
     {
         $parsedNode = [];
+        $eventNode = simplexml_load_file($eventsXmlFile);
 
         foreach ($eventNode->children() as $event) {
             if (!$eventName = XmlParsingHelper::getNodeAttribute($event)) {
-                throw new \LogicException(sprintf('Name attribute is not provided for event'));
+                throw new \LogicException(sprintf('Name attribute is not provided for event in "%s" file', $eventsXmlFile));
             }
             $parsedNode[$eventName] = $parsedNode[$eventName] ?? [];
 
@@ -72,11 +72,9 @@ class EventXmlParser
                 if (!$class) {
                     throw new \LogicException(sprintf('Class is not specified for "%s" observer', $observerName));
                 }
-                $disabled = XmlParsingHelper::isAttributeBooleanTrue($observer);
-
                 $parsedNode[$eventName][$observerName] = [
                     'class' => '\\' . $class,
-                    'disabled' => $disabled
+                    'disabled' => XmlParsingHelper::isAttributeBooleanTrue($observer),
                 ];
 
                 if ($sortOrder = XmlParsingHelper::getNodeAttribute($observer, 'sortOrder')) {
