@@ -20,10 +20,11 @@ class CommandHandler
 
     /**
      * CommandHandler constructor.
+     * @param CommandXmlParser $commandXmlParser
      */
-    function __construct()
+    public function __construct(CommandXmlParser $commandXmlParser)
     {
-        $this->commandXmlParser = new CommandXmlParser();
+        $this->commandXmlParser = $commandXmlParser;
     }
 
     /**
@@ -63,7 +64,7 @@ class CommandHandler
      */
     public function commandExist($commandName)
     {
-        return in_array($commandName, $this->getCommands());
+        return in_array($commandName, $this->getCommands(), true);
     }
 
     /**

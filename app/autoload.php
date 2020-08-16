@@ -1,19 +1,18 @@
 <?php
-
-spl_autoload_register('autoload');
-
 /**
- * Function to load classes by provided class name.
- * @param string $className
+ * Function to load object file by provided name.
+ * @param string $objectName
  * @throws \Exception
  */
-function autoload($className)
-{
-    $file = APP_DIR . '/' . str_replace('\\', '/', ltrim($className, '\\')) . '.php';
+spl_autoload_register(function ($objectName) {
+    $objectFile = APP_DIR . '/' . str_replace('\\', '/', ltrim($objectName, '\\')) . '.php';
 
-    if (!file_exists($file)) {
-        throw new \Exception('File for "'. $className . '" class does not exist.');
+    if (!file_exists($objectFile)) {
+        throw new \Exception(sprintf('Object file was not found for "%s" object', $objectName));
     }
+    require_once $objectFile;
 
-    require_once $file;
-}
+    if (!class_exists($objectName) && !interface_exists($objectName)) {
+        throw new \Exception(sprintf('Object "%s" was not found in "%s"', $objectName, $objectFile));
+    }
+});

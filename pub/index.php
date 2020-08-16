@@ -2,6 +2,10 @@
 
 try {
     require __DIR__ . '/../app/bootstrap.php';
+
+    $invoker = \Awesome\Framework\Model\Invoker::getInstance();
+    /** @var \Awesome\Framework\Model\Http $app */
+    $app = $invoker->get(\Awesome\Framework\Model\Http::class);
 } catch (\Exception $e) {
     echo <<<HTML
 <div style="font:12px/1.35em arial, helvetica, sans-serif;">
@@ -14,5 +18,4 @@ HTML;
     exit(1);
 }
 
-$app = new \Awesome\Framework\Model\Http();
 $app->run();

@@ -2,15 +2,13 @@
 
 namespace Awesome\Framework\Model\Http;
 
-use Awesome\Framework\Model\Processor\JsonProcessor;
-
 class Response
 {
-    const SUCCESS_STATUS_CODE = 200;
-    const FORBIDDEN_STATUS_CODE = 403;
-    const NOTFOUND_STATUS_CODE = 404;
-    const INTERNAL_ERROR_STATUS_CODE = 500;
-    const SERVICE_UNAVAILABLE_STATUS_CODE = 503;
+    public const SUCCESS_STATUS_CODE = 200;
+    public const FORBIDDEN_STATUS_CODE = 403;
+    public const NOTFOUND_STATUS_CODE = 404;
+    public const INTERNAL_ERROR_STATUS_CODE = 500;
+    public const SERVICE_UNAVAILABLE_STATUS_CODE = 503;
 
     /**
      * @var string $content
@@ -87,24 +85,31 @@ class Response
     }
 
     /**
-     * Add header to response.
-     * If $replace is true, existing header with the same name will be overwritten.
+     * Set header to response.
+     * Existing header with the same name will be overwritten.
      * @param string $name
      * @param string $value
-     * @param bool $replace
      * @return $this
      */
-    public function addHeader($name, $value, $replace = false)
+    public function setHeader($name, $value)
     {
-        if ($replace || !isset($this->headers[$name])) {
-            $this->headers[$name] = $value;
-        }
+        $this->headers[$name] = $value;
 
         return $this;
     }
 
     /**
-     * Get response headers.
+     * Get response header by key.
+     * @param string $key
+     * @return string|null
+     */
+    public function getHeader($key)
+    {
+        return $this->headers[$key] ?? null;
+    }
+
+    /**
+     * Get all response headers.
      * @return array
      */
     public function getHeaders()

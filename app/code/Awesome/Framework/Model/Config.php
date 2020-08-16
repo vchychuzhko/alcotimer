@@ -2,10 +2,9 @@
 
 namespace Awesome\Framework\Model;
 
-class Config
+class Config implements \Awesome\Framework\Model\SingletonInterface
 {
     private const CONFIG_FILE_PATH = '/app/etc/config.php';
-    private const CONFIG_PATH_DELIMITER = '/';
 
     /**
      * @var array $config
@@ -14,23 +13,25 @@ class Config
 
     /**
      * Get config value by path.
+     * Method consider the path as chain of keys: a/b/c => ['a']['b']['c']
      * @param string $path
      * @return mixed
      */
     public function get($path)
     {
-        $value = null;
+        $keys = explode('/', $path);
+        $config = $this->getConfig();
 
-        if ($this->pathExist($path)) {
-            $pathParts = $this->parseConfigPath($path);
-            $value = $this->getConfig();
-
-            foreach($pathParts as $pathPart) {
-                $value = $value[$pathPart];
+        foreach ($keys as $key) {
+            if (is_array($config) && isset($config[$key])) {
+                $config = $config[$key];
+            } else {
+                $config = null;
+                break;
             }
         }
 
-        return $value;
+        return $config;
     }
 
     /**
@@ -47,47 +48,15 @@ class Config
     }
 
     /**
-     * Check if the requested config path exists.
-     * @param string $path
-     * @return bool
-     */
-    private function pathExist($path)
-    {
-        $pathParts = $this->parseConfigPath($path);
-        $config = $this->getConfig();
-        $exists = false;
-
-        foreach($pathParts as $pathPart) {
-            if ($exists = isset($config[$pathPart])) {
-                $config = $config[$pathPart];
-            } else {
-                break;
-            }
-        }
-
-        return $exists;
-    }
-
-    /**
-     * Parse requested path string into array of path parts.
-     * @param string $path
-     * @return array
-     */
-    private function parseConfigPath($path)
-    {
-        return explode(self::CONFIG_PATH_DELIMITER, $path);
-    }
-
-    /**
      * Load and get config by including configuration file.
-     * Can be forced to re-parse the file.
-     * @param bool $forceUpdate
+     * Can be forced to reload the file.
+     * @param bool $reload
      * @return array
      */
-    private function getConfig($forceUpdate = false)
+    private function getConfig($reload = false)
     {
-        if ($this->config === null || $forceUpdate) {
-            $this->config = include(BP . self::CONFIG_FILE_PATH);
+        if ($this->config === null || $reload) {
+            $this->config = include BP . self::CONFIG_FILE_PATH;
         }
 
         return $this->config;

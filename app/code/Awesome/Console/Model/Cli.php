@@ -8,10 +8,11 @@ use Awesome\Console\Model\Cli\Input;
 use Awesome\Console\Model\Cli\Input\InputDefinition;
 use Awesome\Console\Model\Cli\Output;
 use Awesome\Console\Model\Handler\CommandHandler;
+use Awesome\Framework\Model\Invoker;
 
 class Cli
 {
-    public const VERSION = '0.3.1';
+    public const VERSION = '0.4.0';
     public const DEFAULT_COMMAND = 'help:show';
 
     /**
@@ -30,24 +31,37 @@ class Cli
     private $output;
 
     /**
+     * @var Invoker $invoker
+     */
+    private $invoker;
+
+    /**
      * @var Input $input
      */
     private $input;
 
     /**
      * Console app constructor.
+     * @param CommandHandler $commandHandler
+     * @param Help $help
+     * @param Output $output
+     * @param Invoker $invoker
      */
-    public function __construct()
-    {
-        $this->commandHandler = new CommandHandler();
-        $this->help = new Help();
-        $this->output = new Output();
+    public function __construct(
+        CommandHandler $commandHandler,
+        Help $help,
+        Output $output,
+        Invoker $invoker
+    ) {
+        $this->commandHandler = $commandHandler;
+        $this->help = $help;
+        $this->output = $output;
+        $this->invoker = $invoker;
     }
 
     /**
      * Run the CLI application.
-     * @throws \LogicException
-     * @throws \RuntimeException
+     * @throws \Exception
      */
     public function run()
     {
@@ -85,7 +99,7 @@ class Cli
                 $this->help->execute($input, $this->output);
             } elseif ($command && $className = $this->commandHandler->getCommandClass($command)) {
                 /** @var AbstractCommand $consoleClass */
-                $consoleClass = new $className();
+                $consoleClass = $this->invoker->get($className);
                 $consoleClass->execute($input, $this->output);
             } else {
                 $this->showAppCliTitle();

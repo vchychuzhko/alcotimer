@@ -4,6 +4,9 @@ namespace Awesome\Frontend\Block\Html;
 
 class Head extends \Awesome\Frontend\Block\Template
 {
+    /**
+     * @inheritDoc
+     */
     protected $template = 'Awesome_Frontend::html/head.phtml';
 
     /**

@@ -1,6 +1,6 @@
 <?php
 
-namespace Awesome\Ui\Block;
+namespace Awesome\Frontend\Block;
 
 class Menu extends \Awesome\Frontend\Block\Template
 {

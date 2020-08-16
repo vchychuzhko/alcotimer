@@ -5,22 +5,44 @@
         <favicon src="images/favicon.png"/>
         <lib src="lib/jquery/jquery.min.js"/>
         <lib src="lib/jquery/jquery-ui.min.js"/>
+        <script src="Awesome_Frontend::copy.js"/>
+        <script src="Awesome_Frontend::menu.js"/>
+        <script src="Awesome_Frontend::message.js"/>
         <css src="Awesome_Frontend::base.css"/>
         <css src="Awesome_Frontend::header.css"/>
         <css src="Awesome_Frontend::footer.css"/>
+        <css src="Awesome_Frontend::menu.css"/>
+        <css src="Awesome_Frontend::message.css"/>
     </head>
     <body>
+        <block name="menu" class="Awesome\Frontend\Block\Menu" template="Awesome_Frontend::menu.phtml" sortOrder="1"/>
         <container name="page-wrapper" htmlTag="main" htmlClass="page-wrapper" sortOrder="5">
             <block name="header"
                    class="Awesome\Frontend\Block\Html\Header"
                    template="Awesome_Frontend::header.phtml"
-                   sortOrder="1"/>
+                   sortOrder="1"
+            >
+                <block name="menu-toggler"
+                       class="Awesome\Frontend\Block\Template"
+                       template="Awesome_Frontend::menu/menu_toggler.phtml"/>
+            </block>
+            <block name="menu-overlay"
+                   class="Awesome\Frontend\Block\Template"
+                   template="Awesome_Frontend::menu/menu_overlay.phtml"
+                   sortOrder="2"/>
             <block name="footer"
                    class="Awesome\Frontend\Block\Template"
                    template="Awesome_Frontend::footer.phtml"
                    sortOrder="10"/>
         </container>
         <container name="popup-init-section" htmlTag="div" htmlClass="popup-init-section" sortOrder="9"/>
-        <container name="js-init-section" htmlTag="div" htmlClass="js-init-section" sortOrder="10"/>
+        <container name="js-init-section" htmlTag="div" htmlClass="js-init-section" sortOrder="10">
+            <block name="menu-init"
+                   class="Awesome\Frontend\Block\Template"
+                   template="Awesome_Frontend::menu/menu_init.phtml"/>
+            <block name="message-init"
+                   class="Awesome\Frontend\Block\Template"
+                   template="Awesome_Frontend::message/message_init.phtml"/>
+        </container>
     </body>
 </page>

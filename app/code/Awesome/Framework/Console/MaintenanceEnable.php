@@ -5,7 +5,7 @@ namespace Awesome\Framework\Console;
 use Awesome\Console\Model\Cli\Input\InputDefinition;
 use Awesome\Console\Model\Cli\Output;
 use Awesome\Framework\Model\Maintenance;
-use Awesome\Framework\Model\Validator\IpAddress as IpAddressValidator;
+use Awesome\Framework\Model\Validator\IpValidator;
 
 class MaintenanceEnable extends \Awesome\Console\Model\Cli\AbstractCommand
 {
@@ -15,17 +15,19 @@ class MaintenanceEnable extends \Awesome\Console\Model\Cli\AbstractCommand
     private $maintenance;
 
     /**
-     * @var IpAddressValidator $validator
+     * @var IpValidator $ipValidator
      */
-    private $validator;
+    private $ipValidator;
 
     /**
      * Maintenance Enable constructor.
+     * @param Maintenance $maintenance
+     * @param IpValidator $ipValidator
      */
-    public function __construct()
+    public function __construct(Maintenance $maintenance, IpValidator $ipValidator)
     {
-        $this->maintenance = new Maintenance();
-        $this->validator = new IpAddressValidator();
+        $this->maintenance = $maintenance;
+        $this->ipValidator = $ipValidator;
     }
 
     /**
@@ -34,8 +36,8 @@ class MaintenanceEnable extends \Awesome\Console\Model\Cli\AbstractCommand
     public static function configure($definition)
     {
         return parent::configure($definition)
-            ->setDescription('Enable maintenance mode with a list of allowed ids')
-            ->addOption('force', 'f', InputDefinition::OPTION_OPTIONAL, 'Ignore IP validation')
+            ->setDescription('Enable maintenance mode with a list of allowed IPs')
+            ->addOption('force', 'f', InputDefinition::OPTION_OPTIONAL, 'Skip IP validation')
             ->addArgument('ips', InputDefinition::ARGUMENT_ARRAY, 'List of IP addresses to exclude');
     }
 
@@ -48,13 +50,13 @@ class MaintenanceEnable extends \Awesome\Console\Model\Cli\AbstractCommand
     {
         $allowedIPs = $input->getArgument('ips');
 
-        if ($input->getOption('force') || $this->validator->validItems($allowedIPs)) {
+        if ($input->getOption('force') || $this->ipValidator->validItems($allowedIPs)) {
             $this->maintenance->enable($allowedIPs);
 
             $output->writeln('Maintenance mode was enabled.');
         } else {
             $output->write('Provided IP addresses are not valid, please, check them and try again: ');
-            $output->writeln($output->colourText(implode(', ', $this->validator->getInvalidItems()), Output::BROWN));
+            $output->writeln($output->colourText(implode(', ', $this->ipValidator->getInvalidItems()), Output::BROWN));
             $output->writeln('Use -f/--force option if you want to proceed anyway.');
 
             throw new \RuntimeException('IP address validation failed');

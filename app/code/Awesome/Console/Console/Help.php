@@ -16,10 +16,11 @@ class Help extends \Awesome\Console\Model\Cli\AbstractCommand
 
     /**
      * Help constructor.
+     * @param CommandHandler $commandHandler
      */
-    public function __construct()
+    public function __construct(CommandHandler $commandHandler)
     {
-        $this->commandHandler = new CommandHandler();
+        $this->commandHandler = $commandHandler;
     }
 
     /**
@@ -180,6 +181,7 @@ class Help extends \Awesome\Console\Model\Cli\AbstractCommand
             $output->writeln($output->colourText('Available commands:', Output::BROWN));
             $padding = max(array_map(function ($name) {
                 [$unused, $command] = explode(':', $name);
+
                 return strlen($command);
             }, $commands));
             $lastNamespace = null;

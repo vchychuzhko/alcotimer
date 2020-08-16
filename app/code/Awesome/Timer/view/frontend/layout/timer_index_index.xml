@@ -8,14 +8,14 @@
         <lib src="lib/goldfire/howler.min.js"/>
         <script src="Awesome_Timer::timer.js"/>
         <script src="Awesome_Timer::settings.js"/>
-        <script src="Awesome_Ui::radial-slider.js"/>
-        <script src="Awesome_Ui::range-slider.js"/>
-        <script src="Awesome_Ui::popup.js"/>
+        <script src="Awesome_Frontend::radial-slider.js"/>
+        <script src="Awesome_Frontend::range-slider.js"/>
+        <script src="Awesome_Frontend::popup.js"/>
         <css src="Awesome_Timer::hint.css"/>
         <css src="Awesome_Timer::timer.css"/>
-        <css src="Awesome_Ui::radial-slider.css"/>
-        <css src="Awesome_Ui::range-slider.css"/>
-        <css src="Awesome_Ui::popup.css"/>
+        <css src="Awesome_Frontend::radial-slider.css"/>
+        <css src="Awesome_Frontend::range-slider.css"/>
+        <css src="Awesome_Frontend::popup.css"/>
     </head>
     <body>
         <referenceBlock name="menu">

@@ -120,17 +120,33 @@ class Output
      * Wrap text with colour for CLI.
      * @param string $text
      * @param string $colour
-     * @param string $backgroundColour
+     * @param string|null $backgroundColour
      * @return string
      */
     public function colourText($text, $colour = self::GREEN, $backgroundColour = null)
     {
-       if (DS !== '\\') {
-            $backgroundColour = $backgroundColour ? ';' . $backgroundColour : '';
+        $backgroundColour = $backgroundColour ? ';' . $backgroundColour : '';
 
-            $text = "\e[" . $colour . $backgroundColour . "m" . $text . "\e[0m";
-       }
+        return "\e[" . $colour . $backgroundColour . "m" . $text . "\e[0m";
+    }
 
-        return $text;
+    /**
+     * Make text bold for CLI.
+     * @param string $text
+     * @return string
+     */
+    public function bold($text)
+    {
+        return "\e[1m" . $text . "\e[0m";
+    }
+
+    /**
+     * Style text with underline for CLI.
+     * @param string $text
+     * @return string
+     */
+    public function underline($text)
+    {
+        return "\e[4m" . $text . "\e[0m";
     }
 }

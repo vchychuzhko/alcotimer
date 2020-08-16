@@ -13,10 +13,11 @@ class MaintenanceDisable extends \Awesome\Console\Model\Cli\AbstractCommand
 
     /**
      * Maintenance Disable constructor.
+     * @param Maintenance $maintenance
      */
-    public function __construct()
+    public function __construct(Maintenance $maintenance)
     {
-        $this->maintenance = new Maintenance();
+        $this->maintenance = $maintenance;
     }
 
     /**

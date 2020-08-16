@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="../../../Framework/Schema/routes.xsd">
+    <route frontName="forbidden" type="internal">
+        <module name="Awesome_Frontend"/>
+    </route>
+    <route frontName="notfound" type="internal">
+        <module name="Awesome_Frontend"/>
+    </route>
+</routes>

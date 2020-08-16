@@ -2,18 +2,57 @@
 
 namespace Awesome\Framework\Model\Http;
 
+use Awesome\Cache\Model\Cache;
 use Awesome\Framework\Model\ActionInterface;
+use Awesome\Framework\Model\Invoker;
+use Awesome\Framework\Model\XmlParser\RoutesXmlParser;
 
 class Router
 {
+    private const ROUTES_CACHE_TAG_PREFIX = 'routes_';
+
+    public const INTERNAL_TYPE = 'internal';
+    public const STANDARD_TYPE = 'standard';
+
     /**
      * @var array $actions
      */
     private $actions = [];
 
     /**
-     * Add action to list.
-     * @param ActionInterface $action
+     * @var Cache $cache
+     */
+    private $cache;
+
+    /**
+     * @var Invoker $invoker
+     */
+    private $invoker;
+
+    /**
+     * @var RoutesXmlParser $routesXmlParser
+     */
+    private $routesXmlParser;
+
+    /**
+     * Router constructor.
+     * @param Cache $cache
+     * @param Invoker $invoker
+     * @param RoutesXmlParser $routesXmlParser
+     */
+    public function __construct(
+        Cache $cache,
+        Invoker $invoker,
+        RoutesXmlParser $routesXmlParser
+    ) {
+        $this->invoker = $invoker;
+        $this->routesXmlParser = $routesXmlParser;
+        $this->cache = $cache;
+    }
+
+    /**
+     * Add action classname to list.
+     * @param string $action
      * @return $this
      */
     public function addAction($action)
@@ -25,10 +64,59 @@ class Router
 
     /**
      * Get action with the highest priority.
-     * @return ActionInterface
+     * @return ActionInterface|null
+     * @throws \Exception
      */
     public function getAction()
     {
-        return reset($this->actions);
+        if ($action = reset($this->actions)) {
+            $action = $this->invoker->get($action);
+
+            if (!($action instanceof ActionInterface)) {
+                throw new \LogicException(sprintf('Action "%s" does not implement ActionInterface', get_class($action)));
+            }
+        }
+
+        return $action ?: null;
+    }
+
+    /**
+     * Get standard (public) routes for a specified view.
+     * @param string $view
+     * @return array
+     */
+    public function getStandardRoutes($view)
+    {
+        $routes = $this->getRoutes($view);
+
+        return $routes[self::STANDARD_TYPE] ?? [];
+    }
+
+    /**
+     * Get internal (system) routes for a specified view.
+     * @param string $view
+     * @return array
+     */
+    public function getInternalRoutes($view)
+    {
+        $routes = $this->getRoutes($view);
+
+        return $routes[self::INTERNAL_TYPE] ?? [];
+    }
+
+    /**
+     * Get all registered routes for a specified view.
+     * @param string $view
+     * @return array
+     */
+    private function getRoutes($view)
+    {
+        if (!$routes = $this->cache->get(Cache::ETC_CACHE_KEY, self::ROUTES_CACHE_TAG_PREFIX . $view)) {
+            $routes = $this->routesXmlParser->getRoutesData($view);
+
+            $this->cache->save(Cache::ETC_CACHE_KEY, self::ROUTES_CACHE_TAG_PREFIX . $view, $routes);
+        }
+
+        return $routes;
     }
 }

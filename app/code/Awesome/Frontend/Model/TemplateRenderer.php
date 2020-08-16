@@ -38,9 +38,9 @@ class TemplateRenderer
     public function __construct($handle, $view, $structure, $handles = [])
     {
         $this->handle = $handle;
-        $this->handles = $handles ?: [$handle];
         $this->view = $view;
         $this->structure = $structure;
+        $this->handles = $handles ?: [$handle];
     }
 
     /**
@@ -48,6 +48,7 @@ class TemplateRenderer
      * Return empty string in case element is not found.
      * @param string $nameInLayout
      * @return string
+     * @throws \Exception
      */
     public function render($nameInLayout)
     {
@@ -75,25 +76,17 @@ class TemplateRenderer
      * Render element template.
      * @param Template $element
      * @return string
-     * @throws \LogicException
-     * @throws \RuntimeException
+     * @throws \Exception
      */
     public function renderElement($element)
     {
-        $template = $element->getTemplate();
-        $fileName = $this->getTemplateFileName($template);
-
-        if (!file_exists($fileName)) {
-            throw new \LogicException(
-                sprintf('Template "%s" is not found for "%s" element', $template, $element->getNameInLayout())
-            );
-        }
+        $fileName = $this->getTemplateFile($element->getTemplate());
         ob_start();
 
         try {
             extract(['block' => $element]);
             include $fileName;
-        } catch (\LogicException | \RuntimeException $e) {
+        } catch (\Exception $e) {
             ob_end_clean();
 
             throw $e;
@@ -103,11 +96,12 @@ class TemplateRenderer
     }
 
     /**
-     * Parse template XML path to a valid filesystem path.
+     * Convert template XML path to a valid filesystem path.
      * @param string $template
      * @return string
+     * @throws \LogicException
      */
-    private function getTemplateFileName($template)
+    private function getTemplateFile($template)
     {
         @list($module, $file) = explode('::', $template);
         $path = $module;
@@ -120,8 +114,15 @@ class TemplateRenderer
                 $path = str_replace('/view/' . $this->view, '/view/' . Http::BASE_VIEW, $path);
             }
         }
+        $path = APP_DIR . $path;
 
-        return APP_DIR . $path;
+        if (!file_exists($path)) {
+            throw new \LogicException(
+                sprintf('Template file "%s" was not found', $template)
+            );
+        }
+
+        return $path;
     }
 
     /**

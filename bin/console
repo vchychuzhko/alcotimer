@@ -14,7 +14,9 @@ try {
 }
 
 try {
-    $app = new \Awesome\Console\Model\Cli();
+    $invoker = \Awesome\Framework\Model\Invoker::getInstance();
+    /** @var \Awesome\Console\Model\Cli $app */
+    $app = $invoker->get(\Awesome\Console\Model\Cli::class);
     $app->run();
 } catch (\LogicException | \RuntimeException $e) {
     exit(1);

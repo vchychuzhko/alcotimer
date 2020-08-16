@@ -7,9 +7,8 @@ namespace Awesome\Framework\Model\Http;
  * @method string getFullActionName()
  * @method string getUserIp()
  * @method string getView()
- * @package Awesome\Framework\Model\Http
  */
-class Request extends \Awesome\Framework\Model\DataObject
+class Request extends \Awesome\Framework\Model\DataObject implements \Awesome\Framework\Model\SingletonInterface
 {
     public const FORBIDDEN_REDIRECT_CODE = 403;
     public const NOTFOUND_REDIRECT_CODE = 404;
@@ -127,37 +126,41 @@ class Request extends \Awesome\Framework\Model\DataObject
     }
 
     /**
-     * Get request parameter.
-     * Return all parameters if no key is specified.
+     * Get request parameter by key.
      * @param string $key
-     * @return string|array|null
+     * @return string|null
      */
-    public function getParam($key = '')
+    public function getParam($key)
     {
-        if ($key === '') {
-            $param = $this->parameters;
-        } else {
-            $param = $this->parameters[$key] ?? null;
-        }
-
-        return $param;
+        return $this->parameters[$key] ?? null;
     }
 
     /**
-     * Get request cookie.
-     * Return all cookies if no key is specified.
-     * @param string $key
-     * @return string|array|null
+     * Get all request parameters.
+     * @return array
      */
-    public function getCookie($key = '')
+    public function getParams()
     {
-        if ($key === '') {
-            $cookie = $this->cookies;
-        } else {
-            $cookie = $this->cookies[$key] ?? null;
-        }
+        return $this->parameters;
+    }
 
-        return $cookie;
+    /**
+     * Get request cookie by key.
+     * @param string $key
+     * @return string|null
+     */
+    public function getCookie($key)
+    {
+        return $this->cookies[$key] ?? null;
+    }
+
+    /**
+     * Get all request cookies.
+     * @return array
+     */
+    public function getCookies()
+    {
+        return $this->cookies;
     }
 
     /**

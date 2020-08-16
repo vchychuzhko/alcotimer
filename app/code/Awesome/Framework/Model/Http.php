@@ -3,26 +3,32 @@
 namespace Awesome\Framework\Model;
 
 use Awesome\Framework\Model\Config;
-use Awesome\Framework\Model\Event\Manager as EventManager;
+use Awesome\Framework\Model\Event\EventManager;
 use Awesome\Framework\Model\Http\Request;
 use Awesome\Framework\Model\Http\Response;
+use Awesome\Framework\Model\Http\Response\HtmlResponse;
 use Awesome\Framework\Model\Http\Router;
 use Awesome\Framework\Model\Logger;
 use Awesome\Framework\Model\Maintenance;
 
 class Http
 {
-    public const VERSION = '0.3.1';
+    public const VERSION = '0.4.0';
 
     public const FRONTEND_VIEW = 'frontend';
     public const BACKEND_VIEW = 'adminhtml';
     public const BASE_VIEW = 'base';
 
-    public const APP_MODE_CONFIG = 'developer_mode';
+    public const DEVELOPER_MODE_CONFIG = 'developer_mode';
     public const SHOW_FORBIDDEN_CONFIG = 'show_forbidden';
     public const WEB_ROOT_CONFIG = 'web_root_is_pub';
 
     public const ROOT_ACTION_NAME = 'index_index_index';
+
+    /**
+     * @var Request $request
+     */
+    private $request;
 
     /**
      * @var Logger $logger
@@ -45,19 +51,30 @@ class Http
     private $eventManager;
 
     /**
-     * @var Request $request
+     * @var Router $router
      */
-    private $request;
+    private $router;
 
     /**
      * Http app constructor.
+     * @param Logger $logger
+     * @param Maintenance $maintenance
+     * @param Config $config
+     * @param EventManager $eventManager
+     * @param Router $router
      */
-    public function __construct()
-    {
-        $this->logger = new Logger();
-        $this->maintenance = new Maintenance();
-        $this->config = new Config();
-        $this->eventManager = new EventManager();
+    public function __construct(
+        Logger $logger,
+        Maintenance $maintenance,
+        Config $config,
+        EventManager $eventManager,
+        Router $router
+    ) {
+        $this->logger = $logger;
+        $this->maintenance = $maintenance;
+        $this->config = $config;
+        $this->eventManager = $eventManager;
+        $this->router = $router;
     }
 
     /**
@@ -71,14 +88,13 @@ class Http
 
             if (!$this->isMaintenance()) {
                 $redirectStatus = $request->getRedirectStatusCode();
-                $router = new Router();
 
                 $this->eventManager->dispatch(
                     'http_frontend_action',
-                    ['request' => $request, 'router' => $router]
+                    ['request' => $request, 'router' => $this->router]
                 );
 
-                if ($action = $router->getAction()) {
+                if ($action = $this->router->getAction()) {
                     $response = $action->execute($request);
                 } elseif ($redirectStatus === Request::FORBIDDEN_REDIRECT_CODE && $this->showForbiddenPage()) {
                     $response = new Response('', Response::FORBIDDEN_STATUS_CODE);
@@ -87,21 +103,19 @@ class Http
                 }
             } else {
                 // @TODO: get request 'accept' header and return error page according to needed type
-                $response = new Response(
+                $response = new HtmlResponse(
                     $this->maintenance->getMaintenancePage(),
-                    Response::SERVICE_UNAVAILABLE_STATUS_CODE,
-                    ['Content-Type' => 'text/html']
+                    Response::SERVICE_UNAVAILABLE_STATUS_CODE
                 );
             }
         } catch (\Exception $e) {
             $this->logger->error($e);
 
-            $response = new Response(
+            $response = new HtmlResponse(
                 $this->isDeveloperMode()
                     ? '<pre>' . get_class($e) . ': ' . $e->getMessage() . "\n" . $e->getTraceAsString() . '</pre>'
                     : $this->maintenance->getInternalErrorPage(),
-                Response::INTERNAL_ERROR_STATUS_CODE,
-                ['Content-Type' => 'text/html']
+                Response::INTERNAL_ERROR_STATUS_CODE
             );
         }
 
@@ -125,7 +139,7 @@ class Http
      */
     private function isDeveloperMode()
     {
-        return (bool) $this->config->get(self::APP_MODE_CONFIG);
+        return (bool) $this->config->get(self::DEVELOPER_MODE_CONFIG);
     }
 
     /**
@@ -186,7 +200,7 @@ class Http
      */
     private function parseFullActionName($url)
     {
-        $parts = explode('_', str_replace('/', '_', trim(parse_url($url, PHP_URL_PATH), '/')));
+        $parts = explode('/', str_replace('_', '-', trim(parse_url($url, PHP_URL_PATH), '/')));
 
         return $parts[0]
             ? ($parts[0] . '_' . ($parts[1] ?? 'index') . '_' . ($parts[2] ?? 'index'))
