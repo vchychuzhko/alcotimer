@@ -3,6 +3,7 @@
 namespace Awesome\Framework\Model;
 
 use Awesome\Framework\Model\DateTime;
+use Awesome\Framework\Model\FileManager;
 use Awesome\Framework\Model\Http\Request;
 
 class Logger
@@ -17,12 +18,19 @@ class Logger
     private $datetime;
 
     /**
+     * @var FileManager $fileManager
+     */
+    private $fileManager;
+
+    /**
      * Logger constructor.
      * @param DateTime $datetime
+     * @param FileManager $fileManager
      */
-    public function __construct(DateTime $datetime)
+    public function __construct(DateTime $datetime, FileManager $fileManager)
     {
         $this->datetime = $datetime;
+        $this->fileManager = $fileManager;
     }
 
     /**
@@ -64,13 +72,13 @@ class Logger
     private function write($logFile, $message)
     {
         if (!file_exists(BP . self::LOG_DIRECTORY)) {
-            mkdir(BP . self::LOG_DIRECTORY);
+            $this->fileManager->createDirectory(BP . self::LOG_DIRECTORY);
         }
 
-        file_put_contents(
+        $this->fileManager->writeFile(
             BP . self::LOG_DIRECTORY . '/' . $logFile,
             '[' . $this->datetime->getCurrentTime() . '] ' . $message . "\n",
-            FILE_APPEND
+            true
         );
 
         return $this;

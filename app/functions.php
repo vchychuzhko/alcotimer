@@ -1,15 +1,16 @@
 <?php
-/**
- * Get first key in array.
- * Based on https://www.php.net/manual/en/function.array-key-first.php
- * A polyfill for PHP versions below 7.3
- * @param array $array
- * @return mixed
- */
+
 if (!function_exists('array_key_first')) {
-    function array_key_first(array $array)
+    /**
+     * Get first key in array.
+     * Based on https://www.php.net/manual/en/function.array-key-first.php
+     * A polyfill for PHP versions below 7.3
+     * @param array $array
+     * @return mixed
+     */
+    function array_key_first($array)
     {
-        foreach($array as $key => $unused) {
+        foreach ($array as $key => $unused) {
             return $key;
         }
 
@@ -17,69 +18,38 @@ if (!function_exists('array_key_first')) {
     }
 }
 
-/**
- * Remove directory recursively.
- * Based on https://www.php.net/manual/en/function.rmdir.php#117354
- * @param string $dir
- */
-if (!function_exists('rrmdir')) {
-    function rrmdir($directory)
+if (!function_exists('in_array_r')) {
+    /**
+     * Check if value exists in a multidimensional array.
+     * Based on https://stackoverflow.com/a/4128377
+     * @param mixed $needle
+     * @param array $haystack
+     * @param bool $strict
+     * @return mixed
+     */
+    function in_array_r($needle, $haystack, $strict = false)
     {
-        if (is_dir($directory)) {
-            $objects = scandir($directory);
-
-            foreach ($objects as $object) {
-                if ($object !== '.' && $object !== '..') {
-                    if (is_dir($directory . '/' . $object)) {
-                        rrmdir($directory . '/' . $object);
-                    } else {
-                        unlink($directory . '/' . $object);
-                    }
-                }
-            }
-
-            rmdir($directory);
-        }
-    }
-}
-
-/**
- * Get all files in the directory recursively by regex filter if needed.
- * Based on https://stackoverflow.com/a/35105800
- * @param string $dir
- * @param string $filter
- * @return array
- */
-if (!function_exists('rscandir')) {
-    function rscandir($directory, $filter = '')
-    {
-        $results = [];
-
-        foreach (scandir($directory) as $object) {
-            $path = realpath($directory . '/' . $object);
-
-            if (!is_dir($path)) {
-                if (empty($filter) || preg_match($filter, $path)) {
-                    $results[] = $path;
-                }
-            } elseif ($object !== '.' && $object !== '..') {
-                $results = array_merge($results, rscandir($path, $filter));
+        foreach ($haystack as $item) {
+            if (($strict ? $item === $needle : $item == $needle)
+                || (is_array($item) && in_array_r($needle, $item, $strict))
+            ) {
+                return true;
             }
         }
 
-        return $results;
+        return false;
     }
 }
 
-/**
- * Replace the first occurrence of the searched string.
- * Based on https://stackoverflow.com/a/2606638
- * @param string $search
- * @param string $replace
- * @param string $subject
- * @return string
- */
 if (!function_exists('str_replace_first')) {
+    /**
+     * Replace the first occurrence of the searched string.
+     * Based on https://stackoverflow.com/a/2606638
+     * @param string $search
+     * @param string $replace
+     * @param string $subject
+     * @return string
+     */
     function str_replace_first($search, $replace, $subject)
     {
         $pos = strpos($subject, $search);

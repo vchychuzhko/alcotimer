@@ -8,6 +8,19 @@ class Maintenance
 
     public const MAINTENANCE_PAGE_PATH = '/pub/pages/maintenance.html';
     public const INTERNALERROR_PAGE_PATH = '/pub/pages/internal_error.html';
+    /**
+     * @var FileManager $fileManager
+     */
+    private $fileManager;
+
+    /**
+     * Maintenance constructor.
+     * @param FileManager $fileManager
+     */
+    public function __construct(FileManager $fileManager)
+    {
+        $this->fileManager = $fileManager;
+    }
 
     /**
      * Enable maintenance mode.
@@ -16,7 +29,7 @@ class Maintenance
      */
     public function enable($allowedIPs = [])
     {
-        file_put_contents(BP . self::MAINTENANCE_FILE, implode(',', $allowedIPs));
+        $this->fileManager->createFile(BP . self::MAINTENANCE_FILE, implode(',', $allowedIPs), true);
 
         return $this;
     }
@@ -27,7 +40,7 @@ class Maintenance
      */
     public function disable()
     {
-        @unlink(BP . self::MAINTENANCE_FILE);
+        $this->fileManager->removeFile(BP . self::MAINTENANCE_FILE);
 
         return $this;
     }
@@ -42,7 +55,7 @@ class Maintenance
             'enabled' => false
         ];
 
-        if (($allowedIPs = @file_get_contents(BP . self::MAINTENANCE_FILE)) !== false) {
+        if ($allowedIPs = $this->fileManager->readFile(BP . self::MAINTENANCE_FILE)) {
             $status = [
                 'enabled' => true,
                 'allowed_ips' => []
@@ -75,7 +88,7 @@ class Maintenance
      */
     public function getMaintenancePage()
     {
-        return file_get_contents(BP . self::MAINTENANCE_PAGE_PATH);
+        return $this->fileManager->readFile(BP . self::MAINTENANCE_PAGE_PATH, false);
     }
 
     /**
@@ -84,6 +97,6 @@ class Maintenance
      */
     public function getInternalErrorPage()
     {
-        return file_get_contents(BP . self::INTERNALERROR_PAGE_PATH);
+        return $this->fileManager->readFile(BP . self::INTERNALERROR_PAGE_PATH, false);
     }
 }

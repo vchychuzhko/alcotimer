@@ -2,12 +2,28 @@
 
 namespace Awesome\Cache\Model;
 
-class Cache
+use Awesome\Framework\Model\FileManager;
+
+class Cache implements \Awesome\Framework\Model\SingletonInterface
 {
     private const CACHE_DIR = '/var/cache';
     public const ETC_CACHE_KEY = 'etc';
     public const LAYOUT_CACHE_KEY = 'layout';
-    public const FULL_PAGE_CACHE_KEY = 'full-page';
+    public const FULL_PAGE_CACHE_KEY = 'fullpage';
+
+    /**
+     * @var FileManager $fileManager
+     */
+    private $fileManager;
+
+    /**
+     * Cache constructor.
+     * @param FileManager $fileManager
+     */
+    public function __construct(FileManager $fileManager)
+    {
+        $this->fileManager = $fileManager;
+    }
 
     /**
      * Retrieve cache by key and tag.
@@ -43,7 +59,7 @@ class Cache
         $cache = $this->get($key);
         $cache[$tag] = $data;
 
-        $this->saveToCacheFile($key, $cache);
+        $this->saveCacheFile($key, $cache);
 
         return $this;
     }
@@ -60,9 +76,9 @@ class Cache
         if ($key && $tag) {
             $cache = $this->readCacheFile($key);
             unset($cache[$tag]);
-            $this->saveToCacheFile($key, $cache);
+            $this->saveCacheFile($key, $cache);
         } else {
-            $this->removeCacheFile($key);
+            $this->removeCache($key);
         }
 
         return $this;
@@ -75,7 +91,7 @@ class Cache
      */
     public function readCacheFile($key)
     {
-        $cache = @file_get_contents(BP . self::CACHE_DIR . '/' . $key . '-cache');
+        $cache = $this->fileManager->readFile(BP . self::CACHE_DIR . '/' . $key . '-cache');
 
         return json_decode($cache, true) ?: [];
     }
@@ -86,13 +102,13 @@ class Cache
      * @param array $data
      * @return $this
      */
-    private function saveToCacheFile($key, $data)
+    private function saveCacheFile($key, $data)
     {
         if (!file_exists(BP . self::CACHE_DIR)) {
-            mkdir(BP . self::CACHE_DIR);
+            $this->fileManager->createDirectory(BP . self::CACHE_DIR);
         }
 
-        file_put_contents(BP . self::CACHE_DIR . '/' . $key . '-cache', json_encode($data));
+        $this->fileManager->createFile(BP . self::CACHE_DIR . '/' . $key . '-cache', json_encode($data), true);
 
         return $this;
     }
@@ -103,12 +119,12 @@ class Cache
      * @param string $key
      * @return $this
      */
-    private function removeCacheFile($key = '')
+    private function removeCache($key = '')
     {
         if ($key) {
-            @unlink(BP . self::CACHE_DIR . '/' . $key . '-cache');
+            $this->fileManager->removeFile(BP . self::CACHE_DIR . '/' . $key . '-cache');
         } else {
-            @rrmdir(BP . self::CACHE_DIR);
+            $this->fileManager->removeDirectory(BP . self::CACHE_DIR);
         }
 
         return $this;
