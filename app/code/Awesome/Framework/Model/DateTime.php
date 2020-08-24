@@ -1,8 +1,8 @@
 <?php
 
-namespace Awesome\Framework\Helper;
+namespace Awesome\Framework\Model;
 
-class DateHelper
+class DateTime implements \Awesome\Framework\Model\SingletonInterface
 {
     private const UTC_TIMEZONE = 'UTC';
     private const DEFAULT_TIMEZONE = 'Europe/Kiev';
@@ -14,7 +14,7 @@ class DateHelper
      * @param string $timezone
      * @return string
      */
-    public static function getCurrentTime($format = self::DEFAULT_TIME_FORMAT, $timezone = self::DEFAULT_TIMEZONE)
+    public function getCurrentTime($format = self::DEFAULT_TIME_FORMAT, $timezone = self::DEFAULT_TIMEZONE)
     {
         try {
             $date = new \DateTime('now', new \DateTimeZone($timezone));
@@ -31,10 +31,11 @@ class DateHelper
 
     /**
      * Get datetime according to UTC timezone as a string.
+     * @param string $format
      * @return string
      */
-    public static function getCurrentTimeUTC()
+    public function getCurrentTimeUTC($format = self::DEFAULT_TIME_FORMAT)
     {
-        return self::getCurrentTime(self::UTC_TIMEZONE);
+        return $this->getCurrentTime($format, self::UTC_TIMEZONE);
     }
 }

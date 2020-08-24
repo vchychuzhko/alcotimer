@@ -2,7 +2,7 @@
 
 namespace Awesome\Framework\Model;
 
-use Awesome\Framework\Helper\DateHelper;
+use Awesome\Framework\Model\DateTime;
 use Awesome\Framework\Model\Http\Request;
 
 class Logger
@@ -10,6 +10,20 @@ class Logger
     private const LOG_DIRECTORY = '/var/log';
     private const EXCEPTION_LOG_FILE = 'exception.log';
     private const VISITOR_LOG_FILE = 'visitor.log';
+
+    /**
+     * @var DateTime $date
+     */
+    private $datetime;
+
+    /**
+     * Logger constructor.
+     * @param DateTime $datetime
+     */
+    public function __construct(DateTime $datetime)
+    {
+        $this->datetime = $datetime;
+    }
 
     /**
      * Write an error to a log file.
@@ -55,7 +69,7 @@ class Logger
 
         file_put_contents(
             BP . self::LOG_DIRECTORY . '/' . $logFile,
-            '[' . DateHelper::getCurrentTime() . '] ' . $message . "\n",
+            '[' . $this->datetime->getCurrentTime() . '] ' . $message . "\n",
             FILE_APPEND
         );
 
