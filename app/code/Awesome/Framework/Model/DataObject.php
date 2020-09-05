@@ -61,7 +61,7 @@ class DataObject
     public function setData($key, $value = null)
     {
         if (!$this->readOnly) {
-            if ($key === (array) $key) {
+            if (is_array($key)) {
                 $this->data = $key;
             } else {
                 $this->data[$key] = $value;

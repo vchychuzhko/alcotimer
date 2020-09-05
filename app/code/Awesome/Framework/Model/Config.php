@@ -74,8 +74,7 @@ class Config implements \Awesome\Framework\Model\SingletonInterface
             }
             $config = array_replace_recursive($config, $newConfig);
 
-            $this->phpFileManager->createArrayFile(BP . self::CONFIG_FILE_PATH, $config, self::CONFIG_ANNOTATION);
-            $success = true;
+            $success = $this->phpFileManager->createArrayFile(BP . self::CONFIG_FILE_PATH, $config, self::CONFIG_ANNOTATION);
         }
 
         return $success;
@@ -90,7 +89,7 @@ class Config implements \Awesome\Framework\Model\SingletonInterface
     private function getConfig($reload = false)
     {
         if ($this->config === null || $reload) {
-            $this->config = $this->phpFileManager->includeFile(BP . self::CONFIG_FILE_PATH);
+            $this->config = $this->phpFileManager->includeFile(BP . self::CONFIG_FILE_PATH, true);
         }
 
         return $this->config;

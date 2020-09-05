@@ -3,6 +3,7 @@
 namespace Awesome\Frontend\Model;
 
 use Awesome\Framework\Helper\DataHelper;
+use Awesome\Framework\Model\FileManager\PhpFileManager;
 use Awesome\Framework\Model\Http;
 use Awesome\Frontend\Block\Template;
 
@@ -29,6 +30,11 @@ class TemplateRenderer
     private $structure;
 
     /**
+     * @var PhpFileManager $phpFileManager
+     */
+    private $phpFileManager;
+
+    /**
      * TemplateRenderer constructor.
      * @param string $handle
      * @param string $view
@@ -41,6 +47,7 @@ class TemplateRenderer
         $this->view = $view;
         $this->structure = $structure;
         $this->handles = $handles ?: [$handle];
+        $this->phpFileManager = new PhpFileManager();
     }
 
     /**
@@ -80,12 +87,11 @@ class TemplateRenderer
      */
     public function renderElement($element)
     {
-        $fileName = $this->getTemplateFile($element->getTemplate());
+        $templateFile = $this->getTemplateFile($element->getTemplate());
         ob_start();
 
         try {
-            extract(['block' => $element]);
-            include $fileName;
+            $this->phpFileManager->includeFile($templateFile, false, ['block' => $element]);
         } catch (\Exception $e) {
             ob_end_clean();
 
@@ -107,11 +113,10 @@ class TemplateRenderer
         $path = $module;
 
         if (isset($file)) {
-            $module = str_replace('_', '/', $module);
-            $path = '/' . $module . '/view/' . $this->view . '/templates/' . $file;
+            $path = '/' . str_replace('_', '/', $module) . '/view/' . $this->view . '/templates/' . $file;
 
             if (!file_exists(APP_DIR . $path)) {
-                $path = str_replace('/view/' . $this->view, '/view/' . Http::BASE_VIEW, $path);
+                $path = preg_replace('/(\/view\/)(\w+)(\/)/', '$1' . Http::BASE_VIEW . '$3', $path);
             }
         }
         $path = APP_DIR . $path;

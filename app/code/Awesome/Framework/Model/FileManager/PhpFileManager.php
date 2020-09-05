@@ -7,10 +7,12 @@ class PhpFileManager extends \Awesome\Framework\Model\FileManager
     /**
      * Include PHP file.
      * @param string $path
-     * @return string|array
+     * @param bool $return
+     * @param array $extract
+     * @return string|array|void
      * @throws \RuntimeException
      */
-    public function includeFile($path)
+    public function includeFile($path, $return = false, $extract = [])
     {
         if (!file_exists($path)) {
             throw new \RuntimeException(sprintf('Provided path "%s" does not exist', $path));
@@ -19,7 +21,15 @@ class PhpFileManager extends \Awesome\Framework\Model\FileManager
             throw new \RuntimeException(sprintf('Provided path "%s" is a directory and cannot be included', $path));
         }
 
-        return include $path;
+        if ($extract) {
+            extract($extract, EXTR_OVERWRITE);
+        }
+
+        if ($return) {
+            return include $path;
+        }
+
+        include $path;
     }
 
     /**
