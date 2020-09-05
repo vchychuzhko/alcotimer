@@ -26,14 +26,12 @@ class CommandXmlParser
             foreach (glob(APP_DIR . self::CLI_XML_PATH_PATTERN) as $cliXmlFile) {
                 $parsedData = $this->parse($cliXmlFile);
 
-                foreach ($parsedData as $commandName => $command) {
-                    if (!$command['disabled']) {
-                        if (isset($this->commands[$commandName])) {
-                            throw new \LogicException(sprintf('Command "%s" is already defined', $commandName));
-                        }
-
-                        $this->commandsClasses[$commandName] = $command['class'];
+                foreach ($parsedData as $commandName => $commandClass) {
+                    if (isset($this->commands[$commandName])) {
+                        throw new \LogicException(sprintf('Command "%s" is already defined', $commandName));
                     }
+
+                    $this->commandsClasses[$commandName] = $commandClass;
                 }
             }
             ksort($this->commandsClasses);
@@ -54,31 +52,26 @@ class CommandXmlParser
         $commandNode = simplexml_load_file($cliXmlFile);
 
         foreach ($commandNode->children() as $namespace) {
-            if (!$namespaceName = (string) $namespace['name']) {
+            if (!$namespaceName = XmlParsingHelper::getNodeAttribute($namespace)) {
                 throw new \LogicException(sprintf('Name attribute is not specified for namespace in "%s" file', $cliXmlFile));
             }
 
             foreach ($namespace->children() as $command) {
-                if (!$commandName = XmlParsingHelper::getNodeAttribute($command)) {
-                    throw new \LogicException(sprintf('Name attribute is not specified for "%s" namespace command', $namespaceName));
-                }
-                $commandName = $namespaceName . ':' . $commandName;
+                if (!XmlParsingHelper::isAttributeBooleanTrue($command)) {
+                    if (!$commandName = XmlParsingHelper::getNodeAttribute($command)) {
+                        throw new \LogicException(sprintf('Name attribute is not specified for "%s" namespace command', $namespaceName));
+                    }
+                    $commandName = $namespaceName . ':' . $commandName;
 
-                if (isset($parsedNode[$commandName])) {
-                    throw new \LogicException(sprintf('Command "%s" is defined twice in one file', $commandName));
-                }
-                $class = XmlParsingHelper::getNodeAttribute($command, 'class');
+                    if (isset($parsedNode[$commandName])) {
+                        throw new \LogicException(sprintf('Command "%s" is defined twice in one file', $commandName));
+                    }
+                    if (!$class = ltrim(XmlParsingHelper::getNodeAttribute($command, 'class'), '\\')) {
+                        throw new \LogicException(sprintf('Class is not specified for "%s" command', $commandName));
+                    }
 
-                if (!$class) {
-                    throw new \LogicException(sprintf('Class is not specified for "%s" command', $commandName));
+                    $parsedNode[$commandName] = $class;
                 }
-                $class = ltrim($class, '\\');
-                $disabled = XmlParsingHelper::isAttributeBooleanTrue($command);
-
-                $parsedNode[$commandName] = [
-                    'class' => $class,
-                    'disabled' => $disabled
-                ];
             }
         }
 

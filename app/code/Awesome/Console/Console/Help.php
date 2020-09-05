@@ -9,6 +9,8 @@ use Awesome\Console\Model\Handler\CommandHandler;
 
 class Help extends \Awesome\Console\Model\Cli\AbstractCommand
 {
+    public const HELP_OPTION = 'help';
+
     /**
      * @var CommandHandler $commandHandler
      */
@@ -43,8 +45,7 @@ class Help extends \Awesome\Console\Model\Cli\AbstractCommand
         if ($command = $input->getArgument('command') ?: $input->getCommand()) {
             $this->showCommandHelp($command, $output);
         } else {
-            $commandData = $this->commandHandler->getCommandData(Cli::DEFAULT_COMMAND);
-            $commands = $this->commandHandler->getCommands();
+            $commandData = $this->commandHandler->getCommandData(Cli::HELP_COMMAND);
 
             $output->writeln($output->colourText('Usage:', Output::BROWN));
             $output->writeln('command [options] [arguments]', 2);
@@ -52,7 +53,7 @@ class Help extends \Awesome\Console\Model\Cli\AbstractCommand
 
             $this->processOptions($commandData['options'], $output, true);
 
-            if ($commands) {
+            if ($commands = $this->commandHandler->getCommands()) {
                 $this->processCommands($commands, $output);
             } else {
                 $output->writeln('No commands are currently available.');
@@ -180,14 +181,14 @@ class Help extends \Awesome\Console\Model\Cli\AbstractCommand
         if ($commands) {
             $output->writeln($output->colourText('Available commands:', Output::BROWN));
             $padding = max(array_map(function ($name) {
-                [$unused, $command] = explode(':', $name);
+                list($unused, $command) = explode(':', $name);
 
                 return strlen($command);
             }, $commands));
             $lastNamespace = null;
 
             foreach ($commands as $name) {
-                [$namespace, $command] = explode(':', $name);
+                list($namespace, $command) = explode(':', $name);
                 $commandData = $this->commandHandler->getCommandData($name);
 
                 if ($namespace !== $lastNamespace) {

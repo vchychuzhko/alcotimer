@@ -3,6 +3,7 @@
 namespace Awesome\Console\Model;
 
 use Awesome\Console\Console\Help;
+use Awesome\Console\Exception\NoSuchCommandException;
 use Awesome\Console\Model\Cli\AbstractCommand;
 use Awesome\Console\Model\Cli\Input;
 use Awesome\Console\Model\Cli\Input\InputDefinition;
@@ -12,8 +13,8 @@ use Awesome\Framework\Model\Invoker;
 
 class Cli
 {
-    public const VERSION = '0.4.0';
-    public const DEFAULT_COMMAND = 'help:show';
+    public const VERSION = '0.4.1';
+    public const HELP_COMMAND = 'help:show';
 
     /**
      * @var CommandHandler $commandHandler
@@ -65,13 +66,38 @@ class Cli
      */
     public function run()
     {
-        $input = $this->getInput();
+        try {
+            $output = $this->getOutput();
+            $input = $this->getInput();
 
-        if (($command = $input->getCommand()) && !$this->commandHandler->commandExist($command)) {
-            $e = new \RuntimeException(sprintf('Command "%s" is not defined', $command));
+            if (($command = $input->getCommand()) && !$this->commandHandler->commandExist($command)) {
+                throw new NoSuchCommandException($command);
+            }
+
+            if ($this->isQuiet()) {
+                $output->mute();
+                $input->disableInteraction();
+            } elseif ($this->isNonInteractive()) {
+                $input->disableInteraction();
+            }
+
+            if ($this->showVersion()) {
+                $this->showAppCliTitle();
+            } elseif ($this->showCommandHelp()) {
+                $this->help->execute($input, $output);
+            } elseif ($command && $className = $this->commandHandler->getCommandClass($command)) {
+                /** @var AbstractCommand $consoleClass */
+                $consoleClass = $this->invoker->get($className);
+                $consoleClass->execute($input, $output);
+            } else {
+                $this->showAppCliTitle();
+                $output->writeln();
+                $this->help->execute($input, $output);
+            }
+        } catch (NoSuchCommandException $e) {
             $this->displayException($e);
 
-            if ($candidates = $this->commandHandler->getAlternatives($command, false)) {
+            if ($candidates = $this->commandHandler->getAlternatives($e->getCommand(), false)) {
                 $this->output->writeln('Did you mean one of these?', 2);
 
                 foreach ($candidates as $candidate) {
@@ -81,35 +107,11 @@ class Cli
                 $this->output->writeln('Try running application help, to see available commands.');
             }
 
-            throw $e;
-        }
-
-        try {
-            if ($this->isQuiet()) {
-                $this->output->mute();
-            }
-
-            if ($this->isNonInteractive()) {
-                $input->disableInteraction();
-            }
-
-            if ($this->showVersion()) {
-                $this->showAppCliTitle();
-            } elseif ($this->showCommandHelp()) {
-                $this->help->execute($input, $this->output);
-            } elseif ($command && $className = $this->commandHandler->getCommandClass($command)) {
-                /** @var AbstractCommand $consoleClass */
-                $consoleClass = $this->invoker->get($className);
-                $consoleClass->execute($input, $this->output);
-            } else {
-                $this->showAppCliTitle();
-                $this->output->writeln();
-                $this->help->execute($input, $this->output);
-            }
+            exit(1);
         } catch (\LogicException | \RuntimeException $e) {
             $this->displayException($e);
 
-            throw $e;
+            exit(1);
         }
     }
 
@@ -122,11 +124,6 @@ class Cli
         if ($length = strlen($e->getMessage())) {
             $this->output->writeln();
             $this->output->writeln($this->output->colourText(str_repeat(' ', $length + 4), Output::WHITE, Output::RED_BG));
-            $this->output->writeln($this->output->colourText(
-                str_repeat(' ', 1) . str_pad(get_class($e) . ':', $length + 3),
-                Output::WHITE,
-                Output::RED_BG
-            ));
             $this->output->writeln($this->output->colourText(
                 str_repeat(' ', 2) . str_pad($e->getMessage(), $length + 2),
                 Output::WHITE,
@@ -161,7 +158,7 @@ class Cli
      */
     private function showVersion()
     {
-        return $this->getInput()->getOption('version');
+        return $this->getInput()->getOption(AbstractCommand::VERSION_OPTION);
     }
 
     /**
@@ -170,7 +167,7 @@ class Cli
      */
     private function showCommandHelp()
     {
-        return $this->getInput()->getOption('help')
+        return $this->getInput()->getOption(Help::HELP_OPTION)
             && ($this->getInput()->getCommand() || $this->getInput()->getArgument('command'));
     }
 
@@ -183,7 +180,7 @@ class Cli
     }
 
     /**
-     * Parse and get console input.
+     * Parse and get CLI input.
      * @return Input
      */
     private function getInput()
@@ -205,7 +202,7 @@ class Cli
                 $collectedArguments = [];
                 $argumentPosition = 1;
 
-                $commandData = $this->commandHandler->getCommandData($command ?: self::DEFAULT_COMMAND);
+                $commandData = $this->commandHandler->getCommandData($command ?: self::HELP_COMMAND);
                 $commandOptions = $commandData['options'];
                 $commandShortcuts = $commandData['shortcuts'];
                 $commandArguments = $commandData['arguments'];
@@ -242,30 +239,32 @@ class Cli
                     }
                 }
 
-                if ($commandOptions) {
-                    foreach ($commandOptions as $optionName => $optionData) {
-                        if ($optionData['type'] === InputDefinition::OPTION_REQUIRED && !isset($options[$optionName])) {
-                            throw new \RuntimeException(sprintf('Required option "%s" was not provided', $optionName));
+                if (!isset($options[Help::HELP_OPTION]) && !isset($options[AbstractCommand::VERSION_OPTION])) {
+                    if ($commandOptions) {
+                        foreach ($commandOptions as $optionName => $optionData) {
+                            if ($optionData['type'] === InputDefinition::OPTION_REQUIRED && !isset($options[$optionName])) {
+                                throw new \RuntimeException(sprintf('Required option "%s" was not provided', $optionName));
+                            }
                         }
                     }
-                }
 
-                if ($commandArguments) {
-                    foreach ($commandArguments as $argumentName => $argumentData) {
-                        $position = $argumentData['position'];
+                    if ($commandArguments) {
+                        foreach ($commandArguments as $argumentName => $argumentData) {
+                            $position = $argumentData['position'];
 
-                        if ($argumentData['type'] === InputDefinition::ARGUMENT_REQUIRED
-                            && !isset($collectedArguments[$position])
-                        ) {
-                            throw new \RuntimeException(sprintf('Required argument "%s" was not provided', $argumentName));
-                        } elseif ($argumentData['type'] === InputDefinition::ARGUMENT_ARRAY) {
-                            $arguments[$argumentName] = array_slice($collectedArguments, $position - 1);
-                        } elseif (isset($collectedArguments[$position])) {
-                            $arguments[$argumentName] = $collectedArguments[$position];
+                            if ($argumentData['type'] === InputDefinition::ARGUMENT_REQUIRED
+                                && !isset($collectedArguments[$position])
+                            ) {
+                                throw new \RuntimeException(sprintf('Required argument "%s" was not provided', $argumentName));
+                            } elseif ($argumentData['type'] === InputDefinition::ARGUMENT_ARRAY) {
+                                $arguments[$argumentName] = array_slice($collectedArguments, $position - 1);
+                            } elseif (isset($collectedArguments[$position])) {
+                                $arguments[$argumentName] = $collectedArguments[$position];
+                            }
                         }
+                    } else {
+                        $arguments = $collectedArguments;
                     }
-                } else {
-                    $arguments = $collectedArguments;
                 }
 
                 $this->input = new Input($command, $options, $arguments);
@@ -273,5 +272,14 @@ class Cli
         }
 
         return $this->input;
+    }
+
+    /**
+     * Get CLI output.
+     * @return Output
+     */
+    private function getOutput()
+    {
+        return $this->output;
     }
 }
