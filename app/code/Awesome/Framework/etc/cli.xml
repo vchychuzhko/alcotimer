@@ -6,4 +6,7 @@
         <command name="disable" class="Awesome\Framework\Console\MaintenanceDisable"/>
         <command name="status" class="Awesome\Framework\Console\MaintenanceStatus"/>
     </namespace>
+    <namespace name="config">
+        <command name="set" class="Awesome\Framework\Console\ConfigSet"/>
+    </namespace>
 </config>

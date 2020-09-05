@@ -129,36 +129,62 @@ class Input
     }
 
     /**
-     * Get input option.
-     * Return all collected options if no name is specified.
+     * Get input option by name.
      * @param string $optionName
-     * @return string|array|null
+     * @param bool $typeCast
+     * @return mixed
      */
-    public function getOption($optionName = '')
+    public function getOption($optionName, $typeCast = false)
     {
-        if ($optionName === '') {
-            $option = $this->options;
-        } else {
-            $option = $this->options[$optionName] ?? null;
-        }
+        $value = $this->options[$optionName] ?? null;
 
-        return $option;
+        return $typeCast ? $this->castInputValue($value) : $value;
     }
 
     /**
-     * Get input argument.
-     * Return all collected arguments if no name is specified.
-     * @param string $argumentName
-     * @return string|array|null
+     * Get all input options.
+     * @return array
      */
-    public function getArgument($argumentName = '')
+    public function getOptions()
     {
-        if ($argumentName === '') {
-            $argument = $this->arguments;
-        } else {
-            $argument = $this->arguments[$argumentName] ?? null;
+        return $this->options;
+    }
+
+    /**
+     * Get input argument by name.
+     * @param string $argumentName
+     * @param bool $typeCast
+     * @return mixed
+     */
+    public function getArgument($argumentName, $typeCast = false)
+    {
+        $value = $this->arguments[$argumentName] ?? null;
+
+        return $typeCast ? $this->castInputValue($value) : $value;
+    }
+
+    /**
+     * Get all input arguments.
+     * @return array
+     */
+    public function getArguments()
+    {
+        return $this->arguments;
+    }
+
+    /**
+     * Cast input value to a corresponding type.
+     * @param mixed $value
+     * @return mixed
+     */
+    private function castInputValue($value)
+    {
+        if (is_numeric($value)) {
+            $value += 0;
+        } elseif (in_array(strtolower($value), ['true', 'false'], true)) {
+            $value = strtolower($value) === 'true';
         }
 
-        return $argument;
+        return $value;
     }
 }

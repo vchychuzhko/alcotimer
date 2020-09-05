@@ -33,7 +33,7 @@ class FileManager
             $this->createDirectory(dirname($path));
         }
 
-        return @file_put_contents($path, $content);
+        return @file_put_contents($path, $content) !== false;
     }
 
     /**

@@ -61,3 +61,31 @@ if (!function_exists('str_replace_first')) {
         return $subject;
     }
 }
+
+if (!function_exists('array_export')) {
+    /**
+     * PHP var_export() modification with short array syntax (square brackets) indented 4 spaces.
+     * Based on https://www.php.net/manual/en/function.var-export.php#124194
+     * @param array $array
+     * @param bool $return
+     * @return string|void
+     */
+    function array_export($array, $return = false)
+    {
+        $export = var_export($array, true);
+        $patterns = [
+            "/^([ ]*)(.*)/m"                   => '$1$1$2',
+            "/array \(/"                       => '[',
+            "/^([ ]*)\)(,?)$/m"                => '$1]$2',
+            "/=>[ ]?\n[ ]+\[/"                 => '=> [',
+            "/([ ]*)(\'[^\']+\') => ([\[\'])/" => '$1$2 => $3',
+        ];
+        $export = preg_replace(array_keys($patterns), array_values($patterns), $export);
+
+        if ($return) {
+            return $export;
+        }
+
+        echo $export;
+    }
+}
