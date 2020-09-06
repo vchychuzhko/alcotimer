@@ -83,12 +83,15 @@ class Cli
 
             if ($this->showVersion()) {
                 $this->showAppCliTitle();
-            } elseif ($this->showCommandHelp()) {
-                $this->help->execute($input, $output);
             } elseif ($command && $className = $this->commandHandler->getCommandClass($command)) {
                 /** @var AbstractCommand $consoleClass */
                 $consoleClass = $this->invoker->get($className);
-                $consoleClass->execute($input, $output);
+
+                if ($this->showCommandHelp()) {
+                    $consoleClass->help($input, $output);
+                } else {
+                    $consoleClass->execute($input, $output);
+                }
             } else {
                 $this->showAppCliTitle();
                 $output->writeln();
@@ -167,8 +170,7 @@ class Cli
      */
     private function showCommandHelp()
     {
-        return $this->getInput()->getOption(Help::HELP_OPTION)
-            && ($this->getInput()->getCommand() || $this->getInput()->getArgument('command'));
+        return $this->getInput()->getOption(AbstractCommand::HELP_OPTION);
     }
 
     /**
@@ -217,9 +219,7 @@ class Cli
                         $value = $value ?: $commandOptions[$option]['default'];
 
                         if ($commandOptions[$option]['type'] === InputDefinition::OPTION_ARRAY) {
-                            if (!isset($options[$option])) {
-                                $options[$option] = [];
-                            }
+                            $options[$option] = $options[$option] ?? [];
                             $options[$option][] = $value;
                         } else {
                             $options[$option] = $value;
@@ -239,7 +239,7 @@ class Cli
                     }
                 }
 
-                if (!isset($options[Help::HELP_OPTION]) && !isset($options[AbstractCommand::VERSION_OPTION])) {
+                if (!isset($options[AbstractCommand::HELP_OPTION]) && !isset($options[AbstractCommand::VERSION_OPTION])) {
                     if ($commandOptions) {
                         foreach ($commandOptions as $optionName => $optionData) {
                             if ($optionData['type'] === InputDefinition::OPTION_REQUIRED && !isset($options[$optionName])) {

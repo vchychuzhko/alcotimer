@@ -2,15 +2,13 @@
 
 namespace Awesome\Console\Console;
 
-use Awesome\Console\Model\Cli;
+use Awesome\Console\Model\Cli\AbstractCommand;
 use Awesome\Console\Model\Cli\Input\InputDefinition;
 use Awesome\Console\Model\Cli\Output;
 use Awesome\Console\Model\Handler\CommandHandler;
 
 class Help extends \Awesome\Console\Model\Cli\AbstractCommand
 {
-    public const HELP_OPTION = 'help';
-
     /**
      * @var CommandHandler $commandHandler
      */
@@ -31,117 +29,24 @@ class Help extends \Awesome\Console\Model\Cli\AbstractCommand
     public static function configure($definition)
     {
         return parent::configure($definition)
-            ->setDescription('Show application help')
-            ->addArgument('command', InputDefinition::ARGUMENT_OPTIONAL, 'Command to show help about');
+            ->setDescription('Show application help');
     }
 
     /**
-     * Show help for the application or command if specified.
+     * Show application help.
      * @inheritDoc
      * @throws \LogicException
      */
     public function execute($input, $output)
     {
-        if ($command = $input->getArgument('command') ?: $input->getCommand()) {
-            $this->showCommandHelp($command, $output);
-        } else {
-            $commandData = $this->commandHandler->getCommandData(Cli::HELP_COMMAND);
+        $commandData = AbstractCommand::configure(new InputDefinition())
+            ->getDefinition();
 
-            $output->writeln($output->colourText('Usage:', Output::BROWN));
-            $output->writeln('command [options] [arguments]', 2);
-            $output->writeln();
+        $output->writeln($output->colourText('Usage:', Output::BROWN));
+        $output->writeln('command [options] [arguments]', 2);
+        $output->writeln();
 
-            $this->processOptions($commandData['options'], $output, true);
-
-            if ($commands = $this->commandHandler->getCommands()) {
-                $this->processCommands($commands, $output);
-            } else {
-                $output->writeln('No commands are currently available.');
-            }
-        }
-    }
-
-    /**
-     * Display help for specified command.
-     * @param string $command
-     * @param Output $output
-     * @throws \LogicException
-     */
-    private function showCommandHelp($command, $output)
-    {
-        if ($commandData = $this->commandHandler->getCommandData($command)) {
-            $options = $commandData['options'];
-            $argumentsString = '';
-
-            $output->writeln($output->colourText('Description:', Output::BROWN));
-            $output->writeln($commandData['description'], 2);
-            $output->writeln();
-
-            if ($arguments = $commandData['arguments']) {
-                foreach ($arguments as $name => $argument) {
-                    $argumentsString .= ' ';
-
-                    switch ($argument['type']) {
-                        case InputDefinition::ARGUMENT_REQUIRED:
-                            $argumentsString .= $name;
-                            break;
-                        case InputDefinition::ARGUMENT_OPTIONAL:
-                            $argumentsString .= '[' . $name . ']';
-                            break;
-                        case InputDefinition::ARGUMENT_ARRAY:
-                            $argumentsString .= '[' . $name . '...]';
-                            break;
-                    }
-                }
-            }
-
-            $output->writeln($output->colourText('Usage:', Output::BROWN));
-            $output->writeln($command . ($options ? ' [options]' : '') . $argumentsString, 2);
-            $output->writeln();
-
-            $this->processArguments($arguments, $output, !empty($options));
-
-            $this->processOptions($options, $output);
-        } else {
-            throw new \LogicException(
-                sprintf('Cannot show help for "%s" command. Please, try specifying the full name.', $command)
-            );
-        }
-    }
-
-    /**
-     * Display command arguments.
-     * @param array $arguments
-     * @param Output $output
-     * @param bool $newLine
-     */
-    private function processArguments($arguments, $output, $newLine = false)
-    {
-        if ($arguments) {
-            $output->writeln($output->colourText('Arguments:', Output::BROWN));
-            $padding = max(array_map(function ($name) {
-                return strlen($name);
-            }, array_keys($arguments)));
-
-            foreach ($arguments as $name => $argument) {
-                $output->writeln($output->colourText(str_pad($name, $padding + 2)) . $argument['description'], 2);
-            }
-
-            if ($newLine) {
-                $output->writeln();
-            }
-        }
-    }
-
-    /**
-     * Display command options.
-     * @param array $options
-     * @param Output $output
-     * @param bool $newLine
-     */
-    private function processOptions($options, $output, $newLine = false)
-    {
-        if ($options) {
+        if ($options = $commandData['options']) {
             $output->writeln($output->colourText('Options:', Output::BROWN));
             $optionFullNames = [];
 
@@ -162,10 +67,13 @@ class Help extends \Awesome\Console\Model\Cli\AbstractCommand
                     2
                 );
             }
+            $output->writeln();
+        }
 
-            if ($newLine) {
-                $output->writeln();
-            }
+        if ($commands = $this->commandHandler->getCommands()) {
+            $this->processCommands($commands, $output);
+        } else {
+            $output->writeln('No commands are currently available.');
         }
     }
 
