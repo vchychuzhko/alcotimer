@@ -5,11 +5,6 @@ namespace Awesome\Console\Model\Cli;
 class Input
 {
     /**
-     * @var bool $interactive
-     */
-    private $interactive = true;
-
-    /**
      * @var string $command
      */
     private $command;
@@ -35,88 +30,6 @@ class Input
         $this->command = $command;
         $this->options = $options;
         $this->arguments = $arguments;
-    }
-
-    /**
-     * Read user input.
-     * @param string $prompt
-     * @return string
-     */
-    public function read($prompt = '')
-    {
-        $line = '';
-
-        if ($this->interactive) {
-            $line = readline($prompt);
-            readline_add_history($line);
-        }
-
-        return $line;
-    }
-
-    /**
-     * Prompt user confirmation.
-     * @param string $prompt
-     * @param array $confirmOptions
-     * @return bool
-     */
-    public function confirm($prompt, $confirmOptions = ['y', 'yes'])
-    {
-        $confirm = true;
-
-        if ($this->interactive) {
-            $answer = $this->read($prompt);
-            $confirm = in_array($answer, $confirmOptions, true);
-        }
-
-        return $confirm;
-    }
-
-    /**
-     * Prompt user to select one of the provided options.
-     * @param string $prompt
-     * @param array $options
-     * @return string
-     */
-    public function choice($prompt, $options)
-    {
-        $choice = null;
-
-        if ($this->interactive && $options) {
-            foreach ($options as $optionKey => $option) {
-                $prompt .= "\n" . $optionKey . ': ' . $option;
-            }
-            $prompt .= "\n" . 'Your choice: ';
-            $answer = $this->read($prompt);
-
-            if (array_key_exists($answer, $options)) {
-                $choice = $answer;
-            }
-        }
-
-        return $choice;
-    }
-
-    /**
-     * Disable interaction.
-     * @return $this
-     */
-    public function disableInteraction()
-    {
-        $this->interactive = false;
-
-        return $this;
-    }
-
-    /**
-     * Enable interaction.
-     * @return $this
-     */
-    public function enableInteraction()
-    {
-        $this->interactive = true;
-
-        return $this;
     }
 
     /**

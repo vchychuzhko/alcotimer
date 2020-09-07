@@ -2,7 +2,6 @@
 
 namespace Awesome\Console\Model\Cli;
 
-use Awesome\Console\Model\Cli;
 use Awesome\Console\Model\Cli\Input;
 use Awesome\Console\Model\Cli\Input\InputDefinition;
 use Awesome\Console\Model\Cli\Output;
@@ -10,6 +9,8 @@ use Awesome\Console\Model\Cli\Output;
 abstract class AbstractCommand
 {
     public const HELP_OPTION = 'help';
+    public const NOINTERACTION_OPTION = 'no-interaction';
+    public const QUIET_OPTION = 'quiet';
     public const VERSION_OPTION = 'version';
 
     /**
@@ -21,8 +22,8 @@ abstract class AbstractCommand
     public static function configure($definition)
     {
         return $definition->addOption(self::HELP_OPTION, 'h', InputDefinition::OPTION_OPTIONAL, 'Display help message')
-            ->addOption('no-interaction', 'n', InputDefinition::OPTION_OPTIONAL, 'Do not ask any interactive question')
-            ->addOption('quiet', 'q', InputDefinition::OPTION_OPTIONAL, 'Do not output anything')
+            ->addOption(self::NOINTERACTION_OPTION, 'n', InputDefinition::OPTION_OPTIONAL, 'Do not ask any interactive question')
+            ->addOption(self::QUIET_OPTION, 'q', InputDefinition::OPTION_OPTIONAL, 'Do not output anything')
             ->addOption(self::VERSION_OPTION, 'V', InputDefinition::OPTION_OPTIONAL, 'Display application version');
     }
 

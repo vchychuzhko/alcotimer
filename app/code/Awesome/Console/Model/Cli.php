@@ -27,11 +27,6 @@ class Cli
     private $help;
 
     /**
-     * @var Output $output
-     */
-    private $output;
-
-    /**
      * @var Invoker $invoker
      */
     private $invoker;
@@ -42,21 +37,23 @@ class Cli
     private $input;
 
     /**
+     * @var Output $output
+     */
+    private $output;
+
+    /**
      * Console app constructor.
      * @param CommandHandler $commandHandler
      * @param Help $help
-     * @param Output $output
      * @param Invoker $invoker
      */
     public function __construct(
         CommandHandler $commandHandler,
         Help $help,
-        Output $output,
         Invoker $invoker
     ) {
         $this->commandHandler = $commandHandler;
         $this->help = $help;
-        $this->output = $output;
         $this->invoker = $invoker;
     }
 
@@ -67,18 +64,11 @@ class Cli
     public function run()
     {
         try {
-            $output = $this->getOutput();
             $input = $this->getInput();
+            $output = $this->getOutput();
 
             if (($command = $input->getCommand()) && !$this->commandHandler->commandExist($command)) {
                 throw new NoSuchCommandException($command);
-            }
-
-            if ($this->isQuiet()) {
-                $output->mute();
-                $input->disableInteraction();
-            } elseif ($this->isNonInteractive()) {
-                $input->disableInteraction();
             }
 
             if ($this->showVersion()) {
@@ -143,7 +133,7 @@ class Cli
      */
     private function isQuiet()
     {
-        return $this->getInput()->getOption('quiet');
+        return $this->getInput()->getOption(AbstractCommand::QUIET_OPTION);
     }
 
     /**
@@ -152,7 +142,7 @@ class Cli
      */
     private function isNonInteractive()
     {
-        return $this->getInput()->getOption('no-interaction');
+        return $this->getInput()->getOption(AbstractCommand::NOINTERACTION_OPTION);
     }
 
     /**
@@ -280,6 +270,10 @@ class Cli
      */
     private function getOutput()
     {
+        if (!$this->output) {
+            $this->output = new Output(!$this->isQuiet() && !$this->isNonInteractive(), $this->isQuiet());
+        }
+
         return $this->output;
     }
 }
