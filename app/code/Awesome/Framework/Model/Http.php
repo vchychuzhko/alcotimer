@@ -13,7 +13,7 @@ use Awesome\Framework\Model\Maintenance;
 
 class Http
 {
-    public const VERSION = '0.4.0';
+    public const VERSION = '0.4.1';
 
     public const FRONTEND_VIEW = 'frontend';
     public const BACKEND_VIEW = 'adminhtml';
@@ -21,7 +21,7 @@ class Http
 
     public const DEVELOPER_MODE_CONFIG = 'developer_mode';
     public const SHOW_FORBIDDEN_CONFIG = 'show_forbidden';
-    public const WEB_ROOT_CONFIG = 'web_root_is_pub';
+    public const WEB_ROOT_CONFIG = 'web/web_root_is_pub';
 
     public const ROOT_ACTION_NAME = 'index_index_index';
 
@@ -96,7 +96,7 @@ class Http
 
                 if ($action = $this->router->getAction()) {
                     $response = $action->execute($request);
-                } elseif ($redirectStatus === Request::FORBIDDEN_REDIRECT_CODE && $this->showForbiddenPage()) {
+                } elseif ($redirectStatus === Request::FORBIDDEN_REDIRECT_CODE && $this->showForbidden()) {
                     $response = new Response('', Response::FORBIDDEN_STATUS_CODE);
                 } else {
                     $response = new Response('', Response::NOTFOUND_STATUS_CODE);
@@ -143,10 +143,10 @@ class Http
     }
 
     /**
-     * Check if it is allowed to show 403 Forbidden page.
+     * Check if it is allowed to show 403 Forbidden response.
      * @return bool
      */
-    private function showForbiddenPage()
+    private function showForbidden()
     {
         return (bool) $this->config->get(self::SHOW_FORBIDDEN_CONFIG);
     }

@@ -37,7 +37,7 @@ class Config implements \Awesome\Framework\Model\SingletonInterface
     public function get($path)
     {
         $keys = explode('/', $path);
-        $config = $this->getConfig();
+        $config = $this->loadConfig();
 
         foreach ($keys as $key) {
             if (is_array($config) && isset($config[$key])) {
@@ -63,9 +63,9 @@ class Config implements \Awesome\Framework\Model\SingletonInterface
         $success = false;
 
         if ($this->get($path) !== null) {
-            $newConfig = $value;
-            $config = $this->getConfig();
+            $config = $this->loadConfig();
             $keys = array_reverse(explode('/', $path));
+            $newConfig = $value;
 
             foreach ($keys as $key) {
                 $newConfig = [
@@ -75,18 +75,19 @@ class Config implements \Awesome\Framework\Model\SingletonInterface
             $config = array_replace_recursive($config, $newConfig);
 
             $success = $this->phpFileManager->createArrayFile(BP . self::CONFIG_FILE_PATH, $config, self::CONFIG_ANNOTATION);
+            $this->loadConfig(true);
         }
 
         return $success;
     }
 
     /**
-     * Load and get config by including configuration file.
+     * Load and return config by including configuration file.
      * Can be forced to reload the file.
      * @param bool $reload
      * @return array
      */
-    private function getConfig($reload = false)
+    private function loadConfig($reload = false)
     {
         if ($this->config === null || $reload) {
             $this->config = $this->phpFileManager->includeFile(BP . self::CONFIG_FILE_PATH, true);

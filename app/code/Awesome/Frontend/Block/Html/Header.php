@@ -6,7 +6,7 @@ use Awesome\Framework\Model\Http;
 
 class Header extends \Awesome\Frontend\Block\Template
 {
-    private const LOGO_PATH_CONFIG = 'web/logo_path';
+    private const LOGO_PATH_CONFIG = 'web/logo';
 
     /**
      * Get app logo file path.
