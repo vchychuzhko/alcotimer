@@ -3,7 +3,7 @@
 if (!function_exists('array_key_first')) {
     /**
      * Get first key in array.
-     * Based on https://www.php.net/manual/en/function.array-key-first.php
+     * Based on https://www.php.net/manual/en/function.array-key-first.php#refsect1-function.array-key-first-notes
      * A polyfill for PHP versions below 7.3
      * @param array $array
      * @return mixed
@@ -15,6 +15,25 @@ if (!function_exists('array_key_first')) {
         }
 
         return null;
+    }
+}
+
+if (!function_exists('get_class_name')) {
+    /**
+     * Get class name with no namespace.
+     * Based on https://www.php.net/manual/en/function.get-class.php#114568
+     * @param object $object
+     * @return string
+     */
+    function get_class_name($object)
+    {
+        $objectName = get_class($object);
+
+        if ($pos = strrpos($objectName, '\\')) {
+            $objectName = substr($objectName, $pos + 1);
+        }
+
+        return $objectName;
     }
 }
 

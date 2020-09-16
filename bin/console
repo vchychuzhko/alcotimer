@@ -19,8 +19,7 @@ try {
     $app = $invoker->get(\Awesome\Console\Model\Cli::class);
     $app->run();
 } catch (\Exception $e) {
-    echo $e->getMessage();
-    echo "\n";
-    echo $e->getTraceAsString();
+    echo $e->getMessage() . "\n";
+    echo $e->getTraceAsString() . "\n";
     exit(1);
 }

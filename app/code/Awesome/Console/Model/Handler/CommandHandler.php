@@ -31,7 +31,6 @@ class CommandHandler
      * Get command data for requested command name.
      * @param string $commandName
      * @return array|null
-     * @throws \LogicException
      */
     public function getCommandData($commandName)
     {
@@ -51,7 +50,6 @@ class CommandHandler
     /**
      * Get all available commands.
      * @return array
-     * @throws \LogicException
      */
     public function getCommands()
     {
@@ -62,7 +60,6 @@ class CommandHandler
      * Check if requested command exists.
      * @param string $commandName
      * @return bool
-     * @throws \LogicException
      */
     public function commandExist($commandName)
     {
@@ -73,7 +70,6 @@ class CommandHandler
      * Parse requested command name into a full name.
      * @param string $commandName
      * @return string
-     * @throws \LogicException
      */
     public function parseCommand($commandName)
     {
@@ -93,7 +89,6 @@ class CommandHandler
      * Get command class according to the requested command name.
      * @param string $commandName
      * @return string
-     * @throws \LogicException
      */
     public function getCommandClass($commandName)
     {
@@ -108,7 +103,6 @@ class CommandHandler
      * @param string $handle
      * @param bool $strict
      * @return array
-     * @throws \LogicException
      */
     public function getAlternatives($handle, $strict = true)
     {
