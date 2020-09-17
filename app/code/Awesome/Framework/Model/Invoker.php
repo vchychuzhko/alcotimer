@@ -14,9 +14,7 @@ final class Invoker implements \Awesome\Framework\Model\SingletonInterface
     /**
      * Invoker constructor.
      */
-    private function __construct() {
-        self::$instances[self::class] = $this;
-    }
+    private function __construct() {}
 
     /**
      * Get requested class instance.
@@ -43,6 +41,48 @@ final class Invoker implements \Awesome\Framework\Model\SingletonInterface
                         ));
                     }
                     $arguments[] = $this->get($type->getName());
+                }
+            }
+            $object = new $id(...$arguments);
+
+            if ($object instanceof SingletonInterface) {
+                self::$instances[$id] = $object;
+            }
+        }
+
+        return $object;
+    }
+
+    /**
+     * Get requested class instance with passing non-object parameters.
+     * @param string $id
+     * @param array $parameters
+     * @return mixed
+     * @throws \Exception
+     */
+    public function make($id, $parameters = [])
+    {
+        $id = ltrim($id, '\\');
+
+        if (!$object = self::$instances[$id] ?? null) {
+            $reflectionClass = new \ReflectionClass($id);
+            $arguments = [];
+
+            if ($constructor = $reflectionClass->getConstructor()) {
+                foreach ($constructor->getParameters() as $parameter) {
+                    $parameterName = $parameter->getName();
+
+                    if (isset($parameters[$parameterName])) {
+                        $arguments[] = $parameters[$parameterName];
+                    } elseif ($type = $parameter->getClass()) {
+                        $arguments[] = $this->get($type->getName());
+                    } elseif ($parameter->isOptional()) {
+                        $arguments[] = $parameter->getDefaultValue();
+                    } else {
+                        throw new \Exception(
+                            sprintf('Parameter "%s" was not provided for "%s" constructor', $parameterName, $id)
+                        );
+                    }
                 }
             }
             $object = new $id(...$arguments);
