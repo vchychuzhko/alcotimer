@@ -49,13 +49,10 @@ class XmlParsingHelper
     {
         if (is_array($nodeElement)) {
             uasort($nodeElement, function ($a, $b) {
-                $a = $a['sortOrder'] ?? null;
-                $b = $b['sortOrder'] ?? null;
+                $compare = 0;
 
-                if ($a === null || $b === null) {
-                    $compare = 0;
-                } else {
-                    $compare = $a <=> $b;
+                if (isset($a['sortOrder'], $b['sortOrder'])) {
+                    $compare = $a['sortOrder'] <=> $b['sortOrder'];
                 }
 
                 return $compare;

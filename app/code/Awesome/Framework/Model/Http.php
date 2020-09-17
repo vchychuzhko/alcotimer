@@ -91,7 +91,8 @@ class Http
 
                 $this->eventManager->dispatch(
                     'http_frontend_action',
-                    ['request' => $request, 'router' => $this->router]
+                    ['request' => $request, 'router' => $this->router],
+                    $request->getView()
                 );
 
                 if ($action = $this->router->getAction()) {
@@ -113,7 +114,7 @@ class Http
 
             $response = new HtmlResponse(
                 $this->isDeveloperMode()
-                    ? '<pre>' . get_class($e) . ': ' . $e->getMessage() . "\n" . $e->getTraceAsString() . '</pre>'
+                    ? '<pre>' . get_class_name($e) . ': ' . $e->getMessage() . "\n" . $e->getTraceAsString() . '</pre>'
                     : $this->maintenance->getInternalErrorPage(),
                 Response::INTERNAL_ERROR_STATUS_CODE
             );
