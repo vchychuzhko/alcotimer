@@ -2,6 +2,7 @@
 
 namespace Awesome\Framework\Model\XmlParser;
 
+use Awesome\Framework\Exception\XmlValidationException;
 use Awesome\Framework\Helper\XmlParsingHelper;
 use Awesome\Framework\Model\Http\Router;
 
@@ -13,7 +14,7 @@ class RoutesXmlParser
      * Get declared routes with their responsive modules.
      * @param string $view
      * @return array
-     * @throws \LogicException
+     * @throws XmlValidationException
      */
     public function getRoutesData($view)
     {
@@ -28,7 +29,7 @@ class RoutesXmlParser
 
                 foreach ($routes as $routeFrontName => $routeData) {
                     if (isset($routesData[$routeType][$routeFrontName])) {
-                        throw new \LogicException(sprintf('Route with "%s" front name is already defined', $routeFrontName));
+                        throw new XmlValidationException(sprintf('Route with "%s" front name is already defined', $routeFrontName));
                     }
 
                     $routesData[$routeType][$routeFrontName] = $routeData;
@@ -43,7 +44,7 @@ class RoutesXmlParser
      * Parse routes XML file.
      * @param string $routesXmlFile
      * @return array
-     * @throws \LogicException
+     * @throws XmlValidationException
      */
     private function parse($routesXmlFile)
     {
@@ -56,22 +57,22 @@ class RoutesXmlParser
         foreach ($routesNode->children() as $route) {
             if (!XmlParsingHelper::isAttributeBooleanTrue($route)) {
                 if (!$routeFrontName = XmlParsingHelper::getNodeAttribute($route, 'frontName')) {
-                    throw new \LogicException(sprintf('FrontName attribute is not provided for route in "%s" file', $routesXmlFile));
+                    throw new XmlValidationException(sprintf('FrontName attribute is not provided for route in "%s" file', $routesXmlFile));
                 }
                 if (!$routeType = XmlParsingHelper::getNodeAttribute($route, 'type')) {
-                    throw new \LogicException(sprintf('Type attribute is not provided for "%s" route', $routeFrontName));
+                    throw new XmlValidationException(sprintf('Type attribute is not provided for "%s" route', $routeFrontName));
                 }
                 if (!isset($parsedNode[$routeType])) {
-                    throw new \LogicException(sprintf('Route type "%s" is not recognized', $routeType));
+                    throw new XmlValidationException(sprintf('Route type "%s" is not recognized', $routeType));
                 }
                 if (isset($parsedNode[$routeType][$routeFrontName])) {
-                    throw new \LogicException(sprintf('Route "%s" is defined twice in one file', $routeFrontName));
+                    throw new XmlValidationException(sprintf('Route "%s" is defined twice in one file', $routeFrontName));
                 }
                 if (!$module = $route->module) {
-                    throw new \LogicException(sprintf('Responsible module is not provided for "%s" route', $routeFrontName));
+                    throw new XmlValidationException(sprintf('Responsible module is not provided for "%s" route', $routeFrontName));
                 }
                 if (!$moduleName = XmlParsingHelper::getNodeAttribute($module)) {
-                    throw new \LogicException(sprintf('Module name attribute is not provided for "%s" route', $routeFrontName));
+                    throw new XmlValidationException(sprintf('Module name attribute is not provided for "%s" route', $routeFrontName));
                 }
                 $parsedNode[$routeType][$routeFrontName] = $moduleName;
             }

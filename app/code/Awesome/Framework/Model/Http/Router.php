@@ -51,13 +51,17 @@ class Router
     }
 
     /**
-     * Add action classname to list.
-     * @param string $action
+     * Add action classname and additional parameters to list.
+     * @param string $id
+     * @param array $data
      * @return $this
      */
-    public function addAction($action)
+    public function addAction($id, $data = [])
     {
-        $this->actions[] = $action;
+        $this->actions[] = [
+            'id' => $id,
+            'data' => $data,
+        ];
 
         return $this;
     }
@@ -70,7 +74,7 @@ class Router
     public function getAction()
     {
         if ($action = reset($this->actions)) {
-            $action = $this->invoker->get($action);
+            $action = $this->invoker->make($action['id'], $action['data']);
 
             if (!($action instanceof ActionInterface)) {
                 throw new \LogicException(sprintf('Action "%s" does not implement ActionInterface', get_class($action)));
