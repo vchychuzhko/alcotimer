@@ -44,7 +44,7 @@ class MaintenanceEnable extends \Awesome\Console\Model\Cli\AbstractCommand
     /**
      * Enable maintenance mode.
      * @inheritDoc
-     * @throws \RuntimeException
+     * @throws \InvalidArgumentException
      */
     public function execute($input, $output)
     {
@@ -59,7 +59,7 @@ class MaintenanceEnable extends \Awesome\Console\Model\Cli\AbstractCommand
             $output->writeln($output->colourText(implode(', ', $this->ipValidator->getInvalidItems()), Output::BROWN));
             $output->writeln('Use -f/--force option if you want to proceed anyway.');
 
-            throw new \RuntimeException('IP address validation failed');
+            throw new \InvalidArgumentException('IP address validation failed');
         }
     }
 }

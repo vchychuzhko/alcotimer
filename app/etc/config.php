@@ -19,7 +19,7 @@ return [
     'cache' => [
         'etc' => 1,
         'layout' => 1,
-        'full-page' => 1
+        'full_page' => 1
     ],
     'timer_config' => [
         'timer' => [

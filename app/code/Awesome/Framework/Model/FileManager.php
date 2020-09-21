@@ -76,7 +76,7 @@ class FileManager
             $this->createFile($path);
         }
 
-        return @file_put_contents($path, $content, $append ? FILE_APPEND : 0);
+        return @file_put_contents($path, $content, $append ? FILE_APPEND : 0) !== false;
     }
 
     /**

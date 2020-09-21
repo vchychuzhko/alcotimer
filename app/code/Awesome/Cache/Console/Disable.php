@@ -5,8 +5,9 @@ namespace Awesome\Cache\Console;
 use Awesome\Cache\Model\Cache;
 use Awesome\Console\Model\Cli\Input\InputDefinition;
 use Awesome\Console\Model\Cli\Output;
+use Awesome\Framework\Model\Config;
 
-class Clean extends \Awesome\Console\Model\Cli\AbstractCommand
+class Disable extends \Awesome\Console\Model\Cli\AbstractCommand
 {
     /**
      * @var Cache $cache
@@ -14,12 +15,19 @@ class Clean extends \Awesome\Console\Model\Cli\AbstractCommand
     private $cache;
 
     /**
-     * Cache Clean constructor.
-     * @param Cache $cache
+     * @var Config $config
      */
-    public function __construct(Cache $cache)
+    private $config;
+
+    /**
+     * Cache Disable constructor.
+     * @param Cache $cache
+     * @param Config $config
+     */
+    public function __construct(Cache $cache, Config $config)
     {
         $this->cache = $cache;
+        $this->config = $config;
     }
 
     /**
@@ -28,12 +36,12 @@ class Clean extends \Awesome\Console\Model\Cli\AbstractCommand
     public static function configure($definition)
     {
         return parent::configure($definition)
-            ->setDescription('Clear application cache')
-            ->addArgument('types', InputDefinition::ARGUMENT_ARRAY, 'Cache types to be cleared');
+            ->setDescription('Disable application cache')
+            ->addArgument('types', InputDefinition::ARGUMENT_ARRAY, 'Cache types to be disabled');
     }
 
     /**
-     * Clear application cache.
+     * Disable application cache.
      * @inheritDoc
      */
     public function execute($input, $output)
@@ -43,8 +51,8 @@ class Clean extends \Awesome\Console\Model\Cli\AbstractCommand
 
         foreach ($types as $type) {
             if (in_array($type, $definedTypes, true)) {
-                $this->cache->invalidate($type);
-                $output->writeln('Cache cleared: ' . $type);
+                $this->config->set(Cache::CACHE_CONFIG_PATH . '/' . $type, 0);
+                $output->writeln('Cache disabled: ' . $type);
             } else {
                 $output->writeln('Provided cache type was not recognized.');
                 $output->writeln();

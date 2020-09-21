@@ -3,5 +3,8 @@
         xsi:noNamespaceSchemaLocation="../../Console/Schema/console_command.xsd">
     <namespace name="cache">
         <command name="clean" class="Awesome\Cache\Console\Clean"/>
+        <command name="disable" class="Awesome\Cache\Console\Disable"/>
+        <command name="enable" class="Awesome\Cache\Console\Enable"/>
+        <command name="status" class="Awesome\Cache\Console\Status"/>
     </namespace>
 </config>

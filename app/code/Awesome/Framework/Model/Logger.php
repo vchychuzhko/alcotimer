@@ -71,10 +71,6 @@ class Logger
      */
     private function write($logFile, $message)
     {
-        if (!file_exists(BP . self::LOG_DIRECTORY)) {
-            $this->fileManager->createDirectory(BP . self::LOG_DIRECTORY);
-        }
-
         $this->fileManager->writeFile(
             BP . self::LOG_DIRECTORY . '/' . $logFile,
             '[' . $this->datetime->getCurrentTime() . '] ' . $message . "\n",
