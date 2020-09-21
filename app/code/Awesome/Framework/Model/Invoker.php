@@ -27,7 +27,9 @@ final class Invoker implements \Awesome\Framework\Model\SingletonInterface
     {
         $id = ltrim($id, '\\');
 
-        if (!$object = self::$instances[$id] ?? null) {
+        if (isset(self::$instances[$id])) {
+            $object = self::$instances[$id];
+        } else {
             $reflectionClass = new \ReflectionClass($id);
             $arguments = [];
 
@@ -64,7 +66,9 @@ final class Invoker implements \Awesome\Framework\Model\SingletonInterface
     {
         $id = ltrim($id, '\\');
 
-        if (!$object = self::$instances[$id] ?? null) {
+        if (isset(self::$instances[$id])) {
+            $object = self::$instances[$id];
+        } else {
             $reflectionClass = new \ReflectionClass($id);
             $arguments = [];
 

@@ -51,8 +51,8 @@ class StaticGenerationHandler implements \Awesome\Framework\Model\ActionInterfac
         $extension = pathinfo($request->getPath(), PATHINFO_EXTENSION);
         $contentTypeHeader = [];
 
-        if ($contentType = self::MIME_TYPES[$extension] ?? null) {
-            $contentTypeHeader = ['Content-Type' => $contentType];
+        if (isset(self::MIME_TYPES[$extension])) {
+            $contentTypeHeader = ['Content-Type' => self::MIME_TYPES[$extension]];
         }
 
         return new Response($content, Response::SUCCESS_STATUS_CODE, $contentTypeHeader);

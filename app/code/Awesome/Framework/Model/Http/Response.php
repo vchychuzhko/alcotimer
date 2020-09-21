@@ -45,11 +45,11 @@ class Response
     {
         http_response_code($this->status);
 
-        foreach ($this->headers as $name => $value) {
-            header($name . ': ' . $value);
+        foreach ($this->headers as $key => $value) {
+            header($key . ': ' . $value);
         }
 
-        if ($this->content) {
+        if ($this->content !== '') {
             echo $this->content;
         }
     }
@@ -86,14 +86,14 @@ class Response
 
     /**
      * Set header to response.
-     * Existing header with the same name will be overwritten.
-     * @param string $name
+     * Existing header with the same key will be overwritten.
+     * @param string $key
      * @param string $value
      * @return $this
      */
-    public function setHeader($name, $value)
+    public function setHeader($key, $value)
     {
-        $this->headers[$name] = $value;
+        $this->headers[$key] = $value;
 
         return $this;
     }

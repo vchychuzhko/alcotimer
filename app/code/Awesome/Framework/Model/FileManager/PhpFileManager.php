@@ -47,4 +47,21 @@ class PhpFileManager extends \Awesome\Framework\Model\FileManager
 
         return $this->createFile($path, $content, true);
     }
+
+    /**
+     * Check if requested PHP object have corresponding file.
+     * @param string $objectName
+     * @return bool
+     * @throws \RuntimeException
+     */
+    public function objectFileExists($objectName)
+    {
+        $path = APP_DIR . '/' . str_replace('\\', '/', ltrim($objectName, '\\')) . '.php';
+
+        if (is_dir($path)) {
+            throw new \RuntimeException(sprintf('Provided path "%s" is a directory and cannot contain object', $path));
+        }
+
+        return file_exists($path);
+    }
 }
