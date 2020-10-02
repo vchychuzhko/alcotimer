@@ -3,8 +3,8 @@
       xsi:noNamespaceSchemaLocation="../../../../Frontend/Schema/page_layout.xsd">
     <head>
         <favicon src="images/favicon.png"/>
-        <lib src="lib/jquery/jquery.min.js"/>
-        <lib src="lib/jquery/jquery-ui.min.js"/>
+        <script src="lib/jquery/jquery.min.js"/>
+        <script src="lib/jquery/jquery-ui.min.js"/>
         <script src="Awesome_Frontend::copy.js"/>
         <script src="Awesome_Frontend::menu.js"/>
         <script src="Awesome_Frontend::message.js"/>

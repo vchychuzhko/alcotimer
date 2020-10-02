@@ -10,18 +10,21 @@ class Head extends \Awesome\Frontend\Block\Template
     protected $template = 'Awesome_Frontend::html/head.phtml';
 
     /**
-     * Get js libs, resolving their paths.
+     * Get styles, resolving their paths.
      * @return array
      */
-    public function getLibs()
+    public function getStyles()
     {
-        $libs = $this->getData('lib') ?: [];
+        $styles = [];
+        $stylesData = $this->getData('css') ?: [];
 
-        foreach ($libs as $index => $lib) {
-            $libs[$index] = $this->resolveAssetPath($lib, 'lib');
+        foreach ($stylesData as $style => $data) {
+            $styles[] = [
+                'src' => $this->resolveAssetPath($style),
+            ];
         }
 
-        return $libs;
+        return $styles;
     }
 
     /**
@@ -30,47 +33,34 @@ class Head extends \Awesome\Frontend\Block\Template
      */
     public function getScripts()
     {
-        $scripts = $this->getData('script') ?: [];
+        $scripts = [];
+        $scriptsData = $this->getData('script') ?: [];
 
-        foreach ($scripts as $index => $script) {
-            $scripts[$index] = $this->resolveAssetPath($script, 'js');
+        foreach ($scriptsData as $script => $data) {
+            $scripts[] = [
+                'src' => $this->resolveAssetPath($script),
+                'async' => $data['async'] ?? false,
+                'defer' => $data['defer'] ?? false,
+            ];
         }
 
         return $scripts;
     }
 
     /**
-     * Get styles, resolving their paths.
-     * @return array
-     */
-    public function getStyles()
-    {
-        $styles = $this->getData('css') ?: [];
-
-        foreach ($styles as $index => $style) {
-            $styles[$index] = $this->resolveAssetPath($style, 'css');
-        }
-
-        return $styles;
-    }
-
-    /**
      * Resolve XML assets path.
      * @param string $path
-     * @param string $type
      * @return string
      */
-    private function resolveAssetPath($path, $type)
+    private function resolveAssetPath($path)
     {
-        if (strpos($path, '//') === false) {
-            @list($module, $file) = explode('::', $path);
+        if (strpos($path, '::') !== false) {
+            list($module, $file) = explode('::', $path);
+            $type = pathinfo($file, PATHINFO_EXTENSION);
 
-            if (isset($file)) {
-                $path = $module . '/' . $type . '/' . $file;
-            }
-            $path = $this->getStaticUrl($this->renderer->getView() . '/' . $path);
+            $path = $module . '/' . $type . '/' . $file;
         }
 
-        return $path;
+        return $this->getStaticUrl($this->renderer->getView() . '/' . $path);
     }
 }
