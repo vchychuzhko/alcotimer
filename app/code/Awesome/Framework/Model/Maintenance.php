@@ -8,6 +8,7 @@ class Maintenance
 
     public const MAINTENANCE_PAGE_PATH = '/pub/pages/maintenance.html';
     public const INTERNALERROR_PAGE_PATH = '/pub/pages/internal_error.html';
+
     /**
      * @var FileManager $fileManager
      */
@@ -64,7 +65,7 @@ class Maintenance
             if ($allowedIPs) {
                 $status['allowed_ips'] = explode(',', $allowedIPs);
             }
-        };
+        }
 
         return $status;
     }

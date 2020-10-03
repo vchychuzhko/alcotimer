@@ -1,5 +1,9 @@
 <?php /** General configuration file */
 return [
+    'backend' => [
+        'enabled' => 0,
+        'front_name' => 'admin'
+    ],
     'developer_mode' => 0, // Note: this will show all errors and exceptions in the frontend
     'show_forbidden' => 0, // NotFound response will be returned instead
     'support_email_address' => '',

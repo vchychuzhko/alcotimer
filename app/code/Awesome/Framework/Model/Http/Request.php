@@ -4,6 +4,7 @@ namespace Awesome\Framework\Model\Http;
 
 /**
  * Class Request
+ * @method string getAcceptType()
  * @method string getFullActionName()
  * @method string getUserIp()
  * @method string getView()
@@ -21,10 +22,28 @@ class Request extends \Awesome\Framework\Model\DataObject implements \Awesome\Fr
     public const SCHEME_HTTP  = 'http';
     public const SCHEME_HTTPS = 'https';
 
+    public const JSON_ACCEPT_HEADER = 'application/json';
+    public const HTML_ACCEPT_HEADER = 'text/html';
+
     /**
      * @var string $url
      */
     private $url;
+
+    /**
+     * @var string $scheme
+     */
+    private $scheme;
+
+    /**
+     * @var string $host
+     */
+    private $host;
+
+    /**
+     * @var string $path
+     */
+    private $path;
 
     /**
      * @var string $method
@@ -86,7 +105,11 @@ class Request extends \Awesome\Framework\Model\DataObject implements \Awesome\Fr
      */
     private function getScheme()
     {
-        return parse_url($this->url, PHP_URL_SCHEME);
+        if (!$this->scheme) {
+            $this->scheme = parse_url($this->url, PHP_URL_SCHEME);
+        }
+
+        return $this->scheme;
     }
 
     /**
@@ -95,7 +118,11 @@ class Request extends \Awesome\Framework\Model\DataObject implements \Awesome\Fr
      */
     public function getHost()
     {
-        return parse_url($this->url, PHP_URL_HOST);
+        if (!$this->host) {
+            $this->host = parse_url($this->url, PHP_URL_HOST);
+        }
+
+        return $this->host;
     }
 
     /**
@@ -104,7 +131,11 @@ class Request extends \Awesome\Framework\Model\DataObject implements \Awesome\Fr
      */
     public function getPath()
     {
-        return rtrim(parse_url($this->url, PHP_URL_PATH), '/') ?: '/';
+        if (!$this->path) {
+            $this->path = rtrim(parse_url($this->url, PHP_URL_PATH), '/') ?: '/';
+        }
+
+        return $this->path;
     }
 
     /**
