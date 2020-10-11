@@ -2,28 +2,61 @@
 
 namespace Awesome\Cache\Model;
 
-class Cache
+use Awesome\Framework\Model\Config;
+use Awesome\Framework\Model\FileManager;
+use Awesome\Framework\Model\Serializer\Json;
+
+class Cache implements \Awesome\Framework\Model\SingletonInterface
 {
     private const CACHE_DIR = '/var/cache';
+
+    public const CACHE_CONFIG_PATH = 'cache';
+
     public const ETC_CACHE_KEY = 'etc';
     public const LAYOUT_CACHE_KEY = 'layout';
-    public const FULL_PAGE_CACHE_KEY = 'full-page';
+    public const FULL_PAGE_CACHE_KEY = 'full_page';
+
+    /**
+     * @var Config $config
+     */
+    private $config;
+
+    /**
+     * @var FileManager $fileManager
+     */
+    private $fileManager;
+
+    /**
+     * @var Json $json
+     */
+    private $json;
+
+    /**
+     * Cache constructor.
+     * @param Config $config
+     * @param FileManager $fileManager
+     * @param Json $json
+     */
+    public function __construct(Config $config, FileManager $fileManager, Json $json)
+    {
+        $this->config = $config;
+        $this->fileManager = $fileManager;
+        $this->json = $json;
+    }
 
     /**
      * Retrieve cache by key and tag.
-     * If tag is not provided, all data related to the key will be returned.
      * @param string $key
      * @param string $tag
      * @return mixed
      */
-    public function get($key, $tag = '')
+    public function get($key, $tag)
     {
-        //@TODO: Possibly, rework it according to Symfony, with save callback
-        $cache = $this->readCacheFile($key);
+        $data = null;
 
-        if ($tag === '') {
-            $data = $cache;
-        } else {
+        if ($this->cacheTypeEnabled($key)) {
+            $cache = $this->readCacheFile($key);
+
             $data = $cache[$tag] ?? null;
         }
 
@@ -39,11 +72,12 @@ class Cache
      */
     public function save($key, $tag, $data)
     {
-        //@TODO: implement enable/disable cache functionality
-        $cache = $this->get($key);
-        $cache[$tag] = $data;
+        if ($this->cacheTypeEnabled($key)) {
+            $cache = $this->readCacheFile($key);
+            $cache[$tag] = $data;
 
-        $this->saveToCacheFile($key, $cache);
+            $this->saveCacheFile($key, $cache);
+        }
 
         return $this;
     }
@@ -52,20 +86,40 @@ class Cache
      * Remove cache by key and tag.
      * If key is not specified, remove all caches.
      * @param string $key
-     * @param string $tag
      * @return $this
      */
-    public function remove($key = '', $tag = '')
+    public function invalidate($key = '')
     {
-        if ($key && $tag) {
-            $cache = $this->readCacheFile($key);
-            unset($cache[$tag]);
-            $this->saveToCacheFile($key, $cache);
+        if ($key === '') {
+            $this->fileManager->removeDirectory(BP . self::CACHE_DIR);
         } else {
-            $this->removeCacheFile($key);
+            $this->fileManager->removeFile(BP . self::CACHE_DIR . '/' . $key . '-cache');
         }
 
         return $this;
+    }
+
+    /**
+     * Check if requested cache type is enabled.
+     * @param string $key
+     * @return bool
+     */
+    private function cacheTypeEnabled($key)
+    {
+        return (bool) $this->config->get(self::CACHE_CONFIG_PATH . '/' . $key);
+    }
+
+    /**
+     * Get available cache types.
+     * @return array
+     */
+    public function getTypes()
+    {
+        return [
+            self::ETC_CACHE_KEY,
+            self::LAYOUT_CACHE_KEY,
+            self::FULL_PAGE_CACHE_KEY,
+        ];
     }
 
     /**
@@ -73,11 +127,11 @@ class Cache
      * @param string $key
      * @return array
      */
-    public function readCacheFile($key)
+    private function readCacheFile($key)
     {
-        $cache = @file_get_contents(BP . self::CACHE_DIR . '/' . $key . '-cache');
+        $cache = $this->fileManager->readFile(BP . self::CACHE_DIR . '/' . $key . '-cache') ?: '{}';
 
-        return json_decode($cache, true) ?: [];
+        return $this->json->decode($cache);
     }
 
     /**
@@ -86,30 +140,9 @@ class Cache
      * @param array $data
      * @return $this
      */
-    private function saveToCacheFile($key, $data)
+    private function saveCacheFile($key, $data)
     {
-        if (!file_exists(BP . self::CACHE_DIR)) {
-            mkdir(BP . self::CACHE_DIR);
-        }
-
-        file_put_contents(BP . self::CACHE_DIR . '/' . $key . '-cache', json_encode($data));
-
-        return $this;
-    }
-
-    /**
-     * Remove cache file according to key.
-     * If key is not specified, remove all caches.
-     * @param string $key
-     * @return $this
-     */
-    private function removeCacheFile($key = '')
-    {
-        if ($key) {
-            @unlink(BP . self::CACHE_DIR . '/' . $key . '-cache');
-        } else {
-            @rrmdir(BP . self::CACHE_DIR);
-        }
+        $this->fileManager->createFile(BP . self::CACHE_DIR . '/' . $key . '-cache', $this->json->encode($data), true);
 
         return $this;
     }

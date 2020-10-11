@@ -3,6 +3,8 @@
 namespace Awesome\Cache\Console;
 
 use Awesome\Cache\Model\Cache;
+use Awesome\Console\Model\Cli\Input\InputDefinition;
+use Awesome\Console\Model\Cli\Output;
 
 class Clean extends \Awesome\Console\Model\Cli\AbstractCommand
 {
@@ -12,7 +14,7 @@ class Clean extends \Awesome\Console\Model\Cli\AbstractCommand
     private $cache;
 
     /**
-     * Clean constructor.
+     * Cache Clean constructor.
      * @param Cache $cache
      */
     public function __construct(Cache $cache)
@@ -26,18 +28,31 @@ class Clean extends \Awesome\Console\Model\Cli\AbstractCommand
     public static function configure($definition)
     {
         return parent::configure($definition)
-            ->setDescription('Flush application cache');
+            ->setDescription('Clear application cache')
+            ->addArgument('types', InputDefinition::ARGUMENT_ARRAY, 'Cache types to be cleared');
     }
 
     /**
-     * Clean XML cache files.
+     * Clear application cache.
      * @inheritDoc
      */
     public function execute($input, $output)
     {
-        $this->cache->remove();
-        //@TODO: Add cache type argument
+        $definedTypes = $this->cache->getTypes();
+        $types = $input->getArgument('types') ?: $definedTypes;
 
-        $output->writeln('Cache was cleaned.');
+        foreach ($types as $type) {
+            if (in_array($type, $definedTypes, true)) {
+                $this->cache->invalidate($type);
+                $output->writeln('Cache cleared: ' . $type);
+            } else {
+                $output->writeln('Provided cache type was not recognized.');
+                $output->writeln();
+                $output->writeln('Allowed types:');
+                $output->writeln($output->colourText(implode(', ', $definedTypes)), 2);
+
+                throw new \InvalidArgumentException('Invalid cache type is provided');
+            }
+        }
     }
 }

@@ -13,12 +13,9 @@
 <?php if ($favicon = $block->getFavicon()): ?>
     <link rel="shortcut icon" type="image/png" href="<?= $block->getMediaUrl($favicon); ?>"/>
 <?php endif; ?>
-<?php foreach($block->getLibs() as $lib): ?>
-    <script src="<?= $lib; ?>"></script>
-<?php endforeach; ?>
 <?php foreach($block->getStyles() as $css): ?>
-    <link rel="stylesheet" type="text/css" href="<?= $css; ?>"/>
+    <link rel="stylesheet" type="text/css" href="<?= $css['src']; ?>"/>
 <?php endforeach; ?>
 <?php foreach($block->getScripts() as $script): ?>
-    <script src="<?= $script; ?>"></script>
+    <script src="<?= $script['src']; ?>"<?= $script['async'] ? ' async' : ''; ?><?= $script['defer'] ? ' defer' : ''; ?>></script>
 <?php endforeach; ?>

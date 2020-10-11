@@ -43,9 +43,25 @@ class Output
     public const WHITE_BG = '107';
 
     /**
+     * @var bool $interactive
+     */
+    private $interactive;
+
+    /**
      * @var bool $mute
      */
-    private $mute = false;
+    private $mute;
+
+    /**
+     * Output constructor.
+     * @param bool $interactive
+     * @param bool $mute
+     */
+    public function __construct($interactive = true, $mute = false)
+    {
+        $this->interactive = $interactive;
+        $this->mute = $mute;
+    }
 
     /**
      * Output the text.
@@ -74,6 +90,77 @@ class Output
     }
 
     /**
+     * Read user input.
+     * @param string $prompt
+     * @return string
+     */
+    public function read($prompt = '')
+    {
+        $line = '';
+
+        if ($this->interactive) {
+            $this->write($prompt);
+            $line = readline();
+            readline_add_history($line);
+        }
+
+        return $line;
+    }
+
+    /**
+     * Read user input starting with a new line.
+     * @param string $prompt
+     * @return string
+     */
+    public function readln($prompt = '')
+    {
+        return $this->read($prompt . "\n");
+    }
+
+    /**
+     * Prompt user confirmation.
+     * @param string $prompt
+     * @param array $confirmOptions
+     * @return bool
+     */
+    public function confirm($prompt, $confirmOptions = ['y', 'yes'])
+    {
+        $confirm = true;
+
+        if ($this->interactive) {
+            $answer = $this->readln($prompt);
+            $confirm = in_array($answer, $confirmOptions, true);
+        }
+
+        return $confirm;
+    }
+
+    /**
+     * Prompt user to select one of the provided options.
+     * @param string $prompt
+     * @param array $options
+     * @return string
+     */
+    public function choice($prompt, $options)
+    {
+        $choice = null;
+
+        if ($this->interactive && $options) {
+            foreach ($options as $optionKey => $option) {
+                $prompt .= "\n" . $optionKey . ': ' . $option;
+            }
+            $prompt .= "\n" . 'Your choice: ';
+            $answer = $this->readln($prompt);
+
+            if (array_key_exists($answer, $options)) {
+                $choice = $answer;
+            }
+        }
+
+        return $choice;
+    }
+
+    /**
      * Disable output.
      * @return $this
      */
@@ -91,6 +178,28 @@ class Output
     public function unmute()
     {
         $this->mute = false;
+
+        return $this;
+    }
+
+    /**
+     * Disable interaction.
+     * @return $this
+     */
+    public function disableInteraction()
+    {
+        $this->interactive = false;
+
+        return $this;
+    }
+
+    /**
+     * Enable interaction.
+     * @return $this
+     */
+    public function enableInteraction()
+    {
+        $this->interactive = true;
 
         return $this;
     }

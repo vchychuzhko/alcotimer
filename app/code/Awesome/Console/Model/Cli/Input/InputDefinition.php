@@ -43,6 +43,11 @@ class InputDefinition
     private $hasArrayArgument = false;
 
     /**
+     * @var int $numberOfArguments
+     */
+    private $numberOfArguments = 0;
+
+    /**
      * Set command description, overrides if already set.
      * @param string $description
      * @return $this
@@ -57,7 +62,7 @@ class InputDefinition
     /**
      * Parse, check and add command option.
      * @param string $name
-     * @param string $shortcut
+     * @param string|null $shortcut
      * @param int $type
      * @param string $description
      * @param mixed $default
@@ -75,7 +80,6 @@ class InputDefinition
             if ($type === self::OPTION_ARRAY) {
                 throw new \LogicException(sprintf('Array option "%s" cannot have shortcut', $name));
             }
-
             if (isset($this->shortcuts[$shortcut])) {
                 throw new \LogicException(sprintf('An option with shortcut "%s" already exists', $shortcut));
             }
@@ -100,27 +104,24 @@ class InputDefinition
      * @return $this
      * @throws \LogicException
      */
-    public function addArgument($name, $type = self::ARGUMENT_OPTIONAL, $description = '')
+    public function addArgument($name, $type = self::ARGUMENT_REQUIRED, $description = '')
     {
         if ($this->hasArrayArgument) {
             throw new \LogicException('Argument cannot be added after array argument');
         }
-
-        if ($type !== self::ARGUMENT_OPTIONAL && $this->lastArgumentOptional) {
-            throw new \LogicException('Cannot add required or array argument after optional one');
+        if ($this->lastArgumentOptional) {
+            throw new \LogicException('Argument cannot be added after optional argument');
         }
-
         if ($type === self::ARGUMENT_OPTIONAL) {
             $this->lastArgumentOptional = true;
         }
-
         if ($type === self::ARGUMENT_ARRAY) {
             $this->hasArrayArgument = true;
         }
 
         $this->arguments[$name] = [
             'type' => $type,
-            'position' => count($this->arguments) + 1,
+            'position' => ++$this->numberOfArguments,
             'description' => $description
         ];
 
@@ -151,6 +152,9 @@ class InputDefinition
         $this->options = [];
         $this->arguments = [];
         $this->shortcuts = [];
+        $this->lastArgumentOptional = false;
+        $this->hasArrayArgument = false;
+        $this->numberOfArguments = 0;
 
         return $this;
     }

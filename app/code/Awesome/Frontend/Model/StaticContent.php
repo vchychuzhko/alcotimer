@@ -2,12 +2,14 @@
 
 namespace Awesome\Frontend\Model;
 
+use Awesome\Framework\Model\FileManager;
 use Awesome\Framework\Model\Http;
 use Awesome\Framework\Model\Config;
 
 class StaticContent
 {
-    private const STATIC_FOLDER_PATH = '/pub/static/';
+    public const STATIC_FOLDER_PATH = '/pub/static/';
+    public const LIB_FOLDER_PATH = 'lib';
     private const DEPLOYED_VERSION_FILE = '/pub/static/deployed_version.txt';
     private const ASSETS_FOLDER_PATH_PATTERN = '/*/*/view/%v/web/%a';
     private const JS_LIB_PATH_PATTERN = '/lib/*/*.js';
@@ -19,16 +21,23 @@ class StaticContent
     private $config;
 
     /**
+     * @var FileManager $fileManager
+     */
+    private $fileManager;
+
+    /**
      * App constructor.
      * @param Config $config
+     * @param FileManager $fileManager
      */
-    public function __construct(Config $config)
+    public function __construct(Config $config, FileManager $fileManager)
     {
         $this->config = $config;
+        $this->fileManager = $fileManager;
     }
 
     /**
-     * Deploy static files for needed view.
+     * Deploy static files for a specified view.
      * Process both views if not specified.
      * @param string $view
      * @return $this
@@ -55,7 +64,7 @@ class StaticContent
     private function processView($view)
     {
         if (!file_exists(BP . self::STATIC_FOLDER_PATH . $view)) {
-            mkdir(BP . self::STATIC_FOLDER_PATH . $view);
+            $this->fileManager->createDirectory(BP . self::STATIC_FOLDER_PATH . $view);
         }
 
         $this->removeStatic($view);
@@ -72,7 +81,7 @@ class StaticContent
      */
     private function removeStatic($view)
     {
-        rrmdir(BP . self::STATIC_FOLDER_PATH . $view);
+        $this->fileManager->removeDirectory(BP . self::STATIC_FOLDER_PATH . $view);
 
         return $this;
     }
@@ -98,17 +107,17 @@ class StaticContent
             $assetFormat = strstr($assetFormat, '_', true);
 
             foreach (glob(APP_DIR . $assetPattern, GLOB_ONLYDIR) as $assetFolder) {
-                $assetFiles = rscandir($assetFolder, '/\.' . $assetFormat .'$/');
+                $assetFiles = $this->fileManager->scanDirectory($assetFolder, true, '/\.' . $assetFormat .'$/');
 
                 foreach ($assetFiles as $assetFile) {
                     list($folder, $file) = $this->getFilePath($assetFile);
-                    @mkdir($staticFolder . $folder, 0777, true);
+                    $this->fileManager->createDirectory($staticFolder . $folder);
 
-                    $content = file_get_contents($assetFile);
+                    $content = $this->fileManager->readFile($assetFile, false);
                     $content = $this->parsePubDirPath($content);
                     //@TODO: insert minifying/merging here
 
-                    file_put_contents($staticFolder . $folder . '/' . $file, $content);
+                    $this->fileManager->createFile($staticFolder . $folder . '/' . $file, $content);
                 }
             }
         }
@@ -130,7 +139,7 @@ class StaticContent
 
         foreach ($libFiles as $libFile) {
             list($folder, $file) = $this->getFilePath($libFile, true);
-            @mkdir($staticFolder . $folder, 0777, true);
+            $this->fileManager->createDirectory($staticFolder . $folder);
 
             copy($libFile, $staticFolder . $folder . $file);
         }
@@ -184,7 +193,7 @@ class StaticContent
      */
     public function generateDeployedVersion()
     {
-        file_put_contents(BP . self::DEPLOYED_VERSION_FILE, time());
+        $this->fileManager->createFile(BP . self::DEPLOYED_VERSION_FILE, time(), true);
 
         return $this;
     }
@@ -196,7 +205,7 @@ class StaticContent
     public function getDeployedVersion()
     {
         //@TODO: Resolve situation when frontend folder is missing, but deployed version is present
-        return (string) @file_get_contents(BP . self::DEPLOYED_VERSION_FILE);
+        return $this->fileManager->readFile(BP . self::DEPLOYED_VERSION_FILE);
     }
 
     /**

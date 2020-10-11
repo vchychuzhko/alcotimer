@@ -10,7 +10,8 @@ use Awesome\Framework\Model\XmlParser\EventXmlParser;
 
 class EventManager
 {
-    private const EVENTS_CACHE_TAG = 'events';
+    private const EVENTS_CACHE_TAG_GLOBAL = 'events';
+    private const EVENTS_CACHE_TAG_PREFIX = 'events_';
 
     /**
      * @var Cache $cache
@@ -44,19 +45,20 @@ class EventManager
     }
 
     /**
-     * Fire event with calling all related observers.
+     * Fire event with calling all related observers for a view if specified.
      * @param string $eventName
      * @param array $data
+     * @param string $view
      * @throws \Exception
      */
-    public function dispatch($eventName, $data = [])
+    public function dispatch($eventName, $data = [], $view = '')
     {
-        if ($observers = $this->getObservers($eventName)) {
+        if ($observers = $this->getObservers($eventName, $view)) {
             $event = new Event($eventName, $data);
 
             foreach ($observers as $observer) {
                 /** @var ObserverInterface $observer */
-                $observer = $this->invoker->get($observer);
+                $observer = $this->invoker->get($observer['class']);
 
                 if (!($observer instanceof ObserverInterface)) {
                     throw new \LogicException(
@@ -69,14 +71,14 @@ class EventManager
     }
 
     /**
-     * Get observers for provided event name.
+     * Get observers for provided event name for a view if specified.
      * @param string $eventName
+     * @param string $view
      * @return array
-     * @throws \LogicException
      */
-    public function getObservers($eventName)
+    public function getObservers($eventName, $view = '')
     {
-        $eventsData = $this->getEventsData();
+        $eventsData = $this->getEventsData($view);
 
         return $eventsData[$eventName] ?? [];
     }
@@ -84,7 +86,6 @@ class EventManager
     /**
      * Get all declared events.
      * @return array
-     * @throws \LogicException
      */
     public function getEvents()
     {
@@ -92,16 +93,18 @@ class EventManager
     }
 
     /**
-     * Get events data.
+     * Get events data for a view if specified.
+     * @param string $view
      * @return array
-     * @throws \LogicException
      */
-    private function getEventsData()
+    private function getEventsData($view = '')
     {
-        if (!$eventsData = $this->cache->get(Cache::ETC_CACHE_KEY, self::EVENTS_CACHE_TAG)) {
-            $eventsData = $this->eventXmlParser->getEventsData();
+        $tag = $view ? self::EVENTS_CACHE_TAG_PREFIX . $view : self::EVENTS_CACHE_TAG_GLOBAL;
 
-            $this->cache->save(Cache::ETC_CACHE_KEY, self::EVENTS_CACHE_TAG, $eventsData);
+        if (!$eventsData = $this->cache->get(Cache::ETC_CACHE_KEY, $tag)) {
+            $eventsData = $this->eventXmlParser->getEventsData($view);
+
+            $this->cache->save(Cache::ETC_CACHE_KEY, $tag, $eventsData);
         }
 
         return $eventsData;

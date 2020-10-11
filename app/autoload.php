@@ -10,6 +10,9 @@ spl_autoload_register(function ($objectName) {
     if (!file_exists($objectFile)) {
         throw new \Exception(sprintf('Object file was not found for "%s" object', $objectName));
     }
+    if (is_dir($objectFile)) {
+        throw new \Exception(sprintf('Object path "%s" is a directory and cannot be loaded', $objectName));
+    }
     require_once $objectFile;
 
     if (!class_exists($objectName) && !interface_exists($objectName)) {

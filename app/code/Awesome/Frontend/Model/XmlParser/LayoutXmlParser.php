@@ -2,6 +2,7 @@
 
 namespace Awesome\Frontend\Model\XmlParser;
 
+use Awesome\Framework\Exception\XmlValidationException;
 use Awesome\Framework\Helper\DataHelper;
 use Awesome\Framework\Model\Http;
 use Awesome\Framework\Helper\XmlParsingHelper;
@@ -23,9 +24,8 @@ class LayoutXmlParser
      * @var array $collectedAssets
      */
     private $collectedAssets = [
-        'lib' => [],
         'script' => [],
-        'css' => []
+        'css' => [],
     ];
 
     /**
@@ -77,19 +77,20 @@ class LayoutXmlParser
 
         // @TODO: Add check for minify/merge enabled and replace links
         $this->filterRemovedAssets();
+        XmlParsingHelper::applySortOrder($this->collectedAssets);
         $head = [
             'name' => 'head',
             'class' => Head::class,
             'template' => null,
             'children' => [],
-            'data' => array_merge($head, $this->collectedAssets)
+            'data' => array_merge($head, $this->collectedAssets),
         ];
 
         $body = [
             'name' => 'body',
             'class' => Container::class,
             'template' => null,
-            'children' => $body
+            'children' => $body,
         ];
         $this->applyReferences($body);
         XmlParsingHelper::applySortOrder($body);
@@ -102,25 +103,9 @@ class LayoutXmlParser
                 'children' => [
                     'head' => $head,
                     'body' => $body
-                ]
+                ],
             ]
         ];
-    }
-
-    /**
-     * Get available page layout handles for specified view.
-     * @param string $view
-     * @return array
-     */
-    public function getPageHandles($view)
-    {
-        $pattern = sprintf(self::LAYOUT_XML_PATH_PATTERN, $view, '*_*_*');
-        $handles = [];
-
-        foreach (glob(APP_DIR . $pattern) as $collectedHandle) {
-            $handles[] = basename($collectedHandle, '.xml');
-        }
-        return array_unique($handles);
     }
 
     /**
@@ -132,7 +117,6 @@ class LayoutXmlParser
     {
         $data = [];
 
-        //@TODO: Implement 'async' loading option
         foreach ($headNode->children() as $child) {
             switch ($childName = $child->getName()) {
                 case 'title':
@@ -144,10 +128,27 @@ class LayoutXmlParser
                 case 'favicon':
                     $data[$childName] = XmlParsingHelper::getNodeAttribute($child, 'src');
                     break;
-                case 'lib':
                 case 'script':
+                    $parsedAsset = [];
+
+                    if ($sortOrder = XmlParsingHelper::getNodeAttribute($child, 'sortOrder')) {
+                        $parsedAsset['sortOrder'] = $sortOrder;
+                    }
+                    if (XmlParsingHelper::isAttributeBooleanTrue($child, 'async')) {
+                        $parsedAsset['async'] = true;
+                    }
+                    if (XmlParsingHelper::isAttributeBooleanTrue($child, 'defer')) {
+                        $parsedAsset['defer'] = true;
+                    }
+                    $this->collectedAssets[$childName][XmlParsingHelper::getNodeAttribute($child, 'src')] = $parsedAsset;
+                    break;
                 case 'css':
-                    $this->collectedAssets[$childName][] = XmlParsingHelper::getNodeAttribute($child, 'src');
+                    $parsedAsset = [];
+
+                    if ($sortOrder = XmlParsingHelper::getNodeAttribute($child, 'sortOrder')) {
+                        $parsedAsset['sortOrder'] = $sortOrder;
+                    }
+                    $this->collectedAssets[$childName][XmlParsingHelper::getNodeAttribute($child, 'src')] = $parsedAsset;
                     break;
                 case 'remove':
                     $this->assetsToRemove[] = XmlParsingHelper::getNodeAttribute($child, 'src');
@@ -180,7 +181,7 @@ class LayoutXmlParser
      * Parse block, container or reference items.
      * @param \SimpleXMLElement $itemNode
      * @return array
-     * @throws \LogicException
+     * @throws XmlValidationException
      */
     private function parseBodyItem($itemNode)
     {
@@ -205,7 +206,7 @@ class LayoutXmlParser
                 }
 
                 if (in_array($itemName, $this->processedElements, true)) {
-                    throw new \LogicException(sprintf('"%s" block is declared twice', $itemName));
+                    throw new XmlValidationException(sprintf('"%s" block is declared twice', $itemName));
                 }
                 $this->processedElements[] = $itemName;
                 break;
@@ -234,7 +235,7 @@ class LayoutXmlParser
                 }
 
                 if (in_array($itemName, $this->processedElements, true)) {
-                    throw new \LogicException(sprintf('"%s" container is declared twice', $itemName));
+                    throw new XmlValidationException(sprintf('"%s" container is declared twice', $itemName));
                 }
                 $this->processedElements[] = $itemName;
                 break;
@@ -271,10 +272,8 @@ class LayoutXmlParser
     private function filterRemovedAssets()
     {
         foreach ($this->assetsToRemove as $assetToRemove) {
-            foreach ($this->collectedAssets as $assetsType => $assets) {
-                if (($index = array_search($assetToRemove, $assets)) !== false) {
-                    unset($this->collectedAssets[$assetsType][$index]);
-                }
+            foreach ($this->collectedAssets as $assetType => $unused) {
+                unset($this->collectedAssets[$assetType][$assetToRemove]);
             }
         }
     }

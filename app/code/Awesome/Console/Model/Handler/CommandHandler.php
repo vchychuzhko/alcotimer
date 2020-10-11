@@ -30,7 +30,7 @@ class CommandHandler
     /**
      * Get command data for requested command name.
      * @param string $commandName
-     * @return array
+     * @return array|null
      */
     public function getCommandData($commandName)
     {
@@ -50,7 +50,6 @@ class CommandHandler
     /**
      * Get all available commands.
      * @return array
-     * @throws \LogicException
      */
     public function getCommands()
     {
@@ -90,7 +89,6 @@ class CommandHandler
      * Get command class according to the requested command name.
      * @param string $commandName
      * @return string
-     * @throws \LogicException
      */
     public function getCommandClass($commandName)
     {

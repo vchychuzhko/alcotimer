@@ -7,38 +7,25 @@ use Awesome\Framework\Model\Event\EventManager;
 use Awesome\Framework\Model\Http\Request;
 use Awesome\Framework\Model\Http\Response;
 use Awesome\Framework\Model\Http\Response\HtmlResponse;
+use Awesome\Framework\Model\Http\Response\JsonResponse;
 use Awesome\Framework\Model\Http\Router;
 use Awesome\Framework\Model\Logger;
 use Awesome\Framework\Model\Maintenance;
 
 class Http
 {
-    public const VERSION = '0.4.0';
+    public const VERSION = '0.4.1';
 
     public const FRONTEND_VIEW = 'frontend';
     public const BACKEND_VIEW = 'adminhtml';
     public const BASE_VIEW = 'base';
 
+    public const BACKEND_FRONT_NAME_CONFIG = 'backend/front_name';
     public const DEVELOPER_MODE_CONFIG = 'developer_mode';
     public const SHOW_FORBIDDEN_CONFIG = 'show_forbidden';
-    public const WEB_ROOT_CONFIG = 'web_root_is_pub';
+    public const WEB_ROOT_CONFIG = 'web/web_root_is_pub';
 
     public const ROOT_ACTION_NAME = 'index_index_index';
-
-    /**
-     * @var Request $request
-     */
-    private $request;
-
-    /**
-     * @var Logger $logger
-     */
-    private $logger;
-
-    /**
-     * @var Maintenance $maintenance
-     */
-    private $maintenance;
 
     /**
      * @var Config $config
@@ -51,29 +38,46 @@ class Http
     private $eventManager;
 
     /**
+     * @var Logger $logger
+     */
+    private $logger;
+
+    /**
+     * @var Maintenance $maintenance
+     */
+    private $maintenance;
+
+    /**
      * @var Router $router
      */
     private $router;
 
     /**
+     * @var Request $request
+     */
+    private $request;
+
+    /**
      * Http app constructor.
-     * @param Logger $logger
-     * @param Maintenance $maintenance
      * @param Config $config
      * @param EventManager $eventManager
+     * @param Logger $logger
+     * @param Maintenance $maintenance
      * @param Router $router
      */
     public function __construct(
+        Config $config,
+        EventManager $eventManager,
         Logger $logger,
         Maintenance $maintenance,
         Config $config,
         EventManager $eventManager,
         Router $router
     ) {
-        $this->logger = $logger;
-        $this->maintenance = $maintenance;
         $this->config = $config;
         $this->eventManager = $eventManager;
+        $this->logger = $logger;
+        $this->maintenance = $maintenance;
         $this->router = $router;
     }
 
@@ -87,16 +91,15 @@ class Http
             $this->logger->logVisitor($request);
 
             if (!$this->isMaintenance()) {
-                $redirectStatus = $request->getRedirectStatusCode();
-
                 $this->eventManager->dispatch(
                     'http_frontend_action',
-                    ['request' => $request, 'router' => $this->router]
+                    ['request' => $request, 'router' => $this->router],
+                    $request->getView()
                 );
 
                 if ($action = $this->router->getAction()) {
                     $response = $action->execute($request);
-                } elseif ($redirectStatus === Request::FORBIDDEN_REDIRECT_CODE && $this->showForbiddenPage()) {
+                } elseif ($request->getRedirectStatusCode() === Request::FORBIDDEN_REDIRECT_CODE && $this->showForbidden()) {
                     $response = new Response('', Response::FORBIDDEN_STATUS_CODE);
                 } else {
                     $response = new Response('', Response::NOTFOUND_STATUS_CODE);
@@ -111,12 +114,24 @@ class Http
         } catch (\Exception $e) {
             $this->logger->error($e);
 
-            $response = new HtmlResponse(
-                $this->isDeveloperMode()
-                    ? '<pre>' . get_class($e) . ': ' . $e->getMessage() . "\n" . $e->getTraceAsString() . '</pre>'
-                    : $this->maintenance->getInternalErrorPage(),
-                Response::INTERNAL_ERROR_STATUS_CODE
-            );
+            if (isset($request) && $request->getAcceptType() === Request::JSON_ACCEPT_HEADER) {
+                $response = new JsonResponse(
+                    [
+                        'status' => 'ERROR',
+                        'message' => $this->isDeveloperMode()
+                            ? get_class_name($e) . ': ' . $e->getMessage() . "\n" . $e->getTraceAsString()
+                            : 'Error details are hidden due to security reasons. Additional information can be found in the server logs.'
+                    ],
+                    Response::INTERNAL_ERROR_STATUS_CODE
+                );
+            } else {
+                $response = new HtmlResponse(
+                    $this->isDeveloperMode()
+                        ? '<pre>' . get_class_name($e) . ': ' . $e->getMessage() . "\n" . $e->getTraceAsString() . '</pre>'
+                        : $this->maintenance->getInternalErrorPage(),
+                    Response::INTERNAL_ERROR_STATUS_CODE
+                );
+            }
         }
 
         $response->proceed();
@@ -143,10 +158,10 @@ class Http
     }
 
     /**
-     * Check if it is allowed to show 403 Forbidden page.
+     * Check if it is allowed to show 403 Forbidden response.
      * @return bool
      */
-    private function showForbiddenPage()
+    private function showForbidden()
     {
         return (bool) $this->config->get(self::SHOW_FORBIDDEN_CONFIG);
     }
@@ -163,29 +178,21 @@ class Http
                 : Request::SCHEME_HTTP;
             $url = $scheme . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             $method = $_SERVER['REQUEST_METHOD'];
-            $parameters = [];
-            $cookies = [];
-            $redirectStatus = $_SERVER['REDIRECT_STATUS'] ?? null;
+            $parameters = array_merge($_GET, $_POST);
+            $cookies = $_COOKIE;
+            $redirectStatus = isset($_SERVER['REDIRECT_STATUS']) ? (int) $_SERVER['REDIRECT_STATUS'] : null;
+            list($acceptType) = isset($_SERVER['HTTP_ACCEPT']) && $_SERVER['HTTP_ACCEPT'] !== '*/*'
+                ? explode(',', $_SERVER['HTTP_ACCEPT'])
+                : [null];
             $fullActionName = $this->parseFullActionName($url);
             $userIp = $_SERVER['REMOTE_ADDR'];
             $view = $this->parseView($url);
 
-            if ($_GET) {
-                $parameters = array_merge($parameters, $_GET);
-            }
-
-            if ($_POST) {
-                $parameters = array_merge($parameters, $_POST);
-            }
-
-            if ($_COOKIE) {
-                $cookies = $_COOKIE;
-            }
-
             $this->request = new Request($url, $method, $parameters, $cookies, $redirectStatus, [
+                'accept_type' => $acceptType,
                 'full_action_name' => $fullActionName,
                 'user_ip' => $userIp,
-                'view' => $view
+                'view' => $view,
             ]);
         }
 
@@ -214,7 +221,15 @@ class Http
      */
     private function parseView($url)
     {
-        // @TODO: update to resolve adminhtml view
-        return self::FRONTEND_VIEW;
+        $view = self::FRONTEND_VIEW;
+
+        if ($this->config->get('backend/enabled')) {
+            $url = '/' . trim(parse_url($url, PHP_URL_PATH), '/') . '/';
+            $backendFrontName = $this->config->get(self::BACKEND_FRONT_NAME_CONFIG);
+
+            $view = preg_match('/^\/' . $backendFrontName . '\//', $url) ? self::BACKEND_VIEW : $view;
+        }
+
+        return $view;
     }
 }

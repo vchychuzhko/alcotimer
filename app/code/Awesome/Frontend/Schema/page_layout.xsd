@@ -14,20 +14,18 @@
                                     <xs:attribute name="src" type="xs:string" use="required"/>
                                 </xs:complexType>
                             </xs:element>
-                            <xs:element name="lib" minOccurs="0" maxOccurs="unbounded">
-                                <xs:complexType>
-                                    <xs:attribute name="src" type="xs:string" use="required"/>
-                                </xs:complexType>
-                            </xs:element>
                             <xs:element name="script" minOccurs="0" maxOccurs="unbounded">
                                 <xs:complexType>
                                     <xs:attribute name="src" type="xs:string" use="required"/>
-                                    <xs:attribute name="async" type="xs:boolean" default="false"/>
+                                    <xs:attribute name="async" type="xs:boolean"/>
+                                    <xs:attribute name="defer" type="xs:boolean"/>
+                                    <xs:attribute name="sortOrder" type="xs:nonNegativeInteger"/>
                                 </xs:complexType>
                             </xs:element>
                             <xs:element name="css" minOccurs="0" maxOccurs="unbounded">
                                 <xs:complexType>
                                     <xs:attribute name="src" type="xs:string" use="required"/>
+                                    <xs:attribute name="sortOrder" type="xs:nonNegativeInteger"/>
                                 </xs:complexType>
                             </xs:element>
                             <xs:element name="remove" minOccurs="0" maxOccurs="unbounded">

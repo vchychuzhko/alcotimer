@@ -18,11 +18,8 @@ try {
     /** @var \Awesome\Console\Model\Cli $app */
     $app = $invoker->get(\Awesome\Console\Model\Cli::class);
     $app->run();
-} catch (\LogicException | \RuntimeException $e) {
-    exit(1);
 } catch (\Exception $e) {
-    echo $e->getMessage();
-    echo "\n";
-    echo $e->getTraceAsString();
+    echo $e->getMessage() . "\n";
+    echo $e->getTraceAsString() . "\n";
     exit(1);
 }
