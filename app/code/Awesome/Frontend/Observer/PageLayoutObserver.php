@@ -6,14 +6,15 @@ use Awesome\Cache\Model\Cache;
 use Awesome\Framework\Model\Config;
 use Awesome\Framework\Model\Http;
 use Awesome\Framework\Model\Http\Request;
+use Awesome\Framework\Model\Http\Response;
 use Awesome\Framework\Model\Http\Router;
-use Awesome\Frontend\Model\Action\ErrorLayoutHandler;
 use Awesome\Frontend\Model\Action\LayoutHandler;
-use Awesome\Frontend\Model\XmlParser\LayoutXmlParser;
 
 class PageLayoutObserver implements \Awesome\Framework\Model\Event\ObserverInterface
 {
     private const PAGE_HANDLES_CACHE_TAG_PREFIX = 'page-handles_';
+
+    private const LAYOUT_XML_PATH_PATTERN = '/*/*/view/%s/layout/*_*_*.xml';
 
     /**
      * @var Cache $cache
@@ -26,24 +27,16 @@ class PageLayoutObserver implements \Awesome\Framework\Model\Event\ObserverInter
     private $config;
 
     /**
-     * @var LayoutXmlParser $layoutXmlParser
-     */
-    private $layoutXmlParser;
-
-    /**
      * PageLayoutObserver constructor.
      * @param Cache $cache
      * @param Config $config
-     * @param LayoutXmlParser $layoutXmlParser
      */
     public function __construct(
         Cache $cache,
-        Config $config,
-        LayoutXmlParser $layoutXmlParser
+        Config $config
     ) {
         $this->cache = $cache;
         $this->config = $config;
-        $this->layoutXmlParser = $layoutXmlParser;
     }
 
     /**
@@ -58,16 +51,27 @@ class PageLayoutObserver implements \Awesome\Framework\Model\Event\ObserverInter
         $request = $event->getRequest();
 
         $handle = $request->getFullActionName();
+        $handles = [$handle];
         $view = $request->getView();
+        $status = Response::SUCCESS_STATUS_CODE;
 
         if ($this->isHomepage($request)) {
             $handle = $this->getHomepageHandle();
+            $handles[] = $handle;
         }
-        if ($this->handleExist($handle, $view, $router)) {
-            $router->addAction(LayoutHandler::class);
-        } else {
-            $router->addAction(ErrorLayoutHandler::class);
+
+        if (!$this->handleExist($handle, $view, $router)) {
+            if ($request->getRedirectStatusCode() === Request::FORBIDDEN_REDIRECT_CODE && $this->showForbiddenPage()) {
+                $handle = LayoutHandler::FORBIDDEN_PAGE_HANDLE;
+                $status = Response::FORBIDDEN_STATUS_CODE;
+            } else {
+                $handle = LayoutHandler::NOTFOUND_PAGE_HANDLE;
+                $status = Response::NOTFOUND_STATUS_CODE;
+            }
+            $handles = [$handle];
         }
+
+        $router->addAction(LayoutHandler::class, ['handle' => $handle, 'handles' => $handles, 'status' => $status]);
     }
 
     /**
@@ -90,6 +94,15 @@ class PageLayoutObserver implements \Awesome\Framework\Model\Event\ObserverInter
     }
 
     /**
+     * Check if it is allowed to show 403 Forbidden page.
+     * @return bool
+     */
+    private function showForbiddenPage()
+    {
+        return (bool) $this->config->get(Http::SHOW_FORBIDDEN_CONFIG);
+    }
+
+    /**
      * Check if requested page handle is registered and exists in specified view.
      * @param string $handle
      * @param string $view
@@ -98,15 +111,30 @@ class PageLayoutObserver implements \Awesome\Framework\Model\Event\ObserverInter
      */
     private function handleExist($handle, $view, $router)
     {
-        $routes = $router->getStandardRoutes($view);
         list($route) = explode('_', $handle);
 
-        if (!$handles = $this->cache->get(Cache::LAYOUT_CACHE_KEY, self::PAGE_HANDLES_CACHE_TAG_PREFIX . $view)) {
-            $handles = $this->layoutXmlParser->getPageHandles($view);
+        return $router->getStandardRoute($route, $view) && in_array($handle, $this->getPageHandles($view), true);
+    }
 
-            $this->cache->save(Cache::LAYOUT_CACHE_KEY, self::PAGE_HANDLES_CACHE_TAG_PREFIX . $view, $handles);
+    /**
+     * Get available page layout handles for specified view.
+     * @param string $view
+     * @return array
+     */
+    private function getPageHandles($view)
+    {
+        if (!$handles = $this->cache->get(Cache::LAYOUT_CACHE_KEY, self::PAGE_HANDLES_CACHE_TAG_PREFIX . $view)
+        ) {
+            $handles = [];
+            $pattern = sprintf(self::LAYOUT_XML_PATH_PATTERN, $view);
+
+            foreach (glob(APP_DIR . $pattern) as $collectedHandle) {
+                $handles[] = basename($collectedHandle, '.xml');
+            }
+
+            $this->cache->save(Cache::LAYOUT_CACHE_KEY, self::PAGE_HANDLES_CACHE_TAG_PREFIX . $view, array_unique($handles));
         }
 
-        return isset($routes[$route]) && in_array($handle, $handles, true);
+        return $handles;
     }
 }

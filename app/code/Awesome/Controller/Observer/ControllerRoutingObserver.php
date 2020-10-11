@@ -41,11 +41,10 @@ class ControllerRoutingObserver implements \Awesome\Framework\Model\Event\Observ
         $request = $event->getRequest();
         $view = $request->getView();
 
-        $routes = $router->getStandardRoutes($view);
         @list($route, $entity, $action) = explode('/', ltrim($request->getPath(), '/'));
 
-        if (isset($routes[$route])) {
-            $module = str_replace('_', '\\', $routes[$route]);
+        if ($module = $router->getStandardRoute($route, $view)) {
+            $module = str_replace('_', '\\', $module);
             $controllerFolder = $view === Http::BACKEND_VIEW
                 ? self::ADMINHTML_CONTROLLER_FOLDER
                 : self::DEFAULT_CONTROLLER_FOLDER;

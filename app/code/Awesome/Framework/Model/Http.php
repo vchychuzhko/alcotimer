@@ -180,7 +180,7 @@ class Http
             $method = $_SERVER['REQUEST_METHOD'];
             $parameters = array_merge($_GET, $_POST);
             $cookies = $_COOKIE;
-            $redirectStatus = $_SERVER['REDIRECT_STATUS'] ?? null;
+            $redirectStatus = isset($_SERVER['REDIRECT_STATUS']) ? (int) $_SERVER['REDIRECT_STATUS'] : null;
             list($acceptType) = isset($_SERVER['HTTP_ACCEPT']) && $_SERVER['HTTP_ACCEPT'] !== '*/*'
                 ? explode(',', $_SERVER['HTTP_ACCEPT'])
                 : [null];

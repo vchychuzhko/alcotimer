@@ -8,7 +8,8 @@ use Awesome\Framework\Model\Config;
 
 class StaticContent
 {
-    private const STATIC_FOLDER_PATH = '/pub/static/';
+    public const STATIC_FOLDER_PATH = '/pub/static/';
+    public const LIB_FOLDER_PATH = 'lib';
     private const DEPLOYED_VERSION_FILE = '/pub/static/deployed_version.txt';
     private const ASSETS_FOLDER_PATH_PATTERN = '/*/*/view/%v/web/%a';
     private const JS_LIB_PATH_PATTERN = '/lib/*/*.js';
@@ -36,7 +37,7 @@ class StaticContent
     }
 
     /**
-     * Deploy static files for needed view.
+     * Deploy static files for a specified view.
      * Process both views if not specified.
      * @param string $view
      * @return $this

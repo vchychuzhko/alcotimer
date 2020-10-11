@@ -10,6 +10,7 @@ class Logger
 {
     private const LOG_DIRECTORY = '/var/log';
     private const EXCEPTION_LOG_FILE = 'exception.log';
+    private const SYSTEM_LOG_FILE = 'system.log';
     private const VISITOR_LOG_FILE = 'visitor.log';
 
     /**
@@ -43,6 +44,21 @@ class Logger
         $this->write(
             self::EXCEPTION_LOG_FILE,
             get_class($e) . ': ' . $e->getMessage() . "\n" . $e->getTraceAsString()
+        );
+
+        return $this;
+    }
+
+    /**
+     * Write a system info message to a log file.
+     * @param string $message
+     * @return $this
+     */
+    public function info($message)
+    {
+        $this->write(
+            self::SYSTEM_LOG_FILE,
+            $message
         );
 
         return $this;

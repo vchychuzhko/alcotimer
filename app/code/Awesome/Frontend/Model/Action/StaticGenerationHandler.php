@@ -3,11 +3,19 @@
 namespace Awesome\Frontend\Model\Action;
 
 use Awesome\Framework\Model\FileManager;
+use Awesome\Framework\Model\Http;
 use Awesome\Framework\Model\Http\Response;
+use Awesome\Framework\Model\Logger;
 use Awesome\Frontend\Model\StaticContent;
 
-class StaticGenerationHandler implements \Awesome\Framework\Model\ActionInterface
+/**
+ * Class StaticGenerationHandler
+ * @method getRequestedFile()
+ */
+class StaticGenerationHandler extends \Awesome\Framework\Model\AbstractAction
 {
+    private const STATIC_FILE_PATTERN = '/^(\/pub)?(\/static\/)(version.+?\/)?(%s|%s)\/(.*)$/';
+
     /**
      * Mime types for static files.
      */
@@ -18,24 +26,37 @@ class StaticGenerationHandler implements \Awesome\Framework\Model\ActionInterfac
     ];
 
     /**
-     * @var StaticContent $staticContent
-     */
-    private $staticContent;
-
-    /**
      * @var FileManager $fileManager
      */
     private $fileManager;
 
     /**
-     * StaticGenerationHandler constructor.
-     * @param StaticContent $staticContent
-     * @param FileManager $fileManager
+     * @var Logger $logger
      */
-    public function __construct(StaticContent $staticContent, FileManager $fileManager)
-    {
-        $this->staticContent = $staticContent;
+    private $logger;
+
+    /**
+     * @var StaticContent $staticContent
+     */
+    private $staticContent;
+
+    /**
+     * StaticGenerationHandler constructor.
+     * @param FileManager $fileManager
+     * @param Logger $logger
+     * @param StaticContent $staticContent
+     * @param array $data
+     */
+    public function __construct(
+        FileManager $fileManager,
+        Logger $logger,
+        StaticContent $staticContent,
+        $data = []
+    ) {
+        parent::__construct($data);
         $this->fileManager = $fileManager;
+        $this->logger = $logger;
+        $this->staticContent = $staticContent;
     }
 
     /**
@@ -45,16 +66,22 @@ class StaticGenerationHandler implements \Awesome\Framework\Model\ActionInterfac
      */
     public function execute($request)
     {
-        // @TODO: Deploy only requested file in developer mode without full regeneration, transform this to dataObject?
-        $this->staticContent->deploy($request->getView());
-        $content = $this->fileManager->readFile(BP . '/pub' . $request->getPath());
-        $extension = pathinfo($request->getPath(), PATHINFO_EXTENSION);
-        $contentTypeHeader = [];
+        $path = $this->getRequestedFile();
+        $view = preg_replace(sprintf(self::STATIC_FILE_PATTERN, Http::FRONTEND_VIEW, Http::BACKEND_VIEW), '$4', $request->getPath());
+
+        $this->staticContent->deploy($view);
+
+        $staticPath = preg_replace(sprintf(self::STATIC_FILE_PATTERN, Http::FRONTEND_VIEW, Http::BACKEND_VIEW), '$4/$5', $request->getPath());
+
+        $content = $this->fileManager->readFile(BP . StaticContent::STATIC_FOLDER_PATH . $staticPath);
+        $extension = pathinfo($path, PATHINFO_EXTENSION);
+        $headers = [];
 
         if (isset(self::MIME_TYPES[$extension])) {
-            $contentTypeHeader = ['Content-Type' => self::MIME_TYPES[$extension]];
+            $headers = ['Content-Type' => self::MIME_TYPES[$extension]];
         }
+        $this->logger->info(sprintf('Static file "%s" was requested and generated', $request->getPath()));
 
-        return new Response($content, Response::SUCCESS_STATUS_CODE, $contentTypeHeader);
+        return new Response($content, Response::SUCCESS_STATUS_CODE, $headers);
     }
 }

@@ -109,23 +109,6 @@ class LayoutXmlParser
     }
 
     /**
-     * Get available page layout handles for specified view.
-     * @param string $view
-     * @return array
-     */
-    public function getPageHandles($view)
-    {
-        $handles = [];
-        $pattern = sprintf(self::LAYOUT_XML_PATH_PATTERN, $view, '*_*_*');
-
-        foreach (glob(APP_DIR . $pattern) as $collectedHandle) {
-            $handles[] = basename($collectedHandle, '.xml');
-        }
-
-        return array_unique($handles);
-    }
-
-    /**
      * Parse head part of XML layout node.
      * @param \SimpleXMLElement $headNode
      * @return array

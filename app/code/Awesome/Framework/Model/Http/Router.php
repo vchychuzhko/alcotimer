@@ -3,7 +3,7 @@
 namespace Awesome\Framework\Model\Http;
 
 use Awesome\Cache\Model\Cache;
-use Awesome\Framework\Model\ActionInterface;
+use Awesome\Framework\Model\AbstractAction;
 use Awesome\Framework\Model\Invoker;
 use Awesome\Framework\Model\XmlParser\RoutesXmlParser;
 
@@ -45,9 +45,9 @@ class Router
         Invoker $invoker,
         RoutesXmlParser $routesXmlParser
     ) {
+        $this->cache = $cache;
         $this->invoker = $invoker;
         $this->routesXmlParser = $routesXmlParser;
-        $this->cache = $cache;
     }
 
     /**
@@ -68,20 +68,33 @@ class Router
 
     /**
      * Get action with the highest priority.
-     * @return ActionInterface|null
+     * @return AbstractAction|null
      * @throws \Exception
      */
     public function getAction()
     {
         if ($action = reset($this->actions)) {
-            $action = $this->invoker->make($action['id'], $action['data']);
+            $action = $this->invoker->make($action['id'], ['data' => $action['data']]);
 
-            if (!($action instanceof ActionInterface)) {
-                throw new \LogicException(sprintf('Action "%s" does not implement ActionInterface', get_class($action)));
+            if (!($action instanceof AbstractAction)) {
+                throw new \LogicException(sprintf('Action "%s" does not extends AbstractAction class', get_class($action)));
             }
         }
 
         return $action ?: null;
+    }
+
+    /**
+     * Check if provided route is a registered standard route and return its responsible module name.
+     * @param string $route
+     * @param string $view
+     * @return string|null
+     */
+    public function getStandardRoute($route, $view)
+    {
+        $routes = $this->getStandardRoutes($view);
+
+        return $routes[$route] ?? null;
     }
 
     /**
