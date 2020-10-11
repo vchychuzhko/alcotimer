@@ -70,8 +70,6 @@ class Http
         EventManager $eventManager,
         Logger $logger,
         Maintenance $maintenance,
-        Config $config,
-        EventManager $eventManager,
         Router $router
     ) {
         $this->config = $config;
