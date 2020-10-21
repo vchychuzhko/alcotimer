@@ -1,7 +1,9 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Frontend\Observer;
 
+use Awesome\Framework\Model\Event;
 use Awesome\Framework\Model\Http;
 use Awesome\Framework\Model\Http\Request;
 use Awesome\Framework\Model\Http\Router;
@@ -17,7 +19,7 @@ class StaticGenerationObserver implements \Awesome\Framework\Model\Event\Observe
      * Check if missing static file is requested and return action to generate it.
      * @inheritDoc
      */
-    public function execute($event)
+    public function execute(Event $event): void
     {
         /** @var Request $request */
         $request = $event->getRequest();
@@ -40,7 +42,7 @@ class StaticGenerationObserver implements \Awesome\Framework\Model\Event\Observe
      * @param string $requestPath
      * @return bool
      */
-    private function isStaticFileRequest($requestPath)
+    private function isStaticFileRequest(string $requestPath): bool
     {
         return (bool) preg_match(self::STATIC_REQUEST_PATTERN, $requestPath);
     }
@@ -50,7 +52,7 @@ class StaticGenerationObserver implements \Awesome\Framework\Model\Event\Observe
      * @param string $requestPath
      * @return string
      */
-    private function getFilePath($requestPath)
+    private function getFilePath(string $requestPath): string
     {
         $path = preg_replace(
             sprintf(self::STATIC_FILE_PATTERN, Http::FRONTEND_VIEW, Http::BACKEND_VIEW, StaticContent::LIB_FOLDER_PATH),

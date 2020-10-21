@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Framework\Model\Http;
 
@@ -56,7 +57,7 @@ class Router
      * @param array $data
      * @return $this
      */
-    public function addAction($id, $data = [])
+    public function addAction(string $id, array $data = []): self
     {
         $this->actions[] = [
             'id' => $id,
@@ -71,7 +72,7 @@ class Router
      * @return AbstractAction|null
      * @throws \Exception
      */
-    public function getAction()
+    public function getAction(): ?AbstractAction
     {
         if ($action = reset($this->actions)) {
             $action = $this->invoker->make($action['id'], ['data' => $action['data']]);
@@ -90,7 +91,7 @@ class Router
      * @param string $view
      * @return string|null
      */
-    public function getStandardRoute($route, $view)
+    public function getStandardRoute(string $route, string $view): ?string
     {
         $routes = $this->getStandardRoutes($view);
 
@@ -102,7 +103,7 @@ class Router
      * @param string $view
      * @return array
      */
-    public function getStandardRoutes($view)
+    public function getStandardRoutes(string $view): array
     {
         $routes = $this->getRoutes($view);
 
@@ -114,7 +115,7 @@ class Router
      * @param string $view
      * @return array
      */
-    public function getInternalRoutes($view)
+    public function getInternalRoutes(string $view): array
     {
         $routes = $this->getRoutes($view);
 
@@ -126,7 +127,7 @@ class Router
      * @param string $view
      * @return array
      */
-    private function getRoutes($view)
+    private function getRoutes(string $view): array
     {
         if (!$routes = $this->cache->get(Cache::ETC_CACHE_KEY, self::ROUTES_CACHE_TAG_PREFIX . $view)) {
             $routes = $this->routesXmlParser->getRoutesData($view);

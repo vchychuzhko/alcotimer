@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Framework\Model;
 
@@ -14,14 +15,14 @@ abstract class AbstractValidator
      * @param mixed $item
      * @return bool
      */
-    abstract public function valid($item);
+    abstract public function valid($item): bool;
 
     /**
      * Validate array of items.
      * @param array $items
      * @return bool
      */
-    public function validItems($items)
+    public function validItems(array $items): bool
     {
         $valid = true;
 
@@ -54,7 +55,7 @@ abstract class AbstractValidator
      * Get all invalid items.
      * @return array
      */
-    public function getInvalidItems()
+    public function getInvalidItems(): array
     {
         return $this->invalid;
     }
@@ -63,7 +64,7 @@ abstract class AbstractValidator
      * Remove stored invalid items.
      * @return $this
      */
-    public function reset()
+    public function reset(): self
     {
         $this->invalid = [];
 

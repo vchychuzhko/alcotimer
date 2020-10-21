@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Framework\Model\Event;
 
@@ -49,9 +50,10 @@ class EventManager
      * @param string $eventName
      * @param array $data
      * @param string $view
+     * @return void
      * @throws \Exception
      */
-    public function dispatch($eventName, $data = [], $view = '')
+    public function dispatch(string $eventName, array $data = [], string $view = ''): void
     {
         if ($observers = $this->getObservers($eventName, $view)) {
             $event = new Event($eventName, $data);
@@ -76,7 +78,7 @@ class EventManager
      * @param string $view
      * @return array
      */
-    public function getObservers($eventName, $view = '')
+    public function getObservers(string $eventName, string $view = ''): array
     {
         $eventsData = $this->getEventsData($view);
 
@@ -87,7 +89,7 @@ class EventManager
      * Get all declared events.
      * @return array
      */
-    public function getEvents()
+    public function getEvents(): array
     {
         return array_keys($this->getEventsData());
     }
@@ -97,7 +99,7 @@ class EventManager
      * @param string $view
      * @return array
      */
-    private function getEventsData($view = '')
+    private function getEventsData(string $view = ''): array
     {
         $tag = $view ? self::EVENTS_CACHE_TAG_PREFIX . $view : self::EVENTS_CACHE_TAG_GLOBAL;
 

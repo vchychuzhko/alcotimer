@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Frontend\Block\Error;
 
@@ -7,7 +8,7 @@ class NotFound extends \Awesome\Frontend\Block\Template implements \Awesome\Fron
     /**
      * @inheritDoc
      */
-    public function getErrorTitle()
+    public function getErrorTitle(): string
     {
         return '404 error: Not Found';
     }
@@ -15,7 +16,7 @@ class NotFound extends \Awesome\Frontend\Block\Template implements \Awesome\Fron
     /**
      * @inheritDoc
      */
-    public function getErrorDescription()
+    public function getErrorDescription(): string
     {
         return 'Seems, page you are looking for is not present.';
     }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Timer\Block;
 
@@ -12,7 +13,7 @@ class Timer extends \Awesome\Frontend\Block\Template
      * Get random time range slider json.
      * @return string
      */
-    public function getRandomRangeConfigJson()
+    public function getRandomRangeConfigJson(): string
     {
         $randomRangeConfig = $this->config->get(self::TIMER_CONFIG_PATH . '/random_range') ?: [];
 
@@ -23,7 +24,7 @@ class Timer extends \Awesome\Frontend\Block\Template
      * Get timer settings json.
      * @return string
      */
-    public function getSettingsJson()
+    public function getSettingsJson(): string
     {
         $settings = $this->config->get(self::TIMER_CONFIG_PATH . '/settings') ?: [];
 
@@ -34,7 +35,7 @@ class Timer extends \Awesome\Frontend\Block\Template
      * Get timer configurations.
      * @return string
      */
-    public function getTimerConfigJson()
+    public function getTimerConfigJson(): string
     {
         $timerConfig = $this->config->get(self::TIMER_CONFIG_PATH . '/timer') ?: [];
 
@@ -50,9 +51,9 @@ class Timer extends \Awesome\Frontend\Block\Template
      * @param array $config
      * @return string
      */
-    private  function processConfig($config)
+    private function processConfig(array $config): string
     {
-        //@TODO: rework this somehow
+        //@TODO: Rework Timer configurations structure and processing
         foreach ($config as $configKey => $configValue) {
             unset($config[$configKey]);
             $config[DataHelper::camelCase($configKey)] = $configValue;

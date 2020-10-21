@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Frontend\Block\Html;
 
@@ -13,7 +14,7 @@ class Head extends \Awesome\Frontend\Block\Template
      * Get styles, resolving their paths.
      * @return array
      */
-    public function getStyles()
+    public function getStyles(): array
     {
         $styles = [];
         $stylesData = $this->getData('css') ?: [];
@@ -31,7 +32,7 @@ class Head extends \Awesome\Frontend\Block\Template
      * Get scripts, resolving their paths.
      * @return array
      */
-    public function getScripts()
+    public function getScripts(): array
     {
         $scripts = [];
         $scriptsData = $this->getData('script') ?: [];
@@ -52,7 +53,7 @@ class Head extends \Awesome\Frontend\Block\Template
      * @param string $path
      * @return string
      */
-    private function resolveAssetPath($path)
+    private function resolveAssetPath(string $path): string
     {
         if (strpos($path, '::') !== false) {
             list($module, $file) = explode('::', $path);

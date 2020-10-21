@@ -1,9 +1,11 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Frontend\Observer;
 
 use Awesome\Cache\Model\Cache;
 use Awesome\Framework\Model\Config;
+use Awesome\Framework\Model\Event;
 use Awesome\Framework\Model\Http;
 use Awesome\Framework\Model\Http\Request;
 use Awesome\Framework\Model\Http\Response;
@@ -43,7 +45,7 @@ class PageLayoutObserver implements \Awesome\Framework\Model\Event\ObserverInter
      * Add layout renderer as a Http action.
      * @inheritDoc
      */
-    public function execute($event)
+    public function execute(Event $event): void
     {
         /** @var Router $router */
         $router = $event->getRouter();
@@ -79,7 +81,7 @@ class PageLayoutObserver implements \Awesome\Framework\Model\Event\ObserverInter
      * @param Request $request
      * @return bool
      */
-    private function isHomepage($request)
+    private function isHomepage(Request $request): bool
     {
         return $request->getFullActionName() === Http::ROOT_ACTION_NAME;
     }
@@ -88,7 +90,7 @@ class PageLayoutObserver implements \Awesome\Framework\Model\Event\ObserverInter
      * Get homepage handle.
      * @return string
      */
-    private function getHomepageHandle()
+    private function getHomepageHandle(): string
     {
         return $this->config->get(LayoutHandler::HOMEPAGE_HANDLE_CONFIG);
     }
@@ -97,7 +99,7 @@ class PageLayoutObserver implements \Awesome\Framework\Model\Event\ObserverInter
      * Check if it is allowed to show 403 Forbidden page.
      * @return bool
      */
-    private function showForbiddenPage()
+    private function showForbiddenPage(): bool
     {
         return (bool) $this->config->get(Http::SHOW_FORBIDDEN_CONFIG);
     }
@@ -109,7 +111,7 @@ class PageLayoutObserver implements \Awesome\Framework\Model\Event\ObserverInter
      * @param Router $router
      * @return bool
      */
-    private function handleExist($handle, $view, $router)
+    private function handleExist(string $handle, string $view, Router $router): bool
     {
         list($route) = explode('_', $handle);
 
@@ -121,10 +123,9 @@ class PageLayoutObserver implements \Awesome\Framework\Model\Event\ObserverInter
      * @param string $view
      * @return array
      */
-    private function getPageHandles($view)
+    private function getPageHandles(string $view): array
     {
-        if (!$handles = $this->cache->get(Cache::LAYOUT_CACHE_KEY, self::PAGE_HANDLES_CACHE_TAG_PREFIX . $view)
-        ) {
+        if (!$handles = $this->cache->get(Cache::LAYOUT_CACHE_KEY, self::PAGE_HANDLES_CACHE_TAG_PREFIX . $view)) {
             $handles = [];
             $pattern = sprintf(self::LAYOUT_XML_PATH_PATTERN, $view);
 

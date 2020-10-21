@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Framework\Model;
 
@@ -15,7 +16,7 @@ class FileManager
      * @return bool
      * @throws \RuntimeException
      */
-    public function createFile($path, $content = '', $replace = false, $recursively = true)
+    public function createFile(string $path, string $content = '', bool $replace = false, bool $recursively = true): bool
     {
         if (file_exists($path)) {
             if (is_dir($path)) {
@@ -40,10 +41,10 @@ class FileManager
      * Read file.
      * @param string $path
      * @param bool $graceful
-     * @return string
+     * @return string|false
      * @throws \RuntimeException
      */
-    public function readFile($path, $graceful = true)
+    public function readFile(string $path, bool $graceful = true)
     {
         if (!$graceful && !file_exists($path)) {
             throw new \RuntimeException(sprintf('Provided path "%s" does not exist', $path));
@@ -52,7 +53,7 @@ class FileManager
             throw new \RuntimeException(sprintf('Provided path "%s" is a directory and cannot be read', $path));
         }
 
-        return (string) @file_get_contents($path);
+        return @file_get_contents($path);
     }
 
     /**
@@ -64,7 +65,7 @@ class FileManager
      * @return bool
      * @throws \RuntimeException
      */
-    public function writeFile($path, $content, $append = false, $create = true)
+    public function writeFile(string $path, string $content, bool $append = false, bool $create = true): bool
     {
         if (is_dir($path)) {
             throw new \RuntimeException(sprintf('Provided path "%s" is a directory and cannot be written', $path));
@@ -85,7 +86,7 @@ class FileManager
      * @return bool
      * @throws \RuntimeException
      */
-    public function removeFile($path)
+    public function removeFile(string $path): bool
     {
         if (is_dir($path)) {
             throw new \RuntimeException(sprintf('Provided path "%s" is a directory and cannot be removed', $path));
@@ -102,7 +103,7 @@ class FileManager
      * @return bool
      * @throws \RuntimeException
      */
-    public function createDirectory($path, $recursive = true, $mode = self::DEFAULT_ACCESS_MODE)
+    public function createDirectory(string $path, bool $recursive = true, int $mode = self::DEFAULT_ACCESS_MODE): bool
     {
         if (file_exists($path)) {
             if (!is_dir($path)) {
@@ -123,7 +124,7 @@ class FileManager
      * @return bool
      * @throws \RuntimeException
      */
-    public function removeDirectory($path, $recursively = true)
+    public function removeDirectory(string $path, bool $recursively = true): bool
     {
         if (file_exists($path)) {
             if (!is_dir($path)) {
@@ -154,7 +155,7 @@ class FileManager
      * @return array
      * @throws \RuntimeException
      */
-    public function scanDirectory($path, $recursively = false, $filter = '')
+    public function scanDirectory(string $path, bool $recursively = false, string $filter = ''): array
     {
         if (!is_dir($path)) {
             throw new \RuntimeException(sprintf('Provided path "%s" is not a directory and cannot be scanned', $path));

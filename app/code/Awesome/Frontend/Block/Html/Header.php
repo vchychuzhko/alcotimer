@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Frontend\Block\Html;
 
@@ -12,7 +13,7 @@ class Header extends \Awesome\Frontend\Block\Template
      * Get app logo file path.
      * @return string
      */
-    public function getLogo()
+    public function getLogo(): string
     {
         return $this->getMediaFileUrl($this->config->get(self::LOGO_CONFIG_PATH));
     }
@@ -21,7 +22,7 @@ class Header extends \Awesome\Frontend\Block\Template
      * Check if current page is a Homepage.
      * @return bool
      */
-    public function isHomepage()
+    public function isHomepage(): bool
     {
         return in_array(Http::ROOT_ACTION_NAME, $this->renderer->getHandles(), true);
     }

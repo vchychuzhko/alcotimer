@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Framework\Model;
 
@@ -28,7 +29,7 @@ class Maintenance
      * @param array $allowedIPs
      * @return $this
      */
-    public function enable($allowedIPs = [])
+    public function enable($allowedIPs = []): self
     {
         $this->fileManager->createFile(BP . self::MAINTENANCE_FILE, implode(',', $allowedIPs), true);
 
@@ -39,7 +40,7 @@ class Maintenance
      * Disable maintenance mode.
      * @return $this
      */
-    public function disable()
+    public function disable(): self
     {
         $this->fileManager->removeFile(BP . self::MAINTENANCE_FILE);
 
@@ -50,13 +51,13 @@ class Maintenance
      * Get current state of maintenance.
      * @return array
      */
-    public function getStatus()
+    public function getStatus(): array
     {
         $status = [
             'enabled' => false
         ];
 
-        if ($allowedIPs = $this->fileManager->readFile(BP . self::MAINTENANCE_FILE)) {
+        if (($allowedIPs = $this->fileManager->readFile(BP . self::MAINTENANCE_FILE)) !== false) {
             $status = [
                 'enabled' => true,
                 'allowed_ips' => []
@@ -76,7 +77,7 @@ class Maintenance
      * @param string $ip
      * @return bool
      */
-    public function isMaintenance($ip = '')
+    public function isMaintenance(string $ip = ''): bool
     {
         $state = $this->getStatus();
 
@@ -87,7 +88,7 @@ class Maintenance
      * Get maintenance page.
      * @return string
      */
-    public function getMaintenancePage()
+    public function getMaintenancePage(): string
     {
         return $this->fileManager->readFile(BP . self::MAINTENANCE_PAGE_PATH, false);
     }
@@ -96,7 +97,7 @@ class Maintenance
      * Get internal error page.
      * @return string
      */
-    public function getInternalErrorPage()
+    public function getInternalErrorPage(): string
     {
         return $this->fileManager->readFile(BP . self::INTERNALERROR_PAGE_PATH, false);
     }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Frontend\Model;
 
@@ -41,7 +42,7 @@ class TemplateRenderer
      * @param array $structure
      * @param array $handles
      */
-    public function __construct($handle, $view, $structure, $handles = [])
+    public function __construct(string $handle, string $view, array $structure, array $handles = [])
     {
         $this->handle = $handle;
         $this->view = $view;
@@ -57,7 +58,7 @@ class TemplateRenderer
      * @return string
      * @throws \Exception
      */
-    public function render($nameInLayout)
+    public function render(string $nameInLayout): string
     {
         $html = '';
 
@@ -85,7 +86,7 @@ class TemplateRenderer
      * @return string
      * @throws \Exception
      */
-    public function renderElement($element)
+    public function renderElement(Template $element): string
     {
         $templateFile = $this->getTemplateFile($element->getTemplate());
         ob_start();
@@ -107,7 +108,7 @@ class TemplateRenderer
      * @return string
      * @throws \LogicException
      */
-    private function getTemplateFile($template)
+    private function getTemplateFile(string $template): string
     {
         @list($module, $file) = explode('::', $template);
         $path = $module;
@@ -134,7 +135,7 @@ class TemplateRenderer
      * Get main page handle.
      * @return string
      */
-    public function getHandle()
+    public function getHandle(): string
     {
         return $this->handle;
     }
@@ -143,7 +144,7 @@ class TemplateRenderer
      * Get all handles assigned for current page.
      * @return array
      */
-    public function getHandles()
+    public function getHandles(): array
     {
         return $this->handles;
     }
@@ -152,7 +153,7 @@ class TemplateRenderer
      * Get current page view.
      * @return string
      */
-    public function getView()
+    public function getView(): string
     {
         return $this->view;
     }

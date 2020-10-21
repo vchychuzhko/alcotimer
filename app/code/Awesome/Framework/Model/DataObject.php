@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Framework\Model;
 
@@ -21,7 +22,7 @@ class DataObject
      * @param array $data
      * @param bool $readOnly
      */
-    public function __construct($data = [], $readOnly = false)
+    public function __construct(array $data = [], bool $readOnly = false)
     {
         $this->data = $data;
         $this->readOnly = $readOnly;
@@ -36,7 +37,7 @@ class DataObject
      * @param string $key
      * @return mixed
      */
-    public function getData($key = '')
+    public function getData(string $key = '')
     {
         if ($key === '') {
             $data = $this->data;
@@ -58,7 +59,7 @@ class DataObject
      * @param mixed $value
      * @return $this
      */
-    public function setData($key, $value = null)
+    public function setData($key, $value = null): self
     {
         if (!$this->readOnly) {
             if (is_array($key)) {
@@ -80,7 +81,7 @@ class DataObject
      * @return mixed
      * @throws \LogicException
      */
-    public function __call($method, $args)
+    public function __call(string $method, array $args)
     {
         switch (substr($method, 0, 3)) {
             case 'get':

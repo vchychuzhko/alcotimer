@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Cache\Model;
 
@@ -50,7 +51,7 @@ class Cache implements \Awesome\Framework\Model\SingletonInterface
      * @param string $tag
      * @return mixed
      */
-    public function get($key, $tag)
+    public function get(string $key, string $tag)
     {
         $data = null;
 
@@ -70,7 +71,7 @@ class Cache implements \Awesome\Framework\Model\SingletonInterface
      * @param mixed $data
      * @return $this
      */
-    public function save($key, $tag, $data)
+    public function save(string $key, string $tag, $data): self
     {
         if ($this->cacheTypeEnabled($key)) {
             $cache = $this->readCacheFile($key);
@@ -88,7 +89,7 @@ class Cache implements \Awesome\Framework\Model\SingletonInterface
      * @param string $key
      * @return $this
      */
-    public function invalidate($key = '')
+    public function invalidate(string $key = ''): self
     {
         if ($key === '') {
             $this->fileManager->removeDirectory(BP . self::CACHE_DIR);
@@ -104,7 +105,7 @@ class Cache implements \Awesome\Framework\Model\SingletonInterface
      * @param string $key
      * @return bool
      */
-    private function cacheTypeEnabled($key)
+    private function cacheTypeEnabled(string $key): bool
     {
         return (bool) $this->config->get(self::CACHE_CONFIG_PATH . '/' . $key);
     }
@@ -113,7 +114,7 @@ class Cache implements \Awesome\Framework\Model\SingletonInterface
      * Get available cache types.
      * @return array
      */
-    public function getTypes()
+    public function getTypes(): array
     {
         return [
             self::ETC_CACHE_KEY,
@@ -127,7 +128,7 @@ class Cache implements \Awesome\Framework\Model\SingletonInterface
      * @param string $key
      * @return array
      */
-    private function readCacheFile($key)
+    private function readCacheFile(string $key): array
     {
         $cache = $this->fileManager->readFile(BP . self::CACHE_DIR . '/' . $key . '-cache') ?: '{}';
 
@@ -140,7 +141,7 @@ class Cache implements \Awesome\Framework\Model\SingletonInterface
      * @param array $data
      * @return $this
      */
-    private function saveCacheFile($key, $data)
+    private function saveCacheFile(string $key, array $data): self
     {
         $this->fileManager->createFile(BP . self::CACHE_DIR . '/' . $key . '-cache', $this->json->encode($data), true);
 

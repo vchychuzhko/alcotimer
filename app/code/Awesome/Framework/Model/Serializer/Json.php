@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Framework\Model\Serializer;
 
@@ -8,7 +9,7 @@ class Json implements \Awesome\Framework\Model\SerializerInterface
      * @inheritDoc
      * @throws \InvalidArgumentException
      */
-    public function encode($data)
+    public function encode(array $data): string
     {
         $result = json_encode($data);
 
@@ -23,7 +24,7 @@ class Json implements \Awesome\Framework\Model\SerializerInterface
      * @inheritDoc
      * @throws \InvalidArgumentException
      */
-    public function decode($string)
+    public function decode(string $string): array
     {
         $result = json_decode($string, true);
 

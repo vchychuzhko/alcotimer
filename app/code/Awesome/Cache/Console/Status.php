@@ -48,7 +48,7 @@ class Status extends \Awesome\Console\Model\Cli\AbstractCommand
     public function execute(Input $input, Output $output): void
     {
         $types = $this->cache->getTypes();
-        $padding = max(array_map(function ($type) {
+        $padding = max(array_map(static function ($type) {
             return strlen($type);
         }, $types));
 

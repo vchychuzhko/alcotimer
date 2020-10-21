@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Frontend\Model\Action;
 
 use Awesome\Framework\Model\FileManager;
 use Awesome\Framework\Model\Http;
 use Awesome\Framework\Model\Http\Response;
+use Awesome\Framework\Model\Http\Request;
 use Awesome\Framework\Model\Logger;
 use Awesome\Frontend\Model\StaticContent;
 
@@ -51,7 +53,7 @@ class StaticGenerationHandler extends \Awesome\Framework\Model\AbstractAction
         FileManager $fileManager,
         Logger $logger,
         StaticContent $staticContent,
-        $data = []
+        array $data = []
     ) {
         parent::__construct($data);
         $this->fileManager = $fileManager;
@@ -64,7 +66,7 @@ class StaticGenerationHandler extends \Awesome\Framework\Model\AbstractAction
      * @inheritDoc
      * @throws \Exception
      */
-    public function execute($request)
+    public function execute(Request $request): Response
     {
         $path = $this->getRequestedFile();
         $view = preg_replace(sprintf(self::STATIC_FILE_PATTERN, Http::FRONTEND_VIEW, Http::BACKEND_VIEW), '$4', $request->getPath());

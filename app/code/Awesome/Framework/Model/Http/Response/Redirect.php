@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Framework\Model\Http\Response;
 
@@ -18,7 +19,7 @@ class Redirect extends \Awesome\Framework\Model\Http\Response
      * @param string $redirectUrl
      * @inheritDoc
      */
-    public function __construct($redirectUrl, $status = self::FOUND_STATUS_CODE, $headers = [])
+    public function __construct(string $redirectUrl, int $status = self::FOUND_STATUS_CODE, array $headers = [])
     {
         parent::__construct('', $status, $headers);
         $this->redirectUrl = $redirectUrl;
@@ -27,7 +28,7 @@ class Redirect extends \Awesome\Framework\Model\Http\Response
     /**
      * @inheritDoc
      */
-    public function proceed()
+    public function proceed(): void
     {
         $this->setHeader('Location', $this->redirectUrl);
 
@@ -40,7 +41,7 @@ class Redirect extends \Awesome\Framework\Model\Http\Response
      * @param string $redirectUrl
      * @return $this
      */
-    public function setRedirectUrl($redirectUrl)
+    public function setRedirectUrl(string $redirectUrl): self
     {
         $this->redirectUrl = $redirectUrl;
 
@@ -51,7 +52,7 @@ class Redirect extends \Awesome\Framework\Model\Http\Response
      * Get redirect URL.
      * @return string
      */
-    public function getRedirectUrl()
+    public function getRedirectUrl(): string
     {
         return $this->redirectUrl;
     }

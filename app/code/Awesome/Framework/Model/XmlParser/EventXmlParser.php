@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Framework\Model\XmlParser;
 
@@ -17,7 +18,7 @@ class EventXmlParser
      * @return array
      * @throws XmlValidationException
      */
-    public function getEventsData($view = '')
+    public function getEventsData(string $view = ''): array
     {
         $eventsData = [];
         $pattern = $view ? sprintf(self::EVENTS_XML_PATH_PATTERN, $view) : self::EVENTS_GLOBAL_XML_PATH_PATTERN;
@@ -50,7 +51,7 @@ class EventXmlParser
      * @return array
      * @throws XmlValidationException
      */
-    private function parse($eventsXmlFile)
+    private function parse(string $eventsXmlFile): array
     {
         $parsedNode = [];
         $eventNode = simplexml_load_file($eventsXmlFile);

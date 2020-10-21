@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Framework\Model\FileManager;
 
@@ -12,7 +13,7 @@ class PhpFileManager extends \Awesome\Framework\Model\FileManager
      * @return string|array|void
      * @throws \RuntimeException
      */
-    public function includeFile($path, $return = false, $extract = [])
+    public function includeFile(string $path, bool $return = false, array $extract = [])
     {
         if (!file_exists($path)) {
             throw new \RuntimeException(sprintf('Provided path "%s" does not exist', $path));
@@ -40,7 +41,7 @@ class PhpFileManager extends \Awesome\Framework\Model\FileManager
      * @return bool
      * @throws \RuntimeException
      */
-    public function createArrayFile($path, $data, $annotation = '')
+    public function createArrayFile(string $path, array $data, string $annotation = ''): bool
     {
         $content = '<?php' . ($annotation ? ' /** ' . $annotation . ' */' : '') . "\n"
             . 'return ' . array_export($data, true) . ';' . "\n";
@@ -54,7 +55,7 @@ class PhpFileManager extends \Awesome\Framework\Model\FileManager
      * @return bool
      * @throws \RuntimeException
      */
-    public function objectFileExists($objectName)
+    public function objectFileExists(string $objectName): bool
     {
         $path = APP_DIR . '/' . str_replace('\\', '/', ltrim($objectName, '\\')) . '.php';
 

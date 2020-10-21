@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Framework\Model;
 
@@ -23,7 +24,7 @@ final class Invoker implements \Awesome\Framework\Model\SingletonInterface
      * @return mixed
      * @throws \Exception
      */
-    public function get($id)
+    public function get(string $id)
     {
         $id = ltrim($id, '\\');
 
@@ -62,7 +63,7 @@ final class Invoker implements \Awesome\Framework\Model\SingletonInterface
      * @return mixed
      * @throws \Exception
      */
-    public function make($id, $parameters = [])
+    public function make(string $id, array $parameters = [])
     {
         $id = ltrim($id, '\\');
 
@@ -103,7 +104,7 @@ final class Invoker implements \Awesome\Framework\Model\SingletonInterface
      * Get DIContainer instance.
      * @return $this
      */
-    public static function getInstance()
+    public static function getInstance(): self
     {
         if (!isset(self::$instances[self::class])) {
             self::$instances[self::class] = new self();

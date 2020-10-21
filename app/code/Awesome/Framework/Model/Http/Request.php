@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Framework\Model\Http;
 
@@ -75,12 +76,12 @@ class Request extends \Awesome\Framework\Model\DataObject implements \Awesome\Fr
      * @param array $data
      */
     public function __construct(
-        $url,
-        $method = self::HTTP_METHOD_GET,
-        $parameters = [],
-        $cookies = [],
-        $redirectStatusCode = null,
-        $data = []
+        string $url,
+        string $method = self::HTTP_METHOD_GET,
+        array $parameters = [],
+        array $cookies = [],
+        ?int $redirectStatusCode = null,
+        array $data = []
     ) {
         parent::__construct($data, true);
         $this->url = $url;
@@ -94,7 +95,7 @@ class Request extends \Awesome\Framework\Model\DataObject implements \Awesome\Fr
      * Get request URL.
      * @return string
      */
-    public function getUrl()
+    public function getUrl(): string
     {
         return $this->url;
     }
@@ -103,7 +104,7 @@ class Request extends \Awesome\Framework\Model\DataObject implements \Awesome\Fr
      * Get URL scheme protocol.
      * @return string
      */
-    private function getScheme()
+    private function getScheme(): string
     {
         if (!$this->scheme) {
             $this->scheme = parse_url($this->url, PHP_URL_SCHEME);
@@ -116,7 +117,7 @@ class Request extends \Awesome\Framework\Model\DataObject implements \Awesome\Fr
      * Get request URL host.
      * @return string
      */
-    public function getHost()
+    public function getHost(): string
     {
         if (!$this->host) {
             $this->host = parse_url($this->url, PHP_URL_HOST);
@@ -129,7 +130,7 @@ class Request extends \Awesome\Framework\Model\DataObject implements \Awesome\Fr
      * Get request URL path.
      * @return string
      */
-    public function getPath()
+    public function getPath(): string
     {
         if (!$this->path) {
             $this->path = rtrim(parse_url($this->url, PHP_URL_PATH), '/') ?: '/';
@@ -142,7 +143,7 @@ class Request extends \Awesome\Framework\Model\DataObject implements \Awesome\Fr
      * Check if request was performed via secure connection.
      * @return bool
      */
-    public function isSecure()
+    public function isSecure(): bool
     {
         return $this->getScheme() === self::SCHEME_HTTPS;
     }
@@ -151,7 +152,7 @@ class Request extends \Awesome\Framework\Model\DataObject implements \Awesome\Fr
      * Get request method.
      * @return string
      */
-    public function getMethod()
+    public function getMethod(): string
     {
         return $this->method;
     }
@@ -161,7 +162,7 @@ class Request extends \Awesome\Framework\Model\DataObject implements \Awesome\Fr
      * @param string $key
      * @return string|null
      */
-    public function getParam($key)
+    public function getParam(string $key): ?string
     {
         return $this->parameters[$key] ?? null;
     }
@@ -170,7 +171,7 @@ class Request extends \Awesome\Framework\Model\DataObject implements \Awesome\Fr
      * Get all request parameters.
      * @return array
      */
-    public function getParams()
+    public function getParams(): array
     {
         return $this->parameters;
     }
@@ -180,7 +181,7 @@ class Request extends \Awesome\Framework\Model\DataObject implements \Awesome\Fr
      * @param string $key
      * @return string|null
      */
-    public function getCookie($key)
+    public function getCookie(string $key): ?string
     {
         return $this->cookies[$key] ?? null;
     }
@@ -189,7 +190,7 @@ class Request extends \Awesome\Framework\Model\DataObject implements \Awesome\Fr
      * Get all request cookies.
      * @return array
      */
-    public function getCookies()
+    public function getCookies(): array
     {
         return $this->cookies;
     }
@@ -198,7 +199,7 @@ class Request extends \Awesome\Framework\Model\DataObject implements \Awesome\Fr
      * Get request redirect status code.
      * @return int|null
      */
-    public function getRedirectStatusCode()
+    public function getRedirectStatusCode(): ?int
     {
         return $this->redirectStatusCode;
     }

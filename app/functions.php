@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 if (!function_exists('array_key_first')) {
     /**
@@ -8,7 +9,7 @@ if (!function_exists('array_key_first')) {
      * @param array $array
      * @return mixed
      */
-    function array_key_first($array)
+    function array_key_first(array $array)
     {
         foreach ($array as $key => $unused) {
             return $key;
@@ -25,7 +26,7 @@ if (!function_exists('get_class_name')) {
      * @param object $object
      * @return string
      */
-    function get_class_name($object)
+    function get_class_name($object): string
     {
         $objectName = get_class($object);
 
@@ -44,9 +45,9 @@ if (!function_exists('in_array_r')) {
      * @param mixed $needle
      * @param array $haystack
      * @param bool $strict
-     * @return mixed
+     * @return bool
      */
-    function in_array_r($needle, $haystack, $strict = false)
+    function in_array_r($needle, array $haystack, bool $strict = false): bool
     {
         foreach ($haystack as $item) {
             if (($strict ? $item === $needle : $item == $needle)
@@ -69,7 +70,7 @@ if (!function_exists('str_replace_first')) {
      * @param string $subject
      * @return string
      */
-    function str_replace_first($search, $replace, $subject)
+    function str_replace_first(string $search, string $replace, string $subject): string
     {
         $pos = strpos($subject, $search);
 
@@ -89,7 +90,7 @@ if (!function_exists('array_export')) {
      * @param bool $return
      * @return string|void
      */
-    function array_export($array, $return = false)
+    function array_export(array $array, bool $return = false)
     {
         $export = var_export($array, true);
         $patterns = [

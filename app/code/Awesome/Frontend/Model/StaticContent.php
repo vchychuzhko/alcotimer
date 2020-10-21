@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Frontend\Model;
 
@@ -42,7 +43,7 @@ class StaticContent
      * @param string $view
      * @return $this
      */
-    public function deploy($view = '')
+    public function deploy(string $view = ''): self
     {
         if ($view) {
             $this->processView($view);
@@ -58,10 +59,10 @@ class StaticContent
 
     /**
      * Perform all needed steps for specified view.
-     * @param $view
+     * @param string $view
      * @return $this
      */
-    private function processView($view)
+    private function processView(string $view): self
     {
         if (!file_exists(BP . self::STATIC_FOLDER_PATH . $view)) {
             $this->fileManager->createDirectory(BP . self::STATIC_FOLDER_PATH . $view);
@@ -75,11 +76,11 @@ class StaticContent
     }
 
     /**
-     * Remove all static files related to requested view, including directory.
+     * Remove all static files related to provided view, including directory.
      * @param string $view
      * @return $this
      */
-    private function removeStatic($view)
+    private function removeStatic(string $view): self
     {
         $this->fileManager->removeDirectory(BP . self::STATIC_FOLDER_PATH . $view);
 
@@ -91,7 +92,7 @@ class StaticContent
      * @param string $view
      * @return $this
      */
-    private function generateAssets($view)
+    private function generateAssets(string $view): self
     {
         $staticFolder = BP . self::STATIC_FOLDER_PATH . $view;
         $viewPath = str_replace('%v', $view, self::ASSETS_FOLDER_PATH_PATTERN);
@@ -130,7 +131,7 @@ class StaticContent
      * @param string $view
      * @return $this
      */
-    private function processLibs($view)
+    private function processLibs(string $view): self
     {
         $staticFolder = BP . self::STATIC_FOLDER_PATH . $view;
 
@@ -153,7 +154,7 @@ class StaticContent
      * @param bool $isLib
      * @return array
      */
-    private function getFilePath($path, $isLib = false)
+    private function getFilePath(string $path, bool $isLib = false): array
     {
         $path = str_replace(DS, '/', $path);
 
@@ -180,7 +181,7 @@ class StaticContent
      * @param string $content
      * @return string
      */
-    private function parsePubDirPath($content)
+    private function parsePubDirPath(string $content): string
     {
         $pubPath = $this->config->get(Http::WEB_ROOT_CONFIG) ? '/' : '/pub/';
 
@@ -191,7 +192,7 @@ class StaticContent
      * Generate static deployed version and save it.
      * @return $this
      */
-    public function generateDeployedVersion()
+    public function generateDeployedVersion(): self
     {
         $this->fileManager->createFile(BP . self::DEPLOYED_VERSION_FILE, time(), true);
 
@@ -202,7 +203,7 @@ class StaticContent
      * Get current static deployed version.
      * @return string
      */
-    public function getDeployedVersion()
+    public function getDeployedVersion(): string
     {
         //@TODO: Resolve situation when frontend folder is missing, but deployed version is present
         return $this->fileManager->readFile(BP . self::DEPLOYED_VERSION_FILE);
@@ -213,7 +214,7 @@ class StaticContent
      * @param array $files
      * @return array
      */
-    private function filterMinifiedFiles($files)
+    private function filterMinifiedFiles(array $files): array
     {
         $files = array_flip($files);
 

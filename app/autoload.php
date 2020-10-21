@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
+
 /**
  * Function to load object file by provided name.
  * @param string $objectName
  * @throws \Exception
  */
-spl_autoload_register(function ($objectName) {
+spl_autoload_register(static function (string $objectName) {
     $objectFile = APP_DIR . '/' . str_replace('\\', '/', ltrim($objectName, '\\')) . '.php';
 
     if (!file_exists($objectFile)) {

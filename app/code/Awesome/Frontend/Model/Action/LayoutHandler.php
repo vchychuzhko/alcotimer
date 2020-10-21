@@ -1,8 +1,11 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Frontend\Model\Action;
 
 use Awesome\Cache\Model\Cache;
+use Awesome\Framework\Model\Http\Request;
+use Awesome\Framework\Model\Http\Response;
 use Awesome\Framework\Model\Http\Response\HtmlResponse;
 use Awesome\Frontend\Model\TemplateRenderer;
 use Awesome\Frontend\Model\XmlParser\LayoutXmlParser;
@@ -39,7 +42,7 @@ class LayoutHandler extends \Awesome\Framework\Model\AbstractAction
     public function __construct(
         Cache $cache,
         LayoutXmlParser $layoutXmlParser,
-        $data = []
+        array $data = []
     ) {
         parent::__construct($data);
         $this->cache = $cache;
@@ -51,7 +54,7 @@ class LayoutHandler extends \Awesome\Framework\Model\AbstractAction
      * @inheritDoc
      * @throws \Exception
      */
-    public function execute($request)
+    public function execute(Request $request): Response
     {
         $handle = $this->getHandle();
         $handles = $this->getHandles();
@@ -75,7 +78,7 @@ class LayoutHandler extends \Awesome\Framework\Model\AbstractAction
      * @return string
      * @throws \Exception
      */
-    private function renderPage($handle, $view, $handles = [])
+    private function renderPage(string $handle, string $view, array $handles = []): string
     {
         // @TODO: Create Page model along with PageFactory and move rendering there
         $handles = $handles ?: [$handle];

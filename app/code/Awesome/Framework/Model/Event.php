@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Framework\Model;
 
@@ -14,7 +15,7 @@ class Event extends \Awesome\Framework\Model\DataObject
      * @param string $eventName
      * @param array $data
      */
-    public function __construct($eventName, $data = [])
+    public function __construct(string $eventName, array $data = [])
     {
         parent::__construct($data);
         $this->eventName = $eventName;
@@ -24,7 +25,7 @@ class Event extends \Awesome\Framework\Model\DataObject
      * Get event name.
      * @return string
      */
-    public function getEventName()
+    public function getEventName(): string
     {
         return $this->eventName;
     }

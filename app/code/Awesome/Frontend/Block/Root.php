@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Frontend\Block;
 
@@ -13,7 +14,7 @@ class Root extends \Awesome\Frontend\Block\Template
      * Get body class by page handle.
      * @return string
      */
-    public function getBodyClass()
+    public function getBodyClass(): string
     {
         return str_replace(['-', '_'], ['', '-'], implode(' ', $this->renderer->getHandles()));
     }

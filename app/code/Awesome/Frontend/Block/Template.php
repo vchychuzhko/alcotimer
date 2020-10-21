@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Frontend\Block;
 
@@ -58,8 +59,13 @@ class Template extends\Awesome\Framework\Model\DataObject
      * @param array $children
      * @param array $data
      */
-    public function __construct($renderer, $name, $template = null, $children = [], $data = [])
-    {
+    public function __construct(
+        TemplateRenderer $renderer,
+        string $name,
+        ?string $template = null,
+        array $children = [],
+        array $data = []
+    ) {
         parent::__construct($data, true);
         $this->renderer = $renderer;
         $this->name = $name;
@@ -74,7 +80,7 @@ class Template extends\Awesome\Framework\Model\DataObject
      * @return string
      * @throws \Exception
      */
-    public function toHtml()
+    public function toHtml(): string
     {
         return $this->renderer->renderElement($this);
     }
@@ -85,7 +91,7 @@ class Template extends\Awesome\Framework\Model\DataObject
      * @param string $childName
      * @return string
      */
-    public function getChildHtml($childName = '')
+    public function getChildHtml(string $childName = ''): string
     {
         $childHtml = '';
 
@@ -108,7 +114,7 @@ class Template extends\Awesome\Framework\Model\DataObject
      * @param string $file
      * @return string
      */
-    public function getMediaUrl($file = '')
+    public function getMediaUrl(string $file = ''): string
     {
         if ($this->mediaUrl === null) {
             $this->mediaUrl = $this->getPubUrl('/media/');
@@ -122,7 +128,7 @@ class Template extends\Awesome\Framework\Model\DataObject
      * @param string $file
      * @return string
      */
-    public function getMediaFileUrl($file)
+    public function getMediaFileUrl(string $file): string
     {
         $mediaRelativePath = preg_replace('/^(\/?(pub)?)?\/?media\//', '', $file);
 
@@ -135,7 +141,7 @@ class Template extends\Awesome\Framework\Model\DataObject
      * @param string $file
      * @return string
      */
-    public function getStaticUrl($file = '')
+    public function getStaticUrl(string $file = ''): string
     {
         if ($this->staticUrl === null) {
             if (!$deployedVersion = $this->staticContent->getDeployedVersion()) {
@@ -155,7 +161,7 @@ class Template extends\Awesome\Framework\Model\DataObject
      * @param string $file
      * @return string
      */
-    private function getPubUrl($file = '')
+    private function getPubUrl(string $file = ''): string
     {
         return ($this->config->get(Http::WEB_ROOT_CONFIG) ? '' : '/pub') . $file;
     }
@@ -164,7 +170,7 @@ class Template extends\Awesome\Framework\Model\DataObject
      * Get element name.
      * @return string
      */
-    public function getNameInLayout()
+    public function getNameInLayout(): string
     {
         return $this->name;
     }
@@ -173,7 +179,7 @@ class Template extends\Awesome\Framework\Model\DataObject
      * Get element template.
      * @return string
      */
-    public function getTemplate()
+    public function getTemplate(): string
     {
         return $this->template;
     }

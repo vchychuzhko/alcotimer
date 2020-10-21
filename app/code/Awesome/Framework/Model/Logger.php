@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Framework\Model;
 
@@ -39,7 +40,7 @@ class Logger
      * @param \Exception $e
      * @return $this
      */
-    public function error($e)
+    public function error(\Exception $e): self
     {
         $this->write(
             self::EXCEPTION_LOG_FILE,
@@ -54,7 +55,7 @@ class Logger
      * @param string $message
      * @return $this
      */
-    public function info($message)
+    public function info(string $message): self
     {
         $this->write(
             self::SYSTEM_LOG_FILE,
@@ -69,7 +70,7 @@ class Logger
      * @param Request $request
      * @return $this
      */
-    public function logVisitor($request)
+    public function logVisitor(Request $request): self
     {
         $this->write(
             self::VISITOR_LOG_FILE,
@@ -85,7 +86,7 @@ class Logger
      * @param string $message
      * @return $this
      */
-    private function write($logFile, $message)
+    private function write(string $logFile, string $message): self
     {
         $this->fileManager->writeFile(
             BP . self::LOG_DIRECTORY . '/' . $logFile,

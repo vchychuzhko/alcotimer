@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Framework\Model;
 
@@ -81,8 +82,9 @@ class Http
 
     /**
      * Run the web application.
+     * @return void
      */
-    public function run()
+    public function run(): void
     {
         try {
             $request = $this->getRequest();
@@ -139,7 +141,7 @@ class Http
      * Check if maintenance mode is active for user IP address.
      * @return bool
      */
-    private function isMaintenance()
+    private function isMaintenance(): bool
     {
         $ip = $this->getRequest()->getUserIp();
 
@@ -150,7 +152,7 @@ class Http
      * Check if app is in developer mode.
      * @return bool
      */
-    private function isDeveloperMode()
+    private function isDeveloperMode(): bool
     {
         return (bool) $this->config->get(self::DEVELOPER_MODE_CONFIG);
     }
@@ -159,7 +161,7 @@ class Http
      * Check if it is allowed to show 403 Forbidden response.
      * @return bool
      */
-    private function showForbidden()
+    private function showForbidden(): bool
     {
         return (bool) $this->config->get(self::SHOW_FORBIDDEN_CONFIG);
     }
@@ -168,7 +170,7 @@ class Http
      * Parse and return http request.
      * @return Request
      */
-    private function getRequest()
+    private function getRequest(): Request
     {
         if (!$this->request) {
             $scheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] === 443
@@ -203,7 +205,7 @@ class Http
      * @param string $url
      * @return string
      */
-    private function parseFullActionName($url)
+    private function parseFullActionName(string $url): string
     {
         $parts = explode('/', str_replace('_', '-', trim(parse_url($url, PHP_URL_PATH), '/')));
 
@@ -217,7 +219,7 @@ class Http
      * @param string $url
      * @return string
      */
-    private function parseView($url)
+    private function parseView(string $url): string
     {
         $view = self::FRONTEND_VIEW;
 

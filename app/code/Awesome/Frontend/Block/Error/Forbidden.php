@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Frontend\Block\Error;
 
@@ -7,7 +8,7 @@ class Forbidden extends \Awesome\Frontend\Block\Template implements \Awesome\Fro
     /**
      * @inheritDoc
      */
-    public function getErrorTitle()
+    public function getErrorTitle(): string
     {
         return '403 error: Forbidden';
     }
@@ -15,7 +16,7 @@ class Forbidden extends \Awesome\Frontend\Block\Template implements \Awesome\Fro
     /**
      * @inheritDoc
      */
-    public function getErrorDescription()
+    public function getErrorDescription(): string
     {
         return 'The page or file you are trying to access is closed for viewing.';
     }
