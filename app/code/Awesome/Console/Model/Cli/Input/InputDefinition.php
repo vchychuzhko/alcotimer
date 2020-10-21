@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Console\Model\Cli\Input;
 
@@ -52,7 +53,7 @@ class InputDefinition
      * @param string $description
      * @return $this
      */
-    public function setDescription($description)
+    public function setDescription(string $description): self
     {
         $this->description = $description;
 
@@ -70,12 +71,13 @@ class InputDefinition
      * @throws \LogicException
      */
     public function addOption(
-        $name,
-        $shortcut = null,
-        $type = self::OPTION_OPTIONAL,
-        $description = '',
+        string $name,
+        ?string $shortcut = null,
+        int $type = self::OPTION_OPTIONAL,
+        string $description = '',
         $default = true
-    ) {
+    ): self
+    {
         if ($shortcut) {
             if ($type === self::OPTION_ARRAY) {
                 throw new \LogicException(sprintf('Array option "%s" cannot have shortcut', $name));
@@ -104,7 +106,7 @@ class InputDefinition
      * @return $this
      * @throws \LogicException
      */
-    public function addArgument($name, $type = self::ARGUMENT_REQUIRED, $description = '')
+    public function addArgument(string $name, int $type = self::ARGUMENT_REQUIRED, string $description = ''): self
     {
         if ($this->hasArrayArgument) {
             throw new \LogicException('Argument cannot be added after array argument');
@@ -132,7 +134,7 @@ class InputDefinition
      * Return all collected command data.
      * @return array
      */
-    public function getDefinition()
+    public function getDefinition(): array
     {
         return [
             'description' => $this->description,
@@ -146,7 +148,7 @@ class InputDefinition
      * Reset collected command data.
      * @return $this
      */
-    public function reset()
+    public function reset(): self
     {
         $this->description = '';
         $this->options = [];

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Console\Model\XmlParser;
 
@@ -19,7 +20,7 @@ class CommandXmlParser
      * @return array
      * @throws XmlValidationException
      */
-    public function getCommandsClasses()
+    public function getCommandsClasses(): array
     {
         if ($this->commandsClasses === null) {
             $this->commandsClasses = [];
@@ -47,28 +48,36 @@ class CommandXmlParser
      * @return array
      * @throws XmlValidationException
      */
-    private function parse($cliXmlFile)
+    private function parse(string $cliXmlFile): array
     {
         $parsedNode = [];
         $commandNode = simplexml_load_file($cliXmlFile);
 
         foreach ($commandNode->children() as $namespace) {
             if (!$namespaceName = XmlParsingHelper::getNodeAttribute($namespace)) {
-                throw new XmlValidationException(sprintf('Name attribute is not specified for namespace in "%s" file', $cliXmlFile));
+                throw new XmlValidationException(
+                    sprintf('Name attribute is not specified for namespace in "%s" file', $cliXmlFile)
+                );
             }
 
             foreach ($namespace->children() as $command) {
                 if (!XmlParsingHelper::isAttributeBooleanTrue($command)) {
                     if (!$commandName = XmlParsingHelper::getNodeAttribute($command)) {
-                        throw new XmlValidationException(sprintf('Name attribute is not specified for "%s" namespace command', $namespaceName));
+                        throw new XmlValidationException(
+                            sprintf('Name attribute is not specified for "%s" namespace command', $namespaceName)
+                        );
                     }
                     $commandName = $namespaceName . ':' . $commandName;
 
                     if (isset($parsedNode[$commandName])) {
-                        throw new XmlValidationException(sprintf('Command "%s" is defined twice in one file', $commandName));
+                        throw new XmlValidationException(
+                            sprintf('Command "%s" is defined twice in one file', $commandName)
+                        );
                     }
                     if (!$class = ltrim(XmlParsingHelper::getNodeAttribute($command, 'class'), '\\')) {
-                        throw new XmlValidationException(sprintf('Class is not specified for "%s" command', $commandName));
+                        throw new XmlValidationException(
+                            sprintf('Class is not specified for "%s" command', $commandName)
+                        );
                     }
 
                     $parsedNode[$commandName] = $class;

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Console\Model;
 
@@ -14,7 +15,7 @@ use Awesome\Framework\Model\Invoker;
 
 class Cli
 {
-    public const VERSION = '0.4.1';
+    public const VERSION = '0.4.2';
     public const HELP_COMMAND = 'help:show';
 
     /**
@@ -60,9 +61,10 @@ class Cli
 
     /**
      * Run the CLI application.
+     * @return void
      * @throws \Exception
      */
-    public function run()
+    public function run(): void
     {
         try {
             $input = $this->getInput();
@@ -112,8 +114,9 @@ class Cli
     /**
      * Display formatted exception message.
      * @param \Exception $e
+     * @return void
      */
-    private function displayException($e)
+    private function displayException(\Exception $e): void
     {
         $name = get_class_name($e);
         $message = $e->getMessage();
@@ -139,42 +142,43 @@ class Cli
      * Determine if output should be disabled.
      * @return bool
      */
-    private function isQuiet()
+    private function isQuiet(): bool
     {
-        return $this->getInput()->getOption(AbstractCommand::QUIET_OPTION);
+        return (bool) $this->getInput()->getOption(AbstractCommand::QUIET_OPTION);
     }
 
     /**
      * Determine if user interaction should be disabled.
      * @return bool
      */
-    private function isNonInteractive()
+    private function isNonInteractive(): bool
     {
-        return $this->getInput()->getOption(AbstractCommand::NOINTERACTION_OPTION);
+        return (bool) $this->getInput()->getOption(AbstractCommand::NOINTERACTION_OPTION);
     }
 
     /**
      * Determine if application version should be shown.
      * @return bool
      */
-    private function showVersion()
+    private function showVersion(): bool
     {
-        return $this->getInput()->getOption(AbstractCommand::VERSION_OPTION);
+        return (bool) $this->getInput()->getOption(AbstractCommand::VERSION_OPTION);
     }
 
     /**
      * Determine if command help should be shown.
      * @return bool
      */
-    private function showCommandHelp()
+    private function showCommandHelp(): bool
     {
-        return $this->getInput()->getOption(AbstractCommand::HELP_OPTION);
+        return (bool) $this->getInput()->getOption(AbstractCommand::HELP_OPTION);
     }
 
     /**
      * Output application CLI title with version.
+     * @return void
      */
-    private function showAppCliTitle()
+    private function showAppCliTitle(): void
     {
         $this->getOutput()->writeln('AlcoTimer CLI ' . $this->getOutput()->colourText(self::VERSION));
     }
@@ -184,7 +188,7 @@ class Cli
      * @return Input
      * @throws \InvalidArgumentException
      */
-    private function getInput()
+    private function getInput(): Input
     {
         if (!$this->input) {
             $argv = $_SERVER['argv'];
@@ -277,7 +281,7 @@ class Cli
      * Get CLI output.
      * @return Output
      */
-    private function getOutput()
+    private function getOutput(): Output
     {
         if (!$this->output) {
             if ($this->input) {

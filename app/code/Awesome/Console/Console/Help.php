@@ -1,8 +1,10 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Console\Console;
 
 use Awesome\Console\Model\Cli\AbstractCommand;
+use Awesome\Console\Model\Cli\Input;
 use Awesome\Console\Model\Cli\Input\InputDefinition;
 use Awesome\Console\Model\Cli\Output;
 use Awesome\Console\Model\Handler\CommandHandler;
@@ -26,7 +28,7 @@ class Help extends \Awesome\Console\Model\Cli\AbstractCommand
     /**
      * @inheritDoc
      */
-    public static function configure($definition)
+    public static function configure(InputDefinition $definition): InputDefinition
     {
         return parent::configure($definition)
             ->setDescription('Show application help');
@@ -37,7 +39,7 @@ class Help extends \Awesome\Console\Model\Cli\AbstractCommand
      * @inheritDoc
      * @throws \LogicException
      */
-    public function execute($input, $output)
+    public function execute(Input $input, Output $output): void
     {
         $commandData = AbstractCommand::configure(new InputDefinition())
             ->getDefinition();
@@ -57,7 +59,7 @@ class Help extends \Awesome\Console\Model\Cli\AbstractCommand
                     $optionFullNames[$name] = str_repeat(' ', 4) . '--' . $name;
                 }
             }
-            $padding = max(array_map(function ($option) {
+            $padding = max(array_map(static function ($option) {
                 return strlen($option);
             }, $optionFullNames));
 
@@ -81,14 +83,14 @@ class Help extends \Awesome\Console\Model\Cli\AbstractCommand
      * Display commands list.
      * @param array $commands
      * @param Output $output
-     * @param bool $newLine
+     * @return void
      * @throws \LogicException
      */
-    private function processCommands($commands, $output, $newLine = false)
+    private function processCommands(array $commands, Output $output): void
     {
         if ($commands) {
             $output->writeln($output->colourText('Available commands:', Output::BROWN));
-            $padding = max(array_map(function ($name) {
+            $padding = max(array_map(static function ($name) {
                 list($unused, $command) = explode(':', $name);
 
                 return strlen($command);
@@ -108,10 +110,6 @@ class Help extends \Awesome\Console\Model\Cli\AbstractCommand
                     $output->colourText(str_pad($command, $padding + 2)) . $commandData['description'],
                     2
                 );
-            }
-
-            if ($newLine) {
-                $output->writeln();
             }
         }
     }

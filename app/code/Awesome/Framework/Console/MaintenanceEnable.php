@@ -1,7 +1,9 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Framework\Console;
 
+use Awesome\Console\Model\Cli\Input;
 use Awesome\Console\Model\Cli\Input\InputDefinition;
 use Awesome\Console\Model\Cli\Output;
 use Awesome\Framework\Model\Maintenance;
@@ -33,7 +35,7 @@ class MaintenanceEnable extends \Awesome\Console\Model\Cli\AbstractCommand
     /**
      * @inheritDoc
      */
-    public static function configure($definition)
+    public static function configure(InputDefinition $definition): InputDefinition
     {
         return parent::configure($definition)
             ->setDescription('Enable maintenance mode with a list of allowed IPs')
@@ -46,7 +48,7 @@ class MaintenanceEnable extends \Awesome\Console\Model\Cli\AbstractCommand
      * @inheritDoc
      * @throws \InvalidArgumentException
      */
-    public function execute($input, $output)
+    public function execute(Input $input, Output $output): void
     {
         $allowedIPs = $input->getArgument('ips');
 

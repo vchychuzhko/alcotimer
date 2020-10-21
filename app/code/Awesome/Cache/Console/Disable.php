@@ -1,8 +1,10 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Cache\Console;
 
 use Awesome\Cache\Model\Cache;
+use Awesome\Console\Model\Cli\Input;
 use Awesome\Console\Model\Cli\Input\InputDefinition;
 use Awesome\Console\Model\Cli\Output;
 use Awesome\Framework\Model\Config;
@@ -33,7 +35,7 @@ class Disable extends \Awesome\Console\Model\Cli\AbstractCommand
     /**
      * @inheritDoc
      */
-    public static function configure($definition)
+    public static function configure(InputDefinition $definition): InputDefinition
     {
         return parent::configure($definition)
             ->setDescription('Disable application cache')
@@ -44,7 +46,7 @@ class Disable extends \Awesome\Console\Model\Cli\AbstractCommand
      * Disable application cache.
      * @inheritDoc
      */
-    public function execute($input, $output)
+    public function execute(Input $input, Output $output): void
     {
         $definedTypes = $this->cache->getTypes();
         $types = $input->getArgument('types') ?: $definedTypes;

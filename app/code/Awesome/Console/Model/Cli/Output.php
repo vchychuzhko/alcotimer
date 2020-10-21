@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Console\Model\Cli;
 
@@ -57,7 +58,7 @@ class Output
      * @param bool $interactive
      * @param bool $mute
      */
-    public function __construct($interactive = true, $mute = false)
+    public function __construct(bool $interactive = true, bool $mute = false)
     {
         $this->interactive = $interactive;
         $this->mute = $mute;
@@ -69,7 +70,7 @@ class Output
      * @param int $indent
      * @return $this
      */
-    public function write($text = '', $indent = 0)
+    public function write(string $text = '', int $indent = 0): self
     {
         if (!$this->mute) {
             echo str_repeat(' ', $indent) . $text;
@@ -84,7 +85,7 @@ class Output
      * @param int $indent
      * @return $this
      */
-    public function writeln($text = '', $indent = 0)
+    public function writeln(string $text = '', int $indent = 0): self
     {
         return $this->write($text . "\n", $indent);
     }
@@ -94,7 +95,7 @@ class Output
      * @param string $prompt
      * @return string
      */
-    public function read($prompt = '')
+    public function read(string $prompt = ''): string
     {
         $line = '';
 
@@ -112,7 +113,7 @@ class Output
      * @param string $prompt
      * @return string
      */
-    public function readln($prompt = '')
+    public function readln(string $prompt = ''): string
     {
         return $this->read($prompt . "\n");
     }
@@ -123,7 +124,7 @@ class Output
      * @param array $confirmOptions
      * @return bool
      */
-    public function confirm($prompt, $confirmOptions = ['y', 'yes'])
+    public function confirm(string $prompt, array $confirmOptions = ['y', 'yes']): bool
     {
         $confirm = true;
 
@@ -141,7 +142,7 @@ class Output
      * @param array $options
      * @return string
      */
-    public function choice($prompt, $options)
+    public function choice(string $prompt, array $options): string
     {
         $choice = null;
 
@@ -164,7 +165,7 @@ class Output
      * Disable output.
      * @return $this
      */
-    public function mute()
+    public function mute(): self
     {
         $this->mute = true;
 
@@ -175,7 +176,7 @@ class Output
      * Enable output.
      * @return $this
      */
-    public function unmute()
+    public function unmute(): self
     {
         $this->mute = false;
 
@@ -186,7 +187,7 @@ class Output
      * Disable interaction.
      * @return $this
      */
-    public function disableInteraction()
+    public function disableInteraction(): self
     {
         $this->interactive = false;
 
@@ -197,7 +198,7 @@ class Output
      * Enable interaction.
      * @return $this
      */
-    public function enableInteraction()
+    public function enableInteraction(): self
     {
         $this->interactive = true;
 
@@ -213,7 +214,7 @@ class Output
      * @param int $width
      * @return $this
      */
-    public function progress($done, $total, $info = '', $width = 50)
+    public function progress(int $done, int $total, string $info = '', int $width = 50): self
     {
         //@TODO: Update to handle several progress bars at the same time (ProgressFactory?)
         $percentage = floor(($done * 100) / $total);
@@ -232,7 +233,7 @@ class Output
      * @param string|null $backgroundColour
      * @return string
      */
-    public function colourText($text, $colour = self::GREEN, $backgroundColour = null)
+    public function colourText(string $text, string $colour = self::GREEN, ?string $backgroundColour = null): string
     {
         $backgroundColour = $backgroundColour ? ';' . $backgroundColour : '';
 
@@ -244,7 +245,7 @@ class Output
      * @param string $text
      * @return string
      */
-    public function bold($text)
+    public function bold(string $text): string
     {
         return "\e[1m" . $text . "\e[0m";
     }
@@ -254,7 +255,7 @@ class Output
      * @param string $text
      * @return string
      */
-    public function underline($text)
+    public function underline(string $text): string
     {
         return "\e[4m" . $text . "\e[0m";
     }

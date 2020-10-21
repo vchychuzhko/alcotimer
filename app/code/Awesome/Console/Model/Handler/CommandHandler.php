@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Console\Model\Handler;
 
@@ -32,7 +33,7 @@ class CommandHandler
      * @param string $commandName
      * @return array|null
      */
-    public function getCommandData($commandName)
+    public function getCommandData(string $commandName): ?array
     {
         $commandData = null;
 
@@ -51,7 +52,7 @@ class CommandHandler
      * Get all available commands.
      * @return array
      */
-    public function getCommands()
+    public function getCommands(): array
     {
         return array_keys($this->commandXmlParser->getCommandsClasses());
     }
@@ -61,7 +62,7 @@ class CommandHandler
      * @param string $commandName
      * @return bool
      */
-    public function commandExist($commandName)
+    public function commandExist(string $commandName): bool
     {
         return in_array($commandName, $this->getCommands(), true);
     }
@@ -71,7 +72,7 @@ class CommandHandler
      * @param string $commandName
      * @return string
      */
-    public function parseCommand($commandName)
+    public function parseCommand(string $commandName): string
     {
         if (!isset($this->parsedHandles[$commandName])) {
             $this->parsedCommands[$commandName] = $commandName;
@@ -88,9 +89,9 @@ class CommandHandler
     /**
      * Get command class according to the requested command name.
      * @param string $commandName
-     * @return string
+     * @return string|null
      */
-    public function getCommandClass($commandName)
+    public function getCommandClass(string $commandName): ?string
     {
         $commandClasses = $this->commandXmlParser->getCommandsClasses();
 
@@ -104,7 +105,7 @@ class CommandHandler
      * @param bool $strict
      * @return array
      */
-    public function getAlternatives($handle, $strict = true)
+    public function getAlternatives(string $handle, bool $strict = true): array
     {
         $possibleCandidates = [];
         @list($namespace, $command) = explode(':', $handle);
