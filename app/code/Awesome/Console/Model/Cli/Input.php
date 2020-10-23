@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Awesome\Console\Model\Cli;
 
+use Awesome\Framework\Helper\DataHelper;
+
 class Input
 {
     /**
@@ -88,15 +90,18 @@ class Input
 
     /**
      * Cast input value to a corresponding type.
+     * In case array option or argument is used, all values will be casted.
      * @param mixed $value
      * @return mixed
      */
     private function castInputValue($value)
     {
-        if (is_numeric($value)) {
-            $value += 0;
-        } elseif (in_array(strtolower($value), ['true', 'false'], true)) {
-            $value = strtolower($value) === 'true';
+        if (is_array($value)) {
+            foreach ($value as &$item) {
+                $item = DataHelper::castValue($item);
+            }
+        } else {
+            $value = DataHelper::castValue($value);
         }
 
         return $value;

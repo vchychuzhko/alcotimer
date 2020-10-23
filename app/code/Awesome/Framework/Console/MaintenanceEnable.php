@@ -35,9 +35,9 @@ class MaintenanceEnable extends \Awesome\Console\Model\Cli\AbstractCommand
     /**
      * @inheritDoc
      */
-    public static function configure(InputDefinition $definition): InputDefinition
+    public static function configure(): InputDefinition
     {
-        return parent::configure($definition)
+        return parent::configure()
             ->setDescription('Enable maintenance mode with a list of allowed IPs')
             ->addOption('force', 'f', InputDefinition::OPTION_OPTIONAL, 'Skip IP validation')
             ->addArgument('ips', InputDefinition::ARGUMENT_ARRAY, 'List of IP addresses to exclude');

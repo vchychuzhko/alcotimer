@@ -26,18 +26,7 @@ class XmlParsingHelper
      */
     public static function isAttributeBooleanTrue(\SimpleXMLElement $node, string $attribute = 'disabled'): bool
     {
-        return self::isBooleanTrue(self::getNodeAttribute($node, $attribute));
-    }
-
-    /**
-     * Check if string is a boolean "true", otherwise return false.
-     * Not case sensitive.
-     * @param string $string
-     * @return bool
-     */
-    public static function isBooleanTrue(string $string): bool
-    {
-        return strtolower($string) === 'true';
+        return DataHelper::isStringBooleanTrue(self::getNodeAttribute($node, $attribute));
     }
 
     /**

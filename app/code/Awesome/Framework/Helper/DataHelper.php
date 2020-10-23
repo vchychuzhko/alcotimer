@@ -72,13 +72,42 @@ class DataHelper
     }
 
     /**
+     * Check if string is a boolean "true", otherwise return false.
+     * Not case sensitive.
+     * @param string $string
+     * @return bool
+     */
+    public static function isStringBooleanTrue(string $string): bool
+    {
+        return strtolower($string) === 'true';
+    }
+
+    /**
+     * Cast value to a corresponding type.
+     * String like "true" or "false" are treated as bool type, not case sensitive.
+     * @param mixed $value
+     * @return mixed
+     */
+    public static function castValue($value)
+    {
+        if (is_numeric($value)) {
+            $value += 0;
+        } elseif (in_array(strtolower($value), ['true', 'false'], true)) {
+            $value = self::isStringBooleanTrue($value);
+        }
+
+        return $value;
+    }
+
+    /**
      * Converts camelCase to snake_case.
+     * Based on https://stackoverflow.com/a/19533226
      * @param string $string
      * @return string
      */
     public static function underscore(string $string): string
     {
-        return strtolower(trim(preg_replace('/([A-Z]|[0-9]+)/', "_$1", $string), '_'));
+        return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $string));
     }
 
     /**

@@ -27,9 +27,9 @@ class Clean extends \Awesome\Console\Model\Cli\AbstractCommand
     /**
      * @inheritDoc
      */
-    public static function configure(InputDefinition $definition): InputDefinition
+    public static function configure(): InputDefinition
     {
-        return parent::configure($definition)
+        return parent::configure()
             ->setDescription('Clear application cache')
             ->addArgument('types', InputDefinition::ARGUMENT_ARRAY, 'Cache types to be cleared');
     }

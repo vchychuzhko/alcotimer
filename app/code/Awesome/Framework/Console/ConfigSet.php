@@ -27,9 +27,9 @@ class ConfigSet extends \Awesome\Console\Model\Cli\AbstractCommand
     /**
      * @inheritDoc
      */
-    public static function configure(InputDefinition $definition): InputDefinition
+    public static function configure(): InputDefinition
     {
-        return parent::configure($definition)
+        return parent::configure()
             ->setDescription('Set configuration value by path')
             ->addArgument('path', InputDefinition::ARGUMENT_REQUIRED, 'Config path to update')
             ->addArgument('value', InputDefinition::ARGUMENT_REQUIRED, 'Config value to set');

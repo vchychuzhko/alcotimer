@@ -16,13 +16,12 @@ abstract class AbstractCommand
 
     /**
      * Define all data related to console command.
-     * @param InputDefinition $definition
      * @return InputDefinition
      * @throws \LogicException
      */
-    public static function configure(InputDefinition $definition): InputDefinition
+    public static function configure(): InputDefinition
     {
-        return $definition->addOption(self::HELP_OPTION, 'h', InputDefinition::OPTION_OPTIONAL, 'Display help message')
+        return (new InputDefinition())->addOption(self::HELP_OPTION, 'h', InputDefinition::OPTION_OPTIONAL, 'Display help message')
             ->addOption(self::NOINTERACTION_OPTION, 'n', InputDefinition::OPTION_OPTIONAL, 'Do not ask any interactive question')
             ->addOption(self::QUIET_OPTION, 'q', InputDefinition::OPTION_OPTIONAL, 'Do not output anything')
             ->addOption(self::VERSION_OPTION, 'V', InputDefinition::OPTION_OPTIONAL, 'Display application version');
@@ -45,7 +44,7 @@ abstract class AbstractCommand
     public function help(Input $input, Output $output): void
     {
         $command = $input->getCommand();
-        $commandData = static::configure(new InputDefinition())
+        $commandData = static::configure()
             ->getDefinition();
 
         $options = $commandData['options'];

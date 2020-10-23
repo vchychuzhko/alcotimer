@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Awesome\Console\Model\Handler;
 
 use Awesome\Console\Model\Cli\AbstractCommand;
-use Awesome\Console\Model\Cli\Input\InputDefinition;
 use Awesome\Console\Model\XmlParser\CommandXmlParser;
 
 class CommandHandler
@@ -38,11 +37,10 @@ class CommandHandler
         $commandData = null;
 
         if ($commandClass = $this->getCommandClass($commandName)) {
-            $definition = new InputDefinition();
             /** @var AbstractCommand $commandClass */
-            $definition = $commandClass::configure($definition);
+            $definition = $commandClass::configure();
 
-            $commandData = array_replace_recursive($definition->getDefinition(), ['class' => $commandClass]);
+            $commandData = array_merge($definition->getDefinition(), ['class' => $commandClass]);
         }
 
         return $commandData;

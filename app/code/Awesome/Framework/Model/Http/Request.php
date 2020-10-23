@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Awesome\Framework\Model\Http;
 
+use Awesome\Framework\Helper\DataHelper;
+
 /**
  * Class Request
  * @method string getAcceptType()
@@ -160,11 +162,35 @@ class Request extends \Awesome\Framework\Model\DataObject implements \Awesome\Fr
     /**
      * Get request parameter by key.
      * @param string $key
-     * @return string|null
+     * @param bool $typeCast
+     * @return mixed
      */
-    public function getParam(string $key): ?string
+    public function getParam(string $key, bool $typeCast = false)
     {
-        return $this->parameters[$key] ?? null;
+        $value = $this->parameters[$key] ?? null;
+
+        return $typeCast ? DataHelper::castValue($value) : $value;
+    }
+
+    /**
+     * Get request parameter by key transforming it to array.
+     * Useful for parameters that can be passed as array, separated by commas.
+     * @param string $key
+     * @param bool $typeCast
+     * @return array
+     */
+    public function getParamAsArray(string $key, bool $typeCast = false): array
+    {
+        $valueString = $this->getParam($key);
+        $values = $valueString ? explode(',', $valueString) : [];
+
+        if ($typeCast) {
+            foreach ($values as &$value) {
+                $value = DataHelper::castValue($value);
+            }
+        }
+
+        return $values;
     }
 
     /**
