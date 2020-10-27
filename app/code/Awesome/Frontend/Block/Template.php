@@ -3,8 +3,7 @@ declare(strict_types=1);
 
 namespace Awesome\Frontend\Block;
 
-use Awesome\Framework\Model\Config;
-use Awesome\Framework\Model\Http;
+use Awesome\Framework\Model\AppState;
 use Awesome\Framework\Model\Invoker;
 use Awesome\Frontend\Model\StaticContent;
 use Awesome\Frontend\Model\TemplateRenderer;
@@ -17,9 +16,9 @@ class Template extends\Awesome\Framework\Model\DataObject
     protected $renderer;
 
     /**
-     * @var string $name
+     * @var string $nameInLayout
      */
-    protected $name;
+    protected $nameInLayout;
 
     /**
      * @var string $template
@@ -42,37 +41,37 @@ class Template extends\Awesome\Framework\Model\DataObject
     protected $staticUrl;
 
     /**
+     * @var AppState $appState
+     */
+    protected $appState;
+
+    /**
      * @var StaticContent $staticContent
      */
     protected $staticContent;
 
     /**
-     * @var Config $config
-     */
-    protected $config;
-
-    /**
      * Template constructor.
      * @param TemplateRenderer $renderer
-     * @param string $name
+     * @param string $nameInLayout
      * @param string|null $template
      * @param array $children
      * @param array $data
      */
     public function __construct(
         TemplateRenderer $renderer,
-        string $name,
+        string $nameInLayout,
         ?string $template = null,
         array $children = [],
         array $data = []
     ) {
         parent::__construct($data, true);
         $this->renderer = $renderer;
-        $this->name = $name;
+        $this->nameInLayout = $nameInLayout;
         $this->template = $template ?: $this->template;
         $this->children = $children;
+        $this->appState = Invoker::getInstance()->get(AppState::class);
         $this->staticContent = Invoker::getInstance()->get(StaticContent::class);
-        $this->config = Invoker::getInstance()->get(Config::class);
     }
 
     /**
@@ -163,7 +162,7 @@ class Template extends\Awesome\Framework\Model\DataObject
      */
     private function getPubUrl(string $file = ''): string
     {
-        return ($this->config->get(Http::WEB_ROOT_CONFIG) ? '' : '/pub') . $file;
+        return ($this->appState->isPubRoot() ? '' : '/pub') . '/' . ltrim($file, '/');
     }
 
     /**
@@ -172,7 +171,7 @@ class Template extends\Awesome\Framework\Model\DataObject
      */
     public function getNameInLayout(): string
     {
-        return $this->name;
+        return $this->nameInLayout;
     }
 
     /**

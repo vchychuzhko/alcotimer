@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Awesome\Frontend\Observer;
 
 use Awesome\Cache\Model\Cache;
+use Awesome\Framework\Model\AppState;
 use Awesome\Framework\Model\Config;
 use Awesome\Framework\Model\Event;
 use Awesome\Framework\Model\Http;
@@ -19,6 +20,11 @@ class PageLayoutObserver implements \Awesome\Framework\Model\Event\ObserverInter
     private const LAYOUT_XML_PATH_PATTERN = '/*/*/view/%s/layout/*_*_*.xml';
 
     /**
+     * @var AppState $appState
+     */
+    private $appState;
+
+    /**
      * @var Cache $cache
      */
     private $cache;
@@ -30,13 +36,16 @@ class PageLayoutObserver implements \Awesome\Framework\Model\Event\ObserverInter
 
     /**
      * PageLayoutObserver constructor.
+     * @param AppState $appState
      * @param Cache $cache
      * @param Config $config
      */
     public function __construct(
+        AppState $appState,
         Cache $cache,
         Config $config
     ) {
+        $this->appState = $appState;
         $this->cache = $cache;
         $this->config = $config;
     }
@@ -63,7 +72,9 @@ class PageLayoutObserver implements \Awesome\Framework\Model\Event\ObserverInter
         }
 
         if (!$this->handleExist($handle, $view, $router)) {
-            if ($request->getRedirectStatusCode() === Request::FORBIDDEN_REDIRECT_CODE && $this->showForbiddenPage()) {
+            if ($request->getRedirectStatusCode() === Request::FORBIDDEN_REDIRECT_CODE
+                && $this->appState->showForbidden()
+            ) {
                 $handle = LayoutHandler::FORBIDDEN_PAGE_HANDLE;
                 $status = Response::FORBIDDEN_STATUS_CODE;
             } else {
@@ -93,15 +104,6 @@ class PageLayoutObserver implements \Awesome\Framework\Model\Event\ObserverInter
     private function getHomepageHandle(): string
     {
         return $this->config->get(LayoutHandler::HOMEPAGE_HANDLE_CONFIG);
-    }
-
-    /**
-     * Check if it is allowed to show 403 Forbidden page.
-     * @return bool
-     */
-    private function showForbiddenPage(): bool
-    {
-        return (bool) $this->config->get(Http::SHOW_FORBIDDEN_CONFIG);
     }
 
     /**

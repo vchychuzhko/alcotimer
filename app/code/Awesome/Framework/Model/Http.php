@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Awesome\Framework\Model;
 
+use Awesome\Framework\Model\AppState;
 use Awesome\Framework\Model\Config;
 use Awesome\Framework\Model\Event\EventManager;
 use Awesome\Framework\Model\Http\Request;
@@ -22,11 +23,13 @@ class Http
     public const BASE_VIEW = 'base';
 
     public const BACKEND_FRONT_NAME_CONFIG = 'backend/front_name';
-    public const DEVELOPER_MODE_CONFIG = 'developer_mode';
-    public const SHOW_FORBIDDEN_CONFIG = 'show_forbidden';
-    public const WEB_ROOT_CONFIG = 'web/web_root_is_pub';
 
     public const ROOT_ACTION_NAME = 'index_index_index';
+
+    /**
+     * @var AppState $appState
+     */
+    private $appState;
 
     /**
      * @var Config $config
@@ -60,6 +63,7 @@ class Http
 
     /**
      * Http app constructor.
+     * @param AppState $appState
      * @param Config $config
      * @param EventManager $eventManager
      * @param Logger $logger
@@ -67,12 +71,14 @@ class Http
      * @param Router $router
      */
     public function __construct(
+        AppState $appState,
         Config $config,
         EventManager $eventManager,
         Logger $logger,
         Maintenance $maintenance,
         Router $router
     ) {
+        $this->appState = $appState;
         $this->config = $config;
         $this->eventManager = $eventManager;
         $this->logger = $logger;
@@ -99,7 +105,9 @@ class Http
 
                 if ($action = $this->router->getAction()) {
                     $response = $action->execute($request);
-                } elseif ($request->getRedirectStatusCode() === Request::FORBIDDEN_REDIRECT_CODE && $this->showForbidden()) {
+                } elseif ($request->getRedirectStatusCode() === Request::FORBIDDEN_REDIRECT_CODE
+                    && $this->appState->showForbidden()
+                ) {
                     $response = new Response('', Response::FORBIDDEN_STATUS_CODE);
                 } else {
                     $response = new Response('', Response::NOTFOUND_STATUS_CODE);
@@ -118,7 +126,7 @@ class Http
                 $response = new JsonResponse(
                     [
                         'status' => 'ERROR',
-                        'message' => $this->isDeveloperMode()
+                        'message' => $this->appState->isDeveloperMode()
                             ? get_class_name($e) . ': ' . $e->getMessage() . "\n" . $e->getTraceAsString()
                             : 'Error details are hidden due to security reasons. Additional information can be found in the server logs.'
                     ],
@@ -126,7 +134,7 @@ class Http
                 );
             } else {
                 $response = new HtmlResponse(
-                    $this->isDeveloperMode()
+                    $this->appState->isDeveloperMode()
                         ? '<pre>' . get_class_name($e) . ': ' . $e->getMessage() . "\n" . $e->getTraceAsString() . '</pre>'
                         : $this->maintenance->getInternalErrorPage(),
                     Response::INTERNAL_ERROR_STATUS_CODE
@@ -146,24 +154,6 @@ class Http
         $ip = $this->getRequest()->getUserIp();
 
         return $this->maintenance->isMaintenance($ip);
-    }
-
-    /**
-     * Check if app is in developer mode.
-     * @return bool
-     */
-    private function isDeveloperMode(): bool
-    {
-        return (bool) $this->config->get(self::DEVELOPER_MODE_CONFIG);
-    }
-
-    /**
-     * Check if it is allowed to show 403 Forbidden response.
-     * @return bool
-     */
-    private function showForbidden(): bool
-    {
-        return (bool) $this->config->get(self::SHOW_FORBIDDEN_CONFIG);
     }
 
     /**

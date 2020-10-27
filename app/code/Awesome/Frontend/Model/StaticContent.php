@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace Awesome\Frontend\Model;
 
+use Awesome\Framework\Model\AppState;
 use Awesome\Framework\Model\FileManager;
 use Awesome\Framework\Model\Http;
-use Awesome\Framework\Model\Config;
 
 class StaticContent
 {
@@ -17,9 +17,9 @@ class StaticContent
     private const PUB_FOLDER_TRIGGER = '{@pubDir}';
 
     /**
-     * @var Config $config
+     * @var AppState $appState
      */
-    private $config;
+    private $appState;
 
     /**
      * @var FileManager $fileManager
@@ -28,12 +28,12 @@ class StaticContent
 
     /**
      * App constructor.
-     * @param Config $config
+     * @param AppState $appState
      * @param FileManager $fileManager
      */
-    public function __construct(Config $config, FileManager $fileManager)
+    public function __construct(AppState $appState, FileManager $fileManager)
     {
-        $this->config = $config;
+        $this->appState = $appState;
         $this->fileManager = $fileManager;
     }
 
@@ -111,7 +111,7 @@ class StaticContent
                 $assetFiles = $this->fileManager->scanDirectory($assetFolder, true, '/\.' . $assetFormat .'$/');
 
                 foreach ($assetFiles as $assetFile) {
-                    list($folder, $file) = $this->getFilePath($assetFile);
+                    [$folder, $file] = $this->getFilePath($assetFile);
                     $this->fileManager->createDirectory($staticFolder . $folder);
 
                     $content = $this->fileManager->readFile($assetFile, false);
@@ -139,7 +139,7 @@ class StaticContent
         $libFiles = $this->filterMinifiedFiles($libFiles);
 
         foreach ($libFiles as $libFile) {
-            list($folder, $file) = $this->getFilePath($libFile, true);
+            [$folder, $file] = $this->getFilePath($libFile, true);
             $this->fileManager->createDirectory($staticFolder . $folder);
 
             copy($libFile, $staticFolder . $folder . $file);
@@ -183,7 +183,7 @@ class StaticContent
      */
     private function parsePubDirPath(string $content): string
     {
-        $pubPath = $this->config->get(Http::WEB_ROOT_CONFIG) ? '/' : '/pub/';
+        $pubPath = $this->appState->isPubRoot() ? '/' : '/pub/';
 
         return str_replace(self::PUB_FOLDER_TRIGGER, $pubPath, $content);
     }
