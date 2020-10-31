@@ -12,7 +12,7 @@ use Awesome\Frontend\Model\StaticContent;
 
 /**
  * Class StaticGenerationHandler
- * @method getRequestedFile()
+ * @method string getRequestedFile()
  */
 class StaticGenerationHandler extends \Awesome\Framework\Model\AbstractAction
 {
@@ -69,13 +69,17 @@ class StaticGenerationHandler extends \Awesome\Framework\Model\AbstractAction
     public function execute(Request $request): Response
     {
         $path = $this->getRequestedFile();
-        $view = preg_replace(sprintf(self::STATIC_FILE_PATTERN, Http::FRONTEND_VIEW, Http::BACKEND_VIEW), '$4', $request->getPath());
+        $view = preg_replace(
+            sprintf(self::STATIC_FILE_PATTERN, Http::FRONTEND_VIEW, Http::BACKEND_VIEW), '$4', $request->getPath()
+        );
 
         $this->staticContent->deploy($view);
 
-        $staticPath = preg_replace(sprintf(self::STATIC_FILE_PATTERN, Http::FRONTEND_VIEW, Http::BACKEND_VIEW), '$4/$5', $request->getPath());
+        $staticPath = preg_replace(
+            sprintf(self::STATIC_FILE_PATTERN, Http::FRONTEND_VIEW, Http::BACKEND_VIEW), '$5', $request->getPath()
+        );
 
-        $content = $this->fileManager->readFile(BP . StaticContent::STATIC_FOLDER_PATH . $staticPath);
+        $content = $this->fileManager->readFile(BP . StaticContent::STATIC_FOLDER_PATH . $view . '/' . $staticPath);
         $extension = pathinfo($path, PATHINFO_EXTENSION);
         $headers = [];
 

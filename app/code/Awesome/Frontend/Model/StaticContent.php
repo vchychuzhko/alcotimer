@@ -27,7 +27,7 @@ class StaticContent
     private $fileManager;
 
     /**
-     * App constructor.
+     * StaticContent constructor.
      * @param AppState $appState
      * @param FileManager $fileManager
      */
@@ -194,7 +194,7 @@ class StaticContent
      */
     public function generateDeployedVersion(): self
     {
-        $this->fileManager->createFile(BP . self::DEPLOYED_VERSION_FILE, time(), true);
+        $this->fileManager->createFile(BP . self::DEPLOYED_VERSION_FILE, (string) time(), true);
 
         return $this;
     }

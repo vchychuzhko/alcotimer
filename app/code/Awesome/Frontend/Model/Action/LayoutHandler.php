@@ -12,9 +12,9 @@ use Awesome\Frontend\Model\XmlParser\LayoutXmlParser;
 
 /**
  * Class LayoutHandler
- * @method getHandle()
- * @method getHandles()
- * @method getStatus()
+ * @method string getHandle()
+ * @method array getHandles()
+ * @method int getStatus()
  */
 class LayoutHandler extends \Awesome\Framework\Model\AbstractAction
 {

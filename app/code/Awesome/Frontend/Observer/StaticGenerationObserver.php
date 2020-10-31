@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Awesome\Frontend\Observer;
 
+use Awesome\Framework\Model\AppState;
 use Awesome\Framework\Model\Event;
 use Awesome\Framework\Model\Http;
 use Awesome\Framework\Model\Http\Request;
@@ -12,8 +13,22 @@ use Awesome\Frontend\Model\StaticContent;
 
 class StaticGenerationObserver implements \Awesome\Framework\Model\Event\ObserverInterface
 {
-    private const STATIC_FILE_PATTERN = '/^(\/pub)?\/static\/(version.+?\/)?(%s|%s)\/(%s|\w+_\w+)?\/?(.*)$/';
-    private const STATIC_REQUEST_PATTERN = '/^(\/pub)?\/static\//';
+    private const STATIC_FILE_PATTERN = '/^(\/pub)?(\/static\/)(version.+?\/)?(%s|%s)\/(%s|\w+_\w+)?\/?(.*)$/';
+    private const STATIC_REQUEST_PATTERN = '/^(\/pub)?\/static\/(version.+?\/)?(%s|%s)\/(.*)$/';
+
+    /**
+     * @var AppState $appState
+     */
+    private $appState;
+
+    /**
+     * StaticGenerationObserver constructor.
+     * @param AppState $appState
+     */
+    public function __construct(AppState $appState)
+    {
+        $this->appState = $appState;
+    }
 
     /**
      * Check if missing static file is requested and return action to generate it.
@@ -44,7 +59,12 @@ class StaticGenerationObserver implements \Awesome\Framework\Model\Event\Observe
      */
     private function isStaticFileRequest(string $requestPath): bool
     {
-        return (bool) preg_match(self::STATIC_REQUEST_PATTERN, $requestPath);
+        $match = (bool) preg_match(
+            sprintf(self::STATIC_REQUEST_PATTERN, Http::FRONTEND_VIEW, Http::BACKEND_VIEW), $requestPath, $matches
+        );
+        @list($unused, $pub) = $matches;
+
+        return $match && (($pub === '') === $this->appState->isPubRoot());
     }
 
     /**
@@ -54,12 +74,12 @@ class StaticGenerationObserver implements \Awesome\Framework\Model\Event\Observe
      */
     private function getFilePath(string $requestPath): string
     {
-        $path = preg_replace(
+        preg_match(
             sprintf(self::STATIC_FILE_PATTERN, Http::FRONTEND_VIEW, Http::BACKEND_VIEW, StaticContent::LIB_FOLDER_PATH),
-            '$3::$4::$5',
-            $requestPath
+            $requestPath,
+            $matches
         );
-        @list($view, $module, $file) = explode('::', $path);
+        @list($unused, $pub, $static, $version, $view, $module, $file) = $matches;
 
         if ($module === StaticContent::LIB_FOLDER_PATH) {
             $path = BP . '/' . StaticContent::LIB_FOLDER_PATH . '/' . $file;
