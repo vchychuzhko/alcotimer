@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Awesome\Framework\Model\Http;
 
 use Awesome\Cache\Model\Cache;
-use Awesome\Framework\Model\AbstractAction;
+use Awesome\Framework\Model\ActionInterface;
 use Awesome\Framework\Model\Invoker;
 use Awesome\Framework\Model\XmlParser\RoutesXmlParser;
 
@@ -19,6 +19,11 @@ class Router
      * @var array $actions
      */
     private $actions = [];
+
+    /**
+     * @var ActionInterface $action
+     */
+    private $action;
 
     /**
      * @var Cache $cache
@@ -56,9 +61,14 @@ class Router
      * @param string $id
      * @param array $data
      * @return $this
+     * @throws \LogicException
      */
     public function addAction(string $id, array $data = []): self
     {
+        if (!is_a($id, ActionInterface::class, true)) {
+            throw new \LogicException(sprintf('Provided action "%s" does not implement ActionInterface', $id));
+        }
+
         $this->actions[] = [
             'id' => $id,
             'data' => $data,
@@ -69,20 +79,16 @@ class Router
 
     /**
      * Get action with the highest priority.
-     * @return AbstractAction|null
+     * @return ActionInterface|null
      * @throws \Exception
      */
-    public function getAction(): ?AbstractAction
+    public function getAction(): ?ActionInterface
     {
-        if ($action = reset($this->actions)) {
-            $action = $this->invoker->make($action['id'], ['data' => $action['data']]);
-
-            if (!($action instanceof AbstractAction)) {
-                throw new \LogicException(sprintf('Action "%s" does not extends AbstractAction class', get_class($action)));
-            }
+        if ($this->action === null && $action = reset($this->actions)) {
+            $this->action = $this->invoker->get($action['id'], ['data' => $action['data']]);
         }
 
-        return $action ?: null;
+        return $this->action;
     }
 
     /**

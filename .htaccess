@@ -5,6 +5,7 @@
     RewriteRule ^(.*)\/$ /$1 [L,R]
 
     Options +FollowSymLinks
+    Options -Indexes
     RewriteEngine on
 
 ############################################
