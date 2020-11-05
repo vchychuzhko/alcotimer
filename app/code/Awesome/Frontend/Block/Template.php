@@ -115,8 +115,10 @@ class Template extends\Awesome\Framework\Model\DataObject
      */
     public function getMediaUrl(string $file = ''): string
     {
+        $file = ltrim($file, '/');
+
         if ($this->mediaUrl === null) {
-            $this->mediaUrl = $this->getPubUrl('/media/');
+            $this->mediaUrl = $this->getPubUrl('media/');
         }
 
         return $this->mediaUrl . $file;
@@ -142,13 +144,17 @@ class Template extends\Awesome\Framework\Model\DataObject
      */
     public function getStaticUrl(string $file = ''): string
     {
+        $file = ltrim($file, '/');
+
         if ($this->staticUrl === null) {
             if (!$deployedVersion = $this->staticContent->getDeployedVersion()) {
                 $deployedVersion = $this->staticContent->deploy()
                     ->getDeployedVersion();
             }
 
-            $this->staticUrl = $this->getPubUrl('/static/version' . $deployedVersion . '/');
+            $this->staticUrl = $this->getPubUrl(
+                'static/' . ($deployedVersion ? 'version' . $deployedVersion . '/' : '') . $this->renderer->getView() . '/'
+            );
         }
 
         return $this->staticUrl . $file;

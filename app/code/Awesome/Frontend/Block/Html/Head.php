@@ -62,6 +62,6 @@ class Head extends \Awesome\Frontend\Block\Template
             $path = $module . '/' . $type . '/' . $file;
         }
 
-        return $this->getStaticUrl($this->renderer->getView() . '/' . $path);
+        return $this->getStaticUrl($path);
     }
 }

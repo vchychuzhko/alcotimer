@@ -9,6 +9,7 @@ use Awesome\Framework\Model\Http;
 use Awesome\Framework\Model\Http\Request;
 use Awesome\Framework\Model\Http\Router;
 use Awesome\Frontend\Model\Action\StaticGenerationHandler;
+use Awesome\Frontend\Model\RequireJs;
 use Awesome\Frontend\Model\StaticContent;
 
 class StaticGenerationObserver implements \Awesome\Framework\Model\Event\ObserverInterface
@@ -43,7 +44,7 @@ class StaticGenerationObserver implements \Awesome\Framework\Model\Event\Observe
         if ($this->isStaticFileRequest($requestPath)) {
             $requestedFile = $this->getFilePath($requestPath);
 
-            if (file_exists($requestedFile)) {
+            if (file_exists($requestedFile) || $requestedFile === RequireJs::RESULT_FILENAME) {
                 /** @var Router $router */
                 $router = $event->getRouter();
 

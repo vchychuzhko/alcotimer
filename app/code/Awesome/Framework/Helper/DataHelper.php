@@ -73,7 +73,7 @@ class DataHelper
 
     /**
      * Check if string is a boolean "true", otherwise return false.
-     * Not case sensitive.
+     * Case insensitive.
      * @param string $string
      * @return bool
      */
