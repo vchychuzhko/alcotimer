@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace Awesome\Frontend\Model;
 
-use Awesome\Framework\Model\AppState;
 use Awesome\Framework\Model\FileManager;
 use Awesome\Framework\Model\Http;
 use Awesome\Framework\Model\Serializer\Json;
+use Awesome\Frontend\Helper\StaticContentHelper;
 
 class RequireJs
 {
@@ -14,9 +14,9 @@ class RequireJs
     public const RESULT_FILENAME = 'requirejs-config.js';
 
     /**
-     * @var AppState $appState
+     * @var FrontendState $frontendState
      */
-    private $appState;
+    private $frontendState;
 
     /**
      * @var FileManager $fileManager
@@ -30,13 +30,13 @@ class RequireJs
 
     /**
      * RequireJs constructor.
-     * @param AppState $appState
+     * @param FrontendState $frontendState
      * @param FileManager $fileManager
      * @param Json $json
      */
-    public function __construct(AppState $appState, FileManager $fileManager, Json $json)
+    public function __construct(FrontendState $frontendState, FileManager $fileManager, Json $json)
     {
-        $this->appState = $appState;
+        $this->frontendState = $frontendState;
         $this->fileManager = $fileManager;
         $this->json = $json;
     }
@@ -55,12 +55,19 @@ class RequireJs
             $config = $this->json->decode($this->fileManager->readFile($configFile));
 
             if (isset($config['paths'])) {
-                $requirePaths = array_replace_recursive($requirePaths, $config['paths']);
+                $paths = $config['paths'];
+
+                if ($this->frontendState->isJsMinificationEnabled()) {
+                    foreach ($paths as &$path) {
+                        $path .= StaticContentHelper::MINIFICATION_FLAG;
+                    }
+                }
+                $requirePaths = array_replace_recursive($requirePaths, $paths);
             }
         }
 
         $config = $this->json->prettyEncode([
-            'baseUrl' => ($this->appState->isPubRoot() ? '' : 'pub/')
+            'baseUrl' => ($this->frontendState->isPubRoot() ? '' : 'pub/')
                 . 'static/' . $view . ($deployedVersion ? '/version' . $deployedVersion : ''),
             'paths' => $requirePaths,
         ]);

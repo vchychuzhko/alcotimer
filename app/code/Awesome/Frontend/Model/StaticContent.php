@@ -3,10 +3,12 @@ declare(strict_types=1);
 
 namespace Awesome\Frontend\Model;
 
-use Awesome\Framework\Model\AppState;
 use Awesome\Framework\Model\FileManager;
 use Awesome\Framework\Model\Http;
 use Awesome\Framework\Model\Logger;
+use Awesome\Frontend\Helper\StaticContentHelper;
+use Awesome\Frontend\Model\Css\CssMinifier;
+use Awesome\Frontend\Model\Js\JsMinifier;
 
 class StaticContent
 {
@@ -22,14 +24,24 @@ class StaticContent
     private const PUB_FOLDER_TRIGGER = '{@pubDir}';
 
     /**
-     * @var AppState $appState
+     * @var CssMinifier $cssMinifier
      */
-    private $appState;
+    private $cssMinifier;
 
     /**
      * @var FileManager $fileManager
      */
     private $fileManager;
+
+    /**
+     * @var FrontendState $frontendState
+     */
+    private $frontendState;
+
+    /**
+     * @var JsMinifier $jsMinifier
+     */
+    private $jsMinifier;
 
     /**
      * @var Logger $logger
@@ -48,15 +60,25 @@ class StaticContent
 
     /**
      * StaticContent constructor.
-     * @param AppState $appState
+     * @param CssMinifier $cssMinifier
      * @param FileManager $fileManager
+     * @param FrontendState $frontendState
+     * @param JsMinifier $jsMinifier
      * @param Logger $logger
      * @param RequireJs $requireJs
      */
-    public function __construct(AppState $appState, FileManager $fileManager, Logger $logger, RequireJs $requireJs)
-    {
-        $this->appState = $appState;
+    public function __construct(
+        CssMinifier $cssMinifier,
+        FileManager $fileManager,
+        FrontendState $frontendState,
+        JsMinifier $jsMinifier,
+        Logger $logger,
+        RequireJs $requireJs
+    ) {
+        $this->cssMinifier = $cssMinifier;
         $this->fileManager = $fileManager;
+        $this->frontendState = $frontendState;
+        $this->jsMinifier = $jsMinifier;
         $this->logger = $logger;
         $this->requireJs = $requireJs;
     }
@@ -107,31 +129,31 @@ class StaticContent
     private function generate(string $view): self
     {
         $cssPattern = sprintf(self::STATIC_PATH_PATTERN, '{' . Http::BASE_VIEW . ',' . $view . '}', 'css');
-        $jsPattern = sprintf(self::STATIC_PATH_PATTERN, '{' . Http::BASE_VIEW . ',' . $view . '}', 'js');
+        $cssMinify = $this->frontendState->isCssMinificationEnabled();
 
-        foreach (glob(APP_DIR . $cssPattern, GLOB_ONLYDIR | GLOB_BRACE) as $folder) {
+        foreach ($this->globWithoutMinifiedFiles(APP_DIR . $cssPattern, GLOB_ONLYDIR | GLOB_BRACE) as $folder) {
             $files = $this->fileManager->scanDirectory($folder, true, 'css');
-            $this->filterMinifiedFiles($files);
 
             foreach ($files as $file) {
-                $this->generateFile($file, $view);
+                $this->generateCssFile($file, $view, $cssMinify);
             }
         }
 
-        foreach (glob(APP_DIR . $jsPattern, GLOB_ONLYDIR | GLOB_BRACE) as $folder) {
+        $jsPattern = sprintf(self::STATIC_PATH_PATTERN, '{' . Http::BASE_VIEW . ',' . $view . '}', 'js');
+        $jsMinify = $this->frontendState->isJsMinificationEnabled();
+
+        foreach ($this->globWithoutMinifiedFiles(APP_DIR . $jsPattern, GLOB_ONLYDIR | GLOB_BRACE) as $folder) {
             $files = $this->fileManager->scanDirectory($folder, true, 'js');
-            $this->filterMinifiedFiles($files);
 
             foreach ($files as $file) {
-                $this->generateFile($file, $view);
+                $this->generateJsFile($file, $view, $jsMinify);
             }
         }
 
-        $libFiles = glob(BP . self::LIB_PATH_PATTERN);
-        $this->filterMinifiedFiles($libFiles);
+        $libFiles = $this->globWithoutMinifiedFiles(BP . self::LIB_PATH_PATTERN);
 
         foreach ($libFiles as $libFile) {
-            $this->generateLibFile($libFile, $view);
+            $this->generateLibFile($libFile, $view, $jsMinify);
         }
 
         return $this;
@@ -155,11 +177,20 @@ class StaticContent
             $this->requireJs->generate($view, $this->getDeployedVersion());
         } else {
             $path = BP . '/' . ltrim(str_replace(BP, '', $path), '/');
+            $extension = pathinfo($path, PATHINFO_EXTENSION);
 
-            if (preg_match(self::LIB_FILE_PATTERN, $path)) {
-                $this->generateLibFile($path, $view);
-            } else {
-                $this->generateFile($path, $view);
+            if ($extension === 'css') {
+                $minify = $this->frontendState->isCssMinificationEnabled();
+
+                $this->generateCssFile($path, $view, $minify);
+            } elseif ($extension === 'js') {
+                $minify = $this->frontendState->isJsMinificationEnabled();
+
+                if (preg_match(self::LIB_FILE_PATTERN, $path)) {
+                    $this->generateLibFile($path, $view, $minify);
+                } else {
+                    $this->generateJsFile($path, $view, $minify);
+                }
             }
         }
         $this->logger->info(sprintf('Static file "%s" was deployed for "%s" view', $path, $view));
@@ -168,18 +199,61 @@ class StaticContent
     }
 
     /**
-     * Parse and generate css/js file for requested view.
+     * Parse and generate css file for requested view.
      * Absolute path is required.
      * @param string $path
      * @param string $view
+     * @param bool $minify
      * @return $this
      */
-    private function generateFile(string $path, string $view): self
+    private function generateCssFile(string $path, string $view, bool $minify = false): self
     {
         $content = $this->fileManager->readFile($path, false);
         $this->parsePubDirPath($content);
 
         $staticPath = preg_replace(self::STATIC_FILE_PATTERN, '/$2_$3/$5', $path);
+
+        if ($minify) {
+            if (StaticContentHelper::minifiedVersionExists($path)) {
+                StaticContentHelper::addMinificationFlag($path);
+
+                $content = $this->fileManager->readFile($path, false);
+                $this->parsePubDirPath($content);
+            } else {
+                $content = $this->cssMinifier->minify($content);
+            }
+            StaticContentHelper::addMinificationFlag($staticPath);
+        }
+
+        $this->fileManager->createFile(BP . self::STATIC_FOLDER_PATH . $view . $staticPath, $content);
+
+        return $this;
+    }
+
+    /**
+     * Parse and generate js file for requested view.
+     * Absolute path is required.
+     * @param string $path
+     * @param string $view
+     * @param bool $minify
+     * @return $this
+     */
+    private function generateJsFile(string $path, string $view, bool $minify = false): self
+    {
+        $content = $this->fileManager->readFile($path, false);
+
+        $staticPath = preg_replace(self::STATIC_FILE_PATTERN, '/$2_$3/$5', $path);
+
+        if ($minify) {
+            if (StaticContentHelper::minifiedVersionExists($path)) {
+                StaticContentHelper::addMinificationFlag($path);
+
+                $content = $this->fileManager->readFile($path, false);
+            } else {
+                $content = $this->jsMinifier->minify($content);
+            }
+            StaticContentHelper::addMinificationFlag($staticPath);
+        }
 
         $this->fileManager->createFile(BP . self::STATIC_FOLDER_PATH . $view . $staticPath, $content);
 
@@ -191,11 +265,20 @@ class StaticContent
      * Absolute path is required.
      * @param string $path
      * @param string $view
+     * @param bool $minify
      * @return $this
      */
-    private function generateLibFile(string $path, string $view): self
+    private function generateLibFile(string $path, string $view, bool $minify = false): self
     {
         $staticPath = str_replace(BP, '', $path);
+
+        if ($minify) {
+            if (StaticContentHelper::minifiedVersionExists($path)) {
+                StaticContentHelper::addMinificationFlag($path);
+            }
+            StaticContentHelper::addMinificationFlag($staticPath);
+        }
+
         $this->fileManager->copyFile($path, BP . self::STATIC_FOLDER_PATH . $view . $staticPath);
 
         return $this;
@@ -208,7 +291,7 @@ class StaticContent
      */
     private function parsePubDirPath(string &$content): void
     {
-        $pubPath = $this->appState->isPubRoot() ? '/' : '/pub/';
+        $pubPath = $this->frontendState->isPubRoot() ? '/' : '/pub/';
 
         $content = str_replace(self::PUB_FOLDER_TRIGGER, $pubPath, $content);
     }
@@ -240,22 +323,17 @@ class StaticContent
     }
 
     /**
-     * Filter files which have minified versions.
-     * @param array $files
-     * @return void
+     * Perform glob skipping minified files.
+     * @param string $pattern
+     * @param int $flags
+     * @return array
      */
-    private function filterMinifiedFiles(array &$files): void
+    private function globWithoutMinifiedFiles(string $pattern, int $flags = 0): array
     {
-        $files = array_flip($files);
+        $files = glob($pattern, $flags) ?: [];
 
-        foreach ($files as $file => $unused) {
-            $fileNotMinified = str_replace('.min', '', $file);
-
-            if ($fileNotMinified !== $file) {
-                unset($files[$fileNotMinified]);
-            }
-        }
-
-        $files = array_flip($files);
+        return array_filter($files, static function ($file) {
+            return !StaticContentHelper::isFileMinified($file);
+        });
     }
 }

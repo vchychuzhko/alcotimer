@@ -8,7 +8,6 @@ use Awesome\Framework\Model\FileManager;
 use Awesome\Framework\Model\Http;
 use Awesome\Framework\Model\Http\Response;
 use Awesome\Framework\Model\Http\Request;
-use Awesome\Framework\Model\Logger;
 use Awesome\Frontend\Model\StaticContent;
 
 /**
@@ -39,11 +38,6 @@ class StaticGenerationHandler extends \Awesome\Framework\Model\AbstractAction
     private $fileManager;
 
     /**
-     * @var Logger $logger
-     */
-    private $logger;
-
-    /**
      * @var StaticContent $staticContent
      */
     private $staticContent;
@@ -52,21 +46,18 @@ class StaticGenerationHandler extends \Awesome\Framework\Model\AbstractAction
      * StaticGenerationHandler constructor.
      * @param AppState $appState
      * @param FileManager $fileManager
-     * @param Logger $logger
      * @param StaticContent $staticContent
      * @param array $data
      */
     public function __construct(
         AppState $appState,
         FileManager $fileManager,
-        Logger $logger,
         StaticContent $staticContent,
         array $data = []
     ) {
         parent::__construct($data);
         $this->appState = $appState;
         $this->fileManager = $fileManager;
-        $this->logger = $logger;
         $this->staticContent = $staticContent;
     }
 
@@ -100,7 +91,6 @@ class StaticGenerationHandler extends \Awesome\Framework\Model\AbstractAction
         if (isset(self::MIME_TYPES[$extension])) {
             $headers = ['Content-Type' => self::MIME_TYPES[$extension]];
         }
-        $this->logger->info(sprintf('Static file "%s" was requested and generated', $request->getPath()));
 
         return new Response($content, Response::SUCCESS_STATUS_CODE, $headers);
     }

@@ -10,14 +10,14 @@ class AppState implements \Awesome\Framework\Model\SingletonInterface
     public const DEVELOPER_MODE = 'development';
     public const PRODUCTION_MODE = 'production';
 
-    public const DEVELOPER_MODE_CONFIG = 'developer_mode';
-    public const SHOW_FORBIDDEN_CONFIG = 'show_forbidden';
-    public const WEB_ROOT_CONFIG = 'web/web_root_is_pub';
+    private const DEVELOPER_MODE_CONFIG = 'developer_mode';
+    private const SHOW_FORBIDDEN_CONFIG = 'show_forbidden';
+    private const WEB_ROOT_CONFIG = 'web/web_root_is_pub';
 
     /**
      * @var Config $config
      */
-    private $config;
+    protected $config;
 
     /**
      * @var bool $isDeveloperMode

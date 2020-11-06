@@ -3,12 +3,13 @@ declare(strict_types=1);
 
 namespace Awesome\Frontend\Observer;
 
-use Awesome\Framework\Model\AppState;
 use Awesome\Framework\Model\Event;
 use Awesome\Framework\Model\Http;
 use Awesome\Framework\Model\Http\Request;
 use Awesome\Framework\Model\Http\Router;
+use Awesome\Frontend\Helper\StaticContentHelper;
 use Awesome\Frontend\Model\Action\StaticGenerationHandler;
+use Awesome\Frontend\Model\FrontendState;
 use Awesome\Frontend\Model\RequireJs;
 use Awesome\Frontend\Model\StaticContent;
 
@@ -18,17 +19,17 @@ class StaticGenerationObserver implements \Awesome\Framework\Model\Event\Observe
     private const STATIC_REQUEST_PATTERN = '/^(\/pub)?\/static\/(version.+?\/)?(%s|%s)\/(.*)$/';
 
     /**
-     * @var AppState $appState
+     * @var FrontendState $frontendState
      */
-    private $appState;
+    private $frontendState;
 
     /**
      * StaticGenerationObserver constructor.
-     * @param AppState $appState
+     * @param FrontendState $frontendState
      */
-    public function __construct(AppState $appState)
+    public function __construct(FrontendState $frontendState)
     {
-        $this->appState = $appState;
+        $this->frontendState = $frontendState;
     }
 
     /**
@@ -45,10 +46,21 @@ class StaticGenerationObserver implements \Awesome\Framework\Model\Event\Observe
             $requestedFile = $this->getFilePath($requestPath);
 
             if (file_exists($requestedFile) || $requestedFile === RequireJs::RESULT_FILENAME) {
-                /** @var Router $router */
-                $router = $event->getRouter();
+                $extension = pathinfo($requestedFile, PATHINFO_EXTENSION);
+                $minify = false;
 
-                $router->addAction(StaticGenerationHandler::class, ['requested_file' => $requestedFile]);
+                if ($extension === 'css') {
+                    $minify = $this->frontendState->isCssMinificationEnabled();
+                } elseif ($extension === 'js') {
+                    $minify = $this->frontendState->isJsMinificationEnabled();
+                }
+
+                if (StaticContentHelper::isFileMinified($requestPath) === $minify) {
+                    /** @var Router $router */
+                    $router = $event->getRouter();
+
+                    $router->addAction(StaticGenerationHandler::class, ['requested_file' => $requestedFile]);
+                }
             }
         }
     }
@@ -65,7 +77,7 @@ class StaticGenerationObserver implements \Awesome\Framework\Model\Event\Observe
         );
         @list($unused, $pub) = $matches;
 
-        return $match && (($pub === '') === $this->appState->isPubRoot());
+        return $match && (($pub === '') === $this->frontendState->isPubRoot());
     }
 
     /**
@@ -81,6 +93,7 @@ class StaticGenerationObserver implements \Awesome\Framework\Model\Event\Observe
             $matches
         );
         @list($unused, $pub, $static, $version, $view, $module, $file) = $matches;
+        StaticContentHelper::removeMinificationFlag($file);
 
         if ($module === StaticContent::LIB_FOLDER_PATH) {
             $path = BP . '/' . StaticContent::LIB_FOLDER_PATH . '/' . $file;

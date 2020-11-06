@@ -18,8 +18,8 @@ class FileManager
     public function createFile(string $path, string $content = '', bool $replace = false): bool
     {
         if (file_exists($path)) {
-            if (is_dir($path)) {
-                throw new \RuntimeException(sprintf('Provided path "%s" is a directory and cannot be replaced', $path));
+            if (!is_file($path)) {
+                throw new \RuntimeException(sprintf('Provided path "%s" is not a file and cannot be replaced', $path));
             }
             if (!$replace) {
                 throw new \RuntimeException(sprintf('Provided file "%s" already exists and cannot be replaced', $path));
@@ -43,8 +43,8 @@ class FileManager
     public function readFile(string $path, bool $graceful = true)
     {
         if (file_exists($path)) {
-            if (is_dir($path)) {
-                throw new \RuntimeException(sprintf('Provided path "%s" is a directory and cannot be read', $path));
+            if (!is_file($path)) {
+                throw new \RuntimeException(sprintf('Provided path "%s" is not a file and cannot be read', $path));
             }
         } elseif (!$graceful) {
             throw new \RuntimeException(sprintf('Provided path "%s" does not exist', $path));
@@ -65,8 +65,8 @@ class FileManager
     public function writeFile(string $path, string $content, bool $append = false): bool
     {
         if (file_exists($path)) {
-            if (is_dir($path)) {
-                throw new \RuntimeException(sprintf('Provided path "%s" is a directory and cannot be written', $path));
+            if (!is_file($path)) {
+                throw new \RuntimeException(sprintf('Provided path "%s" is not a file and cannot be written', $path));
             }
         } else {
             $this->createFile($path);
@@ -83,8 +83,8 @@ class FileManager
      */
     public function removeFile(string $path): bool
     {
-        if (is_dir($path)) {
-            throw new \RuntimeException(sprintf('Provided path "%s" is a directory and cannot be removed', $path));
+        if (file_exists($path) && !is_file($path)) {
+            throw new \RuntimeException(sprintf('Provided path "%s" is not a file and cannot be removed', $path));
         }
 
         return @unlink($path);
@@ -100,11 +100,10 @@ class FileManager
      */
     public function copyFile(string $source, string $destination, $replace = true): bool
     {
-        if (!file_exists($source)) {
-            throw new \RuntimeException(sprintf('Provided source path "%s" does not exist', $source));
-        }
-        if (is_dir($source)) {
-            throw new \RuntimeException(sprintf('Provided source path "%s" is a directory and cannot be copied', $source));
+        if (!is_file($source)) {
+            throw new \RuntimeException(
+                sprintf('Provided source path "%s" does not exist or is not a file and cannot be copied', $source)
+            );
         }
         if (!is_dir(dirname($destination))) {
             $this->createDirectory(dirname($destination));
@@ -147,7 +146,7 @@ class FileManager
         if (file_exists($path) && !is_dir($path)) {
             throw new \RuntimeException(sprintf('Provided path "%s" is not a directory', $path));
         }
-        foreach (@scandir($path) as $object) {
+        foreach (@scandir($path) ?: [] as $object) {
             if ($object !== '.' && $object !== '..') {
                 if (is_dir($path . '/' . $object)) {
                     $this->removeDirectory($path . '/' . $object);
