@@ -1,7 +1,7 @@
-<?php /** @var \Awesome\Frontend\Block\Template $block */ ?>
+<?php /** @var \Awesome\Timer\Block\Timer $block */ ?>
 <div class="content">
-    <div class="timer-container">
-        <div class="timer-wrapper radial-container">
+    <div class="timer-container" data-awesome-init='{"timer": <?= $block->getTimerConfigJson(); ?>}'>
+        <div class="timer-wrapper radial-container" data-awesome-init='{"radialSlider": {}}'>
             <div class="timer-button-container">
                 <button class="timer-button" type="button" name="start-stop" value="Start/Stop">
                     <span class="timer-time no-select" style="display: block; bottom: 0; position: absolute; left: 50%; transform: translateX(-50%)"></span>

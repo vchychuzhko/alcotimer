@@ -147,13 +147,15 @@ class Template extends\Awesome\Framework\Model\DataObject
         $file = ltrim($file, '/');
 
         if ($this->staticUrl === null) {
+            $view = $this->renderer->getView();
+
             if (!$deployedVersion = $this->staticContent->getDeployedVersion()) {
-                $deployedVersion = $this->staticContent->deploy()
+                $deployedVersion = $this->staticContent->deploy($view)
                     ->getDeployedVersion();
             }
 
             $this->staticUrl = $this->getPubUrl(
-                'static/' . ($deployedVersion ? 'version' . $deployedVersion . '/' : '') . $this->renderer->getView() . '/'
+                'static/' . ($deployedVersion ? 'version' . $deployedVersion . '/' : '') . $view . '/'
             );
         }
 

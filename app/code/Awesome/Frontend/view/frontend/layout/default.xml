@@ -3,16 +3,14 @@
       xsi:noNamespaceSchemaLocation="../../../../Frontend/Schema/page_layout.xsd">
     <head>
         <favicon src="images/favicon.png"/>
-        <script src="lib/jquery/jquery.min.js"/>
-        <script src="lib/jquery/jquery-ui.min.js"/>
-        <script src="Awesome_Frontend::copy.js"/>
-        <script src="Awesome_Frontend::menu.js"/>
-        <script src="Awesome_Frontend::message.js"/>
         <css src="Awesome_Frontend::base.css"/>
         <css src="Awesome_Frontend::header.css"/>
         <css src="Awesome_Frontend::footer.css"/>
         <css src="Awesome_Frontend::menu.css"/>
         <css src="Awesome_Frontend::message.css"/>
+        <script src="lib/require/require.js"/>
+        <script src="requirejs-config.js"/>
+        <script src="Awesome_Frontend::main.js"/>
     </head>
     <body>
         <block name="menu" class="Awesome\Frontend\Block\Menu" template="Awesome_Frontend::menu.phtml" sortOrder="1"/>
@@ -36,13 +34,5 @@
                    sortOrder="10"/>
         </container>
         <container name="popup-init-section" htmlTag="div" htmlClass="popup-init-section" sortOrder="9"/>
-        <container name="js-init-section" htmlTag="div" htmlClass="js-init-section" sortOrder="10">
-            <block name="menu-init"
-                   class="Awesome\Frontend\Block\Template"
-                   template="Awesome_Frontend::menu/menu_init.phtml"/>
-            <block name="message-init"
-                   class="Awesome\Frontend\Block\Template"
-                   template="Awesome_Frontend::message/message_init.phtml"/>
-        </container>
     </body>
 </page>

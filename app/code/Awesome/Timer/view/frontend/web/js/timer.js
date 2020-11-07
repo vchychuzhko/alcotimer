@@ -1,4 +1,10 @@
-;(function ($) {
+define([
+    'jquery',
+    'jquery/ui',
+    'howler',
+], function ($) {
+    'use strict'
+
     let RUNNING_STATE = 'running',
         STOPPED_STATE = 'stopped';
 
@@ -6,7 +12,7 @@
         options: {
             defaultTime: 9,
             radialContainerSelector: '.radial-container',
-            sound: ''
+            sound: '',
         },
 
         /**
@@ -295,4 +301,4 @@
             });
         }
     });
-})(jQuery);
+});

@@ -167,8 +167,6 @@ class StaticContent
      */
     public function deployFile(string $path, string $view): self
     {
-        $this->generateDeployedVersion();
-
         if (!is_dir(BP . self::STATIC_FOLDER_PATH . $view)) {
             $this->fileManager->createDirectory(BP . self::STATIC_FOLDER_PATH . $view);
         }

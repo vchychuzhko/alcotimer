@@ -1,4 +1,9 @@
-;(function ($) {
+define([
+    'jquery',
+    'jquery/ui',
+], function ($) {
+    'use strict'
+
     $.widget('awesome.rangeSlider', {
         options: {
             difference: 1,
@@ -197,4 +202,4 @@
             return (value - this.options.minValue) / (this.options.maxValue - this.options.minValue) * 100;
         }
     });
-})(jQuery);
+});

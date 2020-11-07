@@ -1,9 +1,14 @@
-;(function ($) {
+define([
+    'jquery',
+    'jquery/ui',
+], function ($) {
+    'use strict'
+
     $.widget('awesome.copy', {
         options: {
             copyTextSelector: '',
             copyTriggerSelector: '',
-            showMessage: 1
+            showMessage: 1,
         },
 
         /**
@@ -43,9 +48,9 @@
 
             if (this.options.showMessage) {
                 $(document).trigger('message.show', {
-                    message: 'Copied to the clipboard!'
+                    message: 'Copied to the clipboard!',
                 });
             }
         }
     });
-})(jQuery);
+});

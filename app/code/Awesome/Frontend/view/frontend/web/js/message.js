@@ -1,4 +1,9 @@
-;(function ($) {
+define([
+    'jquery',
+    'jquery/ui',
+], function ($) {
+    'use strict'
+
     $.widget('awesome.message', {
         /**
          * Constructor
@@ -49,4 +54,4 @@
             }.bind(this));
         }
     });
-})(jQuery);
+});

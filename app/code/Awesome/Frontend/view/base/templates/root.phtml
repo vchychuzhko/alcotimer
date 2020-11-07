@@ -7,4 +7,9 @@
 <body class="<?= $block->getBodyClass(); ?>">
     <?= $block->getChildHtml('body'); ?>
 </body>
+<script type="application/javascript">
+    require(['jquery', 'jquery/ui', 'message'], function ($) {
+        $(document).message({});
+    });
+</script>
 </html>

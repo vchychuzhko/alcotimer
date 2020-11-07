@@ -1,4 +1,9 @@
-;(function ($) {
+define([
+    'jquery',
+    'jquery/ui',
+], function ($) {
+    'use strict'
+
     let MAX_ANGLE = 360,
         MIN_ANGLE = 0,
         STEP_INDICATOR_ANGLE = 30;
@@ -178,4 +183,4 @@
             return angle;
         }
     });
-})(jQuery);
+});

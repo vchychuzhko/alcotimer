@@ -1,4 +1,9 @@
-;(function ($) {
+define([
+    'jquery',
+    'jquery/ui',
+], function ($) {
+    'use strict'
+
     $.widget('awesome.settings', {
         options: {
             hideRandomTime: false,
@@ -119,4 +124,4 @@
             });
         }
     });
-})(jQuery);
+});

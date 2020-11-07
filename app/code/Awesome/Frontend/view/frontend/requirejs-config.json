@@ -1,0 +1,8 @@
+{
+    "paths": {
+        "menu": "Awesome_Frontend/js/menu",
+        "message": "Awesome_Frontend/js/message",
+        "popup": "Awesome_Frontend/js/popup"
+    }
+}
+

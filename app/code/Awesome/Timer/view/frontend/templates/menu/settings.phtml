@@ -1,8 +1,8 @@
-<?php /** @var \Awesome\Frontend\Block\Template $block */ ?>
-<div class="settings">
+<?php /** @var \Awesome\Timer\Block\Timer $block */ ?>
+<div class="settings" data-awesome-init='{"settings": <?= $block->getSettingsJson(); ?>}'>
     <ul>
         <li>
-            <div class="random-time range-slider">
+            <div class="random-time range-slider" data-awesome-init='{"rangeSlider": {}}'>
                 <h3>Set time range (mins):</h3>
                 <div class="range-controls">
                     <div class="min-controller time"></div>

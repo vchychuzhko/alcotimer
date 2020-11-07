@@ -1,4 +1,9 @@
-;(function ($) {
+define([
+    'jquery',
+    'jquery/ui',
+], function ($) {
+    'use strict'
+
     $.widget('awesome.menu', {
         options: {
             menuSelector: '.menu',
@@ -30,4 +35,4 @@
             }.bind(this));
         },
     });
-})(jQuery);
+});

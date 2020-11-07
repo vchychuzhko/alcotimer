@@ -5,12 +5,6 @@
         <title><![CDATA[AlcoTimer]]></title>
         <description><![CDATA[Web App for people, who would like to make drinking process become really challenging.]]></description>
         <keywords><![CDATA[Alcohol,Alco,Timer,AlcoTimer,Web,App,Drink]]></keywords>
-        <lib src="lib/goldfire/howler.min.js"/>
-        <script src="Awesome_Timer::timer.js"/>
-        <script src="Awesome_Timer::settings.js"/>
-        <script src="Awesome_Frontend::radial-slider.js"/>
-        <script src="Awesome_Frontend::range-slider.js"/>
-        <script src="Awesome_Frontend::popup.js"/>
         <css src="Awesome_Timer::hint.css"/>
         <css src="Awesome_Timer::timer.css"/>
         <css src="Awesome_Frontend::radial-slider.css"/>
@@ -19,11 +13,11 @@
     </head>
     <body>
         <referenceBlock name="menu">
-            <block name="timer.settings" class="Awesome\Frontend\Block\Template" template="Awesome_Timer::menu/settings.phtml"/>
+            <block name="timer.settings" class="Awesome\Timer\Block\Timer" template="Awesome_Timer::menu/settings.phtml"/>
         </referenceBlock>
         <referenceContainer name="page-wrapper">
             <block name="timer.content"
-                   class="Awesome\Frontend\Block\Template"
+                   class="Awesome\Timer\Block\Timer"
                    template="Awesome_Timer::timer.phtml"
                    sortOrder="5"/>
         </referenceContainer>
@@ -32,9 +26,6 @@
                    class="Awesome\Frontend\Block\Template"
                    template="Awesome_Timer::timer/timer_hint.phtml"
                    sortOrder="9"/>
-        </referenceContainer>
-        <referenceContainer name="js-init-section">
-            <block name="timer-init" class="Awesome\Timer\Block\Timer" template="Awesome_Timer::timer/timer_init.phtml"/>
         </referenceContainer>
     </body>
 </page>

@@ -1,6 +1,6 @@
 <?php /** @var \Awesome\Frontend\Block\Menu $block */ ?>
 <?php $supportEmailAddress = $block->getSupportEmailAddress(); ?>
-<div class="menu">
+<div class="menu" data-awesome-init='{"menu": {}}'>
     <div class="menu-list">
         <div class="title">
             <h2>Menu</h2>
@@ -11,14 +11,10 @@
         <div class="contact-us">
             <p>Face any bug or have new ideas?</p>
             <p>Send us an email:
-                <a href="mailto:<?= $supportEmailAddress; ?>?subject = AlcoTimer" class="mail-address word-break">
+                <a href="mailto:<?= $supportEmailAddress; ?>?subject = AlcoTimer"
+                   class="mail-address word-break" data-awesome-init='{"copy": {}}'>
                     <?= $supportEmailAddress; ?>
                 </a>
-                <script type="application/javascript">
-                    jQuery(function () {
-                        $('.mail-address').copy({});
-                    });
-                </script>
             </p>
         </div>
     </div>
