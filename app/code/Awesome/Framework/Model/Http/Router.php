@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace Awesome\Framework\Model\Http;
 
 use Awesome\Cache\Model\Cache;
+use Awesome\Framework\Model\Action\HttpDefaultAction;
+use Awesome\Framework\Model\Action\MaintenanceAction;
 use Awesome\Framework\Model\ActionInterface;
 use Awesome\Framework\Model\Invoker;
 use Awesome\Framework\Model\XmlParser\RoutesXmlParser;
@@ -78,17 +80,31 @@ class Router
     }
 
     /**
-     * Get action with the highest priority.
-     * @return ActionInterface|null
+     * Get action with the highest priority or default if none found.
+     * @return ActionInterface
      * @throws \Exception
      */
-    public function getAction(): ?ActionInterface
+    public function getAction(): ActionInterface
     {
-        if ($this->action === null && $action = reset($this->actions)) {
-            $this->action = $this->invoker->get($action['id'], ['data' => $action['data']]);
+        if ($this->action === null) {
+            if ($action = reset($this->actions)) {
+                $this->action = $this->invoker->get($action['id'], ['data' => $action['data']]);
+            } else {
+                $this->action = $this->invoker->get(HttpDefaultAction::class);
+            }
         }
 
         return $this->action;
+    }
+
+    /**
+     * Get maintenance action.
+     * @return MaintenanceAction
+     * @throws \Exception
+     */
+    public function getMaintenanceAction(): MaintenanceAction
+    {
+        return $this->invoker->get(MaintenanceAction::class);
     }
 
     /**

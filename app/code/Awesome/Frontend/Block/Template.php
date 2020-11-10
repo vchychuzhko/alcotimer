@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace Awesome\Frontend\Block;
 
-use Awesome\Framework\Model\AppState;
 use Awesome\Framework\Model\Invoker;
+use Awesome\Frontend\Model\FrontendState;
 use Awesome\Frontend\Model\StaticContent;
 use Awesome\Frontend\Model\TemplateRenderer;
 
@@ -41,9 +41,9 @@ class Template extends\Awesome\Framework\Model\DataObject
     protected $staticUrl;
 
     /**
-     * @var AppState $appState
+     * @var FrontendState $frontendState
      */
-    protected $appState;
+    protected $frontendState;
 
     /**
      * @var StaticContent $staticContent
@@ -70,7 +70,7 @@ class Template extends\Awesome\Framework\Model\DataObject
         $this->nameInLayout = $nameInLayout;
         $this->template = $template ?: $this->template;
         $this->children = $children;
-        $this->appState = Invoker::getInstance()->get(AppState::class);
+        $this->frontendState = Invoker::getInstance()->get(FrontendState::class);
         $this->staticContent = Invoker::getInstance()->get(StaticContent::class);
     }
 
@@ -170,7 +170,7 @@ class Template extends\Awesome\Framework\Model\DataObject
      */
     private function getPubUrl(string $file = ''): string
     {
-        return ($this->appState->isPubRoot() ? '' : '/pub') . '/' . ltrim($file, '/');
+        return ($this->frontendState->isPubRoot() ? '' : '/pub') . '/' . ltrim($file, '/');
     }
 
     /**

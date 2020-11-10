@@ -5,10 +5,7 @@ namespace Awesome\Framework\Model;
 
 class Maintenance
 {
-    public const MAINTENANCE_FILE = '/var/maintenance.flag';
-
-    public const MAINTENANCE_PAGE_PATH = '/pub/pages/maintenance.html';
-    public const INTERNALERROR_PAGE_PATH = '/pub/pages/internal_error.html';
+    private const MAINTENANCE_FILE = '/var/maintenance.flag';
 
     /**
      * @var FileManager $fileManager
@@ -82,23 +79,5 @@ class Maintenance
         $state = $this->getStatus();
 
         return $state['enabled'] && !in_array($ip, $state['allowed_ips'], true);
-    }
-
-    /**
-     * Get maintenance page.
-     * @return string
-     */
-    public function getMaintenancePage(): string
-    {
-        return $this->fileManager->readFile(BP . self::MAINTENANCE_PAGE_PATH, false);
-    }
-
-    /**
-     * Get internal error page.
-     * @return string
-     */
-    public function getInternalErrorPage(): string
-    {
-        return $this->fileManager->readFile(BP . self::INTERNALERROR_PAGE_PATH, false);
     }
 }

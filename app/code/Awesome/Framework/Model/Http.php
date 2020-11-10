@@ -3,13 +3,11 @@ declare(strict_types=1);
 
 namespace Awesome\Framework\Model;
 
+use Awesome\Framework\Model\Action\HttpErrorAction;
 use Awesome\Framework\Model\AppState;
 use Awesome\Framework\Model\Config;
 use Awesome\Framework\Model\Event\EventManager;
 use Awesome\Framework\Model\Http\Request;
-use Awesome\Framework\Model\Http\Response;
-use Awesome\Framework\Model\Http\Response\HtmlResponse;
-use Awesome\Framework\Model\Http\Response\JsonResponse;
 use Awesome\Framework\Model\Http\Router;
 use Awesome\Framework\Model\Logger;
 use Awesome\Framework\Model\Maintenance;
@@ -103,43 +101,24 @@ class Http
                     $request->getView()
                 );
 
-                if ($action = $this->router->getAction()) {
-                    $response = $action->execute($request);
-                } elseif ($request->getRedirectStatusCode() === Request::FORBIDDEN_REDIRECT_CODE
-                    && $this->appState->showForbidden()
-                ) {
-                    $response = new Response('', Response::FORBIDDEN_STATUS_CODE);
-                } else {
-                    $response = new Response('', Response::NOTFOUND_STATUS_CODE);
-                }
+                $action = $this->router->getAction();
+
+                $response = $action->execute($request);
             } else {
-                // @TODO: get request 'accept' header and return error page according to needed type
-                $response = new HtmlResponse(
-                    $this->maintenance->getMaintenancePage(),
-                    Response::SERVICE_UNAVAILABLE_STATUS_CODE
-                );
+                $maintenanceAction = $this->router->getMaintenanceAction();
+
+                $response = $maintenanceAction->execute($request);
             }
         } catch (\Exception $e) {
-            $this->logger->error($e);
+            $this->logger->error(get_class_name($e) . ': ' . $e->getMessage() . "\n" . $e->getTraceAsString());
 
-            if (isset($request) && $request->getAcceptType() === Request::JSON_ACCEPT_HEADER) {
-                $response = new JsonResponse(
-                    [
-                        'status' => 'ERROR',
-                        'message' => $this->appState->isDeveloperMode()
-                            ? get_class_name($e) . ': ' . $e->getMessage() . "\n" . $e->getTraceAsString()
-                            : 'Error details are hidden due to security reasons. Additional information can be found in the server logs.'
-                    ],
-                    Response::INTERNAL_ERROR_STATUS_CODE
-                );
-            } else {
-                $response = new HtmlResponse(
-                    $this->appState->isDeveloperMode()
-                        ? '<pre>' . get_class_name($e) . ': ' . $e->getMessage() . "\n" . $e->getTraceAsString() . '</pre>'
-                        : $this->maintenance->getInternalErrorPage(),
-                    Response::INTERNAL_ERROR_STATUS_CODE
-                );
-            }
+            $errorAction = new HttpErrorAction([
+                'accept_type' => isset($request) ? $request->getAcceptType() : null,
+                'error' => $e,
+                'is_developer_mode' => $this->appState->isDeveloperMode(),
+            ]);
+
+            $response = $errorAction->execute();
         }
 
         $response->proceed();

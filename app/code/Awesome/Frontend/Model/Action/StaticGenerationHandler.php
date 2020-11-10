@@ -22,9 +22,10 @@ class StaticGenerationHandler extends \Awesome\Framework\Model\AbstractAction
      * Mime types for static files.
      */
     private const MIME_TYPES = [
-        'html' => 'text/html',
         'css' => 'text/css',
+        'html' => 'text/html',
         'js' => 'application/javascript',
+        'json' => 'application/json',
     ];
 
     /**

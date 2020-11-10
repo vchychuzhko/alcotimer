@@ -10,6 +10,7 @@ use Awesome\Framework\Model\Http\Request;
 class Logger
 {
     private const LOG_DIRECTORY = '/var/log';
+
     private const EXCEPTION_LOG_FILE = 'exception.log';
     private const SYSTEM_LOG_FILE = 'system.log';
     private const VISITOR_LOG_FILE = 'visitor.log';
@@ -37,15 +38,12 @@ class Logger
 
     /**
      * Write an error to a log file.
-     * @param \Exception $e
+     * @param string $errorMessage
      * @return $this
      */
-    public function error(\Exception $e): self
+    public function error(string $errorMessage): self
     {
-        $this->write(
-            self::EXCEPTION_LOG_FILE,
-            get_class($e) . ': ' . $e->getMessage() . "\n" . $e->getTraceAsString()
-        );
+        $this->write(self::EXCEPTION_LOG_FILE, $errorMessage);
 
         return $this;
     }
@@ -57,10 +55,7 @@ class Logger
      */
     public function info(string $message): self
     {
-        $this->write(
-            self::SYSTEM_LOG_FILE,
-            $message
-        );
+        $this->write(self::SYSTEM_LOG_FILE, $message);
 
         return $this;
     }
@@ -72,10 +67,7 @@ class Logger
      */
     public function logVisitor(Request $request): self
     {
-        $this->write(
-            self::VISITOR_LOG_FILE,
-            $request->getUserIp() . ' - ' . $request->getUrl()
-        );
+        $this->write(self::VISITOR_LOG_FILE, $request->getUserIp() . ' - ' . $request->getUrl());
 
         return $this;
     }
