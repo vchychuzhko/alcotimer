@@ -1,8 +1,9 @@
 define([
     'jquery',
+    'message',
     'jquery/ui',
     'howler',
-], function ($) {
+], function ($, message) {
     'use strict'
 
     let RUNNING_STATE = 'running',
@@ -204,9 +205,7 @@ define([
 
                 sound.play();
             } else {
-                $(document.trigger('message.show', {
-                    message: 'It time to start!.'
-                }))
+                message.message('It time to start!.');
             }
         },
 

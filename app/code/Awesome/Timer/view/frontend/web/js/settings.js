@@ -1,7 +1,8 @@
 define([
     'jquery',
+    'message',
     'jquery/ui',
-], function ($) {
+], function ($, message) {
     'use strict'
 
     $.widget('awesome.settings', {
@@ -27,9 +28,7 @@ define([
             $(this.element).on('click', '.apply-button', function () {
                 this.applySettings();
                 this.saveSettings();
-                $(document).trigger('message.show', {
-                    message: 'Settings were applied!'
-                });
+                message.message('Settings were applied!');
 
                 setTimeout(function () {
                     $(document).trigger('menu.close');

@@ -136,8 +136,8 @@ require([
      *          }
      *      }
      */
-    function processScripts(context) {
-        let nodes = $(scriptSelector, context);
+    function processScripts() {
+        let nodes = $(scriptSelector);
 
         $.each($.map(nodes, getNodeData), function (index, item) {
             $.each(item, processElems);
@@ -152,8 +152,8 @@ require([
      * @example Sample 'data-awesome-init' declaration.
      *      data-awesome-init='{"path/to/component": {"foo": "bar"}}'
      */
-    (function (context) {
-        let virtuals = processScripts(context ? context : document),
+    $(function () {
+        let virtuals = processScripts(),
             nodes = $(nodeSelector);
 
         $.each(
@@ -166,5 +166,5 @@ require([
                 });
             }
         );
-    })(document)
+    })
 });

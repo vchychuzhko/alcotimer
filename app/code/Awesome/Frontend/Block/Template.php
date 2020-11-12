@@ -8,7 +8,7 @@ use Awesome\Frontend\Model\FrontendState;
 use Awesome\Frontend\Model\StaticContent;
 use Awesome\Frontend\Model\TemplateRenderer;
 
-class Template extends\Awesome\Framework\Model\DataObject
+class Template extends \Awesome\Framework\Model\DataObject
 {
     /**
      * @var TemplateRenderer $renderer

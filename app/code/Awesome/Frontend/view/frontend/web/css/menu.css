@@ -153,6 +153,8 @@ header .toggle-container .toggle:after {
 
 .menu .menu-list .settings .settings-buttons-container button:hover {
     background: #fff;
+    -moz-box-shadow: 0 1px 4px 1px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 1px 4px 1px rgba(0, 0, 0, 0.25);
     box-shadow: 0 1px 4px 1px rgba(0, 0, 0, 0.25);
 }
 
