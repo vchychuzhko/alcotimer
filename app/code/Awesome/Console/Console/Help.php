@@ -41,7 +41,7 @@ class Help extends \Awesome\Console\Model\Cli\AbstractCommand
      */
     public function execute(Input $input, Output $output): void
     {
-        $commandData = AbstractCommand::configure(new InputDefinition())
+        $commandData = AbstractCommand::configure()
             ->getDefinition();
 
         $output->writeln($output->colourText('Usage:', Output::BROWN));

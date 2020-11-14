@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Awesome\Console\Model\Cli;
 
+use Awesome\Console\Model\Cli\Output\ProgressBar;
+
 class Output
 {
     /**
@@ -52,6 +54,11 @@ class Output
      * @var bool $mute
      */
     private $mute;
+
+    /**
+     * @var ProgressBar $progressBar
+     */
+    private $progressBar;
 
     /**
      * Output constructor.
@@ -206,24 +213,21 @@ class Output
     }
 
     /**
-     * Show progress bar.
-     * Based on https://gist.github.com/mayconbordin/2860547
-     * @param int $done
+     * Initialize progress bar.
+     * If already in progress, new one will be created.
      * @param int $total
-     * @param string $info
+     * @param string $title
      * @param int $width
-     * @return $this
+     * @return ProgressBar
      */
-    public function progress(int $done, int $total, string $info = '', int $width = 50): self
+    public function initProgressBar(int $total, string $title = '', int $width = 50): ProgressBar
     {
-        //@TODO: Update to handle several progress bars at the same time (ProgressFactory?)
-        $percentage = floor(($done * 100) / $total);
-        $bar = floor(($width * $percentage) / 100);
+        if ($this->progressBar instanceof ProgressBar) {
+            $this->progressBar->finish();
+        }
+        $this->progressBar = new ProgressBar($total, $width, $this->mute);
 
-        $carriage = $percentage === 100 ? '' : "\r";
-
-        return $this->write(str_pad($percentage, 3) . '%[' . str_repeat('=', $bar)
-            . '>' . str_repeat(' ', $width - $bar) . ']' . $info . $carriage);
+        return $this->progressBar->start($title);
     }
 
     /**

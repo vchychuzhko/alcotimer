@@ -50,11 +50,17 @@ class Disable extends \Awesome\Console\Model\Cli\AbstractCommand
     {
         $definedTypes = $this->cache->getTypes();
         $types = $input->getArgument('types') ?: $definedTypes;
+        $titleShown = false;
 
         foreach ($types as $type) {
             if (in_array($type, $definedTypes, true)) {
                 $this->config->set(Cache::CACHE_CONFIG_PATH . '/' . $type, 0);
-                $output->writeln('Cache disabled: ' . $type);
+
+                if (!$titleShown) {
+                    $output->writeln('Disabled cache types:');
+                    $titleShown = true;
+                }
+                $output->writeln($type);
             } else {
                 $output->writeln('Provided cache type was not recognized.');
                 $output->writeln();

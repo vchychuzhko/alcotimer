@@ -17,7 +17,8 @@ class Redirect extends \Awesome\Framework\Model\Http\Response
     /**
      * Redirect constructor.
      * @param string $redirectUrl
-     * @inheritDoc
+     * @param int $status
+     * @param array $headers
      */
     public function __construct(string $redirectUrl, int $status = self::FOUND_STATUS_CODE, array $headers = [])
     {

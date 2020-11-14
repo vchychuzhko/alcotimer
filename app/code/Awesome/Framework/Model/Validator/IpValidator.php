@@ -6,8 +6,8 @@ namespace Awesome\Framework\Model\Validator;
 class IpValidator extends \Awesome\Framework\Model\AbstractValidator
 {
     /**
-     * @inheritDoc
      * @param string $item
+     * @return bool
      */
     public function valid($item): bool
     {

@@ -42,11 +42,17 @@ class Clean extends \Awesome\Console\Model\Cli\AbstractCommand
     {
         $definedTypes = $this->cache->getTypes();
         $types = $input->getArgument('types') ?: $definedTypes;
+        $titleShown = false;
 
         foreach ($types as $type) {
             if (in_array($type, $definedTypes, true)) {
                 $this->cache->invalidate($type);
-                $output->writeln('Cache cleared: ' . $type);
+
+                if (!$titleShown) {
+                    $output->writeln('Cleared cache types:');
+                    $titleShown = true;
+                }
+                $output->writeln($type);
             } else {
                 $output->writeln('Provided cache type was not recognized.');
                 $output->writeln();

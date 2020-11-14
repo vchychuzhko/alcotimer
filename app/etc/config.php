@@ -2,7 +2,7 @@
 return [
     'backend' => [
         'enabled' => 0,
-        'front_name' => 'admin'
+        'front_name' => 'admin',
     ],
     'developer_mode' => 0, // Show all errors and exceptions on the frontend and disable minification
     'show_forbidden' => 0, // NotFound response will be returned instead
@@ -13,17 +13,17 @@ return [
         'web_root_is_pub' => 1, // 0 for project root
         'js' => [
             'minify' => 1, // Minification is disabled if developer mode is on
-            'merge' => 0
+            'merge' => 0,
         ],
         'css' => [
             'minify' => 1, // Minification is disabled if developer mode is on
-            'merge' => 0
-        ]
+            'merge' => 0,
+        ],
     ],
     'cache' => [
         'etc' => 1,
         'layout' => 1,
-        'full_page' => 1
+        'full_page' => 1,
     ],
     'timer_config' => [
         'timer' => [

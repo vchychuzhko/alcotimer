@@ -7,7 +7,6 @@ use Awesome\Cache\Model\Cache;
 use Awesome\Console\Model\Cli\Input;
 use Awesome\Console\Model\Cli\Input\InputDefinition;
 use Awesome\Console\Model\Cli\Output;
-use Awesome\Framework\Model\Config;
 
 class Status extends \Awesome\Console\Model\Cli\AbstractCommand
 {
@@ -17,19 +16,12 @@ class Status extends \Awesome\Console\Model\Cli\AbstractCommand
     private $cache;
 
     /**
-     * @var Config $config
-     */
-    private $config;
-
-    /**
      * Cache Status constructor.
      * @param Cache $cache
-     * @param Config $config
      */
-    public function __construct(Cache $cache, Config $config)
+    public function __construct(Cache $cache)
     {
         $this->cache = $cache;
-        $this->config = $config;
     }
 
     /**
@@ -53,7 +45,7 @@ class Status extends \Awesome\Console\Model\Cli\AbstractCommand
         }, $types));
 
         foreach ($types as $type) {
-            $status = $this->config->get(Cache::CACHE_CONFIG_PATH . '/' . $type)
+            $status = $this->cache->cacheTypeEnabled($type)
                 ? $output->colourText('enabled')
                 : $output->colourText('disabled', Output::BROWN);
 

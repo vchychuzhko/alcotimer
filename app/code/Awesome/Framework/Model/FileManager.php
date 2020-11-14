@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Awesome\Framework\Model;
 
-class FileManager
+class FileManager implements \Awesome\Framework\Model\SingletonInterface
 {
     private const DEFAULT_ACCESS_MODE = 0777;
 

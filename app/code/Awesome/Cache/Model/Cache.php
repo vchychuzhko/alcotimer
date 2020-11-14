@@ -105,7 +105,7 @@ class Cache implements \Awesome\Framework\Model\SingletonInterface
      * @param string $key
      * @return bool
      */
-    private function cacheTypeEnabled(string $key): bool
+    public function cacheTypeEnabled(string $key): bool
     {
         return (bool) $this->config->get(self::CACHE_CONFIG_PATH . '/' . $key);
     }
