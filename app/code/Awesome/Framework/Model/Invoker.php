@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Framework\Model;
 
@@ -17,79 +18,58 @@ final class Invoker implements \Awesome\Framework\Model\SingletonInterface
     private function __construct() {}
 
     /**
-     * Get requested class instance.
-     * Only object-like parameters are allowed in class constructors.
-     * @param string $id
-     * @return mixed
-     * @throws \Exception
-     */
-    public function get($id)
-    {
-        $id = ltrim($id, '\\');
-
-        if (isset(self::$instances[$id])) {
-            $object = self::$instances[$id];
-        } else {
-            $reflectionClass = new \ReflectionClass($id);
-            $arguments = [];
-
-            if ($constructor = $reflectionClass->getConstructor()) {
-                foreach ($constructor->getParameters() as $parameter) {
-                    if (!$type = $parameter->getClass()) {
-                        throw new \Exception(sprintf(
-                            'Parameter "%s" is not a valid object type for "%s" constructor',
-                            $parameter->getName(),
-                            $id
-                        ));
-                    }
-                    $arguments[] = $this->get($type->getName());
-                }
-            }
-            $object = new $id(...$arguments);
-
-            if ($object instanceof SingletonInterface) {
-                self::$instances[$id] = $object;
-            }
-        }
-
-        return $object;
-    }
-
-    /**
-     * Get requested class instance with passing non-object parameters.
+     * Create requested class instance.
+     * Non-object and extra parameters can be passed as an array.
+     * Regardless of SingletonInterface new instance will be created.
      * @param string $id
      * @param array $parameters
      * @return mixed
      * @throws \Exception
      */
-    public function make($id, $parameters = [])
+    public function create(string $id, array $parameters = [])
+    {
+        $id = ltrim($id, '\\');
+
+        $reflectionClass = new \ReflectionClass($id);
+        $arguments = [];
+
+        if ($constructor = $reflectionClass->getConstructor()) {
+            foreach ($constructor->getParameters() as $parameter) {
+                $parameterName = $parameter->getName();
+
+                if (isset($parameters[$parameterName])) {
+                    $arguments[] = $parameters[$parameterName];
+                } elseif ($type = $parameter->getClass()) {
+                    $arguments[] = $this->get($type->getName());
+                } elseif ($parameter->isOptional()) {
+                    $arguments[] = $parameter->getDefaultValue();
+                } else {
+                    throw new \Exception(
+                        sprintf('Parameter "%s" was not provided for "%s" constructor', $parameterName, $id)
+                    );
+                }
+            }
+        }
+
+        return new $id(...$arguments);
+    }
+
+    /**
+     * Get requested class instance.
+     * Non-object and extra parameters can be passed as an array.
+     * @param string $id
+     * @param array $parameters
+     * @return mixed
+     * @throws \Exception
+     */
+    public function get(string $id, array $parameters = [])
     {
         $id = ltrim($id, '\\');
 
         if (isset(self::$instances[$id])) {
             $object = self::$instances[$id];
         } else {
-            $reflectionClass = new \ReflectionClass($id);
-            $arguments = [];
-
-            if ($constructor = $reflectionClass->getConstructor()) {
-                foreach ($constructor->getParameters() as $parameter) {
-                    $parameterName = $parameter->getName();
-
-                    if (isset($parameters[$parameterName])) {
-                        $arguments[] = $parameters[$parameterName];
-                    } elseif ($type = $parameter->getClass()) {
-                        $arguments[] = $this->get($type->getName());
-                    } elseif ($parameter->isOptional()) {
-                        $arguments[] = $parameter->getDefaultValue();
-                    } else {
-                        throw new \Exception(
-                            sprintf('Parameter "%s" was not provided for "%s" constructor', $parameterName, $id)
-                        );
-                    }
-                }
-            }
-            $object = new $id(...$arguments);
+            $object = $this->create($id, $parameters);
 
             if ($object instanceof SingletonInterface) {
                 self::$instances[$id] = $object;
@@ -103,7 +83,7 @@ final class Invoker implements \Awesome\Framework\Model\SingletonInterface
      * Get DIContainer instance.
      * @return $this
      */
-    public static function getInstance()
+    public static function getInstance(): self
     {
         if (!isset(self::$instances[self::class])) {
             self::$instances[self::class] = new self();

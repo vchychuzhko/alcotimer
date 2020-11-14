@@ -1,9 +1,9 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Console\Model\Handler;
 
 use Awesome\Console\Model\Cli\AbstractCommand;
-use Awesome\Console\Model\Cli\Input\InputDefinition;
 use Awesome\Console\Model\XmlParser\CommandXmlParser;
 
 class CommandHandler
@@ -32,16 +32,15 @@ class CommandHandler
      * @param string $commandName
      * @return array|null
      */
-    public function getCommandData($commandName)
+    public function getCommandData(string $commandName): ?array
     {
         $commandData = null;
 
         if ($commandClass = $this->getCommandClass($commandName)) {
-            $definition = new InputDefinition();
             /** @var AbstractCommand $commandClass */
-            $definition = $commandClass::configure($definition);
+            $definition = $commandClass::configure();
 
-            $commandData = array_replace_recursive($definition->getDefinition(), ['class' => $commandClass]);
+            $commandData = array_merge($definition->getDefinition(), ['class' => $commandClass]);
         }
 
         return $commandData;
@@ -51,7 +50,7 @@ class CommandHandler
      * Get all available commands.
      * @return array
      */
-    public function getCommands()
+    public function getCommands(): array
     {
         return array_keys($this->commandXmlParser->getCommandsClasses());
     }
@@ -61,7 +60,7 @@ class CommandHandler
      * @param string $commandName
      * @return bool
      */
-    public function commandExist($commandName)
+    public function commandExist(string $commandName): bool
     {
         return in_array($commandName, $this->getCommands(), true);
     }
@@ -71,7 +70,7 @@ class CommandHandler
      * @param string $commandName
      * @return string
      */
-    public function parseCommand($commandName)
+    public function parseCommand(string $commandName): string
     {
         if (!isset($this->parsedHandles[$commandName])) {
             $this->parsedCommands[$commandName] = $commandName;
@@ -88,9 +87,9 @@ class CommandHandler
     /**
      * Get command class according to the requested command name.
      * @param string $commandName
-     * @return string
+     * @return string|null
      */
-    public function getCommandClass($commandName)
+    public function getCommandClass(string $commandName): ?string
     {
         $commandClasses = $this->commandXmlParser->getCommandsClasses();
 
@@ -104,7 +103,7 @@ class CommandHandler
      * @param bool $strict
      * @return array
      */
-    public function getAlternatives($handle, $strict = true)
+    public function getAlternatives(string $handle, bool $strict = true): array
     {
         $possibleCandidates = [];
         @list($namespace, $command) = explode(':', $handle);

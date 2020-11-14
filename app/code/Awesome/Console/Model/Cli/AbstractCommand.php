@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Console\Model\Cli;
 
@@ -15,13 +16,12 @@ abstract class AbstractCommand
 
     /**
      * Define all data related to console command.
-     * @param InputDefinition $definition
      * @return InputDefinition
      * @throws \LogicException
      */
-    public static function configure($definition)
+    public static function configure(): InputDefinition
     {
-        return $definition->addOption(self::HELP_OPTION, 'h', InputDefinition::OPTION_OPTIONAL, 'Display help message')
+        return (new InputDefinition())->addOption(self::HELP_OPTION, 'h', InputDefinition::OPTION_OPTIONAL, 'Display help message')
             ->addOption(self::NOINTERACTION_OPTION, 'n', InputDefinition::OPTION_OPTIONAL, 'Do not ask any interactive question')
             ->addOption(self::QUIET_OPTION, 'q', InputDefinition::OPTION_OPTIONAL, 'Do not output anything')
             ->addOption(self::VERSION_OPTION, 'V', InputDefinition::OPTION_OPTIONAL, 'Display application version');
@@ -33,7 +33,7 @@ abstract class AbstractCommand
      * @param Output $output
      * @return void
      */
-    abstract public function execute($input, $output);
+    abstract public function execute(Input $input, Output $output): void;
 
     /**
      * Display help for the command.
@@ -41,10 +41,10 @@ abstract class AbstractCommand
      * @param Output $output
      * @return void
      */
-    public function help($input, $output)
+    public function help(Input $input, Output $output): void
     {
         $command = $input->getCommand();
-        $commandData = static::configure(new InputDefinition())
+        $commandData = static::configure()
             ->getDefinition();
 
         $options = $commandData['options'];
@@ -80,7 +80,7 @@ abstract class AbstractCommand
         if ($arguments) {
             $output->writeln();
             $output->writeln($output->colourText('Arguments:', Output::BROWN));
-            $padding = max(array_map(function ($name) {
+            $padding = max(array_map(static function ($name) {
                 return strlen($name);
             }, array_keys($arguments)));
 
@@ -101,7 +101,7 @@ abstract class AbstractCommand
                     $optionFullNames[$name] = str_repeat(' ', 4) . '--' . $name;
                 }
             }
-            $padding = max(array_map(function ($option) {
+            $padding = max(array_map(static function ($option) {
                 return strlen($option);
             }, $optionFullNames));
 

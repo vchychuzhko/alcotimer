@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Framework\Model\FileManager;
 
@@ -6,13 +7,14 @@ class PhpFileManager extends \Awesome\Framework\Model\FileManager
 {
     /**
      * Include PHP file.
+     * Can be returned and have extracted variables if needed.
      * @param string $path
      * @param bool $return
      * @param array $extract
      * @return string|array|void
      * @throws \RuntimeException
      */
-    public function includeFile($path, $return = false, $extract = [])
+    public function includeFile(string $path, bool $return = false, array $extract = [])
     {
         if (!file_exists($path)) {
             throw new \RuntimeException(sprintf('Provided path "%s" does not exist', $path));
@@ -34,13 +36,14 @@ class PhpFileManager extends \Awesome\Framework\Model\FileManager
 
     /**
      * Generate PHP array file.
+     * According to short array syntax.
      * @param string $path
      * @param array $data
      * @param string $annotation
      * @return bool
      * @throws \RuntimeException
      */
-    public function createArrayFile($path, $data, $annotation = '')
+    public function createArrayFile(string $path, array $data, string $annotation = ''): bool
     {
         $content = '<?php' . ($annotation ? ' /** ' . $annotation . ' */' : '') . "\n"
             . 'return ' . array_export($data, true) . ';' . "\n";
@@ -52,16 +55,11 @@ class PhpFileManager extends \Awesome\Framework\Model\FileManager
      * Check if requested PHP object have corresponding file.
      * @param string $objectName
      * @return bool
-     * @throws \RuntimeException
      */
-    public function objectFileExists($objectName)
+    public function objectFileExists(string $objectName): bool
     {
         $path = APP_DIR . '/' . str_replace('\\', '/', ltrim($objectName, '\\')) . '.php';
 
-        if (is_dir($path)) {
-            throw new \RuntimeException(sprintf('Provided path "%s" is a directory and cannot contain object', $path));
-        }
-
-        return file_exists($path);
+        return file_exists($path) && !is_dir($path);
     }
 }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Framework\Helper;
 
@@ -11,7 +12,7 @@ class XmlParsingHelper
      * @param string $attribute
      * @return string
      */
-    public static function getNodeAttribute($node, $attribute = 'name')
+    public static function getNodeAttribute(\SimpleXMLElement $node, string $attribute = 'name'): string
     {
         return (string) $node[$attribute];
     }
@@ -23,20 +24,9 @@ class XmlParsingHelper
      * @param string $attribute
      * @return bool
      */
-    public static function isAttributeBooleanTrue($node, $attribute = 'disabled')
+    public static function isAttributeBooleanTrue(\SimpleXMLElement $node, string $attribute = 'disabled'): bool
     {
-        return self::isBooleanTrue(self::getNodeAttribute($node, $attribute));
-    }
-
-    /**
-     * Check if string is a boolean "true", otherwise return false.
-     * Not case sensitive.
-     * @param string $string
-     * @return bool
-     */
-    public static function isBooleanTrue($string)
-    {
-        return strtolower($string) === 'true';
+        return DataHelper::isStringBooleanTrue(self::getNodeAttribute($node, $attribute));
     }
 
     /**
@@ -44,23 +34,24 @@ class XmlParsingHelper
      * Recursively by default.
      * @param array $nodeElement
      * @param bool $recursive
+     * @return void
      */
-    public static function applySortOrder(&$nodeElement, $recursive = true)
+    public static function applySortOrder(array &$nodeElement, bool $recursive = true): void
     {
-        if (is_array($nodeElement)) {
-            uasort($nodeElement, function ($a, $b) {
-                $compare = 0;
+        uasort($nodeElement, static function ($a, $b) {
+            $compare = 0;
 
-                if (isset($a['sortOrder'], $b['sortOrder'])) {
-                    $compare = $a['sortOrder'] <=> $b['sortOrder'];
-                }
+            if (isset($a['sortOrder'], $b['sortOrder'])) {
+                $compare = $a['sortOrder'] <=> $b['sortOrder'];
+            }
 
-                return $compare;
-            });
+            return $compare;
+        });
 
-            if ($recursive) {
-                foreach ($nodeElement as $index => $unused) {
-                    self::applySortOrder($nodeElement[$index]);
+        if ($recursive) {
+            foreach ($nodeElement as &$childElement) {
+                if (is_array($childElement)) {
+                    self::applySortOrder($childElement);
                 }
             }
         }

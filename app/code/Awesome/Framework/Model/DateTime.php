@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Framework\Model;
 
@@ -14,7 +15,10 @@ class DateTime implements \Awesome\Framework\Model\SingletonInterface
      * @param string $timezone
      * @return string
      */
-    public function getCurrentTime($format = self::DEFAULT_TIME_FORMAT, $timezone = self::DEFAULT_TIMEZONE)
+    public function getCurrentTime(
+        string $format = self::DEFAULT_TIME_FORMAT,
+        string $timezone = self::DEFAULT_TIMEZONE
+    ): string
     {
         try {
             $date = new \DateTime('now', new \DateTimeZone($timezone));
@@ -34,7 +38,7 @@ class DateTime implements \Awesome\Framework\Model\SingletonInterface
      * @param string $format
      * @return string
      */
-    public function getCurrentTimeUTC($format = self::DEFAULT_TIME_FORMAT)
+    public function getCurrentTimeUTC(string $format = self::DEFAULT_TIME_FORMAT): string
     {
         return $this->getCurrentTime($format, self::UTC_TIMEZONE);
     }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Framework\Model\Http;
 
@@ -31,7 +32,7 @@ class Response
      * @param int $status
      * @param array $headers
      */
-    public function __construct($content = '', $status = self::SUCCESS_STATUS_CODE, $headers = [])
+    public function __construct(string $content = '', int $status = self::SUCCESS_STATUS_CODE, array $headers = [])
     {
         $this->content = $content;
         $this->status = $status;
@@ -40,8 +41,9 @@ class Response
 
     /**
      * Prepare and return response.
+     * @return void
      */
-    public function proceed()
+    public function proceed(): void
     {
         http_response_code($this->status);
 
@@ -59,7 +61,7 @@ class Response
      * @param int $status
      * @return $this
      */
-    public function setStatusCode($status)
+    public function setStatusCode(int $status): self
     {
         $this->status = $status;
 
@@ -70,7 +72,7 @@ class Response
      * Get response status code.
      * @return int
      */
-    public function getStatusCode()
+    public function getStatusCode(): int
     {
         return $this->status;
     }
@@ -79,7 +81,7 @@ class Response
      * Check if response is successful.
      * @return bool
      */
-    public function isOk()
+    public function isOk(): bool
     {
         return $this->status === self::SUCCESS_STATUS_CODE;
     }
@@ -91,7 +93,7 @@ class Response
      * @param string $value
      * @return $this
      */
-    public function setHeader($key, $value)
+    public function setHeader(string $key, string $value): self
     {
         $this->headers[$key] = $value;
 
@@ -103,7 +105,7 @@ class Response
      * @param string $key
      * @return string|null
      */
-    public function getHeader($key)
+    public function getHeader(string $key): ?string
     {
         return $this->headers[$key] ?? null;
     }
@@ -112,7 +114,7 @@ class Response
      * Get all response headers.
      * @return array
      */
-    public function getHeaders()
+    public function getHeaders(): array
     {
         return $this->headers;
     }
@@ -121,7 +123,7 @@ class Response
      * Remove all headers from response.
      * @return $this
      */
-    public function resetHeaders()
+    public function resetHeaders(): self
     {
         $this->headers = [];
 
@@ -133,7 +135,7 @@ class Response
      * @param string $content
      * @return $this
      */
-    public function setContent($content)
+    public function setContent(string $content): self
     {
         $this->content = $content;
 
@@ -144,7 +146,7 @@ class Response
      * Get response content.
      * @return string
      */
-    public function getContent()
+    public function getContent(): string
     {
         return $this->content;
     }

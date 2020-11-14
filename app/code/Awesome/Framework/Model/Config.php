@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Framework\Model;
 
@@ -34,7 +35,7 @@ class Config implements \Awesome\Framework\Model\SingletonInterface
      * @param string $path
      * @return mixed
      */
-    public function get($path)
+    public function get(string $path)
     {
         $keys = explode('/', $path);
         $config = $this->loadConfig();
@@ -58,7 +59,7 @@ class Config implements \Awesome\Framework\Model\SingletonInterface
      * @param mixed $value
      * @return bool
      */
-    public function set($path, $value)
+    public function set(string $path, $value): bool
     {
         $success = false;
 
@@ -87,7 +88,7 @@ class Config implements \Awesome\Framework\Model\SingletonInterface
      * @param bool $reload
      * @return array
      */
-    private function loadConfig($reload = false)
+    private function loadConfig(bool $reload = false): array
     {
         if ($this->config === null || $reload) {
             $this->config = $this->phpFileManager->includeFile(BP . self::CONFIG_FILE_PATH, true);

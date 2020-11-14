@@ -1,6 +1,9 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Console\Model\Cli;
+
+use Awesome\Framework\Helper\DataHelper;
 
 class Input
 {
@@ -21,11 +24,11 @@ class Input
 
     /**
      * Input constructor.
-     * @param string $command
+     * @param string|null $command
      * @param array $options
      * @param array $arguments
      */
-    public function __construct($command, $options = [], $arguments = [])
+    public function __construct(?string $command = null, array $options = [], array $arguments = [])
     {
         $this->command = $command;
         $this->options = $options;
@@ -34,9 +37,9 @@ class Input
 
     /**
      * Get input command.
-     * @return string
+     * @return string|null
      */
-    public function getCommand()
+    public function getCommand(): ?string
     {
         return $this->command;
     }
@@ -47,7 +50,7 @@ class Input
      * @param bool $typeCast
      * @return mixed
      */
-    public function getOption($optionName, $typeCast = false)
+    public function getOption(string $optionName, bool $typeCast = false)
     {
         $value = $this->options[$optionName] ?? null;
 
@@ -58,7 +61,7 @@ class Input
      * Get all input options.
      * @return array
      */
-    public function getOptions()
+    public function getOptions(): array
     {
         return $this->options;
     }
@@ -69,7 +72,7 @@ class Input
      * @param bool $typeCast
      * @return mixed
      */
-    public function getArgument($argumentName, $typeCast = false)
+    public function getArgument(string $argumentName, bool $typeCast = false)
     {
         $value = $this->arguments[$argumentName] ?? null;
 
@@ -80,22 +83,25 @@ class Input
      * Get all input arguments.
      * @return array
      */
-    public function getArguments()
+    public function getArguments(): array
     {
         return $this->arguments;
     }
 
     /**
      * Cast input value to a corresponding type.
+     * In case array option or argument is used, all values will be casted.
      * @param mixed $value
      * @return mixed
      */
     private function castInputValue($value)
     {
-        if (is_numeric($value)) {
-            $value += 0;
-        } elseif (in_array(strtolower($value), ['true', 'false'], true)) {
-            $value = strtolower($value) === 'true';
+        if (is_array($value)) {
+            foreach ($value as &$item) {
+                $item = DataHelper::castValue($item);
+            }
+        } else {
+            $value = DataHelper::castValue($value);
         }
 
         return $value;

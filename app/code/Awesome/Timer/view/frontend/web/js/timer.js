@@ -1,12 +1,19 @@
-;(function ($) {
-    let RUNNING_STATE = 'running',
-        STOPPED_STATE = 'stopped';
+define([
+    'jquery',
+    'messenger',
+    'jquery/ui',
+    'howler',
+], function ($, messenger) {
+    'use strict'
+
+    const RUNNING_STATE = 'running',
+          STOPPED_STATE = 'stopped';
 
     $.widget('awesome.timer', {
         options: {
             defaultTime: 9,
             radialContainerSelector: '.radial-container',
-            sound: ''
+            sound: '',
         },
 
         /**
@@ -193,14 +200,12 @@
 
             if (this.options.sound) {
                 let sound = new Howl({
-                    src: [this.options.sound]
+                    src: [this.options.sound],
                 });
 
                 sound.play();
             } else {
-                $(document.trigger('message.show', {
-                    message: 'It time to start!.'
-                }))
+                messenger.message('It time to start!');
             }
         },
 
@@ -295,4 +300,4 @@
             });
         }
     });
-})(jQuery);
+});

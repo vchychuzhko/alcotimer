@@ -1,25 +1,25 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Framework\Model;
 
-class FileManager
+class FileManager implements \Awesome\Framework\Model\SingletonInterface
 {
     private const DEFAULT_ACCESS_MODE = 0777;
 
     /**
-     * Create file.
+     * Create file recursively.
      * @param string $path
      * @param string $content
      * @param bool $replace
-     * @param bool $recursively
      * @return bool
      * @throws \RuntimeException
      */
-    public function createFile($path, $content = '', $replace = false, $recursively = true)
+    public function createFile(string $path, string $content = '', bool $replace = false): bool
     {
         if (file_exists($path)) {
-            if (is_dir($path)) {
-                throw new \RuntimeException(sprintf('Provided path "%s" is a directory and cannot be replaced', $path));
+            if (!is_file($path)) {
+                throw new \RuntimeException(sprintf('Provided path "%s" is not a file and cannot be replaced', $path));
             }
             if (!$replace) {
                 throw new \RuntimeException(sprintf('Provided file "%s" already exists and cannot be replaced', $path));
@@ -27,9 +27,6 @@ class FileManager
         }
 
         if (!is_dir(dirname($path))) {
-            if (!$recursively) {
-                throw new \RuntimeException(sprintf('Directory does not exist for provided file "%s"', $path));
-            }
             $this->createDirectory(dirname($path));
         }
 
@@ -40,39 +37,38 @@ class FileManager
      * Read file.
      * @param string $path
      * @param bool $graceful
-     * @return string
+     * @return string|false
      * @throws \RuntimeException
      */
-    public function readFile($path, $graceful = true)
+    public function readFile(string $path, bool $graceful = true)
     {
-        if (!$graceful && !file_exists($path)) {
+        if (file_exists($path)) {
+            if (!is_file($path)) {
+                throw new \RuntimeException(sprintf('Provided path "%s" is not a file and cannot be read', $path));
+            }
+        } elseif (!$graceful) {
             throw new \RuntimeException(sprintf('Provided path "%s" does not exist', $path));
         }
-        if (is_dir($path)) {
-            throw new \RuntimeException(sprintf('Provided path "%s" is a directory and cannot be read', $path));
-        }
 
-        return (string) @file_get_contents($path);
+        return @file_get_contents($path);
     }
 
     /**
-     * Write content to a file.
+     * Write content to a file, appending by default.
+     * File will be created if not exists.
      * @param string $path
      * @param string $content
      * @param bool $append
-     * @param bool $create
      * @return bool
      * @throws \RuntimeException
      */
-    public function writeFile($path, $content, $append = false, $create = true)
+    public function writeFile(string $path, string $content, bool $append = false): bool
     {
-        if (is_dir($path)) {
-            throw new \RuntimeException(sprintf('Provided path "%s" is a directory and cannot be written', $path));
-        }
-        if (!file_exists($path)) {
-            if (!$create) {
-                throw new \RuntimeException(sprintf('Provided file "%s" does not exist and cannot be written', $path));
+        if (file_exists($path)) {
+            if (!is_file($path)) {
+                throw new \RuntimeException(sprintf('Provided path "%s" is not a file and cannot be written', $path));
             }
+        } else {
             $this->createFile($path);
         }
 
@@ -85,59 +81,77 @@ class FileManager
      * @return bool
      * @throws \RuntimeException
      */
-    public function removeFile($path)
+    public function removeFile(string $path): bool
     {
-        if (is_dir($path)) {
-            throw new \RuntimeException(sprintf('Provided path "%s" is a directory and cannot be removed', $path));
+        if (file_exists($path) && !is_file($path)) {
+            throw new \RuntimeException(sprintf('Provided path "%s" is not a file and cannot be removed', $path));
         }
 
         return @unlink($path);
     }
 
     /**
-     * Create directory.
+     * Copy file replacing destination by default.
+     * @param string $source
+     * @param string $destination
+     * @param bool $replace
+     * @return bool
+     * @throws \RuntimeException
+     */
+    public function copyFile(string $source, string $destination, $replace = true): bool
+    {
+        if (!is_file($source)) {
+            throw new \RuntimeException(
+                sprintf('Provided source path "%s" does not exist or is not a file and cannot be copied', $source)
+            );
+        }
+        if (!is_dir(dirname($destination))) {
+            $this->createDirectory(dirname($destination));
+        }
+        if (file_exists($destination)) {
+            if (!$replace) {
+                throw new \RuntimeException(sprintf('Provided destination file "%s" already exists', $destination));
+            }
+            $this->removeFile($destination);
+        }
+
+        return copy($source, $destination);
+    }
+
+    /**
+     * Create directory recursively.
      * @param string $path
-     * @param bool $recursive
      * @param int $mode
      * @return bool
      * @throws \RuntimeException
      */
-    public function createDirectory($path, $recursive = true, $mode = self::DEFAULT_ACCESS_MODE)
+    public function createDirectory(string $path, int $mode = self::DEFAULT_ACCESS_MODE): bool
     {
-        if (file_exists($path)) {
-            if (!is_dir($path)) {
-                throw new \RuntimeException(sprintf('File with provided directory name "%s" already exists', $path));
-            }
-        } elseif (!@mkdir($path, $mode, $recursive)) {
-            throw new \RuntimeException(sprintf('Cannot create a directory "%s"', $path));
+        if (file_exists($path) && !is_dir($path)) {
+            throw new \RuntimeException(sprintf('Provided path "%s" already exists and is not a directory', $path));
         }
 
-        return true;
+        return @mkdir($path, $mode, true);
     }
 
     /**
-     * Remove directory.
+     * Remove directory recursively.
      * Based on https://www.php.net/manual/en/function.rmdir.php#117354
      * @param string $path
-     * @param bool $recursively
      * @return bool
      * @throws \RuntimeException
      */
-    public function removeDirectory($path, $recursively = true)
+    public function removeDirectory(string $path): bool
     {
-        if (file_exists($path)) {
-            if (!is_dir($path)) {
-                throw new \RuntimeException(sprintf('Provided path "%s" is not a directory', $path));
-            }
-            if ($recursively) {
-                foreach (scandir($path) as $object) {
-                    if ($object !== '.' && $object !== '..') {
-                        if (is_dir($path . '/' . $object)) {
-                            $this->removeDirectory($path . '/' . $object);
-                        } else {
-                            unlink($path . '/' . $object);
-                        }
-                    }
+        if (file_exists($path) && !is_dir($path)) {
+            throw new \RuntimeException(sprintf('Provided path "%s" is not a directory', $path));
+        }
+        foreach (@scandir($path) ?: [] as $object) {
+            if ($object !== '.' && $object !== '..') {
+                if (is_dir($path . '/' . $object)) {
+                    $this->removeDirectory($path . '/' . $object);
+                } else {
+                    unlink($path . '/' . $object);
                 }
             }
         }
@@ -146,15 +160,15 @@ class FileManager
     }
 
     /**
-     * Get all files in a directory by regex filter if needed.
+     * Get all files in a directory by extension filter if needed.
      * Based on https://stackoverflow.com/a/35105800
      * @param string $path
      * @param bool $recursively
-     * @param string $filter
+     * @param string $extension
      * @return array
      * @throws \RuntimeException
      */
-    public function scanDirectory($path, $recursively = false, $filter = '')
+    public function scanDirectory(string $path, bool $recursively = false, string $extension = ''): array
     {
         if (!is_dir($path)) {
             throw new \RuntimeException(sprintf('Provided path "%s" is not a directory and cannot be scanned', $path));
@@ -165,11 +179,11 @@ class FileManager
             $objectPath = $path . '/' . $object;
 
             if (!is_dir($objectPath)) {
-                if (!$filter || preg_match($filter, $objectPath)) {
+                if (!$extension || preg_match('/\.' . $extension .'$/', $objectPath)) {
                     $results[] = $objectPath;
                 }
             } elseif ($recursively && $object !== '.' && $object !== '..') {
-                $results = array_merge($results, $this->scanDirectory($objectPath, true, $filter));
+                $results = array_merge($results, $this->scanDirectory($objectPath, true, $extension));
             }
         }
 

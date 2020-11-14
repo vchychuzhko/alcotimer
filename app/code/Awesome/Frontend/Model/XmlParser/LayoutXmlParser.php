@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Frontend\Model\XmlParser;
 
@@ -50,7 +51,7 @@ class LayoutXmlParser
      * @param array $handles
      * @return array
      */
-    public function getLayoutStructure($handle, $view, $handles = [])
+    public function getLayoutStructure(string $handle, string $view, array $handles = []): array
     {
         $handles = $handles ?: [$handle];
         $pattern = sprintf(
@@ -113,7 +114,7 @@ class LayoutXmlParser
      * @param \SimpleXMLElement $headNode
      * @return array
      */
-    private function parseHeadNode($headNode)
+    private function parseHeadNode(\SimpleXMLElement $headNode): array
     {
         $data = [];
 
@@ -164,7 +165,7 @@ class LayoutXmlParser
      * @param \SimpleXMLElement $bodyNode
      * @return array
      */
-    private function parseBodyNode($bodyNode)
+    private function parseBodyNode(\SimpleXMLElement $bodyNode): array
     {
         $body = [];
 
@@ -183,7 +184,7 @@ class LayoutXmlParser
      * @return array
      * @throws XmlValidationException
      */
-    private function parseBodyItem($itemNode)
+    private function parseBodyItem(\SimpleXMLElement $itemNode): array
     {
         $parsedItemNode = [];
         $itemName = XmlParsingHelper::getNodeAttribute($itemNode);
@@ -268,8 +269,9 @@ class LayoutXmlParser
 
     /**
      * Filter collected assets according to remove references.
+     * @return void
      */
-    private function filterRemovedAssets()
+    private function filterRemovedAssets(): void
     {
         foreach ($this->assetsToRemove as $assetToRemove) {
             foreach ($this->collectedAssets as $assetType => $unused) {
@@ -281,8 +283,9 @@ class LayoutXmlParser
     /**
      * Apply reference updates to a parsed layout.
      * @param array $bodyStructure
+     * @return void
      */
-    private function applyReferences(&$bodyStructure)
+    private function applyReferences(array &$bodyStructure): void
     {
         foreach ($this->references as $reference) {
             DataHelper::arrayReplaceByKeyRecursive($bodyStructure, $reference['name'], $reference['data']);

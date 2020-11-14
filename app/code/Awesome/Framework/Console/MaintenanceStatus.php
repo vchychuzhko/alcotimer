@@ -1,7 +1,10 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Framework\Console;
 
+use Awesome\Console\Model\Cli\Input;
+use Awesome\Console\Model\Cli\Input\InputDefinition;
 use Awesome\Console\Model\Cli\Output;
 use Awesome\Framework\Model\Maintenance;
 
@@ -24,9 +27,9 @@ class MaintenanceStatus extends \Awesome\Console\Model\Cli\AbstractCommand
     /**
      * @inheritDoc
      */
-    public static function configure($definition)
+    public static function configure(): InputDefinition
     {
-        return parent::configure($definition)
+        return parent::configure()
             ->setDescription('View current state of maintenance');
     }
 
@@ -34,7 +37,7 @@ class MaintenanceStatus extends \Awesome\Console\Model\Cli\AbstractCommand
      * Get current state of maintenance.
      * @inheritDoc
      */
-    public function execute($input, $output)
+    public function execute(Input $input, Output $output): void
     {
         $status = 'Maintenance mode is disabled.';
         $state = $this->maintenance->getStatus();

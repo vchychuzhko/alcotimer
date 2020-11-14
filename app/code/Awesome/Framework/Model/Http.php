@@ -1,31 +1,33 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Framework\Model;
 
+use Awesome\Framework\Model\Action\HttpErrorAction;
+use Awesome\Framework\Model\AppState;
 use Awesome\Framework\Model\Config;
 use Awesome\Framework\Model\Event\EventManager;
 use Awesome\Framework\Model\Http\Request;
-use Awesome\Framework\Model\Http\Response;
-use Awesome\Framework\Model\Http\Response\HtmlResponse;
-use Awesome\Framework\Model\Http\Response\JsonResponse;
 use Awesome\Framework\Model\Http\Router;
 use Awesome\Framework\Model\Logger;
 use Awesome\Framework\Model\Maintenance;
 
 class Http
 {
-    public const VERSION = '0.4.1';
+    public const VERSION = '0.4.2';
 
     public const FRONTEND_VIEW = 'frontend';
     public const BACKEND_VIEW = 'adminhtml';
     public const BASE_VIEW = 'base';
 
     public const BACKEND_FRONT_NAME_CONFIG = 'backend/front_name';
-    public const DEVELOPER_MODE_CONFIG = 'developer_mode';
-    public const SHOW_FORBIDDEN_CONFIG = 'show_forbidden';
-    public const WEB_ROOT_CONFIG = 'web/web_root_is_pub';
 
     public const ROOT_ACTION_NAME = 'index_index_index';
+
+    /**
+     * @var AppState $appState
+     */
+    private $appState;
 
     /**
      * @var Config $config
@@ -59,6 +61,7 @@ class Http
 
     /**
      * Http app constructor.
+     * @param AppState $appState
      * @param Config $config
      * @param EventManager $eventManager
      * @param Logger $logger
@@ -66,12 +69,14 @@ class Http
      * @param Router $router
      */
     public function __construct(
+        AppState $appState,
         Config $config,
         EventManager $eventManager,
         Logger $logger,
         Maintenance $maintenance,
         Router $router
     ) {
+        $this->appState = $appState;
         $this->config = $config;
         $this->eventManager = $eventManager;
         $this->logger = $logger;
@@ -81,8 +86,9 @@ class Http
 
     /**
      * Run the web application.
+     * @return void
      */
-    public function run()
+    public function run(): void
     {
         try {
             $request = $this->getRequest();
@@ -95,41 +101,24 @@ class Http
                     $request->getView()
                 );
 
-                if ($action = $this->router->getAction()) {
-                    $response = $action->execute($request);
-                } elseif ($request->getRedirectStatusCode() === Request::FORBIDDEN_REDIRECT_CODE && $this->showForbidden()) {
-                    $response = new Response('', Response::FORBIDDEN_STATUS_CODE);
-                } else {
-                    $response = new Response('', Response::NOTFOUND_STATUS_CODE);
-                }
+                $action = $this->router->getAction();
+
+                $response = $action->execute($request);
             } else {
-                // @TODO: get request 'accept' header and return error page according to needed type
-                $response = new HtmlResponse(
-                    $this->maintenance->getMaintenancePage(),
-                    Response::SERVICE_UNAVAILABLE_STATUS_CODE
-                );
+                $maintenanceAction = $this->router->getMaintenanceAction();
+
+                $response = $maintenanceAction->execute($request);
             }
         } catch (\Exception $e) {
-            $this->logger->error($e);
+            $this->logger->error(get_class_name($e) . ': ' . $e->getMessage() . "\n" . $e->getTraceAsString());
 
-            if (isset($request) && $request->getAcceptType() === Request::JSON_ACCEPT_HEADER) {
-                $response = new JsonResponse(
-                    [
-                        'status' => 'ERROR',
-                        'message' => $this->isDeveloperMode()
-                            ? get_class_name($e) . ': ' . $e->getMessage() . "\n" . $e->getTraceAsString()
-                            : 'Error details are hidden due to security reasons. Additional information can be found in the server logs.'
-                    ],
-                    Response::INTERNAL_ERROR_STATUS_CODE
-                );
-            } else {
-                $response = new HtmlResponse(
-                    $this->isDeveloperMode()
-                        ? '<pre>' . get_class_name($e) . ': ' . $e->getMessage() . "\n" . $e->getTraceAsString() . '</pre>'
-                        : $this->maintenance->getInternalErrorPage(),
-                    Response::INTERNAL_ERROR_STATUS_CODE
-                );
-            }
+            $errorAction = new HttpErrorAction([
+                'accept_type' => isset($request) ? $request->getAcceptType() : null,
+                'error' => $e,
+                'is_developer_mode' => $this->appState->isDeveloperMode(),
+            ]);
+
+            $response = $errorAction->execute();
         }
 
         $response->proceed();
@@ -139,7 +128,7 @@ class Http
      * Check if maintenance mode is active for user IP address.
      * @return bool
      */
-    private function isMaintenance()
+    private function isMaintenance(): bool
     {
         $ip = $this->getRequest()->getUserIp();
 
@@ -147,28 +136,10 @@ class Http
     }
 
     /**
-     * Check if app is in developer mode.
-     * @return bool
-     */
-    private function isDeveloperMode()
-    {
-        return (bool) $this->config->get(self::DEVELOPER_MODE_CONFIG);
-    }
-
-    /**
-     * Check if it is allowed to show 403 Forbidden response.
-     * @return bool
-     */
-    private function showForbidden()
-    {
-        return (bool) $this->config->get(self::SHOW_FORBIDDEN_CONFIG);
-    }
-
-    /**
      * Parse and return http request.
      * @return Request
      */
-    private function getRequest()
+    private function getRequest(): Request
     {
         if (!$this->request) {
             $scheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] === 443
@@ -203,7 +174,7 @@ class Http
      * @param string $url
      * @return string
      */
-    private function parseFullActionName($url)
+    private function parseFullActionName(string $url): string
     {
         $parts = explode('/', str_replace('_', '-', trim(parse_url($url, PHP_URL_PATH), '/')));
 
@@ -217,7 +188,7 @@ class Http
      * @param string $url
      * @return string
      */
-    private function parseView($url)
+    private function parseView(string $url): string
     {
         $view = self::FRONTEND_VIEW;
 

@@ -1,23 +1,42 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Frontend\Observer;
 
+use Awesome\Framework\Model\Event;
 use Awesome\Framework\Model\Http;
 use Awesome\Framework\Model\Http\Request;
 use Awesome\Framework\Model\Http\Router;
+use Awesome\Frontend\Helper\StaticContentHelper;
 use Awesome\Frontend\Model\Action\StaticGenerationHandler;
+use Awesome\Frontend\Model\FrontendState;
+use Awesome\Frontend\Model\RequireJs;
 use Awesome\Frontend\Model\StaticContent;
 
 class StaticGenerationObserver implements \Awesome\Framework\Model\Event\ObserverInterface
 {
-    private const STATIC_FILE_PATTERN = '/^(\/pub)?\/static\/(version.+?\/)?(%s|%s)\/(%s|\w+_\w+)?\/?(.*)$/';
-    private const STATIC_REQUEST_PATTERN = '/^(\/pub)?\/static\//';
+    private const STATIC_FILE_PATTERN = '/^(\/pub)?(\/static\/)(version.+?\/)?(%s|%s)\/(%s|\w+_\w+)?\/?(.*)$/';
+    private const STATIC_REQUEST_PATTERN = '/^(\/pub)?\/static\/(version.+?\/)?(%s|%s)\/(.*)$/';
+
+    /**
+     * @var FrontendState $frontendState
+     */
+    private $frontendState;
+
+    /**
+     * StaticGenerationObserver constructor.
+     * @param FrontendState $frontendState
+     */
+    public function __construct(FrontendState $frontendState)
+    {
+        $this->frontendState = $frontendState;
+    }
 
     /**
      * Check if missing static file is requested and return action to generate it.
      * @inheritDoc
      */
-    public function execute($event)
+    public function execute(Event $event): void
     {
         /** @var Request $request */
         $request = $event->getRequest();
@@ -26,11 +45,22 @@ class StaticGenerationObserver implements \Awesome\Framework\Model\Event\Observe
         if ($this->isStaticFileRequest($requestPath)) {
             $requestedFile = $this->getFilePath($requestPath);
 
-            if (file_exists($requestedFile)) {
-                /** @var Router $router */
-                $router = $event->getRouter();
+            if (file_exists($requestedFile) || $requestedFile === RequireJs::RESULT_FILENAME) {
+                $extension = pathinfo($requestedFile, PATHINFO_EXTENSION);
+                $minify = false;
 
-                $router->addAction(StaticGenerationHandler::class, ['requested_file' => $requestedFile]);
+                if ($extension === 'css') {
+                    $minify = $this->frontendState->isCssMinificationEnabled();
+                } elseif ($extension === 'js') {
+                    $minify = $this->frontendState->isJsMinificationEnabled();
+                }
+
+                if (StaticContentHelper::isFileMinified($requestPath) === $minify) {
+                    /** @var Router $router */
+                    $router = $event->getRouter();
+
+                    $router->addAction(StaticGenerationHandler::class, ['requested_file' => $requestedFile]);
+                }
             }
         }
     }
@@ -40,9 +70,14 @@ class StaticGenerationObserver implements \Awesome\Framework\Model\Event\Observe
      * @param string $requestPath
      * @return bool
      */
-    private function isStaticFileRequest($requestPath)
+    private function isStaticFileRequest(string $requestPath): bool
     {
-        return (bool) preg_match(self::STATIC_REQUEST_PATTERN, $requestPath);
+        $match = (bool) preg_match(
+            sprintf(self::STATIC_REQUEST_PATTERN, Http::FRONTEND_VIEW, Http::BACKEND_VIEW), $requestPath, $matches
+        );
+        @list($unused, $pub) = $matches;
+
+        return $match && (($pub === '') === $this->frontendState->isPubRoot());
     }
 
     /**
@@ -50,14 +85,15 @@ class StaticGenerationObserver implements \Awesome\Framework\Model\Event\Observe
      * @param string $requestPath
      * @return string
      */
-    private function getFilePath($requestPath)
+    private function getFilePath(string $requestPath): string
     {
-        $path = preg_replace(
+        preg_match(
             sprintf(self::STATIC_FILE_PATTERN, Http::FRONTEND_VIEW, Http::BACKEND_VIEW, StaticContent::LIB_FOLDER_PATH),
-            '$3::$4::$5',
-            $requestPath
+            $requestPath,
+            $matches
         );
-        @list($view, $module, $file) = explode('::', $path);
+        @list($unused, $pub, $static, $version, $view, $module, $file) = $matches;
+        StaticContentHelper::removeMinificationFlag($file);
 
         if ($module === StaticContent::LIB_FOLDER_PATH) {
             $path = BP . '/' . StaticContent::LIB_FOLDER_PATH . '/' . $file;

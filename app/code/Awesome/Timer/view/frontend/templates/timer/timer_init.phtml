@@ -1,9 +1,0 @@
-<?php /** @var \Awesome\Timer\Block\Timer $block */ ?>
-<script type="application/javascript">
-    jQuery(function () {
-        $('.random-time.range-slider').rangeSlider(<?= $block->getRandomRangeConfigJson(); ?>);
-        $('.settings').settings(<?= $block->getSettingsJson(); ?>);
-        $('.timer-container').timer(<?= $block->getTimerConfigJson(); ?>);
-        $('.timer-wrapper.radial-container').radialSlider({});
-    });
-</script>

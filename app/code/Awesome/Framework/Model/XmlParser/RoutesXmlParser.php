@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Framework\Model\XmlParser;
 
@@ -16,7 +17,7 @@ class RoutesXmlParser
      * @return array
      * @throws XmlValidationException
      */
-    public function getRoutesData($view)
+    public function getRoutesData(string $view): array
     {
         $routesData = [];
         $routesXmlFilesPattern = APP_DIR . sprintf(self::ROUTES_XML_PATH_PATTERN, $view);
@@ -46,7 +47,7 @@ class RoutesXmlParser
      * @return array
      * @throws XmlValidationException
      */
-    private function parse($routesXmlFile)
+    private function parse(string $routesXmlFile): array
     {
         $parsedNode = [
             Router::INTERNAL_TYPE => [],

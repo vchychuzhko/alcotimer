@@ -1,0 +1,7 @@
+{
+    "paths": {
+        "howler": "lib/goldfire/howler",
+        "settings": "Awesome_Timer/js/settings",
+        "timer": "Awesome_Timer/js/timer"
+    }
+}

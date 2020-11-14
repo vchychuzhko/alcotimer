@@ -1,8 +1,10 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Cache\Console;
 
 use Awesome\Cache\Model\Cache;
+use Awesome\Console\Model\Cli\Input;
 use Awesome\Console\Model\Cli\Input\InputDefinition;
 use Awesome\Console\Model\Cli\Output;
 use Awesome\Framework\Model\Config;
@@ -33,9 +35,9 @@ class Enable extends \Awesome\Console\Model\Cli\AbstractCommand
     /**
      * @inheritDoc
      */
-    public static function configure($definition)
+    public static function configure(): InputDefinition
     {
-        return parent::configure($definition)
+        return parent::configure()
             ->setDescription('Enable application cache')
             ->addArgument('types', InputDefinition::ARGUMENT_ARRAY, 'Cache types to be enabled');
     }
@@ -44,15 +46,21 @@ class Enable extends \Awesome\Console\Model\Cli\AbstractCommand
      * Enable application cache.
      * @inheritDoc
      */
-    public function execute($input, $output)
+    public function execute(Input $input, Output $output): void
     {
         $definedTypes = $this->cache->getTypes();
         $types = $input->getArgument('types') ?: $definedTypes;
+        $titleShown = false;
 
         foreach ($types as $type) {
             if (in_array($type, $definedTypes, true)) {
                 $this->config->set(Cache::CACHE_CONFIG_PATH . '/' . $type, 1);
-                $output->writeln('Cache enabled: ' . $type);
+
+                if (!$titleShown) {
+                    $output->writeln('Enabled cache types:');
+                    $titleShown = true;
+                }
+                $output->writeln($type);
             } else {
                 $output->writeln('Provided cache type was not recognized.');
                 $output->writeln();

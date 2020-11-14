@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Framework\Helper;
 
@@ -11,7 +12,7 @@ class DataHelper
      * @param string $elementKeyToGet
      * @return mixed
      */
-    public static function arrayGetByKeyRecursive($array, $elementKeyToGet)
+    public static function arrayGetByKeyRecursive(array $array, string $elementKeyToGet)
     {
         $element = null;
 
@@ -35,8 +36,9 @@ class DataHelper
      * @param array $array
      * @param string $elementKeyToUpdate
      * @param mixed $newValue
+     * @return void
      */
-    public static function arrayReplaceByKeyRecursive(&$array, $elementKeyToUpdate, $newValue)
+    public static function arrayReplaceByKeyRecursive(array &$array, string $elementKeyToUpdate, $newValue): void
     {
         foreach ($array as $key => $value) {
             if ($key === $elementKeyToUpdate) {
@@ -56,8 +58,9 @@ class DataHelper
      * Based on https://www.php.net/manual/en/function.array-walk-recursive.php#114574
      * @param array $array
      * @param string $elementKeyToRemove
+     * @return void
      */
-    public static function arrayRemoveByKeyRecursive(&$array, $elementKeyToRemove)
+    public static function arrayRemoveByKeyRecursive(array &$array, string $elementKeyToRemove): void
     {
         foreach ($array as $key => $value) {
             if ($key === $elementKeyToRemove) {
@@ -69,13 +72,42 @@ class DataHelper
     }
 
     /**
+     * Check if string is a boolean "true", otherwise return false.
+     * Case insensitive.
+     * @param string $string
+     * @return bool
+     */
+    public static function isStringBooleanTrue(string $string): bool
+    {
+        return strtolower($string) === 'true';
+    }
+
+    /**
+     * Cast value to a corresponding type.
+     * String like "true" or "false" are treated as bool type, not case sensitive.
+     * @param mixed $value
+     * @return mixed
+     */
+    public static function castValue($value)
+    {
+        if (is_numeric($value)) {
+            $value += 0;
+        } elseif (in_array(strtolower($value), ['true', 'false'], true)) {
+            $value = self::isStringBooleanTrue($value);
+        }
+
+        return $value;
+    }
+
+    /**
      * Converts camelCase to snake_case.
+     * Based on https://stackoverflow.com/a/19533226
      * @param string $string
      * @return string
      */
-    public static function underscore($string)
+    public static function underscore(string $string): string
     {
-        return strtolower(trim(preg_replace('/([A-Z]|[0-9]+)/', "_$1", $string), '_'));
+        return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $string));
     }
 
     /**
@@ -84,7 +116,7 @@ class DataHelper
      * @param string $separator
      * @return string
      */
-    public static function camelCase($string, $separator = '_')
+    public static function camelCase(string $string, string $separator = '_'): string
     {
         return str_replace($separator, '', lcfirst(ucwords($string, $separator)));
     }

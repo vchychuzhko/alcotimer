@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Framework\Model\Http\Response;
 
@@ -17,7 +18,7 @@ class JsonResponse extends \Awesome\Framework\Model\Http\Response
      * @param array|string $data
      * @inheritDoc
      */
-    public function __construct($data = [], $status = self::SUCCESS_STATUS_CODE, $headers = [])
+    public function __construct($data = [], int $status = self::SUCCESS_STATUS_CODE, array $headers = [])
     {
         parent::__construct('', $status, $headers);
         $this->json = Invoker::getInstance()->get(Json::class);
@@ -27,7 +28,7 @@ class JsonResponse extends \Awesome\Framework\Model\Http\Response
     /**
      * @inheritDoc
      */
-    public function proceed()
+    public function proceed(): void
     {
         $this->setHeader('Content-Type', 'application/json');
 
@@ -39,7 +40,7 @@ class JsonResponse extends \Awesome\Framework\Model\Http\Response
      * @param array $data
      * @return $this
      */
-    public function setContentJson($data)
+    public function setContentJson(array $data): self
     {
         $content = $this->json->encode($data);
 
@@ -50,7 +51,7 @@ class JsonResponse extends \Awesome\Framework\Model\Http\Response
      * Get response content, decoding it.
      * @return array
      */
-    public function getContentJson()
+    public function getContentJson(): array
     {
         return $this->json->decode($this->content);
     }

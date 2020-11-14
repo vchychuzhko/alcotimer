@@ -1,4 +1,10 @@
-;(function ($) {
+define([
+    'jquery',
+    'messenger',
+    'jquery/ui',
+], function ($, messenger) {
+    'use strict'
+
     $.widget('awesome.settings', {
         options: {
             hideRandomTime: false,
@@ -22,9 +28,7 @@
             $(this.element).on('click', '.apply-button', function () {
                 this.applySettings();
                 this.saveSettings();
-                $(document).trigger('message.show', {
-                    message: 'Settings were applied!'
-                });
+                messenger.message('Settings were applied!');
 
                 setTimeout(function () {
                     $(document).trigger('menu.close');
@@ -119,4 +123,4 @@
             });
         }
     });
-})(jQuery);
+});

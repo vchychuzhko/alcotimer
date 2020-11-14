@@ -1,8 +1,10 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Controller\Observer;
 
 use Awesome\Framework\Helper\DataHelper;
+use Awesome\Framework\Model\Event;
 use Awesome\Framework\Model\FileManager\PhpFileManager;
 use Awesome\Framework\Model\Http;
 use Awesome\Framework\Model\Http\Request;
@@ -33,7 +35,7 @@ class ControllerRoutingObserver implements \Awesome\Framework\Model\Event\Observ
      * Resolve controller routing.
      * @inheritDoc
      */
-    public function execute($event)
+    public function execute(Event $event): void
     {
         /** @var Router $router */
         $router = $event->getRouter();

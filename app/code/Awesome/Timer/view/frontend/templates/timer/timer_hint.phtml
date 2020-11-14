@@ -9,7 +9,12 @@
     </div>
 </div>
 <script type="application/javascript">
-    (function ($) {
+    require([
+        'jquery',
+        'popup',
+    ], function ($) {
+        'use strict'
+
         let $timerHint = $('.timer-hint'),
             shown = localStorage.getItem('timerHintShown');
 
@@ -25,5 +30,6 @@
                 localStorage.setItem('timerHintShown', 'true');
             })
         }
-    })(jQuery);
+    });
+    // @TODO: unite all timer data into one record in localstorage
 </script>

@@ -1,13 +1,11 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Framework\Model;
 
 class Maintenance
 {
-    public const MAINTENANCE_FILE = '/var/maintenance.flag';
-
-    public const MAINTENANCE_PAGE_PATH = '/pub/pages/maintenance.html';
-    public const INTERNALERROR_PAGE_PATH = '/pub/pages/internal_error.html';
+    private const MAINTENANCE_FILE = '/var/maintenance.flag';
 
     /**
      * @var FileManager $fileManager
@@ -28,7 +26,7 @@ class Maintenance
      * @param array $allowedIPs
      * @return $this
      */
-    public function enable($allowedIPs = [])
+    public function enable($allowedIPs = []): self
     {
         $this->fileManager->createFile(BP . self::MAINTENANCE_FILE, implode(',', $allowedIPs), true);
 
@@ -39,7 +37,7 @@ class Maintenance
      * Disable maintenance mode.
      * @return $this
      */
-    public function disable()
+    public function disable(): self
     {
         $this->fileManager->removeFile(BP . self::MAINTENANCE_FILE);
 
@@ -50,13 +48,13 @@ class Maintenance
      * Get current state of maintenance.
      * @return array
      */
-    public function getStatus()
+    public function getStatus(): array
     {
         $status = [
             'enabled' => false
         ];
 
-        if ($allowedIPs = $this->fileManager->readFile(BP . self::MAINTENANCE_FILE)) {
+        if (($allowedIPs = $this->fileManager->readFile(BP . self::MAINTENANCE_FILE)) !== false) {
             $status = [
                 'enabled' => true,
                 'allowed_ips' => []
@@ -76,28 +74,10 @@ class Maintenance
      * @param string $ip
      * @return bool
      */
-    public function isMaintenance($ip = '')
+    public function isMaintenance(string $ip = ''): bool
     {
         $state = $this->getStatus();
 
         return $state['enabled'] && !in_array($ip, $state['allowed_ips'], true);
-    }
-
-    /**
-     * Get maintenance page.
-     * @return string
-     */
-    public function getMaintenancePage()
-    {
-        return $this->fileManager->readFile(BP . self::MAINTENANCE_PAGE_PATH, false);
-    }
-
-    /**
-     * Get internal error page.
-     * @return string
-     */
-    public function getInternalErrorPage()
-    {
-        return $this->fileManager->readFile(BP . self::INTERNALERROR_PAGE_PATH, false);
     }
 }

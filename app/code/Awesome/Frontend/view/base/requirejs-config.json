@@ -1,0 +1,9 @@
+{
+    "paths": {
+        "jquery": "lib/jquery/jquery",
+        "jquery/ui": "lib/jquery/jquery-ui",
+        "copy": "Awesome_Frontend/js/copy",
+        "radialSlider": "Awesome_Frontend/js/radial-slider",
+        "rangeSlider": "Awesome_Frontend/js/range-slider"
+    }
+}

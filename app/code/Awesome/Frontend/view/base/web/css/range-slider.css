@@ -20,6 +20,8 @@
     /*dots*/
     background-color: #fff;
     border-radius: 50%;
+    -moz-box-shadow: 0 1px 4px 1px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 1px 4px 1px rgba(0, 0, 0, 0.25);
     box-shadow: 0 1px 4px 1px rgba(0, 0, 0, 0.25);
 
     content: '';

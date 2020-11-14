@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
 
 namespace Awesome\Cache\Console;
 
 use Awesome\Cache\Model\Cache;
+use Awesome\Console\Model\Cli\Input;
+use Awesome\Console\Model\Cli\Input\InputDefinition;
 use Awesome\Console\Model\Cli\Output;
-use Awesome\Framework\Model\Config;
 
 class Status extends \Awesome\Console\Model\Cli\AbstractCommand
 {
@@ -14,27 +16,20 @@ class Status extends \Awesome\Console\Model\Cli\AbstractCommand
     private $cache;
 
     /**
-     * @var Config $config
-     */
-    private $config;
-
-    /**
      * Cache Status constructor.
      * @param Cache $cache
-     * @param Config $config
      */
-    public function __construct(Cache $cache, Config $config)
+    public function __construct(Cache $cache)
     {
         $this->cache = $cache;
-        $this->config = $config;
     }
 
     /**
      * @inheritDoc
      */
-    public static function configure($definition)
+    public static function configure(): InputDefinition
     {
-        return parent::configure($definition)
+        return parent::configure()
             ->setDescription('Show application cache status');
     }
 
@@ -42,15 +37,15 @@ class Status extends \Awesome\Console\Model\Cli\AbstractCommand
      * Show application cache status.
      * @inheritDoc
      */
-    public function execute($input, $output)
+    public function execute(Input $input, Output $output): void
     {
         $types = $this->cache->getTypes();
-        $padding = max(array_map(function ($type) {
+        $padding = max(array_map(static function ($type) {
             return strlen($type);
         }, $types));
 
         foreach ($types as $type) {
-            $status = $this->config->get(Cache::CACHE_CONFIG_PATH . '/' . $type)
+            $status = $this->cache->cacheTypeEnabled($type)
                 ? $output->colourText('enabled')
                 : $output->colourText('disabled', Output::BROWN);
 

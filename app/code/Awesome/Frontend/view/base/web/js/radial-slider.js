@@ -1,7 +1,12 @@
-;(function ($) {
-    let MAX_ANGLE = 360,
-        MIN_ANGLE = 0,
-        STEP_INDICATOR_ANGLE = 30;
+define([
+    'jquery',
+    'jquery/ui',
+], function ($) {
+    'use strict'
+
+    const MAX_ANGLE = 360,
+          MIN_ANGLE = 0,
+          STEP_INDICATOR_ANGLE = 30;
 
     $.widget('awesome.radialSlider', {
         /**
@@ -34,7 +39,8 @@
                         let touch = event.originalEvent.touches ? event.originalEvent.touches[0] : undefined,
                             targetX = (event.pageX || touch.pageX) - this.offsetLeft - this.borderWidth / 2,
                             targetY = (event.pageY || touch.pageY) - this.offsetTop - this.borderWidth / 2,
-                            angle = this.getAngleByCoordinates(targetX, targetY);
+                            angle = this.getAngleByCoordinates(targetX, targetY),
+                            previousAngle = this.getValueFromController();
 
                         if (this.minReached) {
                             if (targetX - this.centerX < 0) {
@@ -51,23 +57,17 @@
                         } else if (angle >= MAX_ANGLE - STEP_INDICATOR_ANGLE
                             || angle <= MIN_ANGLE + STEP_INDICATOR_ANGLE
                         ) {
-                            if (this.previousAngle === null) {
-                                this.previousAngle = angle;
-                            } else {
-                                if (this.previousAngle >= MAX_ANGLE - STEP_INDICATOR_ANGLE
-                                    && angle <= MIN_ANGLE + STEP_INDICATOR_ANGLE
-                                ) {
-                                    angle = MAX_ANGLE;
-                                    this.maxReached = true;
-                                } else if (this.previousAngle <= MIN_ANGLE + STEP_INDICATOR_ANGLE
-                                    && angle >= MAX_ANGLE - STEP_INDICATOR_ANGLE
-                                ) {
-                                    angle = MIN_ANGLE;
-                                    this.minReached = true;
-                                }
+                            if (previousAngle >= MAX_ANGLE - STEP_INDICATOR_ANGLE
+                                && angle <= MIN_ANGLE + STEP_INDICATOR_ANGLE
+                            ) {
+                                angle = MAX_ANGLE;
+                                this.maxReached = true;
+                            } else if (previousAngle <= MIN_ANGLE + STEP_INDICATOR_ANGLE
+                                && angle >= MAX_ANGLE - STEP_INDICATOR_ANGLE
+                            ) {
+                                angle = MIN_ANGLE;
+                                this.minReached = true;
                             }
-                        } else {
-                            this.previousAngle = null;
                         }
 
                         this.setControllerPosition(angle);
@@ -178,4 +178,4 @@
             return angle;
         }
     });
-})(jQuery);
+});

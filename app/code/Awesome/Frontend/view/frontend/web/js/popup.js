@@ -1,4 +1,9 @@
-;(function ($) {
+define([
+    'jquery',
+    'jquery/ui',
+], function ($) {
+    'use strict'
+
     $.widget('awesome.popup', {
         options: {
             closeOnEsc: true,
@@ -110,4 +115,4 @@
             $(this.element).trigger('popup.close');
         }
     });
-})(jQuery);
+});

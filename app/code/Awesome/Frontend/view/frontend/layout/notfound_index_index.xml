@@ -9,7 +9,7 @@
         <referenceContainer name="page-wrapper">
             <block name="notfound.content"
                    class="Awesome\Frontend\Block\Error\NotFound"
-                   template="Awesome_Frontend::pages/errors.phtml"
+                   template="Awesome_Frontend::pages/error-content.phtml"
                    sortOrder="5"/>
         </referenceContainer>
     </body>
