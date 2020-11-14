@@ -1,7 +1,7 @@
 {
     "paths": {
         "menu": "Awesome_Frontend/js/menu",
-        "message": "Awesome_Frontend/js/message",
+        "messenger": "Awesome_Frontend/js/messenger",
         "popup": "Awesome_Frontend/js/popup"
     }
 }

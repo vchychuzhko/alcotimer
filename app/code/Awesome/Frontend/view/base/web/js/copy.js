@@ -1,8 +1,8 @@
 define([
     'jquery',
-    'message',
+    'messenger',
     'jquery/ui',
-], function ($, message) {
+], function ($, messenger) {
     'use strict'
 
     $.widget('awesome.copy', {
@@ -49,7 +49,7 @@ define([
             $temp.remove();
 
             if (this.options.showMessage) {
-                message.message('Copied to the clipboard!');
+                messenger.message('Copied to the clipboard!');
             }
         }
     });

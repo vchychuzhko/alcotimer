@@ -3,19 +3,25 @@ define([
     'jquery/ui',
 ], function ($) {
     'use strict'
-
+// @todo: rename to messenger?
     const MAX_MESSAGE_NUMBER = 3;
 
-    let $messagesContainer = null,
-        messages = [];
+    let messages = [];
 
     /**
-     * Create messages container.
+     * Prepare and return messages container element.
+     * @return {jQuery}
      */
-    function init () {
-        $messagesContainer = $('<div class="messages-container"></div>');
+    function getMessagesContainer () {
+        let $messagesContainer = $('.messages-container');
 
-        $('body').append($messagesContainer);
+        if ($messagesContainer.length !== 1) {
+            $messagesContainer = $('<div class="messages-container"></div>');
+
+            $('body').append($messagesContainer);
+        }
+
+        return $messagesContainer;
     }
 
     /**
@@ -25,11 +31,9 @@ define([
      * @param {boolean} error
      * @param {boolean} preprocessed
      */
-    function pushMessage(content, duration = 3000, error = false, preprocessed = false) {
-        if ($messagesContainer === null) {
-            init();
-        }
-        let $message = $('<div class="message' + (error ? ' error' : '') + '"></div>');
+    function pushMessage (content, duration = 3000, error = false, preprocessed = false) {
+        let $message = $('<div class="message' + (error ? ' error' : '') + '"></div>'),
+            $messagesContainer = getMessagesContainer();
 
         if (preprocessed) {
             $message.append(content);
@@ -43,18 +47,18 @@ define([
         messages.push($message);
         $messagesContainer.prepend($message);
 
-        $messagesContainer.addClass('move');
+        $messagesContainer.addClass('slide-down');
         setTimeout(function () {
-            $messagesContainer.removeClass('move');
+            $messagesContainer.removeClass('slide-down');
         }.bind(this), 400);
 
-        let removeMessageTimeout = setTimeout(function () {
+        let messageCloseTimeout = setTimeout(function () {
             $message.off('click.messageClose');
             removeMessage($message);
         }, duration);
 
         $message.one('click.messageClose', function () {
-            clearTimeout(removeMessageTimeout);
+            clearTimeout(messageCloseTimeout);
             removeMessage($message);
         });
     }
@@ -63,7 +67,7 @@ define([
      * Remove message from the list and container.
      * Last message will be removed if none provided.
      */
-    function removeMessage($message = null) {
+    function removeMessage ($message = null) {
         if ($message) {
             let index = messages.indexOf($message);
 

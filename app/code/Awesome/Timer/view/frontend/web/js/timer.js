@@ -1,13 +1,13 @@
 define([
     'jquery',
-    'message',
+    'messenger',
     'jquery/ui',
     'howler',
-], function ($, message) {
+], function ($, messenger) {
     'use strict'
 
-    let RUNNING_STATE = 'running',
-        STOPPED_STATE = 'stopped';
+    const RUNNING_STATE = 'running',
+          STOPPED_STATE = 'stopped';
 
     $.widget('awesome.timer', {
         options: {
@@ -200,12 +200,12 @@ define([
 
             if (this.options.sound) {
                 let sound = new Howl({
-                    src: [this.options.sound]
+                    src: [this.options.sound],
                 });
 
                 sound.play();
             } else {
-                message.message('It time to start!.');
+                messenger.message('It time to start!');
             }
         },
 

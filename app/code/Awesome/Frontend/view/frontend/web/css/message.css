@@ -8,7 +8,7 @@
     z-index: 50;
 }
 
-.messages-container.move {
+.messages-container.slide-down {
     animation: slide-down 0.4s ease;
 }
 

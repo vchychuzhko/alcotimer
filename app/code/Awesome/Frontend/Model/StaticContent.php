@@ -177,17 +177,22 @@ class StaticContent
             $path = BP . '/' . ltrim(str_replace(BP, '', $path), '/');
             $extension = pathinfo($path, PATHINFO_EXTENSION);
 
-            if ($extension === 'css') {
-                $minify = $this->frontendState->isCssMinificationEnabled();
+            switch ($extension) {
+                case 'css': {
+                    $minify = $this->frontendState->isCssMinificationEnabled();
 
-                $this->generateCssFile($path, $view, $minify);
-            } elseif ($extension === 'js') {
-                $minify = $this->frontendState->isJsMinificationEnabled();
+                    $this->generateCssFile($path, $view, $minify);
+                    break;
+                }
+                case 'js': {
+                    $minify = $this->frontendState->isJsMinificationEnabled();
 
-                if (preg_match(self::LIB_FILE_PATTERN, $path)) {
-                    $this->generateLibFile($path, $view, $minify);
-                } else {
-                    $this->generateJsFile($path, $view, $minify);
+                    if (preg_match(self::LIB_FILE_PATTERN, $path)) {
+                        $this->generateLibFile($path, $view, $minify);
+                    } else {
+                        $this->generateJsFile($path, $view, $minify);
+                    }
+                    break;
                 }
             }
         }
