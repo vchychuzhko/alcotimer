@@ -3,7 +3,7 @@ define([
     'jquery/ui',
 ], function ($) {
     'use strict'
-// @todo: rename to messenger?
+
     const MAX_MESSAGE_NUMBER = 3;
 
     let messages = [];

@@ -54,15 +54,15 @@ class CommandXmlParser
         $commandNode = simplexml_load_file($cliXmlFile);
 
         foreach ($commandNode->children() as $namespace) {
-            if (!$namespaceName = XmlParsingHelper::getNodeAttribute($namespace)) {
+            if (!$namespaceName = XmlParsingHelper::getNodeAttributeName($namespace)) {
                 throw new XmlValidationException(
                     sprintf('Name attribute is not specified for namespace in "%s" file', $cliXmlFile)
                 );
             }
 
             foreach ($namespace->children() as $command) {
-                if (!XmlParsingHelper::isAttributeBooleanTrue($command)) {
-                    if (!$commandName = XmlParsingHelper::getNodeAttribute($command)) {
+                if (!XmlParsingHelper::isDisabled($command)) {
+                    if (!$commandName = XmlParsingHelper::getNodeAttributeName($command)) {
                         throw new XmlValidationException(
                             sprintf('Name attribute is not specified for "%s" namespace command', $namespaceName)
                         );

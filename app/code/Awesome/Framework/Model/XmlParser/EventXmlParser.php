@@ -57,13 +57,13 @@ class EventXmlParser
         $eventNode = simplexml_load_file($eventsXmlFile);
 
         foreach ($eventNode->children() as $event) {
-            if (!$eventName = XmlParsingHelper::getNodeAttribute($event)) {
+            if (!$eventName = XmlParsingHelper::getNodeAttributeName($event)) {
                 throw new XmlValidationException(sprintf('Name attribute is not provided for event in "%s" file', $eventsXmlFile));
             }
             $parsedNode[$eventName] = $parsedNode[$eventName] ?? [];
 
             foreach ($event->children() as $observer) {
-                if (!$observerName = XmlParsingHelper::getNodeAttribute($observer)) {
+                if (!$observerName = XmlParsingHelper::getNodeAttributeName($observer)) {
                     throw new XmlValidationException(sprintf('Name attribute is not provided for "%s" event observer', $eventName));
                 }
 
@@ -77,7 +77,7 @@ class EventXmlParser
                 }
                 $parsedNode[$eventName][$observerName] = [
                     'class' => '\\' . $class,
-                    'disabled' => XmlParsingHelper::isAttributeBooleanTrue($observer),
+                    'disabled' => XmlParsingHelper::isDisabled($observer),
                 ];
 
                 if ($sortOrder = XmlParsingHelper::getNodeAttribute($observer, 'sortOrder')) {

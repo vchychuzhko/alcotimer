@@ -7,26 +7,44 @@ class XmlParsingHelper
 {
     /**
      * Get attribute value from the provided XML node.
-     * Process "name" attribute by default.
      * @param \SimpleXMLElement $node
      * @param string $attribute
      * @return string
      */
-    public static function getNodeAttribute(\SimpleXMLElement $node, string $attribute = 'name'): string
+    public static function getNodeAttribute(\SimpleXMLElement $node, string $attribute): string
     {
         return (string) $node[$attribute];
+    }
+    /**
+     * Get node attribute name if any.
+     * @param \SimpleXMLElement $node
+     * @return string
+     */
+    public static function getNodeAttributeName(\SimpleXMLElement $node): string
+    {
+        return self::getNodeAttribute($node, 'name');
     }
 
     /**
      * Check if node attribute is a boolean "true".
-     * Process "disabled" attribute by default.
      * @param \SimpleXMLElement $node
      * @param string $attribute
      * @return bool
      */
-    public static function isAttributeBooleanTrue(\SimpleXMLElement $node, string $attribute = 'disabled'): bool
+    public static function isAttributeBooleanTrue(\SimpleXMLElement $node, string $attribute): bool
     {
         return DataHelper::isStringBooleanTrue(self::getNodeAttribute($node, $attribute));
+    }
+
+    /**
+     * Check if node element is disabled.
+     * If attribute is absent, false will be returned.
+     * @param \SimpleXMLElement $node
+     * @return bool
+     */
+    public static function isDisabled(\SimpleXMLElement $node): bool
+    {
+        return self::isAttributeBooleanTrue($node, 'disabled');
     }
 
     /**

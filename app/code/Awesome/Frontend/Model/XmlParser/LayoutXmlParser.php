@@ -171,7 +171,7 @@ class LayoutXmlParser
 
         foreach ($bodyNode->children() as $bodyItem) {
             if ($parsedItem = $this->parseBodyItem($bodyItem)) {
-                $body[XmlParsingHelper::getNodeAttribute($bodyItem)] = $parsedItem;
+                $body[XmlParsingHelper::getNodeAttributeName($bodyItem)] = $parsedItem;
             }
         }
 
@@ -187,7 +187,7 @@ class LayoutXmlParser
     private function parseBodyItem(\SimpleXMLElement $itemNode): array
     {
         $parsedItemNode = [];
-        $itemName = XmlParsingHelper::getNodeAttribute($itemNode);
+        $itemName = XmlParsingHelper::getNodeAttributeName($itemNode);
 
         switch ($itemNode->getName()) {
             case 'block':
@@ -203,7 +203,7 @@ class LayoutXmlParser
                 }
 
                 foreach ($itemNode->children() as $child) {
-                    $parsedItemNode['children'][XmlParsingHelper::getNodeAttribute($child)] = $this->parseBodyItem($child);
+                    $parsedItemNode['children'][XmlParsingHelper::getNodeAttributeName($child)] = $this->parseBodyItem($child);
                 }
 
                 if (in_array($itemName, $this->processedElements, true)) {
@@ -232,7 +232,7 @@ class LayoutXmlParser
                 }
 
                 foreach ($itemNode->children() as $child) {
-                    $parsedItemNode['children'][XmlParsingHelper::getNodeAttribute($child)] = $this->parseBodyItem($child);
+                    $parsedItemNode['children'][XmlParsingHelper::getNodeAttributeName($child)] = $this->parseBodyItem($child);
                 }
 
                 if (in_array($itemName, $this->processedElements, true)) {
@@ -254,11 +254,11 @@ class LayoutXmlParser
                     }
 
                     foreach ($itemNode->children() as $child) {
-                        $reference['children'][XmlParsingHelper::getNodeAttribute($child)] = $this->parseBodyItem($child);
+                        $reference['children'][XmlParsingHelper::getNodeAttributeName($child)] = $this->parseBodyItem($child);
                     }
                     $this->references[] = [
                         'name' => $itemName,
-                        'data' => $reference
+                        'data' => $reference,
                     ];
                 }
                 break;

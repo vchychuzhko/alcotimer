@@ -56,7 +56,7 @@ class RoutesXmlParser
         $routesNode = simplexml_load_file($routesXmlFile);
 
         foreach ($routesNode->children() as $route) {
-            if (!XmlParsingHelper::isAttributeBooleanTrue($route)) {
+            if (!XmlParsingHelper::isDisabled($route)) {
                 if (!$routeFrontName = XmlParsingHelper::getNodeAttribute($route, 'frontName')) {
                     throw new XmlValidationException(sprintf('FrontName attribute is not provided for route in "%s" file', $routesXmlFile));
                 }
@@ -72,7 +72,7 @@ class RoutesXmlParser
                 if (!$module = $route->module) {
                     throw new XmlValidationException(sprintf('Responsible module is not provided for "%s" route', $routeFrontName));
                 }
-                if (!$moduleName = XmlParsingHelper::getNodeAttribute($module)) {
+                if (!$moduleName = XmlParsingHelper::getNodeAttributeName($module)) {
                     throw new XmlValidationException(sprintf('Module name attribute is not provided for "%s" route', $routeFrontName));
                 }
                 $parsedNode[$routeType][$routeFrontName] = $moduleName;
