@@ -130,7 +130,7 @@ class Cache implements \Awesome\Framework\Model\SingletonInterface
      */
     private function readCacheFile(string $key): array
     {
-        $cache = $this->fileManager->readFile(BP . self::CACHE_DIR . '/' . $key . '-cache') ?: '{}';
+        $cache = $this->fileManager->readFile(BP . self::CACHE_DIR . '/' . $key . '-cache', true) ?: '{}';
 
         return $this->json->decode($cache);
     }

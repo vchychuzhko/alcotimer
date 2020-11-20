@@ -50,18 +50,21 @@ class MaintenanceEnable extends \Awesome\Console\Model\Cli\AbstractCommand
      */
     public function execute(Input $input, Output $output): void
     {
-        $allowedIPs = $input->getArgument('ips');
+        $allowedIPs = $input->getArgument('ips') ?: [];
 
-        if ($input->getOption('force') || $this->ipValidator->validItems($allowedIPs)) {
-            $this->maintenance->enable($allowedIPs);
+        if ($allowedIPs && !$input->getOption('force')) {
+            foreach ($allowedIPs as $allowedIP) {
+                if (!$this->ipValidator->valid($allowedIP)) {
+                    $output->write('Provided IP address is not valid, please, check it and try again: ');
+                    $output->writeln($output->colourText($allowedIP, Output::BROWN));
+                    $output->writeln('Use -f/--force option if you want to proceed anyway.');
 
-            $output->writeln('Maintenance mode was enabled.');
-        } else {
-            $output->write('Provided IP addresses are not valid, please, check them and try again: ');
-            $output->writeln($output->colourText(implode(', ', $this->ipValidator->getInvalidItems()), Output::BROWN));
-            $output->writeln('Use -f/--force option if you want to proceed anyway.');
-
-            throw new \InvalidArgumentException('IP address validation failed');
+                    throw new \InvalidArgumentException('IP address validation failed');
+                }
+            }
         }
+        $this->maintenance->enable($allowedIPs);
+
+        $output->writeln('Maintenance mode was enabled.');
     }
 }

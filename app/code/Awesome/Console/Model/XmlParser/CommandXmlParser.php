@@ -5,53 +5,61 @@ namespace Awesome\Console\Model\XmlParser;
 
 use Awesome\Framework\Exception\XmlValidationException;
 use Awesome\Framework\Helper\XmlParsingHelper;
+use Awesome\Framework\Model\FileManager\XmlFileManager;
 
 class CommandXmlParser
 {
     private const CLI_XML_PATH_PATTERN = '/*/*/etc/cli.xml';
 
     /**
-     * @var array $commandsClasses
+     * @var XmlFileManager $xmlFileManager
      */
-    private $commandsClasses;
+    private $xmlFileManager;
+
+    /**
+     * CommandXmlParser constructor.
+     * @param XmlFileManager $xmlFileManager
+     */
+    public function __construct(XmlFileManager $xmlFileManager)
+    {
+        $this->xmlFileManager = $xmlFileManager;
+    }
 
     /**
      * Get available commands with their responsible classes.
      * @return array
-     * @throws XmlValidationException
+     * @throws \Exception
      */
     public function getCommandsClasses(): array
     {
-        if ($this->commandsClasses === null) {
-            $this->commandsClasses = [];
+        $commandsClasses = [];
 
-            foreach (glob(APP_DIR . self::CLI_XML_PATH_PATTERN) as $cliXmlFile) {
-                $parsedData = $this->parse($cliXmlFile);
+        foreach (glob(APP_DIR . self::CLI_XML_PATH_PATTERN) as $cliXmlFile) {
+            $parsedData = $this->parse($cliXmlFile);
 
-                foreach ($parsedData as $commandName => $commandClass) {
-                    if (isset($this->commands[$commandName])) {
-                        throw new XmlValidationException(sprintf('Command "%s" is already defined', $commandName));
-                    }
-
-                    $this->commandsClasses[$commandName] = $commandClass;
+            foreach ($parsedData as $commandName => $commandClass) {
+                if (isset($this->commands[$commandName])) {
+                    throw new XmlValidationException(sprintf('Command "%s" is already defined', $commandName));
                 }
-            }
-            ksort($this->commandsClasses);
-        }
 
-        return $this->commandsClasses;
+                $commandsClasses[$commandName] = $commandClass;
+            }
+        }
+        ksort($commandsClasses);
+
+        return $commandsClasses;
     }
 
     /**
      * Parse commands XML file.
      * @param string $cliXmlFile
      * @return array
-     * @throws XmlValidationException
+     * @throws \Exception
      */
     private function parse(string $cliXmlFile): array
     {
         $parsedNode = [];
-        $commandNode = simplexml_load_file($cliXmlFile);
+        $commandNode = $this->xmlFileManager->parseXmlFile($cliXmlFile);
 
         foreach ($commandNode->children() as $namespace) {
             if (!$namespaceName = XmlParsingHelper::getNodeAttributeName($namespace)) {

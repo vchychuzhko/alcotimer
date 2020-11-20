@@ -5,6 +5,7 @@ namespace Awesome\Frontend\Model\XmlParser;
 
 use Awesome\Framework\Exception\XmlValidationException;
 use Awesome\Framework\Helper\DataHelper;
+use Awesome\Framework\Model\FileManager\XmlFileManager;
 use Awesome\Framework\Model\Http;
 use Awesome\Framework\Helper\XmlParsingHelper;
 use Awesome\Frontend\Block\Html\Head;
@@ -15,6 +16,11 @@ class LayoutXmlParser
 {
     private const DEFAULT_HANDLE_NAME = 'default';
     private const LAYOUT_XML_PATH_PATTERN = '/*/*/view/%s/layout/%s.xml';
+
+    /**
+     * @var XmlFileManager $xmlFileManager
+     */
+    private $xmlFileManager;
 
     /**
      * @var array $processedElements
@@ -45,11 +51,21 @@ class LayoutXmlParser
     private $referencesToRemove = [];
 
     /**
+     * LayoutXmlParser constructor.
+     * @param XmlFileManager $xmlFileManager
+     */
+    public function __construct(XmlFileManager $xmlFileManager)
+    {
+        $this->xmlFileManager = $xmlFileManager;
+    }
+
+    /**
      * Get layout structure for requested handle for a specified view.
      * @param string $handle
      * @param string $view
      * @param array $handles
      * @return array
+     * @throws \Exception
      */
     public function getLayoutStructure(string $handle, string $view, array $handles = []): array
     {
@@ -63,7 +79,7 @@ class LayoutXmlParser
         $body = [];
 
         foreach (glob(APP_DIR . $pattern, GLOB_BRACE) as $layoutXmlFile) {
-            $layoutData = simplexml_load_file($layoutXmlFile);
+            $layoutData = $this->xmlFileManager->parseXmlFile($layoutXmlFile);
 
             foreach ($layoutData->children() as $rootNode) {
                 if ($rootNode->getName() === 'head') {

@@ -5,11 +5,26 @@ namespace Awesome\Framework\Model\XmlParser;
 
 use Awesome\Framework\Exception\XmlValidationException;
 use Awesome\Framework\Helper\XmlParsingHelper;
+use Awesome\Framework\Model\FileManager\XmlFileManager;
 use Awesome\Framework\Model\Http\Router;
 
 class RoutesXmlParser
 {
     private const ROUTES_XML_PATH_PATTERN = '/*/*/etc/%s/routes.xml';
+
+    /**
+     * @var XmlFileManager $xmlFileManager
+     */
+    private $xmlFileManager;
+
+    /**
+     * RoutesXmlParser constructor.
+     * @param XmlFileManager $xmlFileManager
+     */
+    public function __construct(XmlFileManager $xmlFileManager)
+    {
+        $this->xmlFileManager = $xmlFileManager;
+    }
 
     /**
      * Get declared routes with their responsive modules.
@@ -45,7 +60,7 @@ class RoutesXmlParser
      * Parse routes XML file.
      * @param string $routesXmlFile
      * @return array
-     * @throws XmlValidationException
+     * @throws \Exception
      */
     private function parse(string $routesXmlFile): array
     {
@@ -53,7 +68,7 @@ class RoutesXmlParser
             Router::INTERNAL_TYPE => [],
             Router::STANDARD_TYPE => [],
         ];
-        $routesNode = simplexml_load_file($routesXmlFile);
+        $routesNode = $this->xmlFileManager->parseXmlFile($routesXmlFile);
 
         foreach ($routesNode->children() as $route) {
             if (!XmlParsingHelper::isDisabled($route)) {

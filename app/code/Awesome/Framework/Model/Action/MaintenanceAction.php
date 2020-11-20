@@ -57,6 +57,6 @@ class MaintenanceAction extends \Awesome\Framework\Model\AbstractAction
      */
     private function getMaintenancePage(): string
     {
-        return $this->fileManager->readFile(BP . self::MAINTENANCE_PAGE_PATH, false);
+        return $this->fileManager->readFile(BP . self::MAINTENANCE_PAGE_PATH);
     }
 }

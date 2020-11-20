@@ -6,11 +6,26 @@ namespace Awesome\Framework\Model\XmlParser;
 use Awesome\Framework\Exception\XmlValidationException;
 use Awesome\Framework\Helper\DataHelper;
 use Awesome\Framework\Helper\XmlParsingHelper;
+use Awesome\Framework\Model\FileManager\XmlFileManager;
 
 class EventXmlParser
 {
     private const EVENTS_GLOBAL_XML_PATH_PATTERN = '/*/*/etc/events.xml';
     private const EVENTS_XML_PATH_PATTERN = '/*/*/etc/{%s/,}events.xml';
+
+    /**
+     * @var XmlFileManager $xmlFileManager
+     */
+    private $xmlFileManager;
+
+    /**
+     * EventXmlParser constructor.
+     * @param XmlFileManager $xmlFileManager
+     */
+    public function __construct(XmlFileManager $xmlFileManager)
+    {
+        $this->xmlFileManager = $xmlFileManager;
+    }
 
     /**
      * Get available events with their responsible observers for a view if specified.
@@ -49,12 +64,12 @@ class EventXmlParser
      * Parse events XML file.
      * @param string $eventsXmlFile
      * @return array
-     * @throws XmlValidationException
+     * @throws \Exception
      */
     private function parse(string $eventsXmlFile): array
     {
         $parsedNode = [];
-        $eventNode = simplexml_load_file($eventsXmlFile);
+        $eventNode = $this->xmlFileManager->parseXmlFile($eventsXmlFile);
 
         foreach ($eventNode->children() as $event) {
             if (!$eventName = XmlParsingHelper::getNodeAttributeName($event)) {

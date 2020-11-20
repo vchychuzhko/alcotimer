@@ -35,12 +35,13 @@ class FileManager implements \Awesome\Framework\Model\SingletonInterface
 
     /**
      * Read file.
+     * By default will throw an exception if file does not exist.
      * @param string $path
      * @param bool $graceful
      * @return string|false
      * @throws \RuntimeException
      */
-    public function readFile(string $path, bool $graceful = true)
+    public function readFile(string $path, bool $graceful = false)
     {
         if (file_exists($path)) {
             if (!is_file($path)) {

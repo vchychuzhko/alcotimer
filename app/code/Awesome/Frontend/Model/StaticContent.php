@@ -211,7 +211,7 @@ class StaticContent
      */
     private function generateCssFile(string $path, string $view, bool $minify = false): self
     {
-        $content = $this->fileManager->readFile($path, false);
+        $content = $this->fileManager->readFile($path);
         $this->parsePubDirPath($content);
 
         $staticPath = preg_replace(self::STATIC_FILE_PATTERN, '/$2_$3/$5', $path);
@@ -220,7 +220,7 @@ class StaticContent
             if (StaticContentHelper::minifiedVersionExists($path)) {
                 StaticContentHelper::addMinificationFlag($path);
 
-                $content = $this->fileManager->readFile($path, false);
+                $content = $this->fileManager->readFile($path);
                 $this->parsePubDirPath($content);
             } else {
                 $content = $this->cssMinifier->minify($content);
@@ -243,7 +243,7 @@ class StaticContent
      */
     private function generateJsFile(string $path, string $view, bool $minify = false): self
     {
-        $content = $this->fileManager->readFile($path, false);
+        $content = $this->fileManager->readFile($path);
 
         $staticPath = preg_replace(self::STATIC_FILE_PATTERN, '/$2_$3/$5', $path);
 
@@ -251,7 +251,7 @@ class StaticContent
             if (StaticContentHelper::minifiedVersionExists($path)) {
                 StaticContentHelper::addMinificationFlag($path);
 
-                $content = $this->fileManager->readFile($path, false);
+                $content = $this->fileManager->readFile($path);
             } else {
                 $content = $this->jsMinifier->minify($content);
             }
@@ -318,7 +318,7 @@ class StaticContent
     public function getDeployedVersion(): ?int
     {
         if (!$this->deployedVersion) {
-            $deployedVersion = $this->fileManager->readFile(BP . self::STATIC_FOLDER_PATH . self::DEPLOYED_VERSION_FILE);
+            $deployedVersion = $this->fileManager->readFile(BP . self::STATIC_FOLDER_PATH . self::DEPLOYED_VERSION_FILE, true);
             $this->deployedVersion = $deployedVersion ? (int) $deployedVersion : null;
         }
 
