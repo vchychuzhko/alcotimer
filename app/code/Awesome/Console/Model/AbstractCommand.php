@@ -6,6 +6,7 @@ namespace Awesome\Console\Model;
 use Awesome\Console\Model\Cli\Input;
 use Awesome\Console\Model\Cli\Input\InputDefinition;
 use Awesome\Console\Model\Cli\Output;
+use Awesome\Framework\Helper\DataHelper;
 
 abstract class AbstractCommand implements \Awesome\Console\Model\CommandInterface
 {
@@ -67,9 +68,7 @@ abstract class AbstractCommand implements \Awesome\Console\Model\CommandInterfac
         if ($arguments) {
             $output->writeln();
             $output->writeln($output->colourText('Arguments:', Output::BROWN));
-            $padding = max(array_map(static function ($name) {
-                return strlen($name);
-            }, array_keys($arguments)));
+            $padding = DataHelper::getMaxLength(array_keys($arguments));
 
             foreach ($arguments as $name => $argument) {
                 $output->writeln($output->colourText(str_pad($name, $padding + 2)) . $argument['description'], 2);
@@ -88,9 +87,7 @@ abstract class AbstractCommand implements \Awesome\Console\Model\CommandInterfac
                     $optionFullNames[$name] = str_repeat(' ', 4) . '--' . $name;
                 }
             }
-            $padding = max(array_map(static function ($option) {
-                return strlen($option);
-            }, $optionFullNames));
+            $padding = DataHelper::getMaxLength($optionFullNames);
 
             foreach ($options as $name => $option) {
                 $output->writeln(

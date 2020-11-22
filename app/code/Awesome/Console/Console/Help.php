@@ -11,6 +11,7 @@ use Awesome\Console\Model\Cli\Input;
 use Awesome\Console\Model\Cli\Input\InputDefinition;
 use Awesome\Console\Model\Cli\Output;
 use Awesome\Console\Model\CommandInterface;
+use Awesome\Framework\Helper\DataHelper;
 
 class Help extends \Awesome\Console\Model\AbstractCommand
 {
@@ -73,9 +74,7 @@ class Help extends \Awesome\Console\Model\AbstractCommand
                         $optionFullNames[$name] = str_repeat(' ', 4) . '--' . $name;
                     }
                 }
-                $padding = max(array_map(static function ($option) {
-                    return strlen($option);
-                }, $optionFullNames));
+                $padding = DataHelper::getMaxLength($optionFullNames);
 
                 foreach ($options as $name => $option) {
                     $output->writeln(
@@ -104,17 +103,17 @@ class Help extends \Awesome\Console\Model\AbstractCommand
     private function processCommands(array $commands, Output $output): void
     {
         $output->writeln($output->colourText('Available commands:', Output::BROWN));
-        $padding = max(array_map(static function ($name) {
+        $padding = DataHelper::getMaxLength($commands, static function ($name) {
             list($unused, $command) = explode(':', $name);
 
-            return strlen($command);
-        }, $commands));
+            return strlen((string) $command);
+        });
         $lastNamespace = null;
 
-        foreach ($commands as $name) {
-            list($namespace, $commandName) = explode(':', $name);
+        foreach ($commands as $commandName) {
+            list($namespace, $name) = explode(':', $commandName);
             /** @var CommandInterface $command */
-            $command = $this->commandResolver->getCommandClass($name);
+            $command = $this->commandResolver->getCommandClass($commandName);
             $definition = $command::configure();
 
             if ($namespace !== $lastNamespace) {
@@ -122,7 +121,7 @@ class Help extends \Awesome\Console\Model\AbstractCommand
                 $lastNamespace = $namespace;
             }
 
-            $output->writeln($output->colourText(str_pad($commandName, $padding + 2)) . $definition->getDescription(), 2);
+            $output->writeln($output->colourText(str_pad($name, $padding + 2)) . $definition->getDescription(), 2);
         }
     }
 }
