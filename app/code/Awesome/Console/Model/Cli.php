@@ -5,33 +5,20 @@ namespace Awesome\Console\Model;
 
 use Awesome\Console\Console\Help;
 use Awesome\Console\Exception\NoSuchCommandException;
-use Awesome\Console\Model\Cli\AbstractCommand;
+use Awesome\Console\Model\Cli\CommandResolver;
 use Awesome\Console\Model\Cli\Input;
 use Awesome\Console\Model\Cli\Input\InputDefinition;
 use Awesome\Console\Model\Cli\Output;
-use Awesome\Console\Model\Handler\CommandHandler;
 use Awesome\Framework\Exception\XmlValidationException;
-use Awesome\Framework\Model\Invoker;
 
 class Cli
 {
     public const VERSION = '0.4.3';
-    public const HELP_COMMAND = 'help:show';
 
     /**
-     * @var CommandHandler $commandHandler
+     * @var CommandResolver $commandResolver
      */
-    private $commandHandler;
-
-    /**
-     * @var Help $help
-     */
-    private $help;
-
-    /**
-     * @var Invoker $invoker
-     */
-    private $invoker;
+    private $commandResolver;
 
     /**
      * @var Input $input
@@ -45,18 +32,12 @@ class Cli
 
     /**
      * Console app constructor.
-     * @param CommandHandler $commandHandler
-     * @param Help $help
-     * @param Invoker $invoker
+     * @param CommandResolver $commandResolver
      */
     public function __construct(
-        CommandHandler $commandHandler,
-        Help $help,
-        Invoker $invoker
+        CommandResolver $commandResolver
     ) {
-        $this->commandHandler = $commandHandler;
-        $this->help = $help;
-        $this->invoker = $invoker;
+        $this->commandResolver = $commandResolver;
     }
 
     /**
@@ -69,35 +50,30 @@ class Cli
         try {
             $input = $this->getInput();
             $output = $this->getOutput();
-
-            if (($command = $input->getCommand()) && !$this->commandHandler->commandExist($command)) {
-                throw new NoSuchCommandException($command);
-            }
+            $commandName = $input->getCommandName();
 
             if ($this->showVersion()) {
                 $this->showAppCliTitle();
-            } elseif ($command && $className = $this->commandHandler->getCommandClass($command)) {
-                /** @var AbstractCommand $consoleClass */
-                $consoleClass = $this->invoker->get($className);
-
+            } elseif ($commandName && $command = $this->commandResolver->getCommand($commandName)) {
                 if ($this->showCommandHelp()) {
-                    $consoleClass->help($input, $output);
+                    $command->help($input, $output);
                 } else {
-                    $consoleClass->execute($input, $output);
+                    $command->execute($input, $output);
                 }
             } else {
-                $this->showAppCliTitle();
-                $output->writeln();
-                $this->help->execute($input, $output);
+                /** @var Help $help */
+                $help = $this->commandResolver->getHelpCommand();
+
+                $help->execute($input, $output);
             }
         } catch (NoSuchCommandException $e) {
             $this->displayException($e);
 
-            if ($candidates = $this->commandHandler->getAlternatives($e->getCommand(), false)) {
+            if ($alternatives = $this->commandResolver->getAlternatives($e->getCommandName(), false)) {
                 $this->getOutput()->writeln('Did you mean one of these?', 2);
 
-                foreach ($candidates as $candidate) {
-                    $this->getOutput()->writeln($this->getOutput()->colourText($candidate, Output::BROWN), 4);
+                foreach ($alternatives as $alternative) {
+                    $this->getOutput()->writeln($this->getOutput()->colourText($alternative, Output::BROWN), 4);
                 }
             } else {
                 $this->getOutput()->writeln('Try running application help, to see available commands.');
@@ -139,39 +115,39 @@ class Cli
     }
 
     /**
-     * Determine if output should be disabled.
+     * Check if output should be disabled.
      * @return bool
      */
     private function isQuiet(): bool
     {
-        return (bool) $this->getInput()->getOption(AbstractCommand::QUIET_OPTION);
+        return $this->input ? (bool) $this->input->getOption(AbstractCommand::QUIET_OPTION) : false;
     }
 
     /**
-     * Determine if user interaction should be disabled.
+     * Check if user interaction should be disabled.
      * @return bool
      */
     private function isNonInteractive(): bool
     {
-        return (bool) $this->getInput()->getOption(AbstractCommand::NOINTERACTION_OPTION);
+        return $this->input ? (bool) $this->input->getOption(AbstractCommand::NOINTERACTION_OPTION) : false;
     }
 
     /**
-     * Determine if application version should be shown.
+     * Check if application version should be shown.
      * @return bool
      */
     private function showVersion(): bool
     {
-        return (bool) $this->getInput()->getOption(AbstractCommand::VERSION_OPTION);
+        return $this->input ? (bool) $this->input->getOption(AbstractCommand::VERSION_OPTION) : false;
     }
 
     /**
-     * Determine if command help should be shown.
+     * Check if command help should be shown.
      * @return bool
      */
     private function showCommandHelp(): bool
     {
-        return (bool) $this->getInput()->getOption(AbstractCommand::HELP_OPTION);
+        return $this->input ? (bool) $this->input->getOption(AbstractCommand::HELP_OPTION) : false;
     }
 
     /**
@@ -186,92 +162,96 @@ class Cli
     /**
      * Parse and get CLI input.
      * @return Input
-     * @throws \InvalidArgumentException
+     * @throws \Exception
      */
     private function getInput(): Input
     {
         if (!$this->input) {
             $argv = $_SERVER['argv'];
-            $command = null;
+            $commandName = null;
 
             if (isset($argv[1]) && strpos($argv[1], '-') !== 0) {
-                $command = $this->commandHandler->parseCommand($argv[1]);
+                $commandName = $this->commandResolver->parseCommand($argv[1]);
                 unset($argv[1]);
             }
 
-            if ($command && !$this->commandHandler->commandExist($command)) {
-                $this->input = new Input($command);
+            if ($commandName) {
+                if (!$this->commandResolver->commandExist($commandName)) {
+                    throw new NoSuchCommandException($commandName);
+                }
+                $command = $this->commandResolver->getCommandClass($commandName) ?: Help::class;
             } else {
-                $options = [];
-                $arguments = [];
-                $collectedArguments = [];
-                $argumentPosition = 1;
-
-                $commandData = $this->commandHandler->getCommandData($command ?: self::HELP_COMMAND);
-                $commandOptions = $commandData['options'];
-                $commandShortcuts = $commandData['shortcuts'];
-                $commandArguments = $commandData['arguments'];
-
-                foreach (array_slice($argv, 1) as $arg) {
-                    if (strpos($arg, '--') === 0) {
-                        @list($option, $value) = explode('=', str_replace_first('--', '', $arg));
-
-                        if (!isset($commandOptions[$option])) {
-                            throw new \InvalidArgumentException(sprintf('Unknown option "%s"', $option));
-                        }
-                        $value = $value ?: $commandOptions[$option]['default'];
-
-                        if ($commandOptions[$option]['type'] === InputDefinition::OPTION_ARRAY) {
-                            $options[$option] = $options[$option] ?? [];
-                            $options[$option][] = $value;
-                        } else {
-                            $options[$option] = $value;
-                        }
-                    } elseif (strpos($arg, '-') === 0) {
-                        $shortcuts = substr($arg, 1);
-
-                        foreach (str_split($shortcuts) as $shortcut) {
-                            if (!isset($commandShortcuts[$shortcut])) {
-                                throw new \InvalidArgumentException(sprintf('Unknown shortcut "%s"', $shortcut));
-                            }
-                            $option = $commandShortcuts[$shortcut];
-                            $options[$option] = $commandOptions[$option]['default'];
-                        }
-                    } else {
-                        $collectedArguments[$argumentPosition++] = $arg;
-                    }
-                }
-
-                if (!isset($options[AbstractCommand::HELP_OPTION]) && !isset($options[AbstractCommand::VERSION_OPTION])) {
-                    if ($commandOptions) {
-                        foreach ($commandOptions as $optionName => $optionData) {
-                            if ($optionData['type'] === InputDefinition::OPTION_REQUIRED && !isset($options[$optionName])) {
-                                throw new \InvalidArgumentException(sprintf('Required option "%s" was not provided', $optionName));
-                            }
-                        }
-                    }
-
-                    if ($commandArguments) {
-                        foreach ($commandArguments as $argumentName => $argumentData) {
-                            $position = $argumentData['position'];
-
-                            if ($argumentData['type'] === InputDefinition::ARGUMENT_REQUIRED
-                                && !isset($collectedArguments[$position])
-                            ) {
-                                throw new \InvalidArgumentException(sprintf('Required argument "%s" was not provided', $argumentName));
-                            } elseif ($argumentData['type'] === InputDefinition::ARGUMENT_ARRAY) {
-                                $arguments[$argumentName] = array_slice($collectedArguments, $position - 1);
-                            } elseif (isset($collectedArguments[$position])) {
-                                $arguments[$argumentName] = $collectedArguments[$position];
-                            }
-                        }
-                    } else {
-                        $arguments = $collectedArguments;
-                    }
-                }
-
-                $this->input = new Input($command, $options, $arguments);
+                $command = Help::class;
             }
+            $options = [];
+            $arguments = [];
+            $collectedArguments = [];
+            $argumentPosition = 1;
+
+            /** @var CommandInterface $command */
+            $definition = $command::configure();
+            $commandOptions = $definition->getOptions();
+            $commandShortcuts = $definition->getShortcuts();
+            $commandArguments = $definition->getArguments();
+
+            foreach (array_slice($argv, 1) as $arg) {
+                if (strpos($arg, '--') === 0) {
+                    @list($option, $value) = explode('=', str_replace_first('--', '', $arg));
+
+                    if (!isset($commandOptions[$option])) {
+                        throw new \InvalidArgumentException(sprintf('Unknown option "%s"', $option));
+                    }
+                    $value = $value ?: $commandOptions[$option]['default'];
+
+                    if ($commandOptions[$option]['type'] === InputDefinition::OPTION_ARRAY) {
+                        $options[$option] = $options[$option] ?? [];
+                        $options[$option][] = $value;
+                    } else {
+                        $options[$option] = $value;
+                    }
+                } elseif (strpos($arg, '-') === 0) {
+                    $shortcuts = substr($arg, 1);
+
+                    foreach (str_split($shortcuts) as $shortcut) {
+                        if (!isset($commandShortcuts[$shortcut])) {
+                            throw new \InvalidArgumentException(sprintf('Unknown shortcut "%s"', $shortcut));
+                        }
+                        $option = $commandShortcuts[$shortcut];
+                        $options[$option] = $commandOptions[$option]['default'];
+                    }
+                } else {
+                    $collectedArguments[$argumentPosition++] = $arg;
+                }
+            }
+
+            if (!isset($options[AbstractCommand::HELP_OPTION]) && !isset($options[AbstractCommand::VERSION_OPTION])) {
+                foreach ($commandOptions as $optionName => $optionData) {
+                    if ($optionData['type'] === InputDefinition::OPTION_REQUIRED && !isset($options[$optionName])) {
+                        throw new \InvalidArgumentException(
+                            sprintf('Required option "%s" was not provided', $optionName)
+                        );
+                    }
+                }
+
+                foreach ($commandArguments as $argumentName => $argumentData) {
+                    $position = $argumentData['position'];
+
+                    if ($argumentData['type'] === InputDefinition::ARGUMENT_REQUIRED
+                        && !isset($collectedArguments[$position])
+                    ) {
+                        throw new \InvalidArgumentException(
+                            sprintf('Required argument "%s" was not provided', $argumentName)
+                        );
+                    }
+                    if ($argumentData['type'] === InputDefinition::ARGUMENT_ARRAY) {
+                        $arguments[$argumentName] = array_slice($collectedArguments, $position - 1);
+                    } elseif (isset($collectedArguments[$position])) {
+                        $arguments[$argumentName] = $collectedArguments[$position];
+                    }
+                }
+            }
+
+            $this->input = new Input($commandName, $options, $arguments);
         }
 
         return $this->input;

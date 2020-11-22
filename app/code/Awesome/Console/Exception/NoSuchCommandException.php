@@ -6,28 +6,28 @@ namespace Awesome\Console\Exception;
 class NoSuchCommandException extends \RuntimeException
 {
     /**
-     * @var string $command
+     * @var string $commandName
      */
-    private $command;
+    private $commandName;
 
     /**
      * NoSuchCommandException constructor.
-     * @param string $command
+     * @param string $commandName
      * @param int $code
      * @param \Throwable|null $previous
      */
-    public function __construct(string $command, int $code = 0, ?\Throwable $previous = null)
+    public function __construct(string $commandName, int $code = 0, ?\Throwable $previous = null)
     {
-        parent::__construct(sprintf('Command "%s" was not recognized', $command), $code, $previous);
-        $this->command = $command;
+        parent::__construct(sprintf('Command "%s" was not recognized', $commandName), $code, $previous);
+        $this->commandName = $commandName;
     }
 
     /**
-     * Get notfound command.
+     * Get notfound command name.
      * @return string
      */
-    public function getCommand(): string
+    public function getCommandName(): string
     {
-        return $this->command;
+        return $this->commandName;
     }
 }

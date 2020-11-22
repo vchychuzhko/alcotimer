@@ -8,7 +8,7 @@ use Awesome\Console\Model\Cli\Input\InputDefinition;
 use Awesome\Console\Model\Cli\Output;
 use Awesome\Framework\Model\Config;
 
-class ConfigSet extends \Awesome\Console\Model\Cli\AbstractCommand
+class ConfigSet extends \Awesome\Console\Model\AbstractCommand
 {
     /**
      * @var Config $maintenance

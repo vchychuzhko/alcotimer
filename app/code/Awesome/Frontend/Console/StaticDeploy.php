@@ -8,7 +8,7 @@ use Awesome\Console\Model\Cli\Input\InputDefinition;
 use Awesome\Console\Model\Cli\Output;
 use Awesome\Frontend\Model\StaticContent;
 
-class StaticDeploy extends \Awesome\Console\Model\Cli\AbstractCommand
+class StaticDeploy extends \Awesome\Console\Model\AbstractCommand
 {
     /**
      * @var StaticContent $staticContent

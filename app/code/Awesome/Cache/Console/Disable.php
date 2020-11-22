@@ -9,7 +9,7 @@ use Awesome\Console\Model\Cli\Input\InputDefinition;
 use Awesome\Console\Model\Cli\Output;
 use Awesome\Framework\Model\Config;
 
-class Disable extends \Awesome\Console\Model\Cli\AbstractCommand
+class Disable extends \Awesome\Console\Model\AbstractCommand
 {
     /**
      * @var Cache $cache

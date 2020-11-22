@@ -3,26 +3,29 @@ declare(strict_types=1);
 
 namespace Awesome\Console\Console;
 
-use Awesome\Console\Model\Cli\AbstractCommand;
+use Awesome\Console\Exception\NoSuchCommandException;
+use Awesome\Console\Model\AbstractCommand;
+use Awesome\Console\Model\Cli;
+use Awesome\Console\Model\Cli\CommandResolver;
 use Awesome\Console\Model\Cli\Input;
 use Awesome\Console\Model\Cli\Input\InputDefinition;
 use Awesome\Console\Model\Cli\Output;
-use Awesome\Console\Model\Handler\CommandHandler;
+use Awesome\Console\Model\CommandInterface;
 
-class Help extends \Awesome\Console\Model\Cli\AbstractCommand
+class Help extends \Awesome\Console\Model\AbstractCommand
 {
     /**
-     * @var CommandHandler $commandHandler
+     * @var CommandResolver $commandResolver
      */
-    private $commandHandler;
+    private $commandResolver;
 
     /**
      * Help constructor.
-     * @param CommandHandler $commandHandler
+     * @param CommandResolver $commandResolver
      */
-    public function __construct(CommandHandler $commandHandler)
+    public function __construct(CommandResolver $commandResolver)
     {
-        $this->commandHandler = $commandHandler;
+        $this->commandResolver = $commandResolver;
     }
 
     /**
@@ -31,51 +34,63 @@ class Help extends \Awesome\Console\Model\Cli\AbstractCommand
     public static function configure(): InputDefinition
     {
         return parent::configure()
-            ->setDescription('Show application help');
+            ->setDescription('Show application help')
+            ->addArgument('command', InputDefinition::ARGUMENT_OPTIONAL, 'Command to show help about');
     }
 
     /**
-     * Show application help.
+     * Show application or command specific help.
      * @inheritDoc
-     * @throws \LogicException
+     * @throws \Exception
      */
     public function execute(Input $input, Output $output): void
     {
-        $commandData = AbstractCommand::configure()
-            ->getDefinition();
+        if ($commandName = $input->getArgument('command')) {
+            $commandName = $this->commandResolver->parseCommand($commandName);
 
-        $output->writeln($output->colourText('Usage:', Output::BROWN));
-        $output->writeln('command [options] [arguments]', 2);
-        $output->writeln();
-
-        if ($options = $commandData['options']) {
-            $output->writeln($output->colourText('Options:', Output::BROWN));
-            $optionFullNames = [];
-
-            foreach ($options as $name => $optionData) {
-                if ($shortcut = $optionData['shortcut']) {
-                    $optionFullNames[$name] = '-' . $shortcut . ', --' . $name;
-                } else {
-                    $optionFullNames[$name] = str_repeat(' ', 4) . '--' . $name;
-                }
+            if (!$command = $this->commandResolver->getCommand($commandName)) {
+                throw new NoSuchCommandException($commandName);
             }
-            $padding = max(array_map(static function ($option) {
-                return strlen($option);
-            }, $optionFullNames));
 
-            foreach ($options as $name => $option) {
-                $output->writeln(
-                    $output->colourText(str_pad($optionFullNames[$name], $padding + 2)) . $option['description'],
-                    2
-                );
-            }
-            $output->writeln();
-        }
-
-        if ($commands = $this->commandHandler->getCommands()) {
-            $this->processCommands($commands, $output);
+            $command->help($input, $output);
         } else {
-            $output->writeln('No commands are currently available.');
+            $output->writeln('AlcoTimer CLI ' . $output->colourText(Cli::VERSION));
+            $output->writeln();
+
+            $output->writeln($output->colourText('Usage:', Output::BROWN));
+            $output->writeln('command [options] [arguments]', 2);
+            $output->writeln();
+            $definition = AbstractCommand::configure();
+
+            if ($options = $definition->getOptions()) {
+                $output->writeln($output->colourText('Options:', Output::BROWN));
+                $optionFullNames = [];
+
+                foreach ($options as $name => $optionData) {
+                    if ($shortcut = $optionData['shortcut']) {
+                        $optionFullNames[$name] = '-' . $shortcut . ', --' . $name;
+                    } else {
+                        $optionFullNames[$name] = str_repeat(' ', 4) . '--' . $name;
+                    }
+                }
+                $padding = max(array_map(static function ($option) {
+                    return strlen($option);
+                }, $optionFullNames));
+
+                foreach ($options as $name => $option) {
+                    $output->writeln(
+                        $output->colourText(str_pad($optionFullNames[$name], $padding + 2)) . $option['description'],
+                        2
+                    );
+                }
+                $output->writeln();
+            }
+
+            if ($commands = $this->commandResolver->getCommands()) {
+                $this->processCommands($commands, $output);
+            } else {
+                $output->writeln('No commands are currently available.');
+            }
         }
     }
 
@@ -84,33 +99,30 @@ class Help extends \Awesome\Console\Model\Cli\AbstractCommand
      * @param array $commands
      * @param Output $output
      * @return void
-     * @throws \LogicException
+     * @throws \Exception
      */
     private function processCommands(array $commands, Output $output): void
     {
-        if ($commands) {
-            $output->writeln($output->colourText('Available commands:', Output::BROWN));
-            $padding = max(array_map(static function ($name) {
-                list($unused, $command) = explode(':', $name);
+        $output->writeln($output->colourText('Available commands:', Output::BROWN));
+        $padding = max(array_map(static function ($name) {
+            list($unused, $command) = explode(':', $name);
 
-                return strlen($command);
-            }, $commands));
-            $lastNamespace = null;
+            return strlen($command);
+        }, $commands));
+        $lastNamespace = null;
 
-            foreach ($commands as $name) {
-                list($namespace, $command) = explode(':', $name);
-                $commandData = $this->commandHandler->getCommandData($name);
+        foreach ($commands as $name) {
+            list($namespace, $commandName) = explode(':', $name);
+            /** @var CommandInterface $command */
+            $command = $this->commandResolver->getCommandClass($name);
+            $definition = $command::configure();
 
-                if ($namespace !== $lastNamespace) {
-                    $output->writeln($output->colourText($namespace, Output::BROWN), 1);
-                }
+            if ($namespace !== $lastNamespace) {
+                $output->writeln($output->colourText($namespace, Output::BROWN), 1);
                 $lastNamespace = $namespace;
-
-                $output->writeln(
-                    $output->colourText(str_pad($command, $padding + 2)) . $commandData['description'],
-                    2
-                );
             }
+
+            $output->writeln($output->colourText(str_pad($commandName, $padding + 2)) . $definition->getDescription(), 2);
         }
     }
 }

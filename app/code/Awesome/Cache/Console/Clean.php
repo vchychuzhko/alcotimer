@@ -8,7 +8,7 @@ use Awesome\Console\Model\Cli\Input;
 use Awesome\Console\Model\Cli\Input\InputDefinition;
 use Awesome\Console\Model\Cli\Output;
 
-class Clean extends \Awesome\Console\Model\Cli\AbstractCommand
+class Clean extends \Awesome\Console\Model\AbstractCommand
 {
     /**
      * @var Cache $cache

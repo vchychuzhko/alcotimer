@@ -9,7 +9,7 @@ use Awesome\Console\Model\Cli\Output;
 use Awesome\Framework\Model\Maintenance;
 use Awesome\Framework\Model\Validator\IpValidator;
 
-class MaintenanceEnable extends \Awesome\Console\Model\Cli\AbstractCommand
+class MaintenanceEnable extends \Awesome\Console\Model\AbstractCommand
 {
     /**
      * @var Maintenance $maintenance
