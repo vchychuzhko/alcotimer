@@ -47,11 +47,13 @@ class Cache implements \Awesome\Framework\Model\SingletonInterface
 
     /**
      * Retrieve cache by key and tag.
+     * Callback function can be provided to set result value to cache.
      * @param string $key
      * @param string $tag
+     * @param callable|null $callback
      * @return mixed
      */
-    public function get(string $key, string $tag)
+    public function get(string $key, string $tag, ?callable $callback = null)
     {
         $data = null;
 
@@ -59,6 +61,11 @@ class Cache implements \Awesome\Framework\Model\SingletonInterface
             $cache = $this->readCacheFile($key);
 
             $data = $cache[$tag] ?? null;
+        }
+
+        if ($data === null && is_callable($callback)) {
+            $data = $callback();
+            $this->save($key, $tag, $data);
         }
 
         return $data;
@@ -84,8 +91,8 @@ class Cache implements \Awesome\Framework\Model\SingletonInterface
     }
 
     /**
-     * Remove cache by key and tag.
-     * If key is not specified, remove all caches.
+     * Flush cache by key.
+     * If key is not specified, invalidate all caches.
      * @param string $key
      * @return $this
      */

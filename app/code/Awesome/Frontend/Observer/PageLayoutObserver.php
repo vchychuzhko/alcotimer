@@ -127,7 +127,7 @@ class PageLayoutObserver implements \Awesome\Framework\Model\Event\ObserverInter
      */
     private function getPageHandles(string $view): array
     {
-        if (!$handles = $this->cache->get(Cache::LAYOUT_CACHE_KEY, self::PAGE_HANDLES_CACHE_TAG_PREFIX . $view)) {
+        return $this->cache->get(Cache::LAYOUT_CACHE_KEY, self::PAGE_HANDLES_CACHE_TAG_PREFIX . $view, function () use ($view) {
             $handles = [];
             $pattern = sprintf(self::LAYOUT_XML_PATH_PATTERN, $view);
 
@@ -135,9 +135,7 @@ class PageLayoutObserver implements \Awesome\Framework\Model\Event\ObserverInter
                 $handles[] = basename($collectedHandle, '.xml');
             }
 
-            $this->cache->save(Cache::LAYOUT_CACHE_KEY, self::PAGE_HANDLES_CACHE_TAG_PREFIX . $view, array_unique($handles));
-        }
-
-        return $handles;
+            return array_unique($handles);
+        });
     }
 }

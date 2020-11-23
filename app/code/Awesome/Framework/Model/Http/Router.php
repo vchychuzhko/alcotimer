@@ -151,12 +151,8 @@ class Router
      */
     private function getRoutes(string $view): array
     {
-        if (!$routes = $this->cache->get(Cache::ETC_CACHE_KEY, self::ROUTES_CACHE_TAG_PREFIX . $view)) {
-            $routes = $this->routesXmlParser->getRoutesData($view);
-
-            $this->cache->save(Cache::ETC_CACHE_KEY, self::ROUTES_CACHE_TAG_PREFIX . $view, $routes);
-        }
-
-        return $routes;
+        return $this->cache->get(Cache::ETC_CACHE_KEY, self::ROUTES_CACHE_TAG_PREFIX . $view, function () use ($view) {
+            return $this->routesXmlParser->getRoutesData($view);
+        });
     }
 }
