@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Awesome\Cache\Console;
 
 use Awesome\Cache\Model\Cache;
+use Awesome\Cache\Model\CacheState;
 use Awesome\Console\Model\Cli\Input;
 use Awesome\Console\Model\Cli\Input\InputDefinition;
 use Awesome\Console\Model\Cli\Output;
@@ -16,12 +17,19 @@ class Clean extends \Awesome\Console\Model\AbstractCommand
     private $cache;
 
     /**
+     * @var CacheState $cacheState
+     */
+    private $cacheState;
+
+    /**
      * Cache Clean constructor.
      * @param Cache $cache
+     * @param CacheState $cacheState
      */
-    public function __construct(Cache $cache)
+    public function __construct(Cache $cache, CacheState $cacheState)
     {
         $this->cache = $cache;
+        $this->cacheState = $cacheState;
     }
 
     /**
@@ -40,7 +48,7 @@ class Clean extends \Awesome\Console\Model\AbstractCommand
      */
     public function execute(Input $input, Output $output): void
     {
-        $definedTypes = $this->cache->getTypes();
+        $definedTypes = $this->cacheState->getDefinedTypes();
         $types = $input->getArgument('types') ?: $definedTypes;
         $titleShown = false;
 

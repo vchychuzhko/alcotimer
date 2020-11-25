@@ -3,33 +3,25 @@ declare(strict_types=1);
 
 namespace Awesome\Cache\Console;
 
-use Awesome\Cache\Model\Cache;
+use Awesome\Cache\Model\CacheState;
 use Awesome\Console\Model\Cli\Input;
 use Awesome\Console\Model\Cli\Input\InputDefinition;
 use Awesome\Console\Model\Cli\Output;
-use Awesome\Framework\Model\Config;
 
 class Disable extends \Awesome\Console\Model\AbstractCommand
 {
     /**
-     * @var Cache $cache
+     * @var CacheState $cacheState
      */
-    private $cache;
-
-    /**
-     * @var Config $config
-     */
-    private $config;
+    private $cacheState;
 
     /**
      * Cache Disable constructor.
-     * @param Cache $cache
-     * @param Config $config
+     * @param CacheState $cacheState
      */
-    public function __construct(Cache $cache, Config $config)
+    public function __construct(CacheState $cacheState)
     {
-        $this->cache = $cache;
-        $this->config = $config;
+        $this->cacheState = $cacheState;
     }
 
     /**
@@ -48,13 +40,13 @@ class Disable extends \Awesome\Console\Model\AbstractCommand
      */
     public function execute(Input $input, Output $output): void
     {
-        $definedTypes = $this->cache->getTypes();
+        $definedTypes = $this->cacheState->getDefinedTypes();
         $types = $input->getArgument('types') ?: $definedTypes;
         $titleShown = false;
 
         foreach ($types as $type) {
             if (in_array($type, $definedTypes, true)) {
-                $this->config->set(Cache::CACHE_CONFIG_PATH . '/' . $type, 0);
+                $this->cacheState->disable($type);
 
                 if (!$titleShown) {
                     $output->writeln('Disabled cache types:');

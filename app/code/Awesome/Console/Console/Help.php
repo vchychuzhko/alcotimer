@@ -74,11 +74,11 @@ class Help extends \Awesome\Console\Model\AbstractCommand
                         $optionFullNames[$name] = str_repeat(' ', 4) . '--' . $name;
                     }
                 }
-                $padding = DataHelper::getMaxLength($optionFullNames);
+                $padding = DataHelper::getMaxLength($optionFullNames) + 2;
 
                 foreach ($options as $name => $option) {
                     $output->writeln(
-                        $output->colourText(str_pad($optionFullNames[$name], $padding + 2)) . $option['description'],
+                        $output->colourText(str_pad($optionFullNames[$name], $padding)) . $option['description'],
                         2
                     );
                 }
@@ -107,7 +107,7 @@ class Help extends \Awesome\Console\Model\AbstractCommand
             list($unused, $command) = explode(':', $name);
 
             return strlen((string) $command);
-        });
+        }) + 2;
         $lastNamespace = null;
 
         foreach ($commands as $commandName) {
@@ -121,7 +121,7 @@ class Help extends \Awesome\Console\Model\AbstractCommand
                 $lastNamespace = $namespace;
             }
 
-            $output->writeln($output->colourText(str_pad($name, $padding + 2)) . $definition->getDescription(), 2);
+            $output->writeln($output->colourText(str_pad($name, $padding)) . $definition->getDescription(), 2);
         }
     }
 }

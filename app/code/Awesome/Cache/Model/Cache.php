@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Awesome\Cache\Model;
 
-use Awesome\Framework\Model\Config;
+use Awesome\Cache\Model\CacheState;
 use Awesome\Framework\Model\FileManager;
 use Awesome\Framework\Model\Serializer\Json;
 
@@ -11,16 +11,14 @@ class Cache implements \Awesome\Framework\Model\SingletonInterface
 {
     private const CACHE_DIR = '/var/cache';
 
-    public const CACHE_CONFIG_PATH = 'cache';
-
     public const ETC_CACHE_KEY = 'etc';
     public const LAYOUT_CACHE_KEY = 'layout';
     public const FULL_PAGE_CACHE_KEY = 'full_page';
 
     /**
-     * @var Config $config
+     * @var CacheState $cacheState
      */
-    private $config;
+    private $cacheState;
 
     /**
      * @var FileManager $fileManager
@@ -34,20 +32,20 @@ class Cache implements \Awesome\Framework\Model\SingletonInterface
 
     /**
      * Cache constructor.
-     * @param Config $config
+     * @param CacheState $cacheState
      * @param FileManager $fileManager
      * @param Json $json
      */
-    public function __construct(Config $config, FileManager $fileManager, Json $json)
+    public function __construct(CacheState $cacheState, FileManager $fileManager, Json $json)
     {
-        $this->config = $config;
+        $this->cacheState = $cacheState;
         $this->fileManager = $fileManager;
         $this->json = $json;
     }
 
     /**
      * Retrieve cache by key and tag.
-     * Callback function can be provided to set result value to cache.
+     * Callback function can be provided to save result value to cache immediately.
      * @param string $key
      * @param string $tag
      * @param callable|null $callback
@@ -57,7 +55,7 @@ class Cache implements \Awesome\Framework\Model\SingletonInterface
     {
         $data = null;
 
-        if ($this->cacheTypeEnabled($key)) {
+        if ($this->cacheState->isEnabled($key)) {
             $cache = $this->readCacheFile($key);
 
             $data = $cache[$tag] ?? null;
@@ -80,7 +78,7 @@ class Cache implements \Awesome\Framework\Model\SingletonInterface
      */
     public function save(string $key, string $tag, $data): self
     {
-        if ($this->cacheTypeEnabled($key)) {
+        if ($this->cacheState->isEnabled($key)) {
             $cache = $this->readCacheFile($key);
             $cache[$tag] = $data;
 
@@ -105,29 +103,6 @@ class Cache implements \Awesome\Framework\Model\SingletonInterface
         }
 
         return $this;
-    }
-
-    /**
-     * Check if requested cache type is enabled.
-     * @param string $key
-     * @return bool
-     */
-    public function cacheTypeEnabled(string $key): bool
-    {
-        return (bool) $this->config->get(self::CACHE_CONFIG_PATH . '/' . $key);
-    }
-
-    /**
-     * Get available cache types.
-     * @return array
-     */
-    public function getTypes(): array
-    {
-        return [
-            self::ETC_CACHE_KEY,
-            self::LAYOUT_CACHE_KEY,
-            self::FULL_PAGE_CACHE_KEY,
-        ];
     }
 
     /**

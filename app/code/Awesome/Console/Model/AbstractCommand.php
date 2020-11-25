@@ -68,10 +68,10 @@ abstract class AbstractCommand implements \Awesome\Console\Model\CommandInterfac
         if ($arguments) {
             $output->writeln();
             $output->writeln($output->colourText('Arguments:', Output::BROWN));
-            $padding = DataHelper::getMaxLength(array_keys($arguments));
+            $padding = DataHelper::getMaxLength(array_keys($arguments)) + 2;
 
             foreach ($arguments as $name => $argument) {
-                $output->writeln($output->colourText(str_pad($name, $padding + 2)) . $argument['description'], 2);
+                $output->writeln($output->colourText(str_pad($name, $padding)) . $argument['description'], 2);
             }
         }
 
@@ -87,11 +87,11 @@ abstract class AbstractCommand implements \Awesome\Console\Model\CommandInterfac
                     $optionFullNames[$name] = str_repeat(' ', 4) . '--' . $name;
                 }
             }
-            $padding = DataHelper::getMaxLength($optionFullNames);
+            $padding = DataHelper::getMaxLength($optionFullNames) + 2;
 
             foreach ($options as $name => $option) {
                 $output->writeln(
-                    $output->colourText(str_pad($optionFullNames[$name], $padding + 2)) . $option['description'],
+                    $output->colourText(str_pad($optionFullNames[$name], $padding)) . $option['description'],
                     2
                 );
             }
