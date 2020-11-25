@@ -45,7 +45,7 @@ class StaticGenerationObserver implements \Awesome\Framework\Model\Event\Observe
         if ($this->isStaticFileRequest($requestPath)) {
             $requestedFile = $this->getFilePath($requestPath);
 
-            if (file_exists($requestedFile) || $requestedFile === RequireJs::RESULT_FILENAME) {
+            if (file_exists($requestedFile)) {
                 $extension = pathinfo($requestedFile, PATHINFO_EXTENSION);
                 $minify = false;
 
@@ -61,6 +61,11 @@ class StaticGenerationObserver implements \Awesome\Framework\Model\Event\Observe
 
                     $router->addAction(StaticGenerationHandler::class, ['requested_file' => $requestedFile]);
                 }
+            } elseif ($requestedFile === RequireJs::RESULT_FILENAME) {
+                /** @var Router $router */
+                $router = $event->getRouter();
+
+                $router->addAction(StaticGenerationHandler::class, ['requested_file' => $requestedFile]);
             }
         }
     }

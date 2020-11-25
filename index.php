@@ -3,9 +3,8 @@
 try {
     require __DIR__ . '/app/bootstrap.php';
 
-    $invoker = \Awesome\Framework\Model\Invoker::getInstance();
     /** @var \Awesome\Framework\Model\Http $app */
-    $app = $invoker->get(\Awesome\Framework\Model\Http::class);
+    $app = \Awesome\Framework\Model\Invoker::getInstance()->get(\Awesome\Framework\Model\Http::class);
 } catch (\Exception $e) {
     echo <<<HTML
 <div style="font:12px/1.35em arial, helvetica, sans-serif;">

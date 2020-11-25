@@ -128,6 +128,16 @@ class StaticContent
      */
     private function generate(string $view): self
     {
+        $fontPattern = sprintf(self::STATIC_PATH_PATTERN, '{' . Http::BASE_VIEW . ',' . $view . '}', 'fonts');
+
+        foreach (glob(APP_DIR . $fontPattern, GLOB_ONLYDIR | GLOB_BRACE) as $folder) {
+            $files = $this->fileManager->scanDirectory($folder, true, 'ttf');
+
+            foreach ($files as $file) {
+                $this->generateFontFile($file, $view);
+            }
+        }
+
         $cssPattern = sprintf(self::STATIC_PATH_PATTERN, '{' . Http::BASE_VIEW . ',' . $view . '}', 'css');
         $cssMinify = $this->frontendState->isCssMinificationEnabled();
 
@@ -178,6 +188,10 @@ class StaticContent
             $extension = pathinfo($path, PATHINFO_EXTENSION);
 
             switch ($extension) {
+                case 'ttf': {
+                    $this->generateFontFile($path, $view);
+                    break;
+                }
                 case 'css': {
                     $minify = $this->frontendState->isCssMinificationEnabled();
 
@@ -197,6 +211,22 @@ class StaticContent
             }
         }
         $this->logger->info(sprintf('Static file "%s" was deployed for "%s" view', $path, $view));
+
+        return $this;
+    }
+
+    /**
+     * Copy font file for requested view.
+     * Absolute path is required.
+     * @param string $path
+     * @param string $view
+     * @return $this
+     */
+    private function generateFontFile(string $path, string $view): self
+    {
+        $staticPath = preg_replace(self::STATIC_FILE_PATTERN, '/$2_$3/$5', $path);
+
+        $this->fileManager->copyFile($path, BP . self::STATIC_FOLDER_PATH . $view . $staticPath);
 
         return $this;
     }
