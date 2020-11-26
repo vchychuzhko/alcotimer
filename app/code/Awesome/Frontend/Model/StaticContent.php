@@ -131,7 +131,7 @@ class StaticContent
         $fontPattern = sprintf(self::STATIC_PATH_PATTERN, '{' . Http::BASE_VIEW . ',' . $view . '}', 'fonts');
 
         foreach (glob(APP_DIR . $fontPattern, GLOB_ONLYDIR | GLOB_BRACE) as $folder) {
-            $files = $this->fileManager->scanDirectory($folder, true, 'ttf');
+            $files = $this->fileManager->scanDirectory($folder, true, ['eot', 'ttf', 'otf', 'woff', 'woff2']);
 
             foreach ($files as $file) {
                 $this->generateFontFile($file, $view);
@@ -188,7 +188,11 @@ class StaticContent
             $extension = pathinfo($path, PATHINFO_EXTENSION);
 
             switch ($extension) {
-                case 'ttf': {
+                case 'eot':
+                case 'ttf':
+                case 'otf':
+                case 'woff':
+                case 'woff2': {
                     $this->generateFontFile($path, $view);
                     break;
                 }

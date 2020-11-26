@@ -14,17 +14,21 @@ class PhpFileManager extends \Awesome\Framework\Model\FileManager
      */
     public function readArrayFile(string $path, bool $graceful = false): array
     {
-        if (!is_file($path) && !$graceful) {
-            throw new \RuntimeException(
-                sprintf('Provided path "%s" does not exist or is not a file and cannot be included', $path)
-            );
-        }
-        $array = include $path;
+        if (!is_file($path)) {
+            if (!$graceful) {
+                throw new \RuntimeException(
+                    sprintf('Provided path "%s" does not exist or is not a file and cannot be included', $path)
+                );
+            }
+            $array = [];
+        } else {
+            $array = include $path;
 
-        if (!is_array($array)) {
-            throw new \RuntimeException(
-                sprintf('Provided path "%s" does not contain valid PHP array', $path)
-            );
+            if (!is_array($array)) {
+                throw new \RuntimeException(
+                    sprintf('Provided path "%s" does not contain valid PHP array', $path)
+                );
+            }
         }
 
         return $array;

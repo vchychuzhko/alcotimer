@@ -21,11 +21,15 @@ class StaticGenerationHandler extends \Awesome\Framework\Model\AbstractAction
      * Mime types for static files.
      */
     private const MIME_TYPES = [
-        'css'  => 'text/css',
-        'html' => 'text/html',
-        'js'   => 'application/javascript',
-        'json' => 'application/json',
-        'ttf'  => 'application/x-font-ttf',
+        'css'   => 'text/css',
+        'html'  => 'text/html',
+        'js'    => 'application/javascript',
+        'json'  => 'application/json',
+        'eot'   => 'application/vnd.ms-fontobject',
+        'ttf'   => 'application/x-font-ttf',
+        'otf'   => 'application/x-font-otf',
+        'woff'  => 'application/x-font-woff',
+        'woff2' => 'application/font-woff2',
     ];
 
     /**
@@ -56,7 +60,6 @@ class StaticGenerationHandler extends \Awesome\Framework\Model\AbstractAction
 
     /**
      * Generate static files and return content for requested one.
-     * In case developer mode is on, only requested file gets generated.
      * @inheritDoc
      * @throws \Exception
      */
@@ -80,6 +83,7 @@ class StaticGenerationHandler extends \Awesome\Framework\Model\AbstractAction
         if (isset(self::MIME_TYPES[$extension])) {
             $headers = ['Content-Type' => self::MIME_TYPES[$extension]];
         }
+        // @todo: add ResponseFactory
 
         return new Response($content, Response::SUCCESS_STATUS_CODE, $headers);
     }
