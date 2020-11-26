@@ -11,11 +11,12 @@ class Root extends \Awesome\Frontend\Block\Template
     protected $template = 'Awesome_Frontend::root.phtml';
 
     /**
-     * Get body class by page handle.
+     * Get current page locale.
      * @return string
      */
-    public function getBodyClass(): string
+    public function getLocale(): string
     {
-        return str_replace(['-', '_'], ['', '-'], implode(' ', $this->renderer->getHandles()));
+        // @TODO: Implement locale resolving along with translation
+        return 'en';
     }
 }

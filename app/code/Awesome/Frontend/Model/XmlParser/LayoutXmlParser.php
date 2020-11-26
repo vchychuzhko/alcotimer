@@ -8,9 +8,10 @@ use Awesome\Framework\Helper\DataHelper;
 use Awesome\Framework\Model\FileManager\XmlFileManager;
 use Awesome\Framework\Model\Http;
 use Awesome\Framework\Helper\XmlParsingHelper;
+use Awesome\Frontend\Block\Container;
+use Awesome\Frontend\Block\Html\Body;
 use Awesome\Frontend\Block\Html\Head;
 use Awesome\Frontend\Block\Root;
-use Awesome\Frontend\Block\Template\Container;
 
 class LayoutXmlParser
 {
@@ -32,7 +33,7 @@ class LayoutXmlParser
      */
     private $collectedAssets = [
         'script' => [],
-        'css' => [],
+        'css'    => [],
     ];
 
     /**
@@ -96,16 +97,16 @@ class LayoutXmlParser
         $this->filterRemovedAssets();
         XmlParsingHelper::applySortOrder($this->collectedAssets);
         $head = [
-            'name' => 'head',
-            'class' => Head::class,
+            'name'     => 'head',
+            'class'    => Head::class,
             'template' => null,
             'children' => [],
-            'data' => array_merge($head, $this->collectedAssets),
+            'data'     => array_merge($head, $this->collectedAssets),
         ];
 
         $body = [
-            'name' => 'body',
-            'class' => Container::class,
+            'name'     => 'body',
+            'class'    => Body::class,
             'template' => null,
             'children' => $body,
         ];
@@ -114,8 +115,8 @@ class LayoutXmlParser
 
         return [
             'root' => [
-                'name' => 'root',
-                'class' => Root::class,
+                'name'     => 'root',
+                'class'    => Root::class,
                 'template' => null,
                 'children' => [
                     'head' => $head,
@@ -208,10 +209,10 @@ class LayoutXmlParser
         switch ($itemNode->getName()) {
             case 'block':
                 $parsedItemNode = [
-                    'name' => $itemName,
-                    'class' => XmlParsingHelper::getNodeAttribute($itemNode, 'class'),
+                    'name'     => $itemName,
+                    'class'    => XmlParsingHelper::getNodeAttribute($itemNode, 'class'),
                     'template' => XmlParsingHelper::getNodeAttribute($itemNode, 'template') ?: null,
-                    'children' => []
+                    'children' => [],
                 ];
 
                 if ($sortOrder = XmlParsingHelper::getNodeAttribute($itemNode, 'sortOrder')) {
@@ -229,17 +230,17 @@ class LayoutXmlParser
                 break;
             case 'container':
                 $parsedItemNode = [
-                    'name' => $itemName,
-                    'class' => Container::class,
+                    'name'     => $itemName,
+                    'class'    => Container::class,
                     'template' => null,
-                    'children' => []
+                    'children' => [],
                 ];
 
                 if ($htmlTag = XmlParsingHelper::getNodeAttribute($itemNode, 'htmlTag')) {
                     $parsedItemNode['data'] = [
-                        'html_tag' => $htmlTag,
+                        'html_tag'   => $htmlTag,
                         'html_class' => XmlParsingHelper::getNodeAttribute($itemNode, 'htmlClass'),
-                        'html_id' => XmlParsingHelper::getNodeAttribute($itemNode, 'htmlId')
+                        'html_id'    => XmlParsingHelper::getNodeAttribute($itemNode, 'htmlId'),
                     ];
                 }
 
