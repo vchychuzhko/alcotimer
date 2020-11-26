@@ -3,12 +3,10 @@ declare(strict_types=1);
 
 namespace Awesome\Frontend\Model\Action;
 
-use Awesome\Cache\Model\Cache;
 use Awesome\Framework\Model\Http\Request;
 use Awesome\Framework\Model\Http\Response;
 use Awesome\Framework\Model\Http\Response\HtmlResponse;
-use Awesome\Frontend\Model\TemplateRenderer;
-use Awesome\Frontend\Model\XmlParser\LayoutXmlParser;
+use Awesome\Frontend\Model\PageFactory;
 
 /**
  * Class LayoutHandler
@@ -24,29 +22,21 @@ class LayoutHandler extends \Awesome\Framework\Model\AbstractAction
     public const NOTFOUND_PAGE_HANDLE = 'notfound_index_index';
 
     /**
-     * @var Cache $cache
+     * @var PageFactory $pageFactory
      */
-    private $cache;
-
-    /**
-     * @var LayoutXmlParser $layoutXmlParser
-     */
-    private $layoutXmlParser;
+    private $pageFactory;
 
     /**
      * LayoutHandler constructor.
-     * @param Cache $cache
-     * @param LayoutXmlParser $layoutXmlParser
+     * @param PageFactory $pageFactory
      * @param array $data
      */
     public function __construct(
-        Cache $cache,
-        LayoutXmlParser $layoutXmlParser,
+        PageFactory $pageFactory,
         array $data = []
     ) {
         parent::__construct($data);
-        $this->cache = $cache;
-        $this->layoutXmlParser = $layoutXmlParser;
+        $this->pageFactory = $pageFactory;
     }
 
     /**
@@ -58,38 +48,10 @@ class LayoutHandler extends \Awesome\Framework\Model\AbstractAction
     {
         $handle = $this->getHandle();
         $handles = $this->getHandles();
-        $status = $this->getStatus();
         $view = $request->getView();
 
-        if (!$pageContent = $this->cache->get(Cache::FULL_PAGE_CACHE_KEY, $handle . '_' . $view)) {
-            $pageContent = $this->renderPage($handle, $view, $handles);
+        $page = $this->pageFactory->create($handle, $view, $handles); // @TODO: add resultPageFactory
 
-            $this->cache->save(Cache::FULL_PAGE_CACHE_KEY, $handle . '_' . $view, $pageContent);
-        }
-
-        return new HtmlResponse($pageContent, $status);
-    }
-
-    /**
-     * Render page by specified handle and view.
-     * @param string $handle
-     * @param string $view
-     * @param array $handles
-     * @return string
-     * @throws \Exception
-     */
-    private function renderPage(string $handle, string $view, array $handles = []): string
-    {
-        // @TODO: Create Page model along with PageFactory and move rendering there
-        $handles = $handles ?: [$handle];
-
-        if (!$structure = $this->cache->get(Cache::LAYOUT_CACHE_KEY, $handle)) {
-            $structure = $this->layoutXmlParser->getLayoutStructure($handle, $view, $handles);
-
-            $this->cache->save(Cache::LAYOUT_CACHE_KEY, $handle, $structure);
-        }
-        $templateRenderer = new TemplateRenderer($handle, $view, $structure, $handles);
-
-        return $templateRenderer->render('root');
+        return new HtmlResponse($page->render(), $this->getStatus());
     }
 }

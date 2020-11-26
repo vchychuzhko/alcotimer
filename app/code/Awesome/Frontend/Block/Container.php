@@ -9,7 +9,7 @@ namespace Awesome\Frontend\Block;
  * @method string|null getHtmlClass()
  * @method string|null getHtmlId()
  */
-class Container extends \Awesome\Frontend\Block\Template
+class Container extends \Awesome\Frontend\Model\AbstractBlock
 {
     /**
      * Render container element according to provided html node data.
