@@ -9,7 +9,7 @@ use Awesome\Framework\Model\AppState;
 use Awesome\Framework\Model\Config;
 use Awesome\Framework\Model\Event\EventManager;
 use Awesome\Framework\Model\Http\Request;
-use Awesome\Framework\Model\Http\Router;
+use Awesome\Framework\Model\Http\ActionResolver;
 use Awesome\Framework\Model\Logger;
 use Awesome\Framework\Model\Maintenance;
 
@@ -24,6 +24,11 @@ class Http
     public const BACKEND_FRONT_NAME_CONFIG = 'backend/front_name';
 
     public const ROOT_ACTION_NAME = 'index_index_index';
+
+    /**
+     * @var ActionResolver $actionResolver
+     */
+    private $actionResolver;
 
     /**
      * @var AppState $appState
@@ -51,38 +56,33 @@ class Http
     private $maintenance;
 
     /**
-     * @var Router $router
-     */
-    private $router;
-
-    /**
      * @var Request $request
      */
     private $request;
 
     /**
      * Http app constructor.
+     * @param ActionResolver $actionResolver
      * @param AppState $appState
      * @param Config $config
      * @param EventManager $eventManager
      * @param Logger $logger
      * @param Maintenance $maintenance
-     * @param Router $router
      */
     public function __construct(
+        ActionResolver $actionResolver,
         AppState $appState,
         Config $config,
         EventManager $eventManager,
         Logger $logger,
-        Maintenance $maintenance,
-        Router $router
+        Maintenance $maintenance
     ) {
+        $this->actionResolver = $actionResolver;
         $this->appState = $appState;
         $this->config = $config;
         $this->eventManager = $eventManager;
         $this->logger = $logger;
         $this->maintenance = $maintenance;
-        $this->router = $router;
     }
 
     /**
@@ -98,16 +98,16 @@ class Http
             if (!$this->isMaintenance()) {
                 $this->eventManager->dispatch(
                     'http_frontend_action',
-                    ['request' => $request, 'router' => $this->router],
+                    ['request' => $request, 'action_resolver' => $this->actionResolver],
                     $request->getView()
                 );
 
-                $action = $this->router->getAction();
+                $action = $this->actionResolver->getAction();
 
                 $response = $action->execute($request);
             } else {
                 /** @var MaintenanceAction $maintenanceAction */
-                $maintenanceAction = $this->router->getMaintenanceAction();
+                $maintenanceAction = $this->actionResolver->getMaintenanceAction();
 
                 $response = $maintenanceAction->execute($request);
             }

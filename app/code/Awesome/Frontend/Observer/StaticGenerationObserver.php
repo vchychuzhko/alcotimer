@@ -5,8 +5,8 @@ namespace Awesome\Frontend\Observer;
 
 use Awesome\Framework\Model\Event;
 use Awesome\Framework\Model\Http;
+use Awesome\Framework\Model\Http\ActionResolver;
 use Awesome\Framework\Model\Http\Request;
-use Awesome\Framework\Model\Http\Router;
 use Awesome\Frontend\Helper\StaticContentHelper;
 use Awesome\Frontend\Model\Action\StaticGenerationHandler;
 use Awesome\Frontend\Model\FrontendState;
@@ -38,6 +38,8 @@ class StaticGenerationObserver implements \Awesome\Framework\Model\Event\Observe
      */
     public function execute(Event $event): void
     {
+        /** @var ActionResolver $actionResolver */
+        $actionResolver = $event->getActionResolver();
         /** @var Request $request */
         $request = $event->getRequest();
         $requestPath = $request->getPath();
@@ -56,16 +58,10 @@ class StaticGenerationObserver implements \Awesome\Framework\Model\Event\Observe
                 }
 
                 if (StaticContentHelper::isFileMinified($requestPath) === $minify) {
-                    /** @var Router $router */
-                    $router = $event->getRouter();
-
-                    $router->addAction(StaticGenerationHandler::class, ['requested_file' => $requestedFile]);
+                    $actionResolver->addAction(StaticGenerationHandler::class, ['requested_file' => $requestedFile]);
                 }
             } elseif ($requestedFile === RequireJs::RESULT_FILENAME) {
-                /** @var Router $router */
-                $router = $event->getRouter();
-
-                $router->addAction(StaticGenerationHandler::class, ['requested_file' => $requestedFile]);
+                $actionResolver->addAction(StaticGenerationHandler::class, ['requested_file' => $requestedFile]);
             }
         }
     }

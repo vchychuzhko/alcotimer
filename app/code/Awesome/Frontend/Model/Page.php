@@ -43,13 +43,23 @@ class Page extends \Awesome\Framework\Model\DataObject
      */
     public function render(): string
     {
+        $content = '';
         $handle = $this->getHandle();
         $view = $this->getView();
+        $handles = $this->getHandles() ?: [$handle];
 
-        return $this->cache->get(Cache::FULL_PAGE_CACHE_KEY, $handle . '_' . $view, function () use ($handle, $view) {
-            $this->layout->init($handle, $view, $this->getHandles());
+        if ($handle && $view) {
+            $content = $this->cache->get(
+                Cache::FULL_PAGE_CACHE_KEY,
+                $handle . '_' . $view,
+                function () use ($handle, $view, $handles) {
+                    $this->layout->init($handle, $view, $handles);
 
-            return $this->layout->render('root');
-        });
+                    return $this->layout->render('root');
+                }
+            );
+        }
+
+        return $content;
     }
 }

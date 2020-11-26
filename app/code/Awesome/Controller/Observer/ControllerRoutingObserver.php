@@ -7,6 +7,7 @@ use Awesome\Framework\Helper\DataHelper;
 use Awesome\Framework\Model\Event;
 use Awesome\Framework\Model\FileManager\PhpFileManager;
 use Awesome\Framework\Model\Http;
+use Awesome\Framework\Model\Http\ActionResolver;
 use Awesome\Framework\Model\Http\Request;
 use Awesome\Framework\Model\Http\Router;
 
@@ -23,12 +24,19 @@ class ControllerRoutingObserver implements \Awesome\Framework\Model\Event\Observ
     private $phpFileManager;
 
     /**
+     * @var Router $router
+     */
+    private $router;
+
+    /**
      * ControllerRoutingObserver constructor.
      * @param PhpFileManager $phpFileManager
+     * @param Router $router
      */
-    public function __construct(PhpFileManager $phpFileManager)
+    public function __construct(PhpFileManager $phpFileManager, Router $router)
     {
         $this->phpFileManager = $phpFileManager;
+        $this->router = $router;
     }
 
     /**
@@ -37,15 +45,15 @@ class ControllerRoutingObserver implements \Awesome\Framework\Model\Event\Observ
      */
     public function execute(Event $event): void
     {
-        /** @var Router $router */
-        $router = $event->getRouter();
+        /** @var ActionResolver $actionResolver */
+        $actionResolver = $event->getActionResolver();
         /** @var Request $request */
         $request = $event->getRequest();
         $view = $request->getView();
 
         @list($route, $entity, $action) = explode('/', ltrim($request->getPath(), '/'));
 
-        if ($module = $router->getStandardRoute($route, $view)) {
+        if ($module = $this->router->getStandardRoute($route, $view)) {
             $module = str_replace('_', '\\', $module);
             $controllerFolder = $view === Http::BACKEND_VIEW
                 ? self::ADMINHTML_CONTROLLER_FOLDER
@@ -65,7 +73,7 @@ class ControllerRoutingObserver implements \Awesome\Framework\Model\Event\Observ
             }
 
             if ($this->phpFileManager->objectFileExists($className)) {
-                $router->addAction($className);
+                $actionResolver->addAction($className);
             }
         }
     }

@@ -4,10 +4,6 @@ declare(strict_types=1);
 namespace Awesome\Framework\Model\Http;
 
 use Awesome\Cache\Model\Cache;
-use Awesome\Framework\Model\Action\HttpDefaultAction;
-use Awesome\Framework\Model\Action\MaintenanceAction;
-use Awesome\Framework\Model\ActionInterface;
-use Awesome\Framework\Model\Http\ActionFactory;
 use Awesome\Framework\Model\XmlParser\RoutesXmlParser;
 
 class Router
@@ -16,11 +12,6 @@ class Router
 
     public const INTERNAL_TYPE = 'internal';
     public const STANDARD_TYPE = 'standard';
-
-    /**
-     * @var ActionFactory $actionFactory
-     */
-    private $actionFactory;
 
     /**
      * @var Cache $cache
@@ -33,78 +24,16 @@ class Router
     private $routesXmlParser;
 
     /**
-     * @var array $actions
-     */
-    private $actions = [];
-
-    /**
-     * @var ActionInterface $action
-     */
-    private $action;
-
-    /**
      * Router constructor.
-     * @param ActionFactory $actionFactory
      * @param Cache $cache
      * @param RoutesXmlParser $routesXmlParser
      */
     public function __construct(
-        ActionFactory $actionFactory,
         Cache $cache,
         RoutesXmlParser $routesXmlParser
     ) {
-        $this->actionFactory = $actionFactory;
         $this->cache = $cache;
         $this->routesXmlParser = $routesXmlParser;
-    }
-
-    /**
-     * Add action classname and additional parameters to list.
-     * @param string $id
-     * @param array $data
-     * @return $this
-     * @throws \LogicException
-     */
-    public function addAction(string $id, array $data = []): self
-    {
-        if (!is_a($id, ActionInterface::class, true)) {
-            throw new \LogicException(sprintf('Provided action "%s" does not implement ActionInterface', $id));
-        }
-
-        $this->actions[] = [
-            'id' => $id,
-            'data' => $data,
-        ];
-
-        return $this;
-    }
-
-    /**
-     * Get action with the highest priority or default if none found.
-     * @return ActionInterface
-     * @throws \Exception
-     */
-    public function getAction(): ActionInterface
-    {
-        if ($this->action === null) {
-            if ($action = reset($this->actions)) {
-                $this->action = $this->actionFactory->create($action['id'], $action['data']);
-            } else {
-                $this->action = $this->actionFactory->create(HttpDefaultAction::class);
-            }
-        }
-
-        return $this->action;
-    }
-
-    /**
-     * Get maintenance action.
-     * @return ActionInterface
-     * @throws \Exception
-     */
-    public function getMaintenanceAction(): ActionInterface
-    {
-        return $this->actionFactory->create(MaintenanceAction::class);
     }
 
     /**
