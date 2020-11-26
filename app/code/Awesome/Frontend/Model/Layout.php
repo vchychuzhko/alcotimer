@@ -5,17 +5,17 @@ namespace Awesome\Frontend\Model;
 
 use Awesome\Cache\Model\Cache;
 use Awesome\Framework\Helper\DataHelper;
-use Awesome\Framework\Model\FileManager\PhpFileManager;
 use Awesome\Framework\Model\Http;
 use Awesome\Frontend\Model\BlockInterface;
+use Awesome\Frontend\Model\TemplateEngine\Php as TemplateEngine;
 use Awesome\Frontend\Model\XmlParser\LayoutXmlParser;
 
 class Layout
 {
     /**
-     * @var LayoutXmlParser $layoutXmlParser
+     * @var BlockFactory $blockFactory
      */
-    private $layoutXmlParser;
+    private $blockFactory;
 
     /**
      * @var Cache $cache
@@ -23,14 +23,14 @@ class Layout
     private $cache;
 
     /**
-     * @var PhpFileManager $phpFileManager
+     * @var LayoutXmlParser $layoutXmlParser
      */
-    private $phpFileManager;
+    private $layoutXmlParser;
 
     /**
-     * @var BlockFactory $templateFactory
+     * @var TemplateEngine $templateEngine
      */
-    private $templateFactory;
+    private $templateEngine;
 
     /**
      * @var string $handle
@@ -54,21 +54,21 @@ class Layout
 
     /**
      * Layout constructor.
-     * @param LayoutXmlParser $layoutXmlParser
+     * @param BlockFactory $blockFactory
      * @param Cache $cache
-     * @param PhpFileManager $phpFileManager
-     * @param BlockFactory $templateFactory
+     * @param LayoutXmlParser $layoutXmlParser
+     * @param TemplateEngine $templateEngine
      */
     public function __construct(
-        LayoutXmlParser $layoutXmlParser,
+        BlockFactory $blockFactory,
         Cache $cache,
-        PhpFileManager $phpFileManager,
-        BlockFactory $templateFactory
+        LayoutXmlParser $layoutXmlParser,
+        TemplateEngine $templateEngine
     ) {
-        $this->layoutXmlParser = $layoutXmlParser;
+        $this->blockFactory = $blockFactory;
         $this->cache = $cache;
-        $this->phpFileManager = $phpFileManager;
-        $this->templateFactory = $templateFactory;
+        $this->layoutXmlParser = $layoutXmlParser;
+        $this->templateEngine = $templateEngine;
     }
 
     /**
@@ -106,7 +106,7 @@ class Layout
             $elementId = $elementData['class'];
 
             /** @var BlockInterface $templateClass */
-            $element = $this->templateFactory->create($elementId, [
+            $element = $this->blockFactory->create($elementId, [
                 'data' => $elementData['data'] ?? []
             ]);
             $element->init($this, $nameInLayout, $elementData['template']);
@@ -142,17 +142,8 @@ class Layout
     public function renderElement(BlockInterface $element): string
     {
         $templateFile = $this->getTemplateFile($element->getTemplate());
-        ob_start();
 
-        try {
-            $this->phpFileManager->includeFile($templateFile, false, ['block' => $element]);
-        } catch (\Exception $e) {
-            ob_end_clean();
-
-            throw $e;
-        }
-
-        return ob_get_clean();
+        return $this->templateEngine->render($element, $templateFile);
     }
 
     /**
