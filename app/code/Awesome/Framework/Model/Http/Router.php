@@ -7,7 +7,7 @@ use Awesome\Cache\Model\Cache;
 use Awesome\Framework\Model\Action\HttpDefaultAction;
 use Awesome\Framework\Model\Action\MaintenanceAction;
 use Awesome\Framework\Model\ActionInterface;
-use Awesome\Framework\Model\Invoker;
+use Awesome\Framework\Model\Http\ActionFactory;
 use Awesome\Framework\Model\XmlParser\RoutesXmlParser;
 
 class Router
@@ -16,6 +16,21 @@ class Router
 
     public const INTERNAL_TYPE = 'internal';
     public const STANDARD_TYPE = 'standard';
+
+    /**
+     * @var ActionFactory $actionFactory
+     */
+    private $actionFactory;
+
+    /**
+     * @var Cache $cache
+     */
+    private $cache;
+
+    /**
+     * @var RoutesXmlParser $routesXmlParser
+     */
+    private $routesXmlParser;
 
     /**
      * @var array $actions
@@ -28,33 +43,18 @@ class Router
     private $action;
 
     /**
-     * @var Cache $cache
-     */
-    private $cache;
-
-    /**
-     * @var Invoker $invoker
-     */
-    private $invoker;
-
-    /**
-     * @var RoutesXmlParser $routesXmlParser
-     */
-    private $routesXmlParser;
-
-    /**
      * Router constructor.
+     * @param ActionFactory $actionFactory
      * @param Cache $cache
-     * @param Invoker $invoker
      * @param RoutesXmlParser $routesXmlParser
      */
     public function __construct(
+        ActionFactory $actionFactory,
         Cache $cache,
-        Invoker $invoker,
         RoutesXmlParser $routesXmlParser
     ) {
+        $this->actionFactory = $actionFactory;
         $this->cache = $cache;
-        $this->invoker = $invoker;
         $this->routesXmlParser = $routesXmlParser;
     }
 
@@ -88,9 +88,9 @@ class Router
     {
         if ($this->action === null) {
             if ($action = reset($this->actions)) {
-                $this->action = $this->invoker->get($action['id'], ['data' => $action['data']]);
+                $this->action = $this->actionFactory->create($action['id'], $action['data']);
             } else {
-                $this->action = $this->invoker->get(HttpDefaultAction::class);
+                $this->action = $this->actionFactory->create(HttpDefaultAction::class);
             }
         }
 
@@ -99,12 +99,12 @@ class Router
 
     /**
      * Get maintenance action.
-     * @return MaintenanceAction
+     * @return ActionInterface
      * @throws \Exception
      */
-    public function getMaintenanceAction(): MaintenanceAction
+    public function getMaintenanceAction(): ActionInterface
     {
-        return $this->invoker->get(MaintenanceAction::class);
+        return $this->actionFactory->create(MaintenanceAction::class);
     }
 
     /**

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Awesome\Framework\Model;
 
 use Awesome\Framework\Model\Action\HttpErrorAction;
+use Awesome\Framework\Model\Action\MaintenanceAction;
 use Awesome\Framework\Model\AppState;
 use Awesome\Framework\Model\Config;
 use Awesome\Framework\Model\Event\EventManager;
@@ -105,6 +106,7 @@ class Http
 
                 $response = $action->execute($request);
             } else {
+                /** @var MaintenanceAction $maintenanceAction */
                 $maintenanceAction = $this->router->getMaintenanceAction();
 
                 $response = $maintenanceAction->execute($request);
