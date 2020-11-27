@@ -115,8 +115,8 @@ class Http
             $this->logger->error(get_class_name($e) . ': ' . $e->getMessage() . "\n" . $e->getTraceAsString());
 
             $errorAction = new HttpErrorAction([
-                'accept_type' => isset($request) ? $request->getAcceptType() : null,
-                'error' => $e,
+                'accept_type'       => isset($request) ? $request->getAcceptType() : null,
+                'error'             => $e,
                 'is_developer_mode' => $this->appState->isDeveloperMode(),
             ]);
 

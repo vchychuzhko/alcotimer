@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Awesome\Framework\Model\Http;
+namespace Awesome\Framework\Model\Result;
 
 class Response
 {
@@ -96,6 +96,19 @@ class Response
     public function setHeader(string $key, string $value): self
     {
         $this->headers[$key] = $value;
+
+        return $this;
+    }
+
+    /**
+     * Set headers to response.
+     * Existing headers will be overwritten.
+     * @param array $headers
+     * @return $this
+     */
+    public function setHeaders(array $headers): self
+    {
+        $this->headers = $headers;
 
         return $this;
     }

@@ -5,7 +5,7 @@ namespace Awesome\Frontend\Model\Result;
 
 use Awesome\Frontend\Model\Page;
 
-class ResultPage extends \Awesome\Framework\Model\Http\Response\HtmlResponse
+class ResultPage extends \Awesome\Framework\Model\Result\HtmlResponse
 {
     /**
      * @var Page $page

@@ -7,8 +7,9 @@ use Awesome\Cache\Model\Cache;
 use Awesome\Framework\Model\AppState;
 use Awesome\Framework\Model\Config;
 use Awesome\Framework\Model\Http;
+use Awesome\Framework\Model\Http\Context;
 use Awesome\Framework\Model\Http\Request;
-use Awesome\Framework\Model\Http\Response;
+use Awesome\Framework\Model\Result\Response;
 use Awesome\Framework\Model\Http\Router;
 use Awesome\Frontend\Model\Result\ResultPageFactory;
 
@@ -53,6 +54,7 @@ class LayoutHandler extends \Awesome\Framework\Model\AbstractAction
      * @param AppState $appState
      * @param Cache $cache
      * @param Config $config
+     * @param Context $context
      * @param ResultPageFactory $resultPageFactory
      * @param Router $router
      * @param array $data
@@ -61,11 +63,12 @@ class LayoutHandler extends \Awesome\Framework\Model\AbstractAction
         AppState $appState,
         Cache $cache,
         Config $config,
+        Context $context,
         ResultPageFactory $resultPageFactory,
         Router $router,
         array $data = []
     ) {
-        parent::__construct($data);
+        parent::__construct($context, $data);
         $this->appState = $appState;
         $this->cache = $cache;
         $this->config = $config;

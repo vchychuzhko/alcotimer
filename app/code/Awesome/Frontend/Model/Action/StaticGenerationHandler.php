@@ -5,7 +5,8 @@ namespace Awesome\Frontend\Model\Action;
 
 use Awesome\Framework\Model\FileManager;
 use Awesome\Framework\Model\Http;
-use Awesome\Framework\Model\Http\Response;
+use Awesome\Framework\Model\Http\Context;
+use Awesome\Framework\Model\Result\Response;
 use Awesome\Framework\Model\Http\Request;
 use Awesome\Frontend\Model\StaticContent;
 
@@ -44,16 +45,18 @@ class StaticGenerationHandler extends \Awesome\Framework\Model\AbstractAction
 
     /**
      * StaticGenerationHandler constructor.
+     * @param Context $context
      * @param FileManager $fileManager
      * @param StaticContent $staticContent
      * @param array $data
      */
     public function __construct(
+        Context $context,
         FileManager $fileManager,
         StaticContent $staticContent,
         array $data = []
     ) {
-        parent::__construct($data);
+        parent::__construct($context, $data);
         $this->fileManager = $fileManager;
         $this->staticContent = $staticContent;
     }
@@ -83,8 +86,9 @@ class StaticGenerationHandler extends \Awesome\Framework\Model\AbstractAction
         if (isset(self::MIME_TYPES[$extension])) {
             $headers = ['Content-Type' => self::MIME_TYPES[$extension]];
         }
-        // @todo: add ResponseFactory
 
-        return new Response($content, Response::SUCCESS_STATUS_CODE, $headers);
+        return $this->responseFactory->create()
+            ->setContent($content)
+            ->setHeaders($headers);
     }
 }
