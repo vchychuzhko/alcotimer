@@ -48,6 +48,8 @@
     background-color: red;
     border: none;
     border-radius: 50%;
+    -moz-box-shadow: 0 0 6px 4px #ab3c3c;
+    -webkit-box-shadow: 0 0 6px 4px #ab3c3c;
     box-shadow: 0 0 6px 4px #ab3c3c;
     cursor: pointer;
     height: 100%;
@@ -181,6 +183,8 @@
     background-color: blue;
     border: none;
     border-radius: 50%;
+    -moz-box-shadow: 0 0 5px 3px #3c69ab;
+    -webkit-box-shadow: 0 0 5px 3px #3c69ab;
     box-shadow: 0 0 5px 3px #3c69ab;
     cursor: pointer;
     height: 100%;

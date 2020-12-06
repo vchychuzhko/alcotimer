@@ -7,132 +7,141 @@ define([
     $.widget('awesome.rangeSlider', {
         options: {
             difference: 1,
+            maxValue: 100,
             minValue: 1,
-            maxValue: 15
         },
 
+        activeController: null,
+        container: null,
+        dragging: false,
+        maxController: null,
+        maxInput: null,
+        minController: null,
+        minInput: null,
+
         /**
-         * Constructor
+         * Constructor.
          */
         _create: function () {
+            this.initFields();
             this.initValuesRestrictions();
             this.initBindings();
-            $(window).trigger('resize');
         },
 
         /**
-         * Init event listeners
+         * Init widget fields.
+         */
+        initFields: function () {
+            this.container = $(this.element).find('.range-controls');
+            this.minController = this.container.find('.controller.min');
+            this.maxController = this.container.find('.controller.max');
+            this.minInput = $(this.element).find('.range-inputs .value.min');
+            this.maxInput = $(this.element).find('.range-inputs .value.max');
+        },
+
+        /**
+         * Init event listeners.
          */
         initBindings: function () {
-            let $minRange = $(this.element).find('.range-controls .min-controller'),
-                $maxRange = $(this.element).find('.range-controls .max-controller'),
-                $minInput = $(this.element).find('.range-inputs .min-value'),
-                $maxInput = $(this.element).find('.range-inputs .max-value');
+            $(this.element).on('mousedown touchstart', '.controller', function (event) {
+                if (!this.dragging) {
+                    this.dragging = true;
+                    this.activeController = $(event.currentTarget);
 
-            $(window).on('resize', function () {
-                let $container =  $(this.element).find('.range-controls');
+                    this.minController.css({'z-index': 4});
+                    this.maxController.css({'z-index': 4});
 
-                this.containerWidth = $container.innerWidth();
-            }.bind(this));
-
-            $(this.element).on('mousedown touchstart', '.range-controls', function (event) {
-                this.isDragging = true;
-                this.draggingController = $(event.target);
-
-                $.each([$minRange, $maxRange], function (index, controller) {
-                    $(controller).css({'z-index': 4});
-                });
-                $(event.target).css({'z-index': 5});
+                    this.activeController.css({'z-index': 5});
+                }
             }.bind(this));
 
             $(document).on('mouseup touchend', function () {
-                this.isDragging = false;
+                this.dragging = false;
+                this.activeController = null;
             }.bind(this));
 
             $(document).on('mousemove touchmove', function (event) {
-                if (this.isDragging) {
+                if (this.dragging) {
                     try {
                         let touch = event.originalEvent.touches ? event.originalEvent.touches[0] : undefined,
                             pos = event.pageX || touch.pageX,
-                            $container =  $(this.element).find('.range-controls'),
-                            containerLeft = $container.offset().left,
-                            containerRight = containerLeft + this.containerWidth,
-                            newPos = (pos - containerLeft) / this.containerWidth * 100;
+                            containerLeft = this.container.offset().left,
+                            containerRight = containerLeft + this.container.innerWidth(),
+                            newPos = (pos - containerLeft) / this.container.innerWidth() * 100;
 
                         if (pos < containerLeft) {
                             newPos = 0;
                         }
-
                         if (pos > containerRight) {
                             newPos = 100;
                         }
 
-                        this.setControllerPosition(this.draggingController, newPos, true);
+                        this.setControllerPosition(this.activeController, newPos, true);
                     } catch (e) {
-                        //do nothing, touch error happened
+                        // Do nothing, touch error happened
                     }
                 }
             }.bind(this));
 
-            $minRange.on('change', function () {
-                let minValue = this.getValueFromController($minRange),
-                    maxValue = this.getValueFromController($maxRange);
+            this.minController.on('change', function () {
+                let minValue = this.getValueFromController(this.minController),
+                    maxValue = this.getValueFromController(this.maxController);
 
                 if (minValue > maxValue - this.options.difference) {
-                    this.setControllerPosition($maxRange, minValue + this.options.difference);
-                    $maxInput.val(this.getValueFromController($maxRange));
+                    this.setControllerPosition(this.maxController, minValue + this.options.difference);
+                    this.maxInput.val(this.getValueFromController(this.maxController));
 
-                    if (this.getValueFromController($maxRange) === this.options.maxValue) {
-                        this.setControllerPosition($minRange, this.options.maxValue - this.options.difference);
+                    if (this.getValueFromController(this.maxController) === this.options.maxValue) {
+                        this.setControllerPosition(this.minController, this.options.maxValue - this.options.difference);
                     }
                 }
-                $minInput.val(this.getValueFromController($minRange));
+                this.minInput.val(this.getValueFromController(this.minController));
             }.bind(this));
 
-            $maxRange.on('change', function () {
-                let minValue = this.getValueFromController($minRange),
-                    maxValue = this.getValueFromController($maxRange);
+            this.maxController.on('change', function () {
+                let minValue = this.getValueFromController(this.minController),
+                    maxValue = this.getValueFromController(this.maxController);
 
                 if (maxValue < minValue + this.options.difference) {
-                    this.setControllerPosition($minRange, maxValue - this.options.difference);
-                    $minInput.val(this.getValueFromController($minRange));
+                    this.setControllerPosition(this.minController, maxValue - this.options.difference);
+                    this.minInput.val(this.getValueFromController(this.minController));
 
-                    if ((this.getValueFromController($maxRange) - this.options.difference) === this.options.minValue - 1) {
-                        this.setControllerPosition($maxRange, this.options.difference);
+                    if ((this.getValueFromController(this.maxController) - this.options.difference) === this.options.minValue - 1) {
+                        this.setControllerPosition(this.maxController, this.options.difference);
                     }
                 }
-                $maxInput.val(this.getValueFromController($maxRange));
+                this.maxInput.val(this.getValueFromController(this.maxController));
             }.bind(this));
 
-            $minInput.on('change', function (event) {
+            this.minInput.on('change', function (event) {
                 let newValue = parseInt($(event.target).val());
 
                 if (!isNaN(newValue)) {
                     if (newValue <= this.options.maxValue - this.options.difference) {
-                        this.setControllerPosition($minRange, newValue);
+                        this.setControllerPosition(this.minController, newValue);
                     } else {
-                        let maxValue = parseInt($maxInput.val());
-                        this.setControllerPosition($minRange, this.options.maxValue - this.options.difference, false, false);
+                        let maxValue = parseInt(this.maxInput.val());
+                        this.setControllerPosition(this.minController, this.options.maxValue - this.options.difference, false, false);
 
                         if (newValue > maxValue - this.options.difference) {
-                            $maxInput.val(newValue + this.options.difference);
+                            this.maxInput.val(newValue + this.options.difference);
                         }
                     }
                 }
             }.bind(this));
 
-            $maxInput.on('change', function (event) {
+            this.maxInput.on('change', function (event) {
                 let newValue = parseInt($(event.target).val());
 
                 if (!isNaN(newValue)) {
                     if (newValue <= this.options.maxValue) {
-                        this.setControllerPosition($maxRange, newValue);
+                        this.setControllerPosition(this.maxController, newValue);
                     } else {
-                        let minValue = parseInt($minInput.val());
-                        this.setControllerPosition($maxRange, this.options.maxValue, false, false);
+                        let minValue = parseInt(this.minInput.val());
+                        this.setControllerPosition(this.maxController, this.options.maxValue, false, false);
 
                         if (newValue < minValue + this.options.difference) {
-                            $minInput.val(newValue - this.options.difference);
+                            this.minInput.val(newValue - this.options.difference);
                         }
                     }
                 }
@@ -140,27 +149,22 @@ define([
         },
 
         /**
-         * Retrieve minimal values for slider
+         * Set min/max values for inputs.
          */
         initValuesRestrictions: function () {
-            $(this.element).find('.range-inputs .min-value').attr('min', this.options.minValue);
-            $(this.element).find('.range-inputs .max-value').attr('min', this.options.minValue + this.options.difference);
+            this.minInput.attr('min', this.options.minValue);
+            this.maxInput.attr('min', this.options.minValue + this.options.difference);
         },
 
         /**
          * Set position of controller
-         * @param $rangeController
-         * @param {number} position
+         * @param {jQuery} $rangeController
+         * @param {number} value
          * @param {boolean} isPercentage
          * @param {boolean} trigger
          */
-        setControllerPosition: function ($rangeController, position, isPercentage = false, trigger = true) {
-            let left = position;
-
-            if (!isPercentage) {
-                left = this.valueToPercent(position);
-            }
-            $rangeController.css({'left': left + '%'});
+        setControllerPosition: function ($rangeController, value, isPercentage = false, trigger = true) {
+            $rangeController.css({'left': (isPercentage ? value : this.valueToPercent(value)) + '%'});
 
             if (trigger) {
                 $rangeController.trigger('change');
@@ -168,25 +172,32 @@ define([
         },
 
         /**
-         * Get value by controller position
-         * @param $rangeController
+         * Get value by controller position.
+         * @param {jQuery} $rangeController
          * @returns {number}
          */
         getValueFromController: function ($rangeController) {
-            return this.percentToValue(parseFloat($rangeController.css('left')) / this.containerWidth * 100)
+            return this.percentToValue(parseFloat($rangeController.css('left')) / this.container.innerWidth() * 100)
         },
 
         /**
-         * Convert percent to value
+         * Convert percent to value.
          * @param {number} percent
          * @returns {number}
          */
         percentToValue: function (percent) {
+            if (percent > 100) {
+                percent = 100;
+            }
+            if (percent < 0) {
+                percent = 0;
+            }
+
             return Math.round(percent / 100 * (this.options.maxValue - this.options.minValue)) + this.options.minValue;
         },
 
         /**
-         * Convert value to percent
+         * Convert value to percent.
          * @param {number} value
          * @returns {number}
          */
@@ -194,7 +205,6 @@ define([
             if (value > this.options.maxValue) {
                 value = this.options.maxValue;
             }
-
             if (value < this.options.minValue) {
                 value = this.options.minValue;
             }

@@ -26,20 +26,20 @@ return [
         'full_page' => 1,
     ],
     'timer_config' => [
-        'timer' => [
-            'default_time' => 8,
-            'sound' => 'pub/media/audio/football_sound.mp3'
+        'general' => [
+            'defaultTime' => 8,
+            'sound' => 'pub/media/audio/football_sound.mp3',
         ],
         'settings' => [
-            'hide_random_time' => 1,
-            'max_time' => 10,
-            'min_time' => 2,
-            'show_loader' => 1
+            'hideRandomTime' => 1,
+            'maxTime' => 10,
+            'minTime' => 2,
+            'showLoader' => 1
         ],
-        'random_range' => [
+        'slider_config' => [
             'difference' => 1,
-            'min_value' => 1,
-            'max_value' => 15,
+            'maxValue' => 15,
+            'minValue' => 1,
         ]
     ]
 ];
