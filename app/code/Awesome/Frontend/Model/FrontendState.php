@@ -19,26 +19,26 @@ class FrontendState extends \Awesome\Framework\Model\AppState
     private $isJsMinificationEnabled;
 
     /**
-     * Check if css minification is enabled and can be used according to the app mode.
+     * Check if css minification is enabled.
      * @return bool
      */
     public function isCssMinificationEnabled(): bool
     {
         if ($this->isCssMinificationEnabled === null) {
-            $this->isCssMinificationEnabled = (bool) $this->config->get(self::CSS_MINIFY_CONFIG) && !$this->isDeveloperMode();
+            $this->isCssMinificationEnabled = (bool) $this->config->get(self::CSS_MINIFY_CONFIG);
         }
 
         return $this->isCssMinificationEnabled;
     }
 
     /**
-     * Check if js minification is enabled and can be used according to the app mode.
+     * Check if js minification is enabled.
      * @return bool
      */
     public function isJsMinificationEnabled(): bool
     {
         if ($this->isJsMinificationEnabled === null) {
-            $this->isJsMinificationEnabled = (bool) $this->config->get(self::JS_MINIFY_CONFIG) && !$this->isDeveloperMode();
+            $this->isJsMinificationEnabled = (bool) $this->config->get(self::JS_MINIFY_CONFIG);
         }
 
         return $this->isJsMinificationEnabled;

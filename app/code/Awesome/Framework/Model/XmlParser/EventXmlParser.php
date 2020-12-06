@@ -12,6 +12,7 @@ class EventXmlParser
 {
     private const EVENTS_GLOBAL_XML_PATH_PATTERN = '/*/*/etc/events.xml';
     private const EVENTS_XML_PATH_PATTERN = '/*/*/etc/{%s/,}events.xml';
+    private const EVENTS_XSD_SCHEMA_PATH = '/Awesome/Framework/Schema/events.xsd';
 
     /**
      * @var XmlFileManager $xmlFileManager
@@ -69,23 +70,15 @@ class EventXmlParser
     private function parse(string $eventsXmlFile): array
     {
         $parsedNode = [];
-        $eventNode = $this->xmlFileManager->parseXmlFile($eventsXmlFile);
+        $eventNode = $this->xmlFileManager->parseXmlFile($eventsXmlFile, APP_DIR . self::EVENTS_XSD_SCHEMA_PATH);
 
         foreach ($eventNode->children() as $event) {
-            if (!$eventName = XmlParsingHelper::getNodeAttributeName($event)) {
-                throw new XmlValidationException(
-                    sprintf('Name attribute is not provided for event in "%s" file', $eventsXmlFile)
-                );
-            }
+            $eventName = XmlParsingHelper::getNodeAttributeName($event);
             $parsedNode[$eventName] = $parsedNode[$eventName] ?? [];
 
             foreach ($event->children() as $observer) {
                 if (!XmlParsingHelper::isDisabled($observer)) {
-                    if (!$observerName = XmlParsingHelper::getNodeAttributeName($observer)) {
-                        throw new XmlValidationException(
-                            sprintf('Name attribute is not provided for "%s" event observer', $eventName)
-                        );
-                    }
+                    $observerName = XmlParsingHelper::getNodeAttributeName($observer);
 
                     if (DataHelper::arrayGetByKeyRecursive($parsedNode, $observerName)) {
                         throw new XmlValidationException(
@@ -93,19 +86,11 @@ class EventXmlParser
                         );
                     }
 
-                    if (!$class = ltrim(XmlParsingHelper::getNodeAttribute($observer, 'class'), '\\')) {
-                        throw new XmlValidationException(
-                            sprintf('Class is not specified for "%s" observer', $observerName)
-                        );
-                    }
                     $parsedNode[$eventName][$observerName] = [
-                        'class' => '\\' . $class,
+                        'class' => '\\' . ltrim(XmlParsingHelper::getNodeAttribute($observer, 'class'), '\\'),
                     ];
 
                     if ($sortOrder = XmlParsingHelper::getNodeAttribute($observer, 'sortOrder')) {
-                        if (!is_numeric($sortOrder)) {
-                            throw new XmlValidationException(sprintf('sortOrder "%s" is not valid', $sortOrder));
-                        }
                         $parsedNode[$eventName][$observerName]['sortOrder'] = $sortOrder;
                     }
                 }

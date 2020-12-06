@@ -24,16 +24,39 @@ class XmlFileManager extends \Awesome\Framework\Model\FileManager
 
     /**
      * Read and parse XML file.
+     * If XSD scheme file is provided, XML is checked for validity.
      * @param string $path
+     * @param string|null $schemaFile
      * @return \SimpleXMLElement|false
      * @throws \Exception
      */
-    public function parseXmlFile(string $path)
+    public function parseXmlFile(string $path, ?string $schemaFile = null)
     {
         $content = $this->readFile($path);
 
         if (!$this->xmlValidator->valid($content)) {
             throw new XmlValidationException(sprintf('Provided file "%s" does not contain valid XML', $path));
+        }
+        if ($schemaFile) {
+            $schema = $this->readFile($schemaFile);
+
+            if (!$this->xmlValidator->validAgainst($content, $schema)) {
+                libxml_use_internal_errors(true);
+
+                $xml = new \DOMDocument();
+                $xml->load($path);
+
+                if (!$xml->schemaValidate($schemaFile)) {
+                    $error = libxml_get_last_error();
+
+                    $errorMessage = trim($error->message);
+                    libxml_clear_errors();
+
+                    throw new XmlValidationException(
+                        sprintf('File "%s" is not valid against XSD scheme: "%s"', $path, $errorMessage)
+                    );
+                }
+            }
         }
 
         return simplexml_load_string($content);

@@ -9,7 +9,7 @@ class Json implements \Awesome\Framework\Model\SerializerInterface
      * @inheritDoc
      * @throws \InvalidArgumentException
      */
-    public function encode(array $data): string
+    public function encode($data): string
     {
         $result = json_encode($data);
 
@@ -24,7 +24,7 @@ class Json implements \Awesome\Framework\Model\SerializerInterface
      * @inheritDoc
      * @throws \InvalidArgumentException
      */
-    public function decode(string $string): array
+    public function decode(string $string)
     {
         $result = json_decode($string, true);
 

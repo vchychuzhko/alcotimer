@@ -15,6 +15,7 @@ class XmlParsingHelper
     {
         return (string) $node[$attribute];
     }
+
     /**
      * Get node attribute name if any.
      * @param \SimpleXMLElement $node
@@ -23,6 +24,25 @@ class XmlParsingHelper
     public static function getNodeAttributeName(\SimpleXMLElement $node): string
     {
         return self::getNodeAttribute($node, 'name');
+    }
+
+    /**
+     * Get node child by name.
+     * Return the first one if several nodes found.
+     * @param \SimpleXMLElement $node
+     * @param string $childNodeName
+     * @return \SimpleXMLElement|null
+     */
+    public static function getChildNode(\SimpleXMLElement $node, string $childNodeName): ?\SimpleXMLElement
+    {
+        $childNode = null;
+
+        foreach ($node->$childNodeName as $child) {
+            $childNode = $child;
+            break;
+        }
+
+        return $childNode;
     }
 
     /**

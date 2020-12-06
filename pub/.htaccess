@@ -58,8 +58,9 @@
 ErrorDocument 403 /
 ErrorDocument 404 /
 
-# For 500s that aren't handled by the application, show plain 500 response
-ErrorDocument 500 /pages/maintenance.html
+# For 500s that aren't handled by the application, show plain response
+ErrorDocument 500 /pages/internal_error.html
+ErrorDocument 503 /pages/maintenance.html
 
 ###########################################
 ## Deny access to files that begin with a dot

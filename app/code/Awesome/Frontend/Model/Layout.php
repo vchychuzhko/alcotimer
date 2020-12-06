@@ -84,9 +84,13 @@ class Layout
         $this->handle = $handle;
         $this->view = $view;
         $this->handles = $handles ?: [$handle];
-        $this->structure = $this->cache->get(Cache::LAYOUT_CACHE_KEY, $handle, function () use ($handle, $view, $handles) {
-            return $this->layoutXmlParser->getLayoutStructure($handle, $view, $handles);
-        });
+        $this->structure = $this->cache->get(
+            Cache::LAYOUT_CACHE_KEY,
+            $handle . '_' . $view,
+            function () use ($handle, $view, $handles) {
+                return $this->layoutXmlParser->getLayoutStructure($handle, $view, $handles);
+            }
+        );
 
         return $this;
     }
@@ -166,7 +170,7 @@ class Layout
         }
         $path = APP_DIR . $path;
 
-        if (!file_exists($path)) {
+        if (!is_file($path)) {
             throw new \LogicException(
                 sprintf('Template file "%s" was not found', $template)
             );
@@ -185,7 +189,7 @@ class Layout
     }
 
     /**
-     * Get all handles assigned for current page.
+     * Get all handles assigned to current page.
      * @return array
      */
     public function getHandles(): array

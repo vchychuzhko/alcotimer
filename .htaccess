@@ -63,5 +63,6 @@
 ErrorDocument 403 /
 ErrorDocument 404 /
 
-# For 500s that aren't handled by the application, show plain 500 response
-ErrorDocument 500 /pub/pages/maintenance.html
+# For 500s that aren't handled by the application, show plain response
+ErrorDocument 500 /pub/pages/internal_error.html
+ErrorDocument 503 /pub/pages/maintenance.html

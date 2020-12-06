@@ -17,6 +17,7 @@ class LayoutXmlParser
 {
     private const DEFAULT_HANDLE_NAME = 'default';
     private const LAYOUT_XML_PATH_PATTERN = '/*/*/view/%s/layout/%s.xml';
+    private const LAYOUT_XSD_SCHEMA_PATH = '/Awesome/Frontend/Schema/page_layout.xsd';
 
     /**
      * @var XmlFileManager $xmlFileManager
@@ -80,20 +81,17 @@ class LayoutXmlParser
         $body = [];
 
         foreach (glob(APP_DIR . $pattern, GLOB_BRACE) as $layoutXmlFile) {
-            $layoutData = $this->xmlFileManager->parseXmlFile($layoutXmlFile);
+            $layoutData = $this->xmlFileManager->parseXmlFile($layoutXmlFile, APP_DIR . self::LAYOUT_XSD_SCHEMA_PATH);
 
-            foreach ($layoutData->children() as $rootNode) {
-                if ($rootNode->getName() === 'head') {
-                    $head = array_replace_recursive($head, $this->parseHeadNode($rootNode));
-                }
-
-                if ($rootNode->getName() === 'body') {
-                    $body = array_replace_recursive($body, $this->parseBodyNode($rootNode));
-                }
+            if ($headNode = XmlParsingHelper::getChildNode($layoutData, 'head')) {
+                $head = array_replace_recursive($head, $this->parseHeadNode($headNode));
+            }
+            if ($bodyNode = XmlParsingHelper::getChildNode($layoutData, 'body')) {
+                $body = array_replace_recursive($body, $this->parseBodyNode($bodyNode));
             }
         }
 
-        // @TODO: Add check for minify/merge enabled and replace links
+        // @TODO: Add check for merge enabled and replace links
         $this->filterRemovedAssets();
         XmlParsingHelper::applySortOrder($this->collectedAssets);
         $head = [
@@ -263,7 +261,7 @@ class LayoutXmlParser
                     $this->referencesToRemove[] = $itemName;
                 } else {
                     $reference = [
-                        'children' => []
+                        'children' => [],
                     ];
 
                     if ($sortOrder = XmlParsingHelper::getNodeAttribute($itemNode, 'sortOrder')) {

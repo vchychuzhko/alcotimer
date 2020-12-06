@@ -112,11 +112,13 @@ class Http
                 $response = $maintenanceAction->execute($request);
             }
         } catch (\Exception $e) {
-            $this->logger->error(get_class_name($e) . ': ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+            $errorMessage = get_class_name($e) . ': ' . $e->getMessage() . "\n" . $e->getTraceAsString();
+
+            $this->logger->error($errorMessage);
 
             $errorAction = new HttpErrorAction([
                 'accept_type'       => isset($request) ? $request->getAcceptType() : null,
-                'error'             => $e,
+                'error_message'     => $errorMessage,
                 'is_developer_mode' => $this->appState->isDeveloperMode(),
             ]);
 
