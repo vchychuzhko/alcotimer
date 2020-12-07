@@ -73,9 +73,7 @@ class LayoutXmlParser
     {
         $handles = $handles ?: [$handle];
         $pattern = sprintf(
-            self::LAYOUT_XML_PATH_PATTERN,
-            '{' . Http::BASE_VIEW . ',' . $view . '}',
-            '{' . self::DEFAULT_HANDLE_NAME . ',' . implode(',', $handles) . '}'
+            self::LAYOUT_XML_PATH_PATTERN, $view, '{' . self::DEFAULT_HANDLE_NAME . ',' . implode(',', $handles) . '}'
         );
         $head = [];
         $body = [];
@@ -222,7 +220,7 @@ class LayoutXmlParser
                 }
 
                 if (in_array($itemName, $this->processedElements, true)) {
-                    throw new XmlValidationException(sprintf('"%s" block is declared twice', $itemName));
+                    throw new XmlValidationException(sprintf('Block "%s" is declared twice', $itemName));
                 }
                 $this->processedElements[] = $itemName;
                 break;
@@ -251,7 +249,7 @@ class LayoutXmlParser
                 }
 
                 if (in_array($itemName, $this->processedElements, true)) {
-                    throw new XmlValidationException(sprintf('"%s" container is declared twice', $itemName));
+                    throw new XmlValidationException(sprintf('Container "%s" is declared twice', $itemName));
                 }
                 $this->processedElements[] = $itemName;
                 break;

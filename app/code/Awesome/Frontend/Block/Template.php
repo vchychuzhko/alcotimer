@@ -3,24 +3,12 @@ declare(strict_types=1);
 
 namespace Awesome\Frontend\Block;
 
-use Awesome\Cache\Model\Cache;
-use Awesome\Framework\Model\Config;
 use Awesome\Frontend\Model\Context;
 use Awesome\Frontend\Model\FrontendState;
 use Awesome\Frontend\Model\StaticContent;
 
 class Template extends \Awesome\Frontend\Model\AbstractBlock
 {
-    /**
-     * @var Cache $cache
-     */
-    protected $cache;
-
-    /**
-     * @var Config $config
-     */
-    protected $config;
-
     /**
      * @var FrontendState $frontendState
      */
@@ -51,8 +39,6 @@ class Template extends \Awesome\Frontend\Model\AbstractBlock
         array $data = []
     ) {
         parent::__construct($data);
-        $this->cache = $context->getCache();
-        $this->config = $context->getConfig();
         $this->frontendState = $context->getFrontendState();
         $this->staticContent = $context->getStaticContent();
     }
