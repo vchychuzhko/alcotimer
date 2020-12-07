@@ -129,6 +129,14 @@
                 </xs:restriction>
             </xs:simpleType>
         </xs:attribute>
+        <xs:attribute name="ifConfig">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:minLength value="1"/>
+                    <xs:pattern value="[a-zA-Z0-9\-_/]*"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
         <xs:attribute name="sortOrder" type="xs:nonNegativeInteger"/>
     </xs:complexType>
     <xs:complexType name="containerType">
@@ -167,6 +175,14 @@
                 <xs:restriction base="xs:string">
                     <xs:minLength value="1"/>
                     <xs:pattern value="[a-zA-Z0-9\-_ ]*"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="ifConfig">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:minLength value="1"/>
+                    <xs:pattern value="[a-zA-Z0-9\-_/]*"/>
                 </xs:restriction>
             </xs:simpleType>
         </xs:attribute>

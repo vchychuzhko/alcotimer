@@ -26,6 +26,7 @@ return [
         'full_page' => 1,
     ],
     'timer_config' => [
+        'show_hint' => 1,
         'general' => [
             'defaultTime' => 8,
             'sound' => 'pub/media/audio/football_sound.mp3',

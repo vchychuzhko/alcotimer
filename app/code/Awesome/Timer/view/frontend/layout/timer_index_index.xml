@@ -25,6 +25,7 @@
             <block name="timer.hint"
                    class="Awesome\Frontend\Block\Template"
                    template="Awesome_Timer::timer/timer_hint.phtml"
+                   ifConfig="timer_config/show_hint"
                    sortOrder="9"/>
         </referenceContainer>
     </body>

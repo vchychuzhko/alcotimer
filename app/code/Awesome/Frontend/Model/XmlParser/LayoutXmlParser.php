@@ -5,8 +5,8 @@ namespace Awesome\Frontend\Model\XmlParser;
 
 use Awesome\Framework\Exception\XmlValidationException;
 use Awesome\Framework\Helper\DataHelper;
+use Awesome\Framework\Model\Config;
 use Awesome\Framework\Model\FileManager\XmlFileManager;
-use Awesome\Framework\Model\Http;
 use Awesome\Framework\Helper\XmlParsingHelper;
 use Awesome\Frontend\Block\Container;
 use Awesome\Frontend\Block\Html\Body;
@@ -18,6 +18,11 @@ class LayoutXmlParser
     private const DEFAULT_HANDLE_NAME = 'default';
     private const LAYOUT_XML_PATH_PATTERN = '/*/*/view/%s/layout/%s.xml';
     private const LAYOUT_XSD_SCHEMA_PATH = '/Awesome/Frontend/Schema/page_layout.xsd';
+
+    /**
+     * @var Config $config
+     */
+    private $config;
 
     /**
      * @var XmlFileManager $xmlFileManager
@@ -54,10 +59,12 @@ class LayoutXmlParser
 
     /**
      * LayoutXmlParser constructor.
+     * @param Config $config
      * @param XmlFileManager $xmlFileManager
      */
-    public function __construct(XmlFileManager $xmlFileManager)
+    public function __construct(Config $config, XmlFileManager $xmlFileManager)
     {
+        $this->config = $config;
         $this->xmlFileManager = $xmlFileManager;
     }
 
@@ -183,7 +190,7 @@ class LayoutXmlParser
         $body = [];
 
         foreach ($bodyNode->children() as $bodyItem) {
-            if ($parsedItem = $this->parseBodyItem($bodyItem)) {
+            if ($parsedItem = $this->parseElement($bodyItem)) {
                 $body[XmlParsingHelper::getNodeAttributeName($bodyItem)] = $parsedItem;
             }
         }
@@ -193,84 +200,102 @@ class LayoutXmlParser
 
     /**
      * Parse block, container or reference items.
-     * @param \SimpleXMLElement $itemNode
+     * @param \SimpleXMLElement $elementNode
      * @return array
      * @throws XmlValidationException
      */
-    private function parseBodyItem(\SimpleXMLElement $itemNode): array
+    private function parseElement(\SimpleXMLElement $elementNode): array
     {
         $parsedItemNode = [];
-        $itemName = XmlParsingHelper::getNodeAttributeName($itemNode);
+        $elementName = XmlParsingHelper::getNodeAttributeName($elementNode);
 
-        switch ($itemNode->getName()) {
+        switch ($elementNode->getName()) {
             case 'block':
+                if (($configPath = XmlParsingHelper::getNodeAttribute($elementNode, 'ifConfig'))
+                    && !(bool) $this->config->get($configPath)
+                ) {
+                    break;
+                }
+
                 $parsedItemNode = [
-                    'name'     => $itemName,
-                    'class'    => XmlParsingHelper::getNodeAttribute($itemNode, 'class'),
-                    'template' => XmlParsingHelper::getNodeAttribute($itemNode, 'template') ?: null,
+                    'name'     => $elementName,
+                    'class'    => XmlParsingHelper::getNodeAttribute($elementNode, 'class'),
+                    'template' => XmlParsingHelper::getNodeAttribute($elementNode, 'template') ?: null,
                     'children' => [],
                 ];
 
-                if ($sortOrder = XmlParsingHelper::getNodeAttribute($itemNode, 'sortOrder')) {
+                if ($sortOrder = XmlParsingHelper::getNodeAttribute($elementNode, 'sortOrder')) {
                     $parsedItemNode['sortOrder'] = $sortOrder;
                 }
 
-                foreach ($itemNode->children() as $child) {
-                    $parsedItemNode['children'][XmlParsingHelper::getNodeAttributeName($child)] = $this->parseBodyItem($child);
+                foreach ($elementNode->children() as $child) {
+                    if ($parsedChild = $this->parseElement($child)) {
+                        $parsedItemNode['children'][XmlParsingHelper::getNodeAttributeName($child)] = $parsedChild;
+                    }
                 }
 
-                if (in_array($itemName, $this->processedElements, true)) {
-                    throw new XmlValidationException(sprintf('Block "%s" is declared twice', $itemName));
+                if (in_array($elementName, $this->processedElements, true)) {
+                    throw new XmlValidationException(sprintf('Block "%s" is declared twice', $elementName));
                 }
-                $this->processedElements[] = $itemName;
+                $this->processedElements[] = $elementName;
                 break;
             case 'container':
+                if (($configPath = XmlParsingHelper::getNodeAttribute($elementNode, 'ifConfig'))
+                    && !(bool) $this->config->get($configPath)
+                ) {
+                    break;
+                }
+
                 $parsedItemNode = [
-                    'name'     => $itemName,
+                    'name'     => $elementName,
                     'class'    => Container::class,
                     'template' => null,
                     'children' => [],
                 ];
 
-                if ($htmlTag = XmlParsingHelper::getNodeAttribute($itemNode, 'htmlTag')) {
+                if ($htmlTag = XmlParsingHelper::getNodeAttribute($elementNode, 'htmlTag')) {
                     $parsedItemNode['data'] = [
                         'html_tag'   => $htmlTag,
-                        'html_class' => XmlParsingHelper::getNodeAttribute($itemNode, 'htmlClass'),
-                        'html_id'    => XmlParsingHelper::getNodeAttribute($itemNode, 'htmlId'),
+                        'html_class' => XmlParsingHelper::getNodeAttribute($elementNode, 'htmlClass'),
+                        'html_id'    => XmlParsingHelper::getNodeAttribute($elementNode, 'htmlId'),
                     ];
                 }
 
-                if ($sortOrder = XmlParsingHelper::getNodeAttribute($itemNode, 'sortOrder')) {
+                if ($sortOrder = XmlParsingHelper::getNodeAttribute($elementNode, 'sortOrder')) {
                     $parsedItemNode['sortOrder'] = $sortOrder;
                 }
 
-                foreach ($itemNode->children() as $child) {
-                    $parsedItemNode['children'][XmlParsingHelper::getNodeAttributeName($child)] = $this->parseBodyItem($child);
+                foreach ($elementNode->children() as $child) {
+                    if ($parsedChild = $this->parseElement($child)) {
+                        $parsedItemNode['children'][XmlParsingHelper::getNodeAttributeName($child)] = $parsedChild;
+                    }
                 }
 
-                if (in_array($itemName, $this->processedElements, true)) {
-                    throw new XmlValidationException(sprintf('Container "%s" is declared twice', $itemName));
+                if (in_array($elementName, $this->processedElements, true)) {
+                    throw new XmlValidationException(sprintf('Container "%s" is declared twice', $elementName));
                 }
-                $this->processedElements[] = $itemName;
+                $this->processedElements[] = $elementName;
                 break;
             case 'referenceBlock':
             case 'referenceContainer':
-                if (XmlParsingHelper::isAttributeBooleanTrue($itemNode, 'remove')) {
-                    $this->referencesToRemove[] = $itemName;
+                if (XmlParsingHelper::isAttributeBooleanTrue($elementNode, 'remove')) {
+                    $this->referencesToRemove[] = $elementName;
                 } else {
                     $reference = [
                         'children' => [],
                     ];
 
-                    if ($sortOrder = XmlParsingHelper::getNodeAttribute($itemNode, 'sortOrder')) {
+                    if ($sortOrder = XmlParsingHelper::getNodeAttribute($elementNode, 'sortOrder')) {
                         $reference['sortOrder'] = $sortOrder;
                     }
 
-                    foreach ($itemNode->children() as $child) {
-                        $reference['children'][XmlParsingHelper::getNodeAttributeName($child)] = $this->parseBodyItem($child);
+                    foreach ($elementNode->children() as $child) {
+                        if ($parsedChild = $this->parseElement($child)) {
+                            $reference['children'][XmlParsingHelper::getNodeAttributeName($child)] = $parsedChild;
+                        }
                     }
                     $this->references[] = [
-                        'name' => $itemName,
+                        'name' => $elementName,
                         'data' => $reference,
                     ];
                 }
