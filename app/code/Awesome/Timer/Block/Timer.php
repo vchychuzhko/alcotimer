@@ -3,10 +3,9 @@ declare(strict_types=1);
 
 namespace Awesome\Timer\Block;
 
-use Awesome\Framework\Helper\DataHelper;
 use Awesome\Framework\Model\Config;
-use Awesome\Framework\Model\Invoker;
-use Awesome\Frontend\Model\TemplateRenderer;
+use Awesome\Framework\Model\Serializer\Json;
+use Awesome\Frontend\Model\Context;
 
 class Timer extends \Awesome\Frontend\Block\Template
 {
@@ -18,33 +17,33 @@ class Timer extends \Awesome\Frontend\Block\Template
     private $config;
 
     /**
+     * @var Json $json
+     */
+    private $json;
+
+    /**
      * Timer constructor.
-     * @param TemplateRenderer $renderer
-     * @param string $nameInLayout
-     * @param string|null $template
-     * @param array $children
+     * @param Config $config
+     * @param Context $context
+     * @param Json $json
      * @param array $data
      */
-    public function __construct(
-        TemplateRenderer $renderer,
-        string $nameInLayout,
-        ?string $template = null,
-        array $children = [],
-        array $data = []
-    ) {
-        parent::__construct($renderer, $nameInLayout, $template, $children, $data);
-        $this->config = Invoker::getInstance()->get(Config::class);
+    public function __construct(Config $config, Context $context, Json $json, array $data = [])
+    {
+        parent::__construct($context, $data);
+        $this->config = $config;
+        $this->json = $json;
     }
 
     /**
-     * Get random time range slider json.
+     * Get random time slider json.
      * @return string
      */
-    public function getRandomRangeConfigJson(): string
+    public function getSliderConfigJson(): string
     {
-        $randomRangeConfig = $this->config->get(self::TIMER_CONFIG_PATH . '/random_range') ?: [];
+        $randomRangeConfig = $this->config->get(self::TIMER_CONFIG_PATH . '/slider_config') ?: [];
 
-        return $this->processConfig($randomRangeConfig);
+        return $this->json->encode($randomRangeConfig);
     }
 
     /**
@@ -55,7 +54,7 @@ class Timer extends \Awesome\Frontend\Block\Template
     {
         $settings = $this->config->get(self::TIMER_CONFIG_PATH . '/settings') ?: [];
 
-        return $this->processConfig($settings);
+        return $this->json->encode($settings);
     }
 
     /**
@@ -64,28 +63,12 @@ class Timer extends \Awesome\Frontend\Block\Template
      */
     public function getTimerConfigJson(): string
     {
-        $timerConfig = $this->config->get(self::TIMER_CONFIG_PATH . '/timer') ?: [];
+        $timerConfig = $this->config->get(self::TIMER_CONFIG_PATH . '/general') ?: [];
 
         if (isset($timerConfig['sound'])) {
             $timerConfig['sound'] = $this->getMediaFileUrl($timerConfig['sound']);
         }
 
-        return $this->processConfig($timerConfig);
-    }
-
-    /**
-     * Change config keys to camelCase and return config json.
-     * @param array $config
-     * @return string
-     */
-    private function processConfig(array $config): string
-    {
-        //@TODO: Rework Timer configurations structure and processing
-        foreach ($config as $configKey => $configValue) {
-            unset($config[$configKey]);
-            $config[DataHelper::camelCase($configKey)] = $configValue;
-        }
-
-        return json_encode($config);
+        return $this->json->encode($timerConfig);
     }
 }

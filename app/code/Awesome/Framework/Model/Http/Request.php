@@ -194,15 +194,6 @@ class Request extends \Awesome\Framework\Model\DataObject implements \Awesome\Fr
     }
 
     /**
-     * Get all request parameters.
-     * @return array
-     */
-    public function getParams(): array
-    {
-        return $this->parameters;
-    }
-
-    /**
      * Get request cookie by key.
      * @param string $key
      * @return string|null
@@ -210,15 +201,6 @@ class Request extends \Awesome\Framework\Model\DataObject implements \Awesome\Fr
     public function getCookie(string $key): ?string
     {
         return $this->cookies[$key] ?? null;
-    }
-
-    /**
-     * Get all request cookies.
-     * @return array
-     */
-    public function getCookies(): array
-    {
-        return $this->cookies;
     }
 
     /**

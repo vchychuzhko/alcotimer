@@ -6,6 +6,13 @@ namespace Awesome\Frontend\Block\Html;
 use Awesome\Frontend\Helper\StaticContentHelper;
 use Awesome\Frontend\Model\RequireJs;
 
+/**
+ * Class Head
+ * @method string|null getTitle()
+ * @method string|null getDescription()
+ * @method string|null getKeywords()
+ * @method string|null getFavicon()
+ */
 class Head extends \Awesome\Frontend\Block\Template
 {
     /**
@@ -44,7 +51,7 @@ class Head extends \Awesome\Frontend\Block\Template
 
         foreach ($scriptsData as $script => $data) {
             $scripts[] = [
-                'src' => $this->resolveAssetPath($script, $minified),
+                'src'   => $this->resolveAssetPath($script, $minified),
                 'async' => $data['async'] ?? false,
                 'defer' => $data['defer'] ?? false,
             ];
@@ -62,7 +69,7 @@ class Head extends \Awesome\Frontend\Block\Template
     private function resolveAssetPath(string $path, bool $minified = false): string
     {
         if (strpos($path, '::') !== false) {
-            [$module, $file] = explode('::', $path);
+            list($module, $file) = explode('::', $path);
             $type = pathinfo($file, PATHINFO_EXTENSION);
 
             $path = $module . '/' . $type . '/' . $file;

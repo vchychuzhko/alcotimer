@@ -7,15 +7,15 @@ interface SerializerInterface
 {
     /**
      * Serialize provided data.
-     * @param array $data
+     * @param mixed $data
      * @return string
      */
-    public function encode(array $data): string;
+    public function encode($data): string;
 
     /**
      * Unserialize provided string.
      * @param string $string
-     * @return array
+     * @return mixed
      */
-    public function decode(string $string): array;
+    public function decode(string $string);
 }

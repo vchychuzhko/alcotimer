@@ -41,7 +41,7 @@ class JsMinifier
 
     /**
      * This character is only active when certain look ahead actions take place.
-     *  @var string $c
+     * @var string $c
      */
     private $c;
 
@@ -184,7 +184,7 @@ class JsMinifier
 
                 // no break
                 case ' ':
-                    if ($this->isAlphaNumeric($this->b)) {
+                    if ($this->b && $this->isAlphaNumeric($this->b)) {
                         echo $this->a;
                     }
 
@@ -537,10 +537,10 @@ class JsMinifier
      * @param  string $js The string to lock
      * @return string
      */
-    private function lock(string $js) : string
+    private function lock(string $js): string
     {
         /* lock things like <code>"asd" + ++x;</code> */
-        $lock = '"LOCK---' . crc32((string) time()) . '"';
+        $lock = '"LOCK---' . crc32((string)time()) . '"';
 
         $matches = [];
         preg_match('/([+-])(\s+)([+-])/S', $js, $matches);

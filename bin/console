@@ -14,9 +14,8 @@ try {
 }
 
 try {
-    $invoker = \Awesome\Framework\Model\Invoker::getInstance();
     /** @var \Awesome\Console\Model\Cli $app */
-    $app = $invoker->get(\Awesome\Console\Model\Cli::class);
+    $app = \Awesome\Framework\Model\Invoker::getInstance()->get(\Awesome\Console\Model\Cli::class);
     $app->run();
 } catch (\Exception $e) {
     echo $e->getMessage() . "\n";

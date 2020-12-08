@@ -3,32 +3,21 @@ declare(strict_types=1);
 
 namespace Awesome\Frontend\Block;
 
-use Awesome\Framework\Model\Invoker;
+use Awesome\Frontend\Model\Context;
 use Awesome\Frontend\Model\FrontendState;
 use Awesome\Frontend\Model\StaticContent;
-use Awesome\Frontend\Model\TemplateRenderer;
 
-class Template extends \Awesome\Framework\Model\DataObject
+class Template extends \Awesome\Frontend\Model\AbstractBlock
 {
     /**
-     * @var TemplateRenderer $renderer
+     * @var FrontendState $frontendState
      */
-    protected $renderer;
+    protected $frontendState;
 
     /**
-     * @var string $nameInLayout
+     * @var StaticContent $staticContent
      */
-    protected $nameInLayout;
-
-    /**
-     * @var string $template
-     */
-    protected $template;
-
-    /**
-     * @var array $children
-     */
-    protected $children;
+    protected $staticContent;
 
     /**
      * @var string $mediaUrl
@@ -41,70 +30,17 @@ class Template extends \Awesome\Framework\Model\DataObject
     protected $staticUrl;
 
     /**
-     * @var FrontendState $frontendState
-     */
-    protected $frontendState;
-
-    /**
-     * @var StaticContent $staticContent
-     */
-    protected $staticContent;
-
-    /**
      * Template constructor.
-     * @param TemplateRenderer $renderer
-     * @param string $nameInLayout
-     * @param string|null $template
-     * @param array $children
+     * @param Context $context
      * @param array $data
      */
     public function __construct(
-        TemplateRenderer $renderer,
-        string $nameInLayout,
-        ?string $template = null,
-        array $children = [],
+        Context $context,
         array $data = []
     ) {
-        parent::__construct($data, true);
-        $this->renderer = $renderer;
-        $this->nameInLayout = $nameInLayout;
-        $this->template = $template ?: $this->template;
-        $this->children = $children;
-        $this->frontendState = Invoker::getInstance()->get(FrontendState::class);
-        $this->staticContent = Invoker::getInstance()->get(StaticContent::class);
-    }
-
-    /**
-     * Render template.
-     * @return string
-     * @throws \Exception
-     */
-    public function toHtml(): string
-    {
-        return $this->renderer->renderElement($this);
-    }
-
-    /**
-     * Get child element.
-     * Return all children if no name is specified.
-     * @param string $childName
-     * @return string
-     */
-    public function getChildHtml(string $childName = ''): string
-    {
-        $childHtml = '';
-
-        if ($childName) {
-            if (in_array($childName, $this->children, true)) {
-                $childHtml = $this->renderer->render($childName);
-            }
-        } else {
-            foreach ($this->children as $child) {
-                $childHtml .= $this->renderer->render($child);
-            }
-        }
-
-        return $childHtml;
+        parent::__construct($data);
+        $this->frontendState = $context->getFrontendState();
+        $this->staticContent = $context->getStaticContent();
     }
 
     /**
@@ -146,8 +82,8 @@ class Template extends \Awesome\Framework\Model\DataObject
     {
         $file = ltrim($file, '/');
 
-        if ($this->staticUrl === null) {
-            $view = $this->renderer->getView();
+        if ($this->staticUrl === null && $layout = $this->getLayout()) {
+            $view = $layout->getView();
 
             if (!$deployedVersion = $this->staticContent->getDeployedVersion()) {
                 $deployedVersion = $this->staticContent->deploy($view)
@@ -171,23 +107,5 @@ class Template extends \Awesome\Framework\Model\DataObject
     private function getPubUrl(string $file = ''): string
     {
         return ($this->frontendState->isPubRoot() ? '' : '/pub') . '/' . ltrim($file, '/');
-    }
-
-    /**
-     * Get element name.
-     * @return string
-     */
-    public function getNameInLayout(): string
-    {
-        return $this->nameInLayout;
-    }
-
-    /**
-     * Get element template.
-     * @return string
-     */
-    public function getTemplate(): string
-    {
-        return $this->template;
     }
 }

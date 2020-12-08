@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace Awesome\Frontend\Model\Action;
 
-use Awesome\Framework\Model\AppState;
 use Awesome\Framework\Model\FileManager;
 use Awesome\Framework\Model\Http;
-use Awesome\Framework\Model\Http\Response;
+use Awesome\Framework\Model\Http\Context;
+use Awesome\Framework\Model\Result\Response;
 use Awesome\Framework\Model\Http\Request;
 use Awesome\Frontend\Model\StaticContent;
 
@@ -22,16 +22,16 @@ class StaticGenerationHandler extends \Awesome\Framework\Model\AbstractAction
      * Mime types for static files.
      */
     private const MIME_TYPES = [
-        'css' => 'text/css',
-        'html' => 'text/html',
-        'js' => 'application/javascript',
-        'json' => 'application/json',
+        'css'   => 'text/css',
+        'html'  => 'text/html',
+        'js'    => 'application/javascript',
+        'json'  => 'application/json',
+        'eot'   => 'application/vnd.ms-fontobject',
+        'ttf'   => 'application/x-font-ttf',
+        'otf'   => 'application/x-font-otf',
+        'woff'  => 'application/x-font-woff',
+        'woff2' => 'application/font-woff2',
     ];
-
-    /**
-     * @var AppState $appState
-     */
-    private $appState;
 
     /**
      * @var FileManager $fileManager
@@ -45,26 +45,24 @@ class StaticGenerationHandler extends \Awesome\Framework\Model\AbstractAction
 
     /**
      * StaticGenerationHandler constructor.
-     * @param AppState $appState
+     * @param Context $context
      * @param FileManager $fileManager
      * @param StaticContent $staticContent
      * @param array $data
      */
     public function __construct(
-        AppState $appState,
+        Context $context,
         FileManager $fileManager,
         StaticContent $staticContent,
         array $data = []
     ) {
-        parent::__construct($data);
-        $this->appState = $appState;
+        parent::__construct($context, $data);
         $this->fileManager = $fileManager;
         $this->staticContent = $staticContent;
     }
 
     /**
      * Generate static files and return content for requested one.
-     * In case developer mode is on, only requested file gets generated.
      * @inheritDoc
      * @throws \Exception
      */
@@ -75,11 +73,7 @@ class StaticGenerationHandler extends \Awesome\Framework\Model\AbstractAction
             sprintf(self::STATIC_FILE_PATTERN, Http::FRONTEND_VIEW, Http::BACKEND_VIEW), '$4', $request->getPath()
         );
 
-        if ($this->appState->isDeveloperMode()) {
-            $this->staticContent->deployFile($path, $view);
-        } else {
-            $this->staticContent->deploy($view);
-        }
+        $this->staticContent->deployFile($path, $view);
 
         $staticPath = preg_replace(
             sprintf(self::STATIC_FILE_PATTERN, Http::FRONTEND_VIEW, Http::BACKEND_VIEW), '$5', $request->getPath()
@@ -93,6 +87,8 @@ class StaticGenerationHandler extends \Awesome\Framework\Model\AbstractAction
             $headers = ['Content-Type' => self::MIME_TYPES[$extension]];
         }
 
-        return new Response($content, Response::SUCCESS_STATUS_CODE, $headers);
+        return $this->responseFactory->create()
+            ->setContent($content)
+            ->setHeaders($headers);
     }
 }

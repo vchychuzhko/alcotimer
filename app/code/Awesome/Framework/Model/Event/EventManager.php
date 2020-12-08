@@ -103,12 +103,8 @@ class EventManager
     {
         $tag = $view ? self::EVENTS_CACHE_TAG_PREFIX . $view : self::EVENTS_CACHE_TAG_GLOBAL;
 
-        if (!$eventsData = $this->cache->get(Cache::ETC_CACHE_KEY, $tag)) {
-            $eventsData = $this->eventXmlParser->getEventsData($view);
-
-            $this->cache->save(Cache::ETC_CACHE_KEY, $tag, $eventsData);
-        }
-
-        return $eventsData;
+        return $this->cache->get(Cache::ETC_CACHE_KEY, $tag, function () use ($view) {
+            return $this->eventXmlParser->getEventsData($view);
+        });
     }
 }

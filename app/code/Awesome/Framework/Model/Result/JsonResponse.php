@@ -1,12 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Awesome\Framework\Model\Http\Response;
+namespace Awesome\Framework\Model\Result;
 
-use Awesome\Framework\Model\Invoker;
 use Awesome\Framework\Model\Serializer\Json;
 
-class JsonResponse extends \Awesome\Framework\Model\Http\Response
+class JsonResponse extends \Awesome\Framework\Model\Result\Response
 {
     /**
      * @var Json $json
@@ -15,13 +14,15 @@ class JsonResponse extends \Awesome\Framework\Model\Http\Response
 
     /**
      * JsonResponse constructor.
+     * @param Json $json
      * @param array|string $data
-     * @inheritDoc
+     * @param int $status
+     * @param array $headers
      */
-    public function __construct($data = [], int $status = self::SUCCESS_STATUS_CODE, array $headers = [])
+    public function __construct(Json $json, $data = [], int $status = self::SUCCESS_STATUS_CODE, array $headers = [])
     {
         parent::__construct('', $status, $headers);
-        $this->json = Invoker::getInstance()->get(Json::class);
+        $this->json = $json;
         is_array($data) ? $this->setContentJson($data) : $this->setContent($data);
     }
 

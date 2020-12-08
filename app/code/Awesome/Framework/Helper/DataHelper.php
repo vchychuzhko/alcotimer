@@ -20,10 +20,9 @@ class DataHelper
             if ($key === $elementKeyToGet) {
                 $element = $value;
                 break;
-            } elseif (is_array($value)) {
-                if ($element = self::arrayGetByKeyRecursive($value, $elementKeyToGet)) {
-                    break;
-                }
+            }
+            if (is_array($value) && $element = self::arrayGetByKeyRecursive($value, $elementKeyToGet)) {
+                break;
             }
         }
 
@@ -92,11 +91,27 @@ class DataHelper
     {
         if (is_numeric($value)) {
             $value += 0;
-        } elseif (in_array(strtolower($value), ['true', 'false'], true)) {
+        } elseif (is_string($value) && in_array(strtolower($value), ['true', 'false'], true)) {
             $value = self::isStringBooleanTrue($value);
         }
 
         return $value;
+    }
+
+    /**
+     * Get max length for items in the provided array.
+     * Custom callback can be specified.
+     * @param array $array
+     * @param callable|null $callback
+     * @return int
+     */
+    public static function getMaxLength(array $array, ?callable $callback = null): int
+    {
+        $callback = $callback ?: static function ($item) {
+            return strlen((string) $item);
+        };
+
+        return (int) max(array_map($callback, $array));
     }
 
     /**

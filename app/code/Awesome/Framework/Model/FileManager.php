@@ -25,7 +25,6 @@ class FileManager implements \Awesome\Framework\Model\SingletonInterface
                 throw new \RuntimeException(sprintf('Provided file "%s" already exists and cannot be replaced', $path));
             }
         }
-
         if (!is_dir(dirname($path))) {
             $this->createDirectory(dirname($path));
         }
@@ -35,12 +34,13 @@ class FileManager implements \Awesome\Framework\Model\SingletonInterface
 
     /**
      * Read file.
+     * By default will throw an exception if file does not exist.
      * @param string $path
      * @param bool $graceful
      * @return string|false
      * @throws \RuntimeException
      */
-    public function readFile(string $path, bool $graceful = true)
+    public function readFile(string $path, bool $graceful = false)
     {
         if (file_exists($path)) {
             if (!is_file($path)) {
@@ -160,30 +160,31 @@ class FileManager implements \Awesome\Framework\Model\SingletonInterface
     }
 
     /**
-     * Get all files in a directory by extension filter if needed.
+     * Get all files in a directory by extensions filter if needed.
      * Based on https://stackoverflow.com/a/35105800
      * @param string $path
      * @param bool $recursively
-     * @param string $extension
+     * @param string|array $extensions
      * @return array
      * @throws \RuntimeException
      */
-    public function scanDirectory(string $path, bool $recursively = false, string $extension = ''): array
+    public function scanDirectory(string $path, bool $recursively = false, $extensions = ''): array
     {
         if (!is_dir($path)) {
             throw new \RuntimeException(sprintf('Provided path "%s" is not a directory and cannot be scanned', $path));
         }
         $results = [];
+        $extensions = is_array($extensions) ? $extensions : [$extensions];
 
         foreach (scandir($path) as $object) {
             $objectPath = $path . '/' . $object;
 
             if (!is_dir($objectPath)) {
-                if (!$extension || preg_match('/\.' . $extension .'$/', $objectPath)) {
+                if (!$extensions || in_array(pathinfo($objectPath, PATHINFO_EXTENSION), $extensions, true)) {
                     $results[] = $objectPath;
                 }
             } elseif ($recursively && $object !== '.' && $object !== '..') {
-                $results = array_merge($results, $this->scanDirectory($objectPath, true, $extension));
+                $results = array_merge($results, $this->scanDirectory($objectPath, true, $extensions));
             }
         }
 

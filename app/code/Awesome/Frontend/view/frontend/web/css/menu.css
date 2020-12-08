@@ -107,7 +107,7 @@ header .toggle-container .toggle:after {
     justify-content: space-around;
 }
 
-.menu .menu-list .settings .random-time .range-inputs .time {
+.menu .menu-list .settings .random-time .range-inputs .value {
     border: 1px solid;
     border-radius: 5px;
     display: inline-block;

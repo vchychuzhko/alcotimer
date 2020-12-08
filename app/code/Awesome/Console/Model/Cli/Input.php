@@ -8,9 +8,9 @@ use Awesome\Framework\Helper\DataHelper;
 class Input
 {
     /**
-     * @var string $command
+     * @var string $commandName
      */
-    private $command;
+    private $commandName;
 
     /**
      * @var array $options
@@ -24,24 +24,24 @@ class Input
 
     /**
      * Input constructor.
-     * @param string|null $command
+     * @param string|null $commandName
      * @param array $options
      * @param array $arguments
      */
-    public function __construct(?string $command = null, array $options = [], array $arguments = [])
+    public function __construct(?string $commandName = null, array $options = [], array $arguments = [])
     {
-        $this->command = $command;
+        $this->commandName = $commandName;
         $this->options = $options;
         $this->arguments = $arguments;
     }
 
     /**
-     * Get input command.
+     * Get input command name.
      * @return string|null
      */
-    public function getCommand(): ?string
+    public function getCommandName(): ?string
     {
-        return $this->command;
+        return $this->commandName;
     }
 
     /**
@@ -58,15 +58,6 @@ class Input
     }
 
     /**
-     * Get all input options.
-     * @return array
-     */
-    public function getOptions(): array
-    {
-        return $this->options;
-    }
-
-    /**
      * Get input argument by name.
      * @param string $argumentName
      * @param bool $typeCast
@@ -77,15 +68,6 @@ class Input
         $value = $this->arguments[$argumentName] ?? null;
 
         return $typeCast ? $this->castInputValue($value) : $value;
-    }
-
-    /**
-     * Get all input arguments.
-     * @return array
-     */
-    public function getArguments(): array
-    {
-        return $this->arguments;
     }
 
     /**

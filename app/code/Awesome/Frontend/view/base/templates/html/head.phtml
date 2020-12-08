@@ -1,5 +1,6 @@
 <?php /** @var \Awesome\Frontend\Block\Html\Head $block */ ?>
-<meta charset="UTF-8">
+<head>
+    <meta charset="UTF-8">
 <?php if ($title = $block->getTitle()): ?>
     <title><?= $title; ?></title>
 <?php endif; ?>
@@ -19,3 +20,4 @@
 <?php foreach($block->getScripts() as $script): ?>
     <script src="<?= $script['src']; ?>"<?= $script['async'] ? ' async' : ''; ?><?= $script['defer'] ? ' defer' : ''; ?>></script>
 <?php endforeach; ?>
+</head>

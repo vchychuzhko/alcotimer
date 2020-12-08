@@ -53,6 +53,31 @@ class Config implements \Awesome\Framework\Model\SingletonInterface
     }
 
     /**
+     * Check if provided config path exists.
+     * Method consider the path as chain of keys: a/b/c => ['a']['b']['c']
+     * @param string $path
+     * @return mixed
+     */
+    private function exists(string $path): bool
+    {
+        $exists = false;
+        $keys = explode('/', $path);
+        $config = $this->loadConfig();
+
+        foreach ($keys as $key) {
+            if (is_array($config) && isset($config[$key])) {
+                $config = $config[$key];
+                $exists = true;
+            } else {
+                $exists = false;
+                break;
+            }
+        }
+
+        return $exists;
+    }
+
+    /**
      * Set config value by path.
      * Method consider the path as chain of keys: a/b/c => ['a']['b']['c']
      * @param string $path
@@ -63,7 +88,7 @@ class Config implements \Awesome\Framework\Model\SingletonInterface
     {
         $success = false;
 
-        if ($this->get($path) !== null) {
+        if ($this->exists($path) !== null) {
             $config = $this->loadConfig();
             $keys = array_reverse(explode('/', $path));
             $newConfig = $value;
@@ -91,7 +116,7 @@ class Config implements \Awesome\Framework\Model\SingletonInterface
     private function loadConfig(bool $reload = false): array
     {
         if ($this->config === null || $reload) {
-            $this->config = $this->phpFileManager->includeFile(BP . self::CONFIG_FILE_PATH, true);
+            $this->config = $this->phpFileManager->readArrayFile(BP . self::CONFIG_FILE_PATH, true);
         }
 
         return $this->config;

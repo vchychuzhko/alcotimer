@@ -4,10 +4,9 @@ declare(strict_types=1);
 namespace Awesome\Framework\Model\Action;
 
 use Awesome\Framework\Model\FileManager;
-use Awesome\Framework\Model\Http\Response;
-use Awesome\Framework\Model\Http\Response\HtmlResponse;
+use Awesome\Framework\Model\Http\Context;
 use Awesome\Framework\Model\Http\Request;
-use Awesome\Framework\Model\Http\Response\JsonResponse;
+use Awesome\Framework\Model\Result\Response;
 
 class MaintenanceAction extends \Awesome\Framework\Model\AbstractAction
 {
@@ -20,11 +19,12 @@ class MaintenanceAction extends \Awesome\Framework\Model\AbstractAction
 
     /**
      * MaintenanceAction constructor.
+     * @param Context $context
      * @param FileManager $fileManager
      */
-    public function __construct(FileManager $fileManager)
+    public function __construct(Context $context, FileManager $fileManager)
     {
-        parent::__construct();
+        parent::__construct($context);
         $this->fileManager = $fileManager;
     }
 
@@ -35,17 +35,19 @@ class MaintenanceAction extends \Awesome\Framework\Model\AbstractAction
     public function execute(Request $request): Response
     {
         if ($request->getAcceptType() === Request::JSON_ACCEPT_HEADER) {
-            $response = new JsonResponse(
-                [
+            $response = $this->jsonResponseFactory->create()
+                ->setContentJson([
                     'status' => 'MAINTENANCE',
                     'message' => 'Service is unavailable due to maintenance works.',
-                ],
-                Response::INTERNAL_ERROR_STATUS_CODE
-            );
+                ])
+                ->setStatusCode(Response::INTERNAL_ERROR_STATUS_CODE);
         } elseif ($request->getAcceptType() === Request::HTML_ACCEPT_HEADER && $content = $this->getMaintenancePage()) {
-            $response = new HtmlResponse($content, Response::SERVICE_UNAVAILABLE_STATUS_CODE);
+            $response = $this->htmlResponseFactory->create()
+                ->setContent($content)
+                ->setStatusCode(Response::SERVICE_UNAVAILABLE_STATUS_CODE);
         } else {
-            $response = new Response('', Response::SERVICE_UNAVAILABLE_STATUS_CODE);
+            $response = $this->responseFactory->create()
+                ->setStatusCode(Response::SERVICE_UNAVAILABLE_STATUS_CODE);
         }
 
         return $response;
@@ -57,6 +59,6 @@ class MaintenanceAction extends \Awesome\Framework\Model\AbstractAction
      */
     private function getMaintenancePage(): string
     {
-        return $this->fileManager->readFile(BP . self::MAINTENANCE_PAGE_PATH, false);
+        return $this->fileManager->readFile(BP . self::MAINTENANCE_PAGE_PATH);
     }
 }

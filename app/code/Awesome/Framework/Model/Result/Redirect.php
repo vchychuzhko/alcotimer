@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Awesome\Framework\Model\Http\Response;
+namespace Awesome\Framework\Model\Result;
 
-class Redirect extends \Awesome\Framework\Model\Http\Response
+class Redirect extends \Awesome\Framework\Model\Result\Response
 {
     public const MOVED_PERMANENTLY_STATUS_CODE = 301;
     public const FOUND_STATUS_CODE = 302;

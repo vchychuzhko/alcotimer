@@ -4,24 +4,30 @@ declare(strict_types=1);
 namespace Awesome\Frontend\Model\Action;
 
 use Awesome\Cache\Model\Cache;
+use Awesome\Framework\Model\AppState;
+use Awesome\Framework\Model\Config;
+use Awesome\Framework\Model\Http;
+use Awesome\Framework\Model\Http\Context;
 use Awesome\Framework\Model\Http\Request;
-use Awesome\Framework\Model\Http\Response;
-use Awesome\Framework\Model\Http\Response\HtmlResponse;
-use Awesome\Frontend\Model\TemplateRenderer;
-use Awesome\Frontend\Model\XmlParser\LayoutXmlParser;
+use Awesome\Framework\Model\Result\Response;
+use Awesome\Framework\Model\Http\Router;
+use Awesome\Frontend\Model\Result\ResultPageFactory;
 
-/**
- * Class LayoutHandler
- * @method string getHandle()
- * @method array getHandles()
- * @method int getStatus()
- */
 class LayoutHandler extends \Awesome\Framework\Model\AbstractAction
 {
+    private const PAGE_HANDLES_CACHE_TAG_PREFIX = 'page-handles_';
+
+    private const LAYOUT_XML_PATH_PATTERN = '/*/*/view/%s/layout/*_*_*.xml';
+
     public const HOMEPAGE_HANDLE_CONFIG = 'web/homepage';
 
     public const FORBIDDEN_PAGE_HANDLE = 'forbidden_index_index';
     public const NOTFOUND_PAGE_HANDLE = 'notfound_index_index';
+
+    /**
+     * @var AppState $appState
+     */
+    private $appState;
 
     /**
      * @var Cache $cache
@@ -29,24 +35,45 @@ class LayoutHandler extends \Awesome\Framework\Model\AbstractAction
     private $cache;
 
     /**
-     * @var LayoutXmlParser $layoutXmlParser
+     * @var Config $config
      */
-    private $layoutXmlParser;
+    private $config;
+
+    /**
+     * @var ResultPageFactory $resultPageFactory
+     */
+    private $resultPageFactory;
+
+    /**
+     * @var Router $router
+     */
+    private $router;
 
     /**
      * LayoutHandler constructor.
+     * @param AppState $appState
      * @param Cache $cache
-     * @param LayoutXmlParser $layoutXmlParser
+     * @param Config $config
+     * @param Context $context
+     * @param ResultPageFactory $resultPageFactory
+     * @param Router $router
      * @param array $data
      */
     public function __construct(
+        AppState $appState,
         Cache $cache,
-        LayoutXmlParser $layoutXmlParser,
+        Config $config,
+        Context $context,
+        ResultPageFactory $resultPageFactory,
+        Router $router,
         array $data = []
     ) {
-        parent::__construct($data);
+        parent::__construct($context, $data);
+        $this->appState = $appState;
         $this->cache = $cache;
-        $this->layoutXmlParser = $layoutXmlParser;
+        $this->config = $config;
+        $this->resultPageFactory = $resultPageFactory;
+        $this->router = $router;
     }
 
     /**
@@ -56,40 +83,81 @@ class LayoutHandler extends \Awesome\Framework\Model\AbstractAction
      */
     public function execute(Request $request): Response
     {
-        $handle = $this->getHandle();
-        $handles = $this->getHandles();
-        $status = $this->getStatus();
+        $handle = $request->getFullActionName();
+        $handles = [$handle];
         $view = $request->getView();
+        $status = Response::SUCCESS_STATUS_CODE;
 
-        if (!$pageContent = $this->cache->get(Cache::FULL_PAGE_CACHE_KEY, $handle . '_' . $view)) {
-            $pageContent = $this->renderPage($handle, $view, $handles);
-
-            $this->cache->save(Cache::FULL_PAGE_CACHE_KEY, $handle . '_' . $view, $pageContent);
+        if ($this->isHomepage($request)) {
+            $handle = $this->getHomepageHandle();
+            $handles[] = $handle;
         }
 
-        return new HtmlResponse($pageContent, $status);
+        if (!$this->handleExist($handle, $view)) {
+            if ($request->getRedirectStatusCode() === Request::FORBIDDEN_REDIRECT_CODE
+                && $this->appState->showForbidden()
+            ) {
+                $handle = self::FORBIDDEN_PAGE_HANDLE;
+                $status = Response::FORBIDDEN_STATUS_CODE;
+            } else {
+                $handle = self::NOTFOUND_PAGE_HANDLE;
+                $status = Response::NOTFOUND_STATUS_CODE;
+            }
+            $handles = [$handle];
+        }
+
+        return $this->resultPageFactory->create($handle, $view, $handles)
+            ->setStatusCode($status);
     }
 
     /**
-     * Render page by specified handle and view.
+     * Check if homepage is requested.
+     * @param Request $request
+     * @return bool
+     */
+    private function isHomepage(Request $request): bool
+    {
+        return $request->getFullActionName() === Http::ROOT_ACTION_NAME;
+    }
+
+    /**
+     * Get homepage handle.
+     * @return string
+     */
+    private function getHomepageHandle(): string
+    {
+        return $this->config->get(self::HOMEPAGE_HANDLE_CONFIG);
+    }
+
+    /**
+     * Check if requested page handle is registered and exists in specified view.
      * @param string $handle
      * @param string $view
-     * @param array $handles
-     * @return string
-     * @throws \Exception
+     * @return bool
      */
-    private function renderPage(string $handle, string $view, array $handles = []): string
+    private function handleExist(string $handle, string $view): bool
     {
-        // @TODO: Create Page model along with PageFactory and move rendering there
-        $handles = $handles ?: [$handle];
+        list($route) = explode('_', $handle);
 
-        if (!$structure = $this->cache->get(Cache::LAYOUT_CACHE_KEY, $handle)) {
-            $structure = $this->layoutXmlParser->getLayoutStructure($handle, $view, $handles);
+        return $this->router->getStandardRoute($route, $view) && in_array($handle, $this->getPageHandles($view), true);
+    }
 
-            $this->cache->save(Cache::LAYOUT_CACHE_KEY, $handle, $structure);
-        }
-        $templateRenderer = new TemplateRenderer($handle, $view, $structure, $handles);
+    /**
+     * Get available page layout handles for requested view.
+     * @param string $view
+     * @return array
+     */
+    private function getPageHandles(string $view): array
+    {
+        return $this->cache->get(Cache::LAYOUT_CACHE_KEY, self::PAGE_HANDLES_CACHE_TAG_PREFIX . $view, function () use ($view) {
+            $handles = [];
+            $pattern = sprintf(self::LAYOUT_XML_PATH_PATTERN, $view);
 
-        return $templateRenderer->render('root');
+            foreach (glob(APP_DIR . $pattern) as $collectedHandle) {
+                $handles[] = basename($collectedHandle, '.xml');
+            }
+
+            return array_unique($handles);
+        });
     }
 }

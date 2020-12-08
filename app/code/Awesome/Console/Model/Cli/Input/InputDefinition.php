@@ -61,6 +61,15 @@ class InputDefinition
     }
 
     /**
+     * Get command description.
+     * @return string
+     */
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    /**
      * Parse, check and add command option.
      * @param string $name
      * @param string|null $shortcut
@@ -89,13 +98,31 @@ class InputDefinition
         }
 
         $this->options[$name] = [
-            'shortcut' => $shortcut,
-            'type' => $type,
+            'shortcut'    => $shortcut,
+            'type'        => $type,
             'description' => $description,
-            'default' => $default
+            'default'     => $default,
         ];
 
         return $this;
+    }
+
+    /**
+     * Get command options.
+     * @return array
+     */
+    public function getOptions(): array
+    {
+        return $this->options;
+    }
+
+    /**
+     * Get command options shortcuts.
+     * @return array
+     */
+    public function getShortcuts(): array
+    {
+        return $this->shortcuts;
     }
 
     /**
@@ -122,26 +149,21 @@ class InputDefinition
         }
 
         $this->arguments[$name] = [
-            'type' => $type,
-            'position' => ++$this->numberOfArguments,
-            'description' => $description
+            'type'        => $type,
+            'position'    => ++$this->numberOfArguments,
+            'description' => $description,
         ];
 
         return $this;
     }
 
     /**
-     * Return all collected command data.
+     * Get command arguments.
      * @return array
      */
-    public function getDefinition(): array
+    public function getArguments(): array
     {
-        return [
-            'description' => $this->description,
-            'options' => $this->options,
-            'arguments' => $this->arguments,
-            'shortcuts' => $this->shortcuts
-        ];
+        return $this->arguments;
     }
 
     /**

@@ -8,15 +8,15 @@ use Awesome\Console\Model\Cli\Input\InputDefinition;
 use Awesome\Console\Model\Cli\Output;
 use Awesome\Framework\Model\Config;
 
-class ConfigSet extends \Awesome\Console\Model\Cli\AbstractCommand
+class ConfigSet extends \Awesome\Console\Model\AbstractCommand
 {
     /**
-     * @var Config $maintenance
+     * @var Config $config
      */
     private $config;
 
     /**
-     * Config Set constructor.
+     * ConfigSet constructor.
      * @param Config $config
      */
     public function __construct(Config $config)
@@ -31,8 +31,9 @@ class ConfigSet extends \Awesome\Console\Model\Cli\AbstractCommand
     {
         return parent::configure()
             ->setDescription('Set configuration value by path')
+            ->addOption('type', null, InputDefinition::OPTION_OPTIONAL, 'Value type to be casted, lowercase')
             ->addArgument('path', InputDefinition::ARGUMENT_REQUIRED, 'Config path to update')
-            ->addArgument('value', InputDefinition::ARGUMENT_REQUIRED, 'Config value to set');
+            ->addArgument('value', InputDefinition::ARGUMENT_OPTIONAL, 'Config value to set. If omitted, considered as null');
     }
 
     /**
@@ -43,10 +44,23 @@ class ConfigSet extends \Awesome\Console\Model\Cli\AbstractCommand
     public function execute(Input $input, Output $output): void
     {
         $path = $input->getArgument('path');
-        $value = $input->getArgument('value', true);
 
-        $this->config->set($path, $value);
+        if ($type = $input->getOption('type')) {
+            if (!in_array($type, ['int', 'integer', 'float', 'double', 'bool', 'boolean', 'string'], true)) {
+                throw new \InvalidArgumentException(sprintf('Provided value type "%s" is not valid', $type));
+            }
+            $value = $input->getArgument('value');
+            settype($value, $type);
+        } else {
+            $value = $input->getArgument('value', true);
+        }
 
-        $output->writeln('Configuration was successfully updated.');
+        if ($this->config->set($path, $value)) {
+            $output->writeln('Configuration was successfully updated.');
+        } else {
+            $output->writeln('Configuration was not updated. Please, check the provided config path.');
+
+            throw new \InvalidArgumentException('Configuration was not updated');
+        }
     }
 }

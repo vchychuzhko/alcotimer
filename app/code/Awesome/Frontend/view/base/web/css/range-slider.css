@@ -11,8 +11,7 @@
     width: 90%;
 }
 
-.range-slider .range-controls .min-controller,
-.range-slider .range-controls .max-controller {
+.range-slider .range-controls .controller {
     /*beer glasses*/
     /*background: url('{@pubDir}media/images/glass.png') center;*/
     /*background-size: cover;*/

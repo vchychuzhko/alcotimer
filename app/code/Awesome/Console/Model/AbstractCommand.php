@@ -1,13 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace Awesome\Console\Model\Cli;
+namespace Awesome\Console\Model;
 
 use Awesome\Console\Model\Cli\Input;
 use Awesome\Console\Model\Cli\Input\InputDefinition;
 use Awesome\Console\Model\Cli\Output;
+use Awesome\Framework\Helper\DataHelper;
 
-abstract class AbstractCommand
+abstract class AbstractCommand implements \Awesome\Console\Model\CommandInterface
 {
     public const HELP_OPTION = 'help';
     public const NOINTERACTION_OPTION = 'no-interaction';
@@ -15,8 +16,7 @@ abstract class AbstractCommand
     public const VERSION_OPTION = 'version';
 
     /**
-     * Define all data related to console command.
-     * @return InputDefinition
+     * @inheritDoc
      * @throws \LogicException
      */
     public static function configure(): InputDefinition
@@ -28,35 +28,23 @@ abstract class AbstractCommand
     }
 
     /**
-     * Run the console command.
-     * @param Input $input
-     * @param Output $output
-     * @return void
-     */
-    abstract public function execute(Input $input, Output $output): void;
-
-    /**
-     * Display help for the command.
-     * @param Input $input
-     * @param Output $output
-     * @return void
+     * @inheritDoc
      */
     public function help(Input $input, Output $output): void
     {
-        $command = $input->getCommand();
-        $commandData = static::configure()
-            ->getDefinition();
+        $commandName = $input->getCommandName();
+        $definition = static::configure();
 
-        $options = $commandData['options'];
+        $options = $definition->getOptions();
         $argumentsString = '';
 
-        if ($description = $commandData['description']) {
+        if ($description = $definition->getDescription()) {
             $output->writeln($output->colourText('Description:', Output::BROWN));
-            $output->writeln($commandData['description'], 2);
+            $output->writeln($description, 2);
             $output->writeln();
         }
 
-        if ($arguments = $commandData['arguments']) {
+        if ($arguments = $definition->getArguments()) {
             foreach ($arguments as $name => $argument) {
                 $argumentsString .= ' ';
 
@@ -75,17 +63,15 @@ abstract class AbstractCommand
         }
 
         $output->writeln($output->colourText('Usage:', Output::BROWN));
-        $output->writeln($command . ($options ? ' [options]' : '') . $argumentsString, 2);
+        $output->writeln($commandName . ($options ? ' [options]' : '') . $argumentsString, 2);
 
         if ($arguments) {
             $output->writeln();
             $output->writeln($output->colourText('Arguments:', Output::BROWN));
-            $padding = max(array_map(static function ($name) {
-                return strlen($name);
-            }, array_keys($arguments)));
+            $padding = DataHelper::getMaxLength(array_keys($arguments)) + 2;
 
             foreach ($arguments as $name => $argument) {
-                $output->writeln($output->colourText(str_pad($name, $padding + 2)) . $argument['description'], 2);
+                $output->writeln($output->colourText(str_pad($name, $padding)) . $argument['description'], 2);
             }
         }
 
@@ -101,13 +87,11 @@ abstract class AbstractCommand
                     $optionFullNames[$name] = str_repeat(' ', 4) . '--' . $name;
                 }
             }
-            $padding = max(array_map(static function ($option) {
-                return strlen($option);
-            }, $optionFullNames));
+            $padding = DataHelper::getMaxLength($optionFullNames) + 2;
 
             foreach ($options as $name => $option) {
                 $output->writeln(
-                    $output->colourText(str_pad($optionFullNames[$name], $padding + 2)) . $option['description'],
+                    $output->colourText(str_pad($optionFullNames[$name], $padding)) . $option['description'],
                     2
                 );
             }

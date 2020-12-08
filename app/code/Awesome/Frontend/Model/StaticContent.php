@@ -128,6 +128,16 @@ class StaticContent
      */
     private function generate(string $view): self
     {
+        $fontPattern = sprintf(self::STATIC_PATH_PATTERN, '{' . Http::BASE_VIEW . ',' . $view . '}', 'fonts');
+
+        foreach (glob(APP_DIR . $fontPattern, GLOB_ONLYDIR | GLOB_BRACE) as $folder) {
+            $files = $this->fileManager->scanDirectory($folder, true, ['eot', 'ttf', 'otf', 'woff', 'woff2']);
+
+            foreach ($files as $file) {
+                $this->generateFontFile($file, $view);
+            }
+        }
+
         $cssPattern = sprintf(self::STATIC_PATH_PATTERN, '{' . Http::BASE_VIEW . ',' . $view . '}', 'css');
         $cssMinify = $this->frontendState->isCssMinificationEnabled();
 
@@ -178,6 +188,14 @@ class StaticContent
             $extension = pathinfo($path, PATHINFO_EXTENSION);
 
             switch ($extension) {
+                case 'eot':
+                case 'ttf':
+                case 'otf':
+                case 'woff':
+                case 'woff2': {
+                    $this->generateFontFile($path, $view);
+                    break;
+                }
                 case 'css': {
                     $minify = $this->frontendState->isCssMinificationEnabled();
 
@@ -202,6 +220,22 @@ class StaticContent
     }
 
     /**
+     * Copy font file for requested view.
+     * Absolute path is required.
+     * @param string $path
+     * @param string $view
+     * @return $this
+     */
+    private function generateFontFile(string $path, string $view): self
+    {
+        $staticPath = preg_replace(self::STATIC_FILE_PATTERN, '/$2_$3/$5', $path);
+
+        $this->fileManager->copyFile($path, BP . self::STATIC_FOLDER_PATH . $view . $staticPath);
+
+        return $this;
+    }
+
+    /**
      * Parse and generate css file for requested view.
      * Absolute path is required.
      * @param string $path
@@ -211,7 +245,7 @@ class StaticContent
      */
     private function generateCssFile(string $path, string $view, bool $minify = false): self
     {
-        $content = $this->fileManager->readFile($path, false);
+        $content = $this->fileManager->readFile($path);
         $this->parsePubDirPath($content);
 
         $staticPath = preg_replace(self::STATIC_FILE_PATTERN, '/$2_$3/$5', $path);
@@ -220,7 +254,7 @@ class StaticContent
             if (StaticContentHelper::minifiedVersionExists($path)) {
                 StaticContentHelper::addMinificationFlag($path);
 
-                $content = $this->fileManager->readFile($path, false);
+                $content = $this->fileManager->readFile($path);
                 $this->parsePubDirPath($content);
             } else {
                 $content = $this->cssMinifier->minify($content);
@@ -243,7 +277,7 @@ class StaticContent
      */
     private function generateJsFile(string $path, string $view, bool $minify = false): self
     {
-        $content = $this->fileManager->readFile($path, false);
+        $content = $this->fileManager->readFile($path);
 
         $staticPath = preg_replace(self::STATIC_FILE_PATTERN, '/$2_$3/$5', $path);
 
@@ -251,7 +285,7 @@ class StaticContent
             if (StaticContentHelper::minifiedVersionExists($path)) {
                 StaticContentHelper::addMinificationFlag($path);
 
-                $content = $this->fileManager->readFile($path, false);
+                $content = $this->fileManager->readFile($path);
             } else {
                 $content = $this->jsMinifier->minify($content);
             }
@@ -318,7 +352,7 @@ class StaticContent
     public function getDeployedVersion(): ?int
     {
         if (!$this->deployedVersion) {
-            $deployedVersion = $this->fileManager->readFile(BP . self::STATIC_FOLDER_PATH . self::DEPLOYED_VERSION_FILE);
+            $deployedVersion = $this->fileManager->readFile(BP . self::STATIC_FOLDER_PATH . self::DEPLOYED_VERSION_FILE, true);
             $this->deployedVersion = $deployedVersion ? (int) $deployedVersion : null;
         }
 

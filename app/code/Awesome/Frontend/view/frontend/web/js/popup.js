@@ -94,10 +94,9 @@ define([
             $('body').addClass('noscroll');
 
             if (this.options.closeOnEsc) {
-                $(document).on('keydown.popup', function (event) {
-                    if (event.keyCode === 27) { // ESC
+                $(document).one('keyup', function (event) {
+                    if (event.key === 'Escape') {
                         this.close();
-                        $(document).off('keydown.popup');
                     }
                 }.bind(this));
             }

@@ -6,17 +6,33 @@ namespace Awesome\Framework\Model\XmlParser;
 use Awesome\Framework\Exception\XmlValidationException;
 use Awesome\Framework\Helper\DataHelper;
 use Awesome\Framework\Helper\XmlParsingHelper;
+use Awesome\Framework\Model\FileManager\XmlFileManager;
 
 class EventXmlParser
 {
     private const EVENTS_GLOBAL_XML_PATH_PATTERN = '/*/*/etc/events.xml';
     private const EVENTS_XML_PATH_PATTERN = '/*/*/etc/{%s/,}events.xml';
+    private const EVENTS_XSD_SCHEMA_PATH = '/Awesome/Framework/Schema/events.xsd';
+
+    /**
+     * @var XmlFileManager $xmlFileManager
+     */
+    private $xmlFileManager;
+
+    /**
+     * EventXmlParser constructor.
+     * @param XmlFileManager $xmlFileManager
+     */
+    public function __construct(XmlFileManager $xmlFileManager)
+    {
+        $this->xmlFileManager = $xmlFileManager;
+    }
 
     /**
      * Get available events with their responsible observers for a view if specified.
      * @param string $view
      * @return array
-     * @throws XmlValidationException
+     * @throws \Exception
      */
     public function getEventsData(string $view = ''): array
     {
@@ -30,13 +46,13 @@ class EventXmlParser
                 $eventsData[$eventName] = $eventsData[$eventName] ?? [];
 
                 foreach ($eventObservers as $observerName => $observer) {
-                    if (!$observer['disabled']) {
-                        if (DataHelper::arrayGetByKeyRecursive($eventsData, $observerName)) {
-                            throw new XmlValidationException(sprintf('Observer with "%s" name is already defined', $observerName));
-                        }
-
-                        $eventsData[$eventName][$observerName] = $observer;
+                    if (DataHelper::arrayGetByKeyRecursive($eventsData, $observerName)) {
+                        throw new XmlValidationException(
+                            sprintf('Observer with "%s" name is already defined', $observerName)
+                        );
                     }
+
+                    $eventsData[$eventName][$observerName] = $observer;
                 }
             }
         }
@@ -49,42 +65,34 @@ class EventXmlParser
      * Parse events XML file.
      * @param string $eventsXmlFile
      * @return array
-     * @throws XmlValidationException
+     * @throws \Exception
      */
     private function parse(string $eventsXmlFile): array
     {
         $parsedNode = [];
-        $eventNode = simplexml_load_file($eventsXmlFile);
+        $eventNode = $this->xmlFileManager->parseXmlFile($eventsXmlFile, APP_DIR . self::EVENTS_XSD_SCHEMA_PATH);
 
         foreach ($eventNode->children() as $event) {
-            if (!$eventName = XmlParsingHelper::getNodeAttribute($event)) {
-                throw new XmlValidationException(sprintf('Name attribute is not provided for event in "%s" file', $eventsXmlFile));
-            }
+            $eventName = XmlParsingHelper::getNodeAttributeName($event);
             $parsedNode[$eventName] = $parsedNode[$eventName] ?? [];
 
             foreach ($event->children() as $observer) {
-                if (!$observerName = XmlParsingHelper::getNodeAttribute($observer)) {
-                    throw new XmlValidationException(sprintf('Name attribute is not provided for "%s" event observer', $eventName));
-                }
+                if (!XmlParsingHelper::isDisabled($observer)) {
+                    $observerName = XmlParsingHelper::getNodeAttributeName($observer);
 
-                if (DataHelper::arrayGetByKeyRecursive($parsedNode, $observerName)) {
-                    throw new XmlValidationException(sprintf('Observer "%s" is defined twice in one file', $observerName));
-                }
-                $class = ltrim(XmlParsingHelper::getNodeAttribute($observer, 'class'), '\\');
-
-                if (!$class) {
-                    throw new XmlValidationException(sprintf('Class is not specified for "%s" observer', $observerName));
-                }
-                $parsedNode[$eventName][$observerName] = [
-                    'class' => '\\' . $class,
-                    'disabled' => XmlParsingHelper::isAttributeBooleanTrue($observer),
-                ];
-
-                if ($sortOrder = XmlParsingHelper::getNodeAttribute($observer, 'sortOrder')) {
-                    if (!is_numeric($sortOrder)) {
-                        throw new XmlValidationException(sprintf('sortOrder "%s" is not valid', $sortOrder));
+                    if (DataHelper::arrayGetByKeyRecursive($parsedNode, $observerName)) {
+                        throw new XmlValidationException(
+                            sprintf('Observer "%s" is defined twice in one file', $observerName)
+                        );
                     }
-                    $parsedNode[$eventName][$observerName]['sortOrder'] = $sortOrder;
+
+                    $parsedNode[$eventName][$observerName] = [
+                        'class' => '\\' . ltrim(XmlParsingHelper::getNodeAttribute($observer, 'class'), '\\'),
+                    ];
+
+                    if ($sortOrder = XmlParsingHelper::getNodeAttribute($observer, 'sortOrder')) {
+                        $parsedNode[$eventName][$observerName]['sortOrder'] = $sortOrder;
+                    }
                 }
             }
         }

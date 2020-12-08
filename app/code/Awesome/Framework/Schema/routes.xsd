@@ -8,12 +8,33 @@
                         <xs:sequence>
                             <xs:element name="module">
                                 <xs:complexType>
-                                    <xs:attribute name="name" type="xs:string" use="required"/>
+                                    <xs:attribute name="name" use="required">
+                                        <xs:simpleType>
+                                            <xs:restriction base="xs:string">
+                                                <xs:minLength value="1"/>
+                                                <xs:pattern value="[a-zA-Z_]*"/>
+                                            </xs:restriction>
+                                        </xs:simpleType>
+                                    </xs:attribute>
                                 </xs:complexType>
                             </xs:element>
                         </xs:sequence>
-                        <xs:attribute name="frontName" type="xs:string" use="required"/>
-                        <xs:attribute name="type" type="xs:string" use="required"/>
+                        <xs:attribute name="frontName" use="required">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:minLength value="1"/>
+                                    <xs:pattern value="[a-z\-_]*"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:attribute>
+                        <xs:attribute name="type" use="required">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:minLength value="1"/>
+                                    <xs:pattern value="[a-z]*"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:attribute>
                         <xs:attribute name="disabled" type="xs:boolean" default="false"/>
                     </xs:complexType>
                 </xs:element>

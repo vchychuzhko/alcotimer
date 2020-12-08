@@ -6,32 +6,32 @@ namespace Awesome\Framework\Model\FileManager;
 class PhpFileManager extends \Awesome\Framework\Model\FileManager
 {
     /**
-     * Include PHP file.
-     * Can be returned and have extracted variables if needed.
+     * Include and parsePHP array file.
      * @param string $path
-     * @param bool $return
-     * @param array $extract
-     * @return string|array|void
+     * @param bool $graceful
+     * @return array
      * @throws \RuntimeException
      */
-    public function includeFile(string $path, bool $return = false, array $extract = [])
+    public function readArrayFile(string $path, bool $graceful = false): array
     {
-        if (!file_exists($path)) {
-            throw new \RuntimeException(sprintf('Provided path "%s" does not exist', $path));
-        }
-        if (is_dir($path)) {
-            throw new \RuntimeException(sprintf('Provided path "%s" is a directory and cannot be included', $path));
+        if (!is_file($path)) {
+            if (!$graceful) {
+                throw new \RuntimeException(
+                    sprintf('Provided path "%s" does not exist or is not a file and cannot be included', $path)
+                );
+            }
+            $array = [];
+        } else {
+            $array = include $path;
+
+            if (!is_array($array)) {
+                throw new \RuntimeException(
+                    sprintf('Provided path "%s" does not contain valid PHP array', $path)
+                );
+            }
         }
 
-        if ($extract) {
-            extract($extract, EXTR_OVERWRITE);
-        }
-
-        if ($return) {
-            return include $path;
-        }
-
-        include $path;
+        return $array;
     }
 
     /**
@@ -60,6 +60,6 @@ class PhpFileManager extends \Awesome\Framework\Model\FileManager
     {
         $path = APP_DIR . '/' . str_replace('\\', '/', ltrim($objectName, '\\')) . '.php';
 
-        return file_exists($path) && !is_dir($path);
+        return is_file($path);
     }
 }

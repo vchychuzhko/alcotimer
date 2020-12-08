@@ -28,7 +28,7 @@ class Maintenance
      */
     public function enable($allowedIPs = []): self
     {
-        $this->fileManager->createFile(BP . self::MAINTENANCE_FILE, implode(',', $allowedIPs), true);
+        $this->fileManager->createFile(BP . self::MAINTENANCE_FILE, implode("\n", $allowedIPs), true);
 
         return $this;
     }
@@ -53,16 +53,13 @@ class Maintenance
         $status = [
             'enabled' => false
         ];
+        $allowedIPs = $this->fileManager->readFile(BP . self::MAINTENANCE_FILE, true);
 
-        if (($allowedIPs = $this->fileManager->readFile(BP . self::MAINTENANCE_FILE)) !== false) {
+        if ($allowedIPs !== false) {
             $status = [
                 'enabled' => true,
-                'allowed_ips' => []
+                'allowed_ips' => $allowedIPs ? explode("\n", $allowedIPs) : [],
             ];
-
-            if ($allowedIPs) {
-                $status['allowed_ips'] = explode(',', $allowedIPs);
-            }
         }
 
         return $status;

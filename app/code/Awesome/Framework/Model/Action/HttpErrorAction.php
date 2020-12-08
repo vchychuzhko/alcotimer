@@ -3,13 +3,13 @@ declare(strict_types=1);
 
 namespace Awesome\Framework\Model\Action;
 
-use Awesome\Framework\Model\Http\Response;
+use Awesome\Framework\Model\Result\Response;
 use Awesome\Framework\Model\Http\Request;
 
 /**
  * Class HttpErrorAction
  * @method string|null getAcceptType()
- * @method \Exception getError()
+ * @method string getErrorMessage()
  * @method bool getIsDeveloperMode()
  */
 class HttpErrorAction extends \Awesome\Framework\Model\DataObject
@@ -22,14 +22,14 @@ class HttpErrorAction extends \Awesome\Framework\Model\DataObject
      */
     public function execute(): Response
     {
-        $e = $this->getError();
+        $errorMessage = $this->getErrorMessage();
 
         if ($this->getAcceptType() === Request::JSON_ACCEPT_HEADER) {
             $response = new Response(
                 json_encode([
                     'status' => 'ERROR',
                     'message' => $this->getIsDeveloperMode()
-                        ? get_class_name($e) . ': ' . $e->getMessage() . "\n" . $e->getTraceAsString()
+                        ? $errorMessage
                         : 'Internal error occurred. Details are hidden and can be found in logs files.',
                 ]),
                 Response::INTERNAL_ERROR_STATUS_CODE,
@@ -37,9 +37,7 @@ class HttpErrorAction extends \Awesome\Framework\Model\DataObject
             );
         } elseif ($this->getAcceptType() === Request::HTML_ACCEPT_HEADER && $content = $this->getInternalErrorPage()) {
             $response = new Response(
-                $this->getIsDeveloperMode()
-                    ? '<pre>' . get_class_name($e) . ': ' . $e->getMessage() . "\n" . $e->getTraceAsString() . '</pre>'
-                    : $content,
+                $this->getIsDeveloperMode() ? '<pre>' . $errorMessage . '</pre>' : $content,
                 Response::INTERNAL_ERROR_STATUS_CODE,
                 ['Content-Type' => 'text/html']
             );
