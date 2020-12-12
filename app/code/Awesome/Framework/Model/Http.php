@@ -15,7 +15,7 @@ use Awesome\Framework\Model\Maintenance;
 
 class Http
 {
-    public const VERSION = '0.4.3';
+    public const VERSION = '0.4.4';
 
     public const FRONTEND_VIEW = 'frontend';
     public const BACKEND_VIEW = 'adminhtml';

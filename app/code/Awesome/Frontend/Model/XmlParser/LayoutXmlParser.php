@@ -38,8 +38,9 @@ class LayoutXmlParser
      * @var array $collectedAssets
      */
     private $collectedAssets = [
-        'script' => [],
-        'css'    => [],
+        'preloads' => [],
+        'scripts'  => [],
+        'styles'   => [],
     ];
 
     /**
@@ -161,7 +162,7 @@ class LayoutXmlParser
                     if (XmlParsingHelper::isAttributeBooleanTrue($child, 'defer')) {
                         $parsedAsset['defer'] = true;
                     }
-                    $this->collectedAssets[$childName][XmlParsingHelper::getNodeAttribute($child, 'src')] = $parsedAsset;
+                    $this->collectedAssets['scripts'][XmlParsingHelper::getNodeAttribute($child, 'src')] = $parsedAsset;
                     break;
                 case 'css':
                     $parsedAsset = [];
@@ -169,7 +170,18 @@ class LayoutXmlParser
                     if ($sortOrder = XmlParsingHelper::getNodeAttribute($child, 'sortOrder')) {
                         $parsedAsset['sortOrder'] = $sortOrder;
                     }
-                    $this->collectedAssets[$childName][XmlParsingHelper::getNodeAttribute($child, 'src')] = $parsedAsset;
+                    $this->collectedAssets['styles'][XmlParsingHelper::getNodeAttribute($child, 'src')] = $parsedAsset;
+                    break;
+                case 'preload':
+                    $parsedAsset = [
+                        'type' => XmlParsingHelper::getNodeAttribute($child, 'type'),
+                        'href' => XmlParsingHelper::getNodeAttribute($child, 'href'),
+                    ];
+
+                    if ($sortOrder = XmlParsingHelper::getNodeAttribute($child, 'sortOrder')) {
+                        $parsedAsset['sortOrder'] = $sortOrder;
+                    }
+                    $this->collectedAssets['preloads'][XmlParsingHelper::getNodeAttribute($child, 'href')] = $parsedAsset;
                     break;
                 case 'remove':
                     $this->assetsToRemove[] = XmlParsingHelper::getNodeAttribute($child, 'src');

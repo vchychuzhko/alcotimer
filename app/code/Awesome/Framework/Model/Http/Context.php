@@ -8,7 +8,7 @@ use Awesome\Framework\Model\Result\JsonResponseFactory;
 use Awesome\Framework\Model\Result\RedirectFactory;
 use Awesome\Framework\Model\Result\ResponseFactory;
 
-class Context
+class Context implements \Awesome\Framework\Model\SingletonInterface
 {
     /**
      * @var JsonResponseFactory $jsonResponseFactory

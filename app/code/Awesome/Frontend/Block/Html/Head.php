@@ -21,13 +21,44 @@ class Head extends \Awesome\Frontend\Block\Template
     protected $template = 'Awesome_Frontend::html/head.phtml';
 
     /**
+     * Get resources to be preloaded, resolving their paths.
+     * @return array
+     */
+    public function getPreloads(): array
+    {
+        $preloads = [];
+        $preloadData = $this->getData('preloads') ?: [];
+
+        foreach ($preloadData as $preload => $data) {
+            $type = $data['type'];
+
+            switch ($type) {
+                case 'style':
+                    $minified = $this->frontendState->isCssMinificationEnabled();
+                    break;
+                case 'script':
+                    $minified = $this->frontendState->isJsMinificationEnabled();
+                    break;
+                default:
+                    $minified = false;
+            }
+            $preloads[] = [
+                'type' => $type,
+                'href' => $this->resolveAssetPath($preload, $minified),
+            ];
+        }
+
+        return $preloads;
+    }
+
+    /**
      * Get styles, resolving their paths.
      * @return array
      */
     public function getStyles(): array
     {
         $styles = [];
-        $stylesData = $this->getData('css') ?: [];
+        $stylesData = $this->getData('styles') ?: [];
         $minified = $this->frontendState->isCssMinificationEnabled();
 
         foreach ($stylesData as $style => $data) {
@@ -46,7 +77,7 @@ class Head extends \Awesome\Frontend\Block\Template
     public function getScripts(): array
     {
         $scripts = [];
-        $scriptsData = $this->getData('script') ?: [];
+        $scriptsData = $this->getData('scripts') ?: [];
         $minified = $this->frontendState->isJsMinificationEnabled();
 
         foreach ($scriptsData as $script => $data) {
@@ -61,20 +92,14 @@ class Head extends \Awesome\Frontend\Block\Template
     }
 
     /**
-     * Resolve XML assets path.
+     * Resolve static assets path including minification flag.
      * @param string $path
      * @param bool $minified
      * @return string
      */
     private function resolveAssetPath(string $path, bool $minified = false): string
     {
-        if (strpos($path, '::') !== false) {
-            list($module, $file) = explode('::', $path);
-            $type = pathinfo($file, PATHINFO_EXTENSION);
-
-            $path = $module . '/' . $type . '/' . $file;
-        }
-        if ($minified && $path !== RequireJs::RESULT_FILENAME) {
+        if ($minified && $path !== RequireJs::RESULT_FILENAME && !StaticContentHelper::isFileMinified($path)) {
             StaticContentHelper::addMinificationFlag($path);
         }
 

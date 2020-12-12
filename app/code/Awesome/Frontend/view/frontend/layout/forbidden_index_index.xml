@@ -3,7 +3,7 @@
       xsi:noNamespaceSchemaLocation="../../../../Frontend/Schema/page_layout.xsd">
     <head>
         <title><![CDATA[Forbidden]]></title>
-        <css src="Awesome_Frontend::pages/errors.css"/>
+        <css src="Awesome_Frontend/css/pages/errors.css"/>
     </head>
     <body>
         <referenceContainer name="page-wrapper">

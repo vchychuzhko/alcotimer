@@ -66,11 +66,17 @@ class RequireJs
             }
         }
 
-        $config = $this->json->prettyEncode([
+        $config = [
             'baseUrl' => ($this->frontendState->isPubRoot() ? '' : 'pub/')
-                . 'static' . ($deployedVersion ? '/version' . $deployedVersion : '') . '/' . $view,
-            'paths' => $requirePaths,
-        ]);
+                . 'static/' . ($deployedVersion ? 'version' . $deployedVersion . '/' : '/') . $view,
+            'paths'   => $requirePaths,
+        ];
+
+        if ($this->frontendState->isJsMinificationEnabled()) {
+            $config = $this->json->encode($config);
+        } else {
+            $config = $this->json->prettyEncode($config);
+        }
 
         $this->fileManager->createFile(
             BP . StaticContent::STATIC_FOLDER_PATH . $view . '/' . self::RESULT_FILENAME,

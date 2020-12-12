@@ -56,6 +56,26 @@
                                     <xs:attribute name="sortOrder" type="xs:nonNegativeInteger"/>
                                 </xs:complexType>
                             </xs:element>
+                            <xs:element name="preload" minOccurs="0" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:attribute name="type" use="required">
+                                        <xs:simpleType>
+                                            <xs:restriction base="xs:string">
+                                                <xs:pattern value="font|style|script"/>
+                                            </xs:restriction>
+                                        </xs:simpleType>
+                                    </xs:attribute>
+                                    <xs:attribute name="href" use="required">
+                                        <xs:simpleType>
+                                            <xs:restriction base="xs:string">
+                                                <xs:minLength value="1"/>
+                                                <xs:pattern value="[a-zA-Z\-_/.]*"/>
+                                            </xs:restriction>
+                                        </xs:simpleType>
+                                    </xs:attribute>
+                                    <xs:attribute name="sortOrder" type="xs:nonNegativeInteger"/>
+                                </xs:complexType>
+                            </xs:element>
                             <xs:element name="remove" minOccurs="0" maxOccurs="unbounded">
                                 <xs:complexType>
                                     <xs:attribute name="src" use="required">

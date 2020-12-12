@@ -3,14 +3,14 @@
       xsi:noNamespaceSchemaLocation="../../../../Frontend/Schema/page_layout.xsd">
     <head>
         <favicon src="images/favicon.png"/>
-        <css src="Awesome_Frontend::base.css"/>
-        <css src="Awesome_Frontend::header.css"/>
-        <css src="Awesome_Frontend::footer.css"/>
-        <css src="Awesome_Frontend::menu.css"/>
-        <css src="Awesome_Frontend::message.css"/>
+        <css src="Awesome_Frontend/css/base.css"/>
+        <css src="Awesome_Frontend/css/header.css"/>
+        <css src="Awesome_Frontend/css/footer.css"/>
+        <css src="Awesome_Frontend/css/menu.css"/>
+        <css src="Awesome_Frontend/css/message.css"/>
         <script src="lib/require/require.js"/>
         <script src="requirejs-config.js"/>
-        <script src="Awesome_Frontend::main.js"/>
+        <script src="Awesome_Frontend/js/main.js"/>
     </head>
     <body>
         <block name="menu" class="Awesome\Frontend\Block\Menu" template="Awesome_Frontend::menu.phtml" sortOrder="1"/>

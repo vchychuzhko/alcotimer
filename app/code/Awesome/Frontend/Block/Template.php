@@ -22,12 +22,12 @@ class Template extends \Awesome\Frontend\Model\AbstractBlock
     /**
      * @var string $mediaUrl
      */
-    protected $mediaUrl;
+    protected $mediaUrl = '';
 
     /**
      * @var string $staticUrl
      */
-    protected $staticUrl;
+    protected $staticUrl = '';
 
     /**
      * Template constructor.
@@ -53,7 +53,7 @@ class Template extends \Awesome\Frontend\Model\AbstractBlock
     {
         $file = ltrim($file, '/');
 
-        if ($this->mediaUrl === null) {
+        if ($this->mediaUrl === '') {
             $this->mediaUrl = $this->getPubUrl('media/');
         }
 
@@ -82,7 +82,7 @@ class Template extends \Awesome\Frontend\Model\AbstractBlock
     {
         $file = ltrim($file, '/');
 
-        if ($this->staticUrl === null && $layout = $this->getLayout()) {
+        if ($this->staticUrl === '' && $layout = $this->getLayout()) {
             $view = $layout->getView();
 
             if (!$deployedVersion = $this->staticContent->getDeployedVersion()) {
