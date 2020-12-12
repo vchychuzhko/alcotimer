@@ -1,0 +1,80 @@
+@font-face {
+    font-family: Rockwell;
+    src: url('../fonts/rockwell.ttf');
+}
+
+.visualizer {
+    background: black;
+    background-size: cover;
+    font-family: Rockwell, sans-serif;
+    height: 100%;
+    left: 0;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    width: 100%;
+}
+
+.visualizer .legend {
+    color: white;
+    display: flex;
+    flex-direction: column;
+    font-size: 24px;
+    left: 10px;
+    padding: 5px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.visualizer .legend #trackname:after {
+    background: linear-gradient(to right, white, transparent);
+    content: '';
+    display: block;
+    height: 5px;
+    margin: 10px 0 10px -5px;
+    width: 30vw;
+}
+
+.visualizer #canvas {
+    left: 75%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.visualizer #player {
+    bottom: 10px;
+    left: 10px;
+    position: absolute;
+    width: calc(100% - 20px);
+}
+
+.visualizer.vertical .legend {
+    left: 50%;
+    text-align: center;
+    top: 50px;
+    transform: translateX(-50%);
+}
+
+.visualizer.vertical .legend #trackname:after {
+    display: none;
+}
+
+.visualizer.vertical #canvas {
+    left: 50%;
+}
+
+@media only screen and (min-width: 768px) {
+    .visualizer .legend {
+        font-size: 32px;
+    }
+
+    .visualizer #player:not(.nohide) {
+        opacity: 0;
+    }
+
+    .visualizer #player:not(.nohide):hover {
+        opacity: 1;
+    }
+}

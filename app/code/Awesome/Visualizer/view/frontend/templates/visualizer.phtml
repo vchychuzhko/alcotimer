@@ -1,0 +1,16 @@
+<?php /** @var \Awesome\Frontend\Block\Template $block */ ?>
+<div class="visualizer">
+    <div class="legend">
+        <span id="trackname">-</span>
+        <span id="timecode">--:--:--</span>
+    </div>
+    <canvas id="canvas" height="900" width="900"></canvas>
+    <audio controls="true" id="player" crossorigin="anonymous"></audio>
+</div>
+<script type="text/x-awesome-init">
+{
+    ".visualizer": {
+        "visualizer": {}
+    }
+}
+</script>
