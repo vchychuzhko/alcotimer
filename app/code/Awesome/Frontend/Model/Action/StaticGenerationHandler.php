@@ -5,9 +5,9 @@ namespace Awesome\Frontend\Model\Action;
 
 use Awesome\Framework\Model\FileManager;
 use Awesome\Framework\Model\Http;
-use Awesome\Framework\Model\Http\Context;
 use Awesome\Framework\Model\Result\Response;
 use Awesome\Framework\Model\Http\Request;
+use Awesome\Framework\Model\Result\ResponseFactory;
 use Awesome\Frontend\Model\StaticContent;
 
 /**
@@ -45,18 +45,18 @@ class StaticGenerationHandler extends \Awesome\Framework\Model\AbstractAction
 
     /**
      * StaticGenerationHandler constructor.
-     * @param Context $context
      * @param FileManager $fileManager
+     * @param ResponseFactory $responseFactory
      * @param StaticContent $staticContent
      * @param array $data
      */
     public function __construct(
-        Context $context,
         FileManager $fileManager,
+        ResponseFactory $responseFactory,
         StaticContent $staticContent,
         array $data = []
     ) {
-        parent::__construct($context, $data);
+        parent::__construct($responseFactory, $data);
         $this->fileManager = $fileManager;
         $this->staticContent = $staticContent;
     }

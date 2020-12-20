@@ -31,7 +31,6 @@ class ResultPageFactory extends \Awesome\Framework\Model\AbstractFactory
      * @param string $view
      * @param array $handles
      * @return ResultPage
-     * @throws \Exception
      */
     public function create(string $handle, string $view, array $handles = []): ResultPage
     {

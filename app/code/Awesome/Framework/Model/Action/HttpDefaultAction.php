@@ -4,9 +4,10 @@ declare(strict_types=1);
 namespace Awesome\Framework\Model\Action;
 
 use Awesome\Framework\Model\AppState;
-use Awesome\Framework\Model\Http\Context;
+use Awesome\Framework\Model\FileManager;
 use Awesome\Framework\Model\Http\Request;
 use Awesome\Framework\Model\Result\Response;
+use Awesome\Framework\Model\Result\ResponseFactory;
 
 class HttpDefaultAction extends \Awesome\Framework\Model\AbstractAction
 {
@@ -19,14 +20,21 @@ class HttpDefaultAction extends \Awesome\Framework\Model\AbstractAction
     private $appState;
 
     /**
+     * @var FileManager $fileManager
+     */
+    private $fileManager;
+
+    /**
      * HttpDefaultAction constructor.
      * @param AppState $appState
-     * @param Context $context
+     * @param FileManager $fileManager
+     * @param ResponseFactory $responseFactory
      */
-    public function __construct(AppState $appState, Context $context)
+    public function __construct(AppState $appState, FileManager $fileManager, ResponseFactory $responseFactory)
     {
-        parent::__construct($context);
+        parent::__construct($responseFactory);
         $this->appState = $appState;
+        $this->fileManager = $fileManager;
     }
 
     /**
@@ -39,14 +47,14 @@ class HttpDefaultAction extends \Awesome\Framework\Model\AbstractAction
             && $this->appState->showForbidden()
         ) {
             if ($request->getAcceptType() === Request::JSON_ACCEPT_HEADER) {
-                $response = $this->jsonResponseFactory->create()
-                    ->setContentJson([
-                        'status' => 'FORBIDDEN',
+                $response = $this->responseFactory->create(ResponseFactory::TYPE_JSON)
+                    ->setData([
+                        'status'  => 'FORBIDDEN',
                         'message' => 'Requested path is not allowed.',
                     ])
                     ->setStatusCode(Response::FORBIDDEN_STATUS_CODE);
             } elseif ($request->getAcceptType() === Request::HTML_ACCEPT_HEADER && $content = $this->getForbiddenPage()) {
-                $response = $this->htmlResponseFactory->create()
+                $response = $this->responseFactory->create(ResponseFactory::TYPE_HTML)
                     ->setContent($content)
                     ->setStatusCode(Response::FORBIDDEN_STATUS_CODE);
             } else {
@@ -55,14 +63,14 @@ class HttpDefaultAction extends \Awesome\Framework\Model\AbstractAction
             }
         } else {
             if ($request->getAcceptType() === Request::JSON_ACCEPT_HEADER) {
-                $response = $this->jsonResponseFactory->create()
-                    ->setContentJson([
-                        'status' => 'NOTFOUND',
+                $response = $this->responseFactory->create(ResponseFactory::TYPE_JSON)
+                    ->setData([
+                        'status'  => 'NOTFOUND',
                         'message' => 'Requested path was not found.',
                     ])
                     ->setStatusCode(Response::NOTFOUND_STATUS_CODE);
             } elseif ($request->getAcceptType() === Request::HTML_ACCEPT_HEADER && $content = $this->getNotfoundPage()) {
-                $response = $this->htmlResponseFactory->create()
+                $response = $this->responseFactory->create(ResponseFactory::TYPE_HTML)
                     ->setContent($content)
                     ->setStatusCode(Response::NOTFOUND_STATUS_CODE);
             } else {
@@ -76,19 +84,19 @@ class HttpDefaultAction extends \Awesome\Framework\Model\AbstractAction
 
     /**
      * Get 403 forbidden page content.
-     * @return string|null
+     * @return string|false
      */
-    private function getForbiddenPage(): ?string
+    private function getForbiddenPage()
     {
-        return @file_get_contents(BP . self::FORBIDDEN_PAGE_PATH) ?: null;
+        return $this->fileManager->readFile(BP . self::FORBIDDEN_PAGE_PATH, true);
     }
 
     /**
      * Get 404 notfound page content.
-     * @return string|null
+     * @return string|false
      */
-    private function getNotfoundPage(): ?string
+    private function getNotfoundPage()
     {
-        return @file_get_contents(BP . self::NOTFOUND_PAGE_PATH) ?: null;
+        return $this->fileManager->readFile(BP . self::NOTFOUND_PAGE_PATH, true);
     }
 }
