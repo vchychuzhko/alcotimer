@@ -100,7 +100,7 @@ class Head extends \Awesome\Frontend\Block\Template
     private function resolveAssetPath(string $path, bool $minified = false): string
     {
         if ($minified && $path !== RequireJs::RESULT_FILENAME && !StaticContentHelper::isFileMinified($path)) {
-            StaticContentHelper::addMinificationFlag($path);
+            $path = StaticContentHelper::addMinificationFlag($path);
         }
 
         return $this->getStaticUrl($path);

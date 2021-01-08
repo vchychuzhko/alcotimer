@@ -1,16 +1,16 @@
 <?php /** @var \Awesome\Frontend\Block\Template $block */ ?>
 <div class="visualizer">
     <div class="legend">
-        <span id="trackname">-</span>
-        <span id="timecode">--:--:--</span>
+        <span class="trackname">-</span>
+        <span class="timecode">--:--:--</span>
     </div>
-    <canvas id="canvas" height="900" width="900"></canvas>
-    <audio controls="true" id="player" crossorigin="anonymous"></audio>
+    <canvas class="canvas" height="900" width="900"></canvas>
+    <audio class="player" controls="true" crossorigin="anonymous"></audio>
 </div>
 <script type="text/x-awesome-init">
 {
     ".visualizer": {
-        "visualizer": {}
+        "player": {}
     }
 }
 </script>

@@ -1,5 +1,5 @@
 {
     "paths": {
-        "visualizer": "Awesome_Visualizer/js/visualizer"
+        "player": "Awesome_Visualizer/js/player"
     }
 }

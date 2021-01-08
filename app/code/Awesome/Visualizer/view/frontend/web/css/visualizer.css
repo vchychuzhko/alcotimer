@@ -4,8 +4,11 @@
 }
 
 .visualizer {
-    background: black;
+    background-color: black;
+    background-attachment: fixed;
     background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     font-family: Rockwell, sans-serif;
     height: 100%;
     left: 0;
@@ -27,23 +30,57 @@
     transform: translateY(-50%);
 }
 
-.visualizer .legend #trackname:after {
+.visualizer .legend .trackname.in {
+    animation: in 0.4s ease;
+}
+
+.visualizer .legend .trackname.out {
+    animation: out 0.4s ease;
+    animation-fill-mode: forwards;
+    position: absolute;
+}
+
+@keyframes in {
+    0% {
+        opacity: 0;
+        transform: translateY(-100%);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes out {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(100%);
+    }
+}
+
+.visualizer .legend .timecode:before {
     background: linear-gradient(to right, white, transparent);
     content: '';
     display: block;
     height: 5px;
-    margin: 10px 0 10px -5px;
+    margin: 10px 0 10px -15px;
     width: 30vw;
 }
 
-.visualizer #canvas {
+.visualizer .canvas {
     left: 75%;
     position: absolute;
     top: 50%;
     transform: translate(-50%, -50%);
 }
 
-.visualizer #player {
+.visualizer .player {
     bottom: 10px;
     left: 10px;
     position: absolute;
@@ -57,11 +94,13 @@
     transform: translateX(-50%);
 }
 
-.visualizer.vertical .legend #trackname:after {
-    display: none;
+.visualizer.vertical .legend .timecode:before {
+    background: linear-gradient(to right, transparent, white, transparent);
+    margin: 10px 0;
+    width: 100%;
 }
 
-.visualizer.vertical #canvas {
+.visualizer.vertical .canvas {
     left: 50%;
 }
 
@@ -70,11 +109,11 @@
         font-size: 32px;
     }
 
-    .visualizer #player:not(.nohide) {
+    .visualizer .player:not(.nohide) {
         opacity: 0;
     }
 
-    .visualizer #player:not(.nohide):hover {
+    .visualizer .player:not(.nohide):hover {
         opacity: 1;
     }
 }
