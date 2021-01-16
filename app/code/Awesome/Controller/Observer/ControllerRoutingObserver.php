@@ -51,22 +51,20 @@ class ControllerRoutingObserver implements \Awesome\Framework\Model\Event\Observ
         $request = $event->getRequest();
         $view = $request->getView();
 
-        @list($route, $entity, $action) = explode('/', ltrim($request->getPath(), '/'));
-
-        if ($module = $this->router->getStandardRoute($route, $view)) {
+        if ($module = $this->router->getStandardRoute($request->getRoute(), $view)) {
             $module = str_replace('_', '\\', $module);
             $controllerFolder = $view === Http::BACKEND_VIEW
                 ? self::ADMINHTML_CONTROLLER_FOLDER
                 : self::DEFAULT_CONTROLLER_FOLDER;
             $className = $module . '\\' . $controllerFolder;
 
-            if (isset($entity)) {
+            if ($entity = $request->getEntity()) {
                 $className .= '\\' . ucfirst(DataHelper::camelCase($entity));
             } else {
                 $className .= '\\' . self::DEFAULT_CONTROLLER_NAME;
             }
 
-            if (isset($action)) {
+            if ($action = $request->getAction()) {
                 $className .= '\\' . ucfirst(DataHelper::camelCase($action));
             } elseif (!$this->phpFileManager->objectFileExists($className)) {
                 $className .= '\\' . self::DEFAULT_CONTROLLER_NAME;

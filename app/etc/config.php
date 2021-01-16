@@ -8,7 +8,7 @@ return [
     'show_forbidden' => 0, // NotFound response will be returned instead
     'support_email_address' => '',
     'web' => [
-        'homepage' => 'timer_index_index',
+        'homepage' => 'timer/index/index',
         'logo' => 'pub/media/images/logo.png',
         'web_root_is_pub' => 1, // 0 for project root
         'js' => [

@@ -58,8 +58,8 @@ class RequireJs
                 $paths = $config['paths'];
 
                 if ($this->frontendState->isJsMinificationEnabled()) {
-                    foreach ($paths as &$path) {
-                        $path .= StaticContentHelper::MINIFICATION_FLAG;
+                    foreach ($paths as $module => $path) {
+                        $paths[$module] = StaticContentHelper::addMinificationFlag($path);
                     }
                 }
                 $requirePaths = array_replace_recursive($requirePaths, $paths);
@@ -67,8 +67,8 @@ class RequireJs
         }
 
         $config = [
-            'baseUrl' => ($this->frontendState->isPubRoot() ? '' : 'pub/')
-                . 'static/' . ($deployedVersion ? 'version' . $deployedVersion . '/' : '/') . $view,
+            'baseUrl' => ($this->frontendState->isPubRoot() ? '' : '/pub')
+                . '/static/' . ($deployedVersion ? 'version' . $deployedVersion . '/' : '/') . $view,
             'paths'   => $requirePaths,
         ];
 

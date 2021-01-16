@@ -51,7 +51,7 @@ class Page extends \Awesome\Framework\Model\DataObject
         if ($handle && $view) {
             $content = $this->cache->get(
                 Cache::FULL_PAGE_CACHE_KEY,
-                $handle . '_' . $view,
+                implode('/', $handles) . '//' . $view,
                 function () use ($handle, $view, $handles) {
                     $this->layout->init($handle, $view, $handles);
 

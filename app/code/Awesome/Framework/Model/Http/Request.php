@@ -8,7 +8,9 @@ use Awesome\Framework\Helper\DataHelper;
 /**
  * Class Request
  * @method string getAcceptType()
- * @method string getFullActionName()
+ * @method string getRoute()
+ * @method string|null getEntity()
+ * @method string|null getAction()
  * @method string getUserIp()
  * @method string getView()
  */
@@ -24,6 +26,8 @@ class Request extends \Awesome\Framework\Model\DataObject implements \Awesome\Fr
 
     public const SCHEME_HTTP  = 'http';
     public const SCHEME_HTTPS = 'https';
+
+    public const ROOT_ACTION_NAME = 'index_index_index';
 
     public const JSON_ACCEPT_HEADER = 'application/json';
     public const HTML_ACCEPT_HEADER = 'text/html';
@@ -67,6 +71,11 @@ class Request extends \Awesome\Framework\Model\DataObject implements \Awesome\Fr
      * @var int|null $redirectStatusCode
      */
     private $redirectStatusCode;
+
+    /**
+     * @var string $fullActionName
+     */
+    private $fullActionName;
 
     /**
      * Request constructor.
@@ -139,6 +148,23 @@ class Request extends \Awesome\Framework\Model\DataObject implements \Awesome\Fr
         }
 
         return $this->path;
+    }
+
+    /**
+     * Get request full action name.
+     * @return string
+     */
+    public function getFullActionName(): string
+    {
+        if (!$this->fullActionName) {
+            $this->fullActionName = implode('_', [
+                $this->getRoute(),
+                $this->getEntity() ?: 'index',
+                $this->getAction() ?: 'index',
+            ]);
+        }
+
+        return $this->fullActionName;
     }
 
     /**
