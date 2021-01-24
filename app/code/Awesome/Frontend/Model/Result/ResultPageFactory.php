@@ -3,9 +3,10 @@ declare(strict_types=1);
 
 namespace Awesome\Frontend\Model\Result;
 
+use Awesome\Framework\Model\Http\Request;
 use Awesome\Framework\Model\Invoker;
+use Awesome\Framework\Model\Result\HtmlResponse;
 use Awesome\Frontend\Model\PageFactory;
-use Awesome\Frontend\Model\Result\ResultPage;
 
 class ResultPageFactory extends \Awesome\Framework\Model\AbstractFactory
 {
@@ -13,6 +14,11 @@ class ResultPageFactory extends \Awesome\Framework\Model\AbstractFactory
      * @var PageFactory $pageFactory
      */
     private $pageFactory;
+
+    /**
+     * @var Request $request
+     */
+    private $request;
 
     /**
      * ResultPageFactory constructor.
@@ -26,19 +32,43 @@ class ResultPageFactory extends \Awesome\Framework\Model\AbstractFactory
     }
 
     /**
-     * Create page response object.
-     * @param string $handle
-     * @param string $view
-     * @param array $handles
-     * @return ResultPage
+     * Set result page request.
+     * @param Request $request
+     * @return $this
      */
-    public function create(string $handle, string $view, array $handles = []): ResultPage
+    public function setRequest(Request $request): self
     {
+        $this->request = $request;
+
+        return $this;
+    }
+
+    /**
+     * Create html page response object.
+     * @param string|null $handle
+     * @param string|null $view
+     * @param array $handles
+     * @return HtmlResponse
+     */
+    public function create(?string $handle = null, ?string $view = null, array $handles = []): HtmlResponse
+    {
+        if (!$handle) {
+            if (!$this->request) {
+                throw new \RuntimeException('Request object was not provided so result page handle cannot be retrieved');
+            }
+            $handle = $this->request->getFullActionName();
+        }
+        if (!$view) {
+            if (!$this->request) {
+                throw new \RuntimeException('Request object was not provided so result page view cannot be retrieved');
+            }
+            $view = $this->request->getView();
+        }
         $handles = $handles ?: [$handle];
         $page = $this->pageFactory->create($handle, $view, $handles);
 
-        return $this->invoker->create(ResultPage::class, [
-            'page' => $page,
+        return $this->invoker->create(HtmlResponse::class, [
+            'content' => $page->render(),
         ]);
     }
 }
