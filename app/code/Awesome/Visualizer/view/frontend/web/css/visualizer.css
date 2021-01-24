@@ -80,7 +80,7 @@
     transform: translate(-50%, -50%);
 }
 
-.visualizer .player {
+.visualizer .audio {
     bottom: 10px;
     left: 10px;
     position: absolute;
@@ -109,11 +109,11 @@
         font-size: 32px;
     }
 
-    .visualizer .player:not(.nohide) {
+    .visualizer .audio:not(.nohide) {
         opacity: 0;
     }
 
-    .visualizer .player:not(.nohide):hover {
+    .visualizer .audio:not(.nohide):hover {
         opacity: 1;
     }
 }

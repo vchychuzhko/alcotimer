@@ -62,6 +62,9 @@ define([
             context.closePath();
 
             $.each(this.data, function (index, value) {
+                value = value * 2.5 - 255;
+                if (value < 0) value = 0; // @TODO: Add complex scale/slice/filter modifications
+
                 value = (value / 255) * (height / 8);
 
                 let currentAngle = 360 * (index / this.analyzerNode.frequencyBinCount),

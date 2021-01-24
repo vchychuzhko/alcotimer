@@ -1,8 +1,8 @@
 define([
-    'Awesome_Visualizer/js/visualizer',
     'jquery',
+    'Awesome_Visualizer/js/visualizer',
     'jquery/ui',
-], function (visualizer) {
+], function ($, visualizer) {
     'use strict'
 
     const RUNNING_STATE = 'running',
@@ -12,14 +12,14 @@ define([
     $.widget('awesome.player', {
         options: {
             canvasSelector: '.canvas',
-            playerSelector: '.player',
+            audioSelector: '.audio',
             playlistConfig: {},
             timeSelector: '.timecode',
             trackNameSelector: '.trackname',
         },
 
+        $audio: null,
         $canvas: null,
-        $player: null,
         $time: null,
         $trackName: null,
 
@@ -40,14 +40,14 @@ define([
          * Init widget fields.
          */
         initFields: function () {
-            this.$audio = this.element.get(0).querySelector(this.options.playerSelector);
+            this.$audio = this.element.get(0).querySelector(this.options.audioSelector);
             this.$canvas = this.element.get(0).querySelector(this.options.canvasSelector);
             this.$time = this.element.get(0).querySelector(this.options.timeSelector);
             this.$trackName = this.element.get(0).querySelector(this.options.trackNameSelector);
         },
 
         /**
-         * Check if screen is touchable and apply responsible changes.
+         * Check if screen is touchable and apply respective changes.
          */
         checkTouchScreen: function () {
             if ('ontouchstart' in document.documentElement) {
@@ -83,7 +83,7 @@ define([
             this.$audio.addEventListener('timeupdate', function (event) {
                 let currentTime = event.currentTarget.currentTime;
 
-                this.updateTrackName(this.fileName, Math.floor(currentTime));
+                this.updateTrackName(this.fileName, currentTime);
                 this.updateTime(currentTime);
             }.bind(this));
 
@@ -105,11 +105,10 @@ define([
          */
         updateTrackName: function (trackName, timeCode = null) {
             if (timeCode !== null && this.options.playlistConfig[trackName]) {
-                let track = Object.keys(this.options.playlistConfig[trackName])
-                    .sort((a, b) => b - a)
-                    .find(seconds => seconds <= timeCode)
-
-                trackName = this.options.playlistConfig[trackName][track];
+                $.each(this.options.playlistConfig[trackName]['playlist'], function (code, name) {
+                    if (code >= timeCode) return false;
+                    trackName = name;
+                }.bind(this));
             }
 
             if (trackName && this.$trackName.innerText !== trackName) {
@@ -147,14 +146,13 @@ define([
          * Init visualizer if was not yet.
          */
         play: function () {
-            if (!visualizer.initialized) {
-                visualizer.init(this.$audio, this.$canvas);
-            }
-
             if (this.state !== RUNNING_STATE) {
-                this.state = RUNNING_STATE;
+                if (!visualizer.initialized) {
+                    visualizer.init(this.$audio, this.$canvas);
+                }
 
-                this.run()
+                this.state = RUNNING_STATE;
+                this.run();
             }
         },
 
@@ -188,13 +186,14 @@ define([
          * Recalculate canvas size to keep it squared.
          */
         calculateCanvasSize: function () {
-            let size;
+            let container = this.element.get(0),
+                size;
 
-            if (window.innerWidth > window.innerHeight) {
-                size = Math.round(Math.min(window.innerHeight * 0.9, window.innerWidth * 0.4));
+            if (container.offsetWidth > container.offsetHeight) {
+                size = Math.round(Math.min(container.offsetHeight * 0.9, container.offsetWidth * 0.4));
                 this.element.get(0).classList.remove('vertical');
-            } else if (window.innerHeight > window.innerWidth) {
-                size = Math.round(Math.min(window.innerWidth * 0.9, window.innerHeight * 0.6));
+            } else if (container.offsetHeight > container.offsetWidth) {
+                size = Math.round(Math.min(container.offsetWidth * 0.9, container.offsetHeight * 0.6));
                 this.element.get(0).classList.add('vertical');
             }
             this.$canvas.style.height = size + 'px';
@@ -248,7 +247,12 @@ define([
                 case 'а':
                     event.preventDefault();
 
-                    // @TODO: Implement fullscreen toggling (hiding header and footer) functionality
+                    // @TODO: Add hiding header/footer functionality along with going fullscreen browser mode
+                    break;
+                case 'Escape':
+                    event.preventDefault();
+
+                    // @TODO: Add exit from fullscreen browser mode (and returning header/footer)
                     break;
                 case 'm':
                 case 'ь':

@@ -16,7 +16,7 @@
             <referenceBlock name="header" remove="true"/>
             <referenceBlock name="menu-overlay" remove="true"/>
             <block name="visualizer.content"
-                   class="Awesome\Frontend\Block\Template"
+                   class="Awesome\Visualizer\Block\Visualizer"
                    template="Awesome_Visualizer::visualizer.phtml"
                    sortOrder="5"/>
             <referenceBlock name="footer" remove="true"/>
