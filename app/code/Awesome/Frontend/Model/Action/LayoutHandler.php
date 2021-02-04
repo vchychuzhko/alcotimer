@@ -7,7 +7,7 @@ use Awesome\Cache\Model\Cache;
 use Awesome\Framework\Model\AppState;
 use Awesome\Framework\Model\Config;
 use Awesome\Framework\Model\Http\Request;
-use Awesome\Framework\Model\Result\Response;
+use Awesome\Framework\Model\ResponseInterface;
 use Awesome\Framework\Model\Http\Router;
 use Awesome\Framework\Model\Result\ResponseFactory;
 use Awesome\Frontend\Model\Result\ResultPageFactory;
@@ -95,13 +95,13 @@ class LayoutHandler extends \Awesome\Framework\Model\AbstractAction
      * @inheritDoc
      * @throws \Exception
      */
-    public function execute(Request $request): Response
+    public function execute(Request $request): ResponseInterface
     {
         $handle = $request->getFullActionName();
         $handles = [$handle];
         $route = $request->getRoute();
         $view = $request->getView();
-        $status = Response::SUCCESS_STATUS_CODE;
+        $status = ResponseInterface::SUCCESS_STATUS_CODE;
 
         if ($this->isHomepage($request)) {
             $handle = $this->getHomepageHandle();
@@ -114,10 +114,10 @@ class LayoutHandler extends \Awesome\Framework\Model\AbstractAction
                 && $this->appState->showForbidden()
             ) {
                 $handle = self::FORBIDDEN_PAGE_HANDLE;
-                $status = Response::FORBIDDEN_STATUS_CODE;
+                $status = ResponseInterface::FORBIDDEN_STATUS_CODE;
             } else {
                 $handle = self::NOTFOUND_PAGE_HANDLE;
-                $status = Response::NOTFOUND_STATUS_CODE;
+                $status = ResponseInterface::NOTFOUND_STATUS_CODE;
             }
             $handles = [$handle];
         }

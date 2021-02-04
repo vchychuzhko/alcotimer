@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Awesome\Framework\Model\Result;
 
+use Awesome\Framework\Model\ResponseInterface;
 use Awesome\Framework\Model\Result\HtmlResponse;
 use Awesome\Framework\Model\Result\JsonResponse;
 use Awesome\Framework\Model\Result\Redirect;
@@ -29,9 +30,9 @@ class ResponseFactory extends \Awesome\Framework\Model\AbstractFactory
      * Create response object.
      * @param string $type
      * @param array $params
-     * @return Response
+     * @return ResponseInterface
      */
-    public function create(string $type = self::TYPE_RAW, array $params = []): Response
+    public function create(string $type = self::TYPE_RAW, array $params = []): ResponseInterface
     {
         if (!isset($this->typeMap[$type])) {
             throw new \LogicException(sprintf('Response type "%s" is not recognized', $type));

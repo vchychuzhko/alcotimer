@@ -6,7 +6,7 @@ namespace Awesome\Framework\Model\Action;
 use Awesome\Framework\Model\AppState;
 use Awesome\Framework\Model\FileManager;
 use Awesome\Framework\Model\Http\Request;
-use Awesome\Framework\Model\Result\Response;
+use Awesome\Framework\Model\ResponseInterface;
 use Awesome\Framework\Model\Result\ResponseFactory;
 
 class HttpDefaultAction extends \Awesome\Framework\Model\AbstractAction
@@ -41,7 +41,7 @@ class HttpDefaultAction extends \Awesome\Framework\Model\AbstractAction
      * Return notfound or forbidden response in case no action was found.
      * @inheritDoc
      */
-    public function execute(Request $request): Response
+    public function execute(Request $request): ResponseInterface
     {
         if ($request->getRedirectStatusCode() === Request::FORBIDDEN_REDIRECT_CODE
             && $this->appState->showForbidden()
@@ -52,14 +52,14 @@ class HttpDefaultAction extends \Awesome\Framework\Model\AbstractAction
                         'status'  => 'FORBIDDEN',
                         'message' => 'Requested path is not allowed.',
                     ])
-                    ->setStatusCode(Response::FORBIDDEN_STATUS_CODE);
+                    ->setStatusCode(ResponseInterface::FORBIDDEN_STATUS_CODE);
             } elseif ($request->getAcceptType() === Request::HTML_ACCEPT_HEADER && $content = $this->getForbiddenPage()) {
                 $response = $this->responseFactory->create(ResponseFactory::TYPE_HTML)
                     ->setContent($content)
-                    ->setStatusCode(Response::FORBIDDEN_STATUS_CODE);
+                    ->setStatusCode(ResponseInterface::FORBIDDEN_STATUS_CODE);
             } else {
                 $response = $this->responseFactory->create()
-                    ->setStatusCode(Response::FORBIDDEN_STATUS_CODE);
+                    ->setStatusCode(ResponseInterface::FORBIDDEN_STATUS_CODE);
             }
         } else {
             if ($request->getAcceptType() === Request::JSON_ACCEPT_HEADER) {
@@ -68,14 +68,14 @@ class HttpDefaultAction extends \Awesome\Framework\Model\AbstractAction
                         'status'  => 'NOTFOUND',
                         'message' => 'Requested path was not found.',
                     ])
-                    ->setStatusCode(Response::NOTFOUND_STATUS_CODE);
+                    ->setStatusCode(ResponseInterface::NOTFOUND_STATUS_CODE);
             } elseif ($request->getAcceptType() === Request::HTML_ACCEPT_HEADER && $content = $this->getNotfoundPage()) {
                 $response = $this->responseFactory->create(ResponseFactory::TYPE_HTML)
                     ->setContent($content)
-                    ->setStatusCode(Response::NOTFOUND_STATUS_CODE);
+                    ->setStatusCode(ResponseInterface::NOTFOUND_STATUS_CODE);
             } else {
                 $response = $this->responseFactory->create()
-                    ->setStatusCode(Response::NOTFOUND_STATUS_CODE);
+                    ->setStatusCode(ResponseInterface::NOTFOUND_STATUS_CODE);
             }
         }
 

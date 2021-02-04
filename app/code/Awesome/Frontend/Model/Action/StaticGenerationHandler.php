@@ -5,7 +5,7 @@ namespace Awesome\Frontend\Model\Action;
 
 use Awesome\Framework\Model\FileManager;
 use Awesome\Framework\Model\Http;
-use Awesome\Framework\Model\Result\Response;
+use Awesome\Framework\Model\ResponseInterface;
 use Awesome\Framework\Model\Http\Request;
 use Awesome\Framework\Model\Result\ResponseFactory;
 use Awesome\Frontend\Model\StaticContent;
@@ -66,7 +66,7 @@ class StaticGenerationHandler extends \Awesome\Framework\Model\AbstractAction
      * @inheritDoc
      * @throws \Exception
      */
-    public function execute(Request $request): Response
+    public function execute(Request $request): ResponseInterface
     {
         $path = $this->getRequestedFile();
         $view = preg_replace(
