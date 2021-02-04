@@ -74,7 +74,7 @@ class DataObject
 
     /**
      * Set/Get attribute wrapper.
-     * Based on vendor/magento/framework/DataObject.php - L381
+     * @see \Magento\Framework\DataObject::__call()
      *
      * @param string $method
      * @param array $args

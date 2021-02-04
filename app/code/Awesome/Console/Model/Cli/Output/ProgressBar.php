@@ -5,7 +5,7 @@ namespace Awesome\Console\Model\Cli\Output;
 
 /**
  * Class ProgressBar
- * Based on https://gist.github.com/mayconbordin/2860547
+ * @link https://gist.github.com/mayconbordin/2860547
  */
 class ProgressBar
 {

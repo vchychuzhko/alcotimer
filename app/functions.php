@@ -4,7 +4,7 @@ declare(strict_types=1);
 if (!function_exists('array_key_first')) {
     /**
      * Get first key in array.
-     * Based on https://www.php.net/manual/en/function.array-key-first.php#refsect1-function.array-key-first-notes
+     * @link https://www.php.net/manual/en/function.array-key-first.php#refsect1-function.array-key-first-notes
      * A polyfill for PHP versions below 7.3
      * @param array $array
      * @return mixed
@@ -22,7 +22,7 @@ if (!function_exists('array_key_first')) {
 if (!function_exists('get_class_name')) {
     /**
      * Get class name with no namespace.
-     * Based on https://www.php.net/manual/en/function.get-class.php#114568
+     * @link https://www.php.net/manual/en/function.get-class.php#114568
      * @param object $object
      * @return string
      */
@@ -41,7 +41,7 @@ if (!function_exists('get_class_name')) {
 if (!function_exists('in_array_r')) {
     /**
      * Check if value exists in a multidimensional array.
-     * Based on https://stackoverflow.com/a/4128377
+     * @link https://stackoverflow.com/a/4128377
      * @param mixed $needle
      * @param array $haystack
      * @param bool $strict
@@ -64,7 +64,7 @@ if (!function_exists('in_array_r')) {
 if (!function_exists('str_replace_first')) {
     /**
      * Replace the first occurrence of the searched string.
-     * Based on https://stackoverflow.com/a/2606638
+     * @link https://stackoverflow.com/a/2606638
      * @param string $search
      * @param string $replace
      * @param string $subject
@@ -85,7 +85,7 @@ if (!function_exists('str_replace_first')) {
 if (!function_exists('array_export')) {
     /**
      * PHP var_export() modification with short array syntax (square brackets) indented 4 spaces.
-     * Based on https://www.php.net/manual/en/function.var-export.php#124194
+     * @link https://www.php.net/manual/en/function.var-export.php#124194
      * @param array $array
      * @param bool $return
      * @return string|void

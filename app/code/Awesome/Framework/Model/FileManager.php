@@ -136,7 +136,7 @@ class FileManager implements \Awesome\Framework\Model\SingletonInterface
 
     /**
      * Remove directory recursively.
-     * Based on https://www.php.net/manual/en/function.rmdir.php#117354
+     * @link https://www.php.net/manual/en/function.rmdir.php#117354
      * @param string $path
      * @return bool
      * @throws \RuntimeException
@@ -161,7 +161,7 @@ class FileManager implements \Awesome\Framework\Model\SingletonInterface
 
     /**
      * Get all files in a directory by extensions filter if needed.
-     * Based on https://stackoverflow.com/a/35105800
+     * @link https://stackoverflow.com/a/35105800
      * @param string $path
      * @param bool $recursively
      * @param string|array $extensions
