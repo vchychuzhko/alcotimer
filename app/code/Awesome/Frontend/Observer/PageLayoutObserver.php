@@ -16,7 +16,7 @@ class PageLayoutObserver implements \Awesome\Framework\Model\Event\ObserverInter
      */
     public function execute(Event $event): void
     {
-        /** @var ActionResolver $router */
+        /** @var ActionResolver $actionResolver */
         $actionResolver = $event->getActionResolver();
 
         $actionResolver->addAction(LayoutHandler::class);

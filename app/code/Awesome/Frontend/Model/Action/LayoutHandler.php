@@ -6,11 +6,10 @@ namespace Awesome\Frontend\Model\Action;
 use Awesome\Cache\Model\Cache;
 use Awesome\Framework\Model\AppState;
 use Awesome\Framework\Model\Config;
-use Awesome\Framework\Model\Http;
-use Awesome\Framework\Model\Http\Context;
 use Awesome\Framework\Model\Http\Request;
-use Awesome\Framework\Model\Result\Response;
+use Awesome\Framework\Model\ResponseInterface;
 use Awesome\Framework\Model\Http\Router;
+use Awesome\Framework\Model\Result\ResponseFactory;
 use Awesome\Frontend\Model\Result\ResultPageFactory;
 
 class LayoutHandler extends \Awesome\Framework\Model\AbstractAction
@@ -50,11 +49,26 @@ class LayoutHandler extends \Awesome\Framework\Model\AbstractAction
     private $router;
 
     /**
+     * @var string $homepageHandle
+     */
+    private $homepageHandle;
+
+    /**
+     * @var string $homepageRoute
+     */
+    private $homepageRoute;
+
+    /**
+     * @var array $pageHandles
+     */
+    private $pageHandles;
+
+    /**
      * LayoutHandler constructor.
      * @param AppState $appState
      * @param Cache $cache
      * @param Config $config
-     * @param Context $context
+     * @param ResponseFactory $responseFactory
      * @param ResultPageFactory $resultPageFactory
      * @param Router $router
      * @param array $data
@@ -63,12 +77,12 @@ class LayoutHandler extends \Awesome\Framework\Model\AbstractAction
         AppState $appState,
         Cache $cache,
         Config $config,
-        Context $context,
+        ResponseFactory $responseFactory,
         ResultPageFactory $resultPageFactory,
         Router $router,
         array $data = []
     ) {
-        parent::__construct($context, $data);
+        parent::__construct($responseFactory, $data);
         $this->appState = $appState;
         $this->cache = $cache;
         $this->config = $config;
@@ -81,27 +95,29 @@ class LayoutHandler extends \Awesome\Framework\Model\AbstractAction
      * @inheritDoc
      * @throws \Exception
      */
-    public function execute(Request $request): Response
+    public function execute(Request $request): ResponseInterface
     {
         $handle = $request->getFullActionName();
         $handles = [$handle];
+        $route = $request->getRoute();
         $view = $request->getView();
-        $status = Response::SUCCESS_STATUS_CODE;
+        $status = ResponseInterface::SUCCESS_STATUS_CODE;
 
         if ($this->isHomepage($request)) {
             $handle = $this->getHomepageHandle();
+            $route = $this->getHomepageRoute();
             $handles[] = $handle;
         }
 
-        if (!$this->handleExist($handle, $view)) {
+        if (!$this->router->getStandardRoute($route, $view) || !$this->handleExist($handle, $view)) {
             if ($request->getRedirectStatusCode() === Request::FORBIDDEN_REDIRECT_CODE
                 && $this->appState->showForbidden()
             ) {
                 $handle = self::FORBIDDEN_PAGE_HANDLE;
-                $status = Response::FORBIDDEN_STATUS_CODE;
+                $status = ResponseInterface::FORBIDDEN_STATUS_CODE;
             } else {
                 $handle = self::NOTFOUND_PAGE_HANDLE;
-                $status = Response::NOTFOUND_STATUS_CODE;
+                $status = ResponseInterface::NOTFOUND_STATUS_CODE;
             }
             $handles = [$handle];
         }
@@ -117,7 +133,7 @@ class LayoutHandler extends \Awesome\Framework\Model\AbstractAction
      */
     private function isHomepage(Request $request): bool
     {
-        return $request->getFullActionName() === Http::ROOT_ACTION_NAME;
+        return $request->getFullActionName() === Request::ROOT_ACTION_NAME;
     }
 
     /**
@@ -126,20 +142,35 @@ class LayoutHandler extends \Awesome\Framework\Model\AbstractAction
      */
     private function getHomepageHandle(): string
     {
-        return $this->config->get(self::HOMEPAGE_HANDLE_CONFIG);
+        if ($this->homepageHandle === null) {
+            $this->homepageHandle = str_replace('/', '_', $this->config->get(self::HOMEPAGE_HANDLE_CONFIG));
+        }
+
+        return $this->homepageHandle;
     }
 
     /**
-     * Check if requested page handle is registered and exists in specified view.
+     * Get homepage route.
+     * @return string
+     */
+    private function getHomepageRoute(): string
+    {
+        if ($this->homepageRoute === null) {
+            list($this->homepageRoute) = explode('/', $this->config->get(self::HOMEPAGE_HANDLE_CONFIG));
+        }
+
+        return $this->homepageRoute;
+    }
+
+    /**
+     * Check if requested page handle exists in specified view.
      * @param string $handle
      * @param string $view
      * @return bool
      */
     private function handleExist(string $handle, string $view): bool
     {
-        list($route) = explode('_', $handle);
-
-        return $this->router->getStandardRoute($route, $view) && in_array($handle, $this->getPageHandles($view), true);
+        return in_array($handle, $this->getPageHandles($view), true);
     }
 
     /**
@@ -149,15 +180,23 @@ class LayoutHandler extends \Awesome\Framework\Model\AbstractAction
      */
     private function getPageHandles(string $view): array
     {
-        return $this->cache->get(Cache::LAYOUT_CACHE_KEY, self::PAGE_HANDLES_CACHE_TAG_PREFIX . $view, function () use ($view) {
-            $handles = [];
-            $pattern = sprintf(self::LAYOUT_XML_PATH_PATTERN, $view);
+        if ($this->pageHandles === null) {
+            $this->pageHandles = $this->cache->get(
+                Cache::LAYOUT_CACHE_KEY,
+                self::PAGE_HANDLES_CACHE_TAG_PREFIX . $view,
+                function () use ($view) {
+                    $handles = [];
+                    $pattern = sprintf(self::LAYOUT_XML_PATH_PATTERN, $view);
 
-            foreach (glob(APP_DIR . $pattern) as $collectedHandle) {
-                $handles[] = basename($collectedHandle, '.xml');
-            }
+                    foreach (glob(APP_DIR . $pattern) as $collectedHandle) {
+                        $handles[] = basename($collectedHandle, '.xml');
+                    }
 
-            return array_unique($handles);
-        });
+                    return array_unique($handles);
+                }
+            );
+        }
+
+        return $this->pageHandles;
     }
 }

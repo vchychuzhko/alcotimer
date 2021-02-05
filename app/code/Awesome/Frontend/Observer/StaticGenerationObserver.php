@@ -94,7 +94,7 @@ class StaticGenerationObserver implements \Awesome\Framework\Model\Event\Observe
             $matches
         );
         @list($unused, $pub, $static, $version, $view, $module, $file) = $matches;
-        StaticContentHelper::removeMinificationFlag($file);
+        $file = StaticContentHelper::removeMinificationFlag($file);
 
         if ($module === StaticContent::LIB_FOLDER_PATH) {
             $path = BP . '/' . StaticContent::LIB_FOLDER_PATH . '/' . $file;

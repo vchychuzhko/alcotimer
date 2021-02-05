@@ -7,23 +7,37 @@
 ############################################
 ## Enable rewrites
 
-    RewriteRule ^(.*)\/$ /$1 [L,R]
-
     Options +FollowSymLinks
     Options -Indexes
     RewriteEngine on
-
-############################################
-## Workaround for HTTP authorization
-## in CGI environment
-
-    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
 ############################################
 ## TRACE and TRACK HTTP methods disabled to prevent XSS attacks
 
     RewriteCond %{REQUEST_METHOD} ^TRAC[EK]
     RewriteRule .* - [L,R=405]
+
+############################################
+## Remove www from host
+
+    RewriteCond %{HTTPS} off
+    RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+    RewriteRule ^ http://%1%{REQUEST_URI} [R=301,L]
+
+    RewriteCond %{HTTPS} on
+    RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+    RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
+
+############################################
+## Remove index.php from uri
+
+    RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}.*index\.php [NC]
+    RewriteRule (.*?)index\.php/*(.*) /$1$2 [R=301,NE,L]
+
+############################################
+## Remove trailing slash
+
+    RewriteRule ^(.*)\/$ /$1 [R=302,L]
 
 ############################################
 ## Never rewrite for existing files, directories and links
@@ -43,6 +57,7 @@
 
     AddDefaultCharset Off
     #AddDefaultCharset UTF-8
+    AddType 'text/html; charset=UTF-8' html
 
 <IfModule mod_expires.c>
 ############################################
@@ -54,22 +69,16 @@
     ExpiresByType text/plain A0
 </IfModule>
 
-# For 404s and 403s redirect to index
-ErrorDocument 403 /
-ErrorDocument 404 /
-
-# For 500s that aren't handled by the application, show plain response
-ErrorDocument 500 /pages/internal_error.html
-ErrorDocument 503 /pages/maintenance.html
-
 ###########################################
 ## Deny access to files that begin with a dot
     <FilesMatch "^\.">
         Require all denied
     </FilesMatch>
 
-<IfModule mod_headers.c>
-    ############################################
-    ## Prevent clickjacking
-    Header set X-Frame-Options SAMEORIGIN
-</IfModule>
+# For 404s and 403s redirect to index
+ErrorDocument 403 /pages/403.html
+ErrorDocument 404 /pages/404.html
+
+# For 500s that aren't handled by the application, show plain response
+ErrorDocument 500 /pages/internal_error.html
+ErrorDocument 503 /pages/maintenance.html

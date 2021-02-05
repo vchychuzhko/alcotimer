@@ -58,19 +58,25 @@ class RequireJs
                 $paths = $config['paths'];
 
                 if ($this->frontendState->isJsMinificationEnabled()) {
-                    foreach ($paths as &$path) {
-                        $path .= StaticContentHelper::MINIFICATION_FLAG;
+                    foreach ($paths as $module => $path) {
+                        $paths[$module] = StaticContentHelper::addMinificationFlag($path);
                     }
                 }
                 $requirePaths = array_replace_recursive($requirePaths, $paths);
             }
         }
 
-        $config = $this->json->prettyEncode([
-            'baseUrl' => ($this->frontendState->isPubRoot() ? '' : 'pub/')
-                . 'static' . ($deployedVersion ? '/version' . $deployedVersion : '') . '/' . $view,
-            'paths' => $requirePaths,
-        ]);
+        $config = [
+            'baseUrl' => ($this->frontendState->isPubRoot() ? '' : '/pub')
+                . '/static/' . ($deployedVersion ? 'version' . $deployedVersion . '/' : '/') . $view,
+            'paths'   => $requirePaths,
+        ];
+
+        if ($this->frontendState->isJsMinificationEnabled()) {
+            $config = $this->json->encode($config);
+        } else {
+            $config = $this->json->prettyEncode($config);
+        }
 
         $this->fileManager->createFile(
             BP . StaticContent::STATIC_FOLDER_PATH . $view . '/' . self::RESULT_FILENAME,

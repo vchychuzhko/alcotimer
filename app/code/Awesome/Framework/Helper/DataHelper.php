@@ -7,7 +7,7 @@ class DataHelper
 {
     /**
      * Get element in a multidimensional array by a specified key.
-     * Based on https://www.php.net/manual/en/function.array-walk-recursive.php#114574
+     * @link https://www.php.net/manual/en/function.array-walk-recursive.php#114574
      * @param array $array
      * @param string $elementKeyToGet
      * @return mixed
@@ -31,7 +31,7 @@ class DataHelper
 
     /**
      * Update element in a multidimensional array by a specified key.
-     * Based on https://www.php.net/manual/en/function.array-walk-recursive.php#114574
+     * @link https://www.php.net/manual/en/function.array-walk-recursive.php#114574
      * @param array $array
      * @param string $elementKeyToUpdate
      * @param mixed $newValue
@@ -54,7 +54,7 @@ class DataHelper
 
     /**
      * Remove element in a multidimensional array by a specified key.
-     * Based on https://www.php.net/manual/en/function.array-walk-recursive.php#114574
+     * @link https://www.php.net/manual/en/function.array-walk-recursive.php#114574
      * @param array $array
      * @param string $elementKeyToRemove
      * @return void
@@ -116,7 +116,7 @@ class DataHelper
 
     /**
      * Converts camelCase to snake_case.
-     * Based on https://stackoverflow.com/a/19533226
+     * @link https://stackoverflow.com/a/19533226
      * @param string $string
      * @return string
      */

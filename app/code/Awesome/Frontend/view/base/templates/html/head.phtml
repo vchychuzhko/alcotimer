@@ -14,6 +14,9 @@
 <?php if ($favicon = $block->getFavicon()): ?>
     <link rel="shortcut icon" type="image/png" href="<?= $block->getMediaUrl($favicon); ?>"/>
 <?php endif; ?>
+<?php foreach($block->getPreloads() as $preload): ?>
+    <link rel="preload" href="<?= $preload['href']; ?>" as="<?= $preload['type']; ?>" crossorigin="anonymous"/>
+<?php endforeach; ?>
 <?php foreach($block->getStyles() as $css): ?>
     <link rel="stylesheet" type="text/css" href="<?= $css['src']; ?>"/>
 <?php endforeach; ?>

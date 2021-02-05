@@ -252,14 +252,14 @@ class StaticContent
 
         if ($minify) {
             if (StaticContentHelper::minifiedVersionExists($path)) {
-                StaticContentHelper::addMinificationFlag($path);
+                $path = StaticContentHelper::addMinificationFlag($path);
 
                 $content = $this->fileManager->readFile($path);
                 $this->parsePubDirPath($content);
             } else {
                 $content = $this->cssMinifier->minify($content);
             }
-            StaticContentHelper::addMinificationFlag($staticPath);
+            $staticPath = StaticContentHelper::addMinificationFlag($staticPath);
         }
 
         $this->fileManager->createFile(BP . self::STATIC_FOLDER_PATH . $view . $staticPath, $content);
@@ -283,13 +283,13 @@ class StaticContent
 
         if ($minify) {
             if (StaticContentHelper::minifiedVersionExists($path)) {
-                StaticContentHelper::addMinificationFlag($path);
+                $path = StaticContentHelper::addMinificationFlag($path);
 
                 $content = $this->fileManager->readFile($path);
             } else {
                 $content = $this->jsMinifier->minify($content);
             }
-            StaticContentHelper::addMinificationFlag($staticPath);
+            $staticPath = StaticContentHelper::addMinificationFlag($staticPath);
         }
 
         $this->fileManager->createFile(BP . self::STATIC_FOLDER_PATH . $view . $staticPath, $content);
@@ -311,9 +311,9 @@ class StaticContent
 
         if ($minify) {
             if (StaticContentHelper::minifiedVersionExists($path)) {
-                StaticContentHelper::addMinificationFlag($path);
+                $path = StaticContentHelper::addMinificationFlag($path);
             }
-            StaticContentHelper::addMinificationFlag($staticPath);
+            $staticPath = StaticContentHelper::addMinificationFlag($staticPath);
         }
 
         $this->fileManager->copyFile($path, BP . self::STATIC_FOLDER_PATH . $view . $staticPath);

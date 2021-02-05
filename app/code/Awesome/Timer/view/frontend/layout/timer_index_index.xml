@@ -5,11 +5,11 @@
         <title><![CDATA[AlcoTimer]]></title>
         <description><![CDATA[Web App for people, who would like to make drinking process become really challenging.]]></description>
         <keywords><![CDATA[Alcohol,Alco,Timer,AlcoTimer,Web,App,Drink]]></keywords>
-        <css src="Awesome_Timer::hint.css"/>
-        <css src="Awesome_Timer::timer.css"/>
-        <css src="Awesome_Frontend::radial-slider.css"/>
-        <css src="Awesome_Frontend::range-slider.css"/>
-        <css src="Awesome_Frontend::popup.css"/>
+        <css src="Awesome_Frontend/css/popup.css"/>
+        <css src="Awesome_Frontend/css/radial-slider.css"/>
+        <css src="Awesome_Frontend/css/range-slider.css"/>
+        <css src="Awesome_Timer/css/hint.css"/>
+        <css src="Awesome_Timer/css/timer.css"/>
     </head>
     <body>
         <referenceBlock name="menu">

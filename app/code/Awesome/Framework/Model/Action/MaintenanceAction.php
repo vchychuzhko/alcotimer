@@ -4,9 +4,9 @@ declare(strict_types=1);
 namespace Awesome\Framework\Model\Action;
 
 use Awesome\Framework\Model\FileManager;
-use Awesome\Framework\Model\Http\Context;
 use Awesome\Framework\Model\Http\Request;
-use Awesome\Framework\Model\Result\Response;
+use Awesome\Framework\Model\ResponseInterface;
+use Awesome\Framework\Model\Result\ResponseFactory;
 
 class MaintenanceAction extends \Awesome\Framework\Model\AbstractAction
 {
@@ -19,12 +19,12 @@ class MaintenanceAction extends \Awesome\Framework\Model\AbstractAction
 
     /**
      * MaintenanceAction constructor.
-     * @param Context $context
+     * @param ResponseFactory $responseFactory
      * @param FileManager $fileManager
      */
-    public function __construct(Context $context, FileManager $fileManager)
+    public function __construct(ResponseFactory $responseFactory, FileManager $fileManager)
     {
-        parent::__construct($context);
+        parent::__construct($responseFactory);
         $this->fileManager = $fileManager;
     }
 
@@ -32,22 +32,22 @@ class MaintenanceAction extends \Awesome\Framework\Model\AbstractAction
      * Show maintenance response according to the accept type.
      * @inheritDoc
      */
-    public function execute(Request $request): Response
+    public function execute(Request $request): ResponseInterface
     {
         if ($request->getAcceptType() === Request::JSON_ACCEPT_HEADER) {
-            $response = $this->jsonResponseFactory->create()
-                ->setContentJson([
+            $response = $this->responseFactory->create(ResponseFactory::TYPE_JSON)
+                ->setData([
                     'status' => 'MAINTENANCE',
                     'message' => 'Service is unavailable due to maintenance works.',
                 ])
-                ->setStatusCode(Response::INTERNAL_ERROR_STATUS_CODE);
+                ->setStatusCode(ResponseInterface::INTERNAL_ERROR_STATUS_CODE);
         } elseif ($request->getAcceptType() === Request::HTML_ACCEPT_HEADER && $content = $this->getMaintenancePage()) {
-            $response = $this->htmlResponseFactory->create()
+            $response = $this->responseFactory->create(ResponseFactory::TYPE_HTML)
                 ->setContent($content)
-                ->setStatusCode(Response::SERVICE_UNAVAILABLE_STATUS_CODE);
+                ->setStatusCode(ResponseInterface::SERVICE_UNAVAILABLE_STATUS_CODE);
         } else {
             $response = $this->responseFactory->create()
-                ->setStatusCode(Response::SERVICE_UNAVAILABLE_STATUS_CODE);
+                ->setStatusCode(ResponseInterface::SERVICE_UNAVAILABLE_STATUS_CODE);
         }
 
         return $response;
@@ -59,6 +59,6 @@ class MaintenanceAction extends \Awesome\Framework\Model\AbstractAction
      */
     private function getMaintenancePage(): string
     {
-        return $this->fileManager->readFile(BP . self::MAINTENANCE_PAGE_PATH);
+        return $this->fileManager->readFile(BP . self::MAINTENANCE_PAGE_PATH, true);
     }
 }

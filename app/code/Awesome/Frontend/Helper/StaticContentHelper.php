@@ -9,26 +9,23 @@ class StaticContentHelper
 
     /**
      * Add minification flag to file path.
+     * Do nothing if already present.
      * @param string $path
-     * @return void
+     * @return string
      */
-    public static function addMinificationFlag(string &$path): void
+    public static function addMinificationFlag(string $path): string
     {
-        $extension = pathinfo($path, PATHINFO_EXTENSION);
-
-        $path = preg_replace('/\.' . $extension . '$/', self::MINIFICATION_FLAG . '.' . $extension, $path);
+        return preg_replace('/^(.*?)(' . self::MINIFICATION_FLAG . ')?(\.\w+)?$/i', '$1' . self::MINIFICATION_FLAG . '$3', $path);
     }
 
     /**
      * Remove minification flag from file path if present.
      * @param string $path
-     * @return void
+     * @return string
      */
-    public static function removeMinificationFlag(string &$path): void
+    public static function removeMinificationFlag(string $path): string
     {
-        $extension = pathinfo($path, PATHINFO_EXTENSION);
-
-        $path = preg_replace('/' . self::MINIFICATION_FLAG . '\.' . $extension . '$/', '.' . $extension, $path);
+        return preg_replace('/' . self::MINIFICATION_FLAG . '(\.\w+)?$/i', '$1', $path);
     }
 
     /**
@@ -38,7 +35,7 @@ class StaticContentHelper
      */
     public static function minifiedVersionExists(string $path): bool
     {
-        self::addMinificationFlag($path);
+        $path = self::addMinificationFlag($path);
 
         return file_exists($path) && is_file($path);
     }
@@ -50,6 +47,6 @@ class StaticContentHelper
      */
     public static function isFileMinified(string $path): bool
     {
-        return strpos(basename($path), self::MINIFICATION_FLAG) !== false;
+        return (bool) preg_match('/' . self::MINIFICATION_FLAG . '(\.\w+)?$/i', $path);
     }
 }

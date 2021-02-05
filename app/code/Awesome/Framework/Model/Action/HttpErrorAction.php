@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Awesome\Framework\Model\Action;
 
+use Awesome\Framework\Model\ResponseInterface;
 use Awesome\Framework\Model\Result\Response;
 use Awesome\Framework\Model\Http\Request;
 
@@ -32,17 +33,17 @@ class HttpErrorAction extends \Awesome\Framework\Model\DataObject
                         ? $errorMessage
                         : 'Internal error occurred. Details are hidden and can be found in logs files.',
                 ]),
-                Response::INTERNAL_ERROR_STATUS_CODE,
+                ResponseInterface::INTERNAL_ERROR_STATUS_CODE,
                 ['Content-Type' => 'application/json']
             );
         } elseif ($this->getAcceptType() === Request::HTML_ACCEPT_HEADER && $content = $this->getInternalErrorPage()) {
             $response = new Response(
                 $this->getIsDeveloperMode() ? '<pre>' . $errorMessage . '</pre>' : $content,
-                Response::INTERNAL_ERROR_STATUS_CODE,
+                ResponseInterface::INTERNAL_ERROR_STATUS_CODE,
                 ['Content-Type' => 'text/html']
             );
         } else {
-            $response = new Response('', Response::INTERNAL_ERROR_STATUS_CODE);
+            $response = new Response('', ResponseInterface::INTERNAL_ERROR_STATUS_CODE);
         }
 
         return $response;

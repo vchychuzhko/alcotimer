@@ -23,8 +23,9 @@ class JsonResponse extends \Awesome\Framework\Model\Result\Response
     {
         parent::__construct('', $status, $headers);
         $this->json = $json;
-        is_array($data) ? $this->setContentJson($data) : $this->setContent($data);
+        is_array($data) ? $this->setData($data) : $this->setContent($data);
     }
+
 
     /**
      * @inheritDoc
@@ -41,7 +42,7 @@ class JsonResponse extends \Awesome\Framework\Model\Result\Response
      * @param array $data
      * @return $this
      */
-    public function setContentJson(array $data): self
+    public function setData(array $data): self
     {
         $content = $this->json->encode($data);
 
@@ -52,7 +53,7 @@ class JsonResponse extends \Awesome\Framework\Model\Result\Response
      * Get response content, decoding it.
      * @return array
      */
-    public function getContentJson(): array
+    public function getData(): array
     {
         return $this->json->decode($this->content);
     }

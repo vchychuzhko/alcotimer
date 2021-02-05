@@ -15,15 +15,14 @@ use Awesome\Framework\Model\Maintenance;
 
 class Http
 {
-    public const VERSION = '0.4.3';
+    public const VERSION = '0.4.4';
 
     public const FRONTEND_VIEW = 'frontend';
     public const BACKEND_VIEW = 'adminhtml';
     public const BASE_VIEW = 'base';
 
-    public const BACKEND_FRONT_NAME_CONFIG = 'backend/front_name';
-
-    public const ROOT_ACTION_NAME = 'index_index_index';
+    public const BACKEND_ENABLED_CONFIG = 'backend/enabled';
+    public const BACKEND_FRONTNAME_CONFIG = 'backend/front_name';
 
     /**
      * @var ActionResolver $actionResolver
@@ -154,55 +153,31 @@ class Http
             $parameters = array_merge($_GET, $_POST);
             $cookies = $_COOKIE;
             $redirectStatus = isset($_SERVER['REDIRECT_STATUS']) ? (int) $_SERVER['REDIRECT_STATUS'] : null;
-            list($acceptType) = isset($_SERVER['HTTP_ACCEPT']) && $_SERVER['HTTP_ACCEPT'] !== '*/*'
-                ? explode(',', $_SERVER['HTTP_ACCEPT'])
-                : [null];
-            $fullActionName = $this->parseFullActionName($url);
+            $acceptType = isset($_SERVER['HTTP_ACCEPT']) && $_SERVER['HTTP_ACCEPT'] !== '*/*'
+                ? substr($_SERVER['HTTP_ACCEPT'], 0, strpos($_SERVER['HTTP_ACCEPT'], ','))
+                : null;
             $userIp = $_SERVER['REMOTE_ADDR'];
-            $view = $this->parseView($url);
+            $view = self::FRONTEND_VIEW;
+            $path = trim(parse_url($url, PHP_URL_PATH), '/');
+
+            if ($this->config->get(self::BACKEND_ENABLED_CONFIG)) {
+                $backendFrontName = $this->config->get(self::BACKEND_FRONTNAME_CONFIG);
+
+                $view = preg_match('/^' . $backendFrontName . '\//', $path) ? self::BACKEND_VIEW : $view;
+                $path = preg_replace('/^' . $backendFrontName . '\//', '', $path);
+            }
+            @list($route, $entity, $action) = explode('/', $path);
 
             $this->request = new Request($url, $method, $parameters, $cookies, $redirectStatus, [
                 'accept_type' => $acceptType,
-                'full_action_name' => $fullActionName,
-                'user_ip' => $userIp,
-                'view' => $view,
+                'route'       => $route ?: 'index',
+                'entity'      => $entity,
+                'action'      => $action,
+                'user_ip'     => $userIp,
+                'view'        => $view,
             ]);
         }
 
         return $this->request;
-    }
-
-    /**
-     * Parse requested URL into a valid action name.
-     * Name should consists of three parts, missing ones will be added as 'index'.
-     * @param string $url
-     * @return string
-     */
-    private function parseFullActionName(string $url): string
-    {
-        $parts = explode('/', str_replace('_', '-', trim(parse_url($url, PHP_URL_PATH), '/')));
-
-        return $parts[0]
-            ? ($parts[0] . '_' . ($parts[1] ?? 'index') . '_' . ($parts[2] ?? 'index'))
-            : self::ROOT_ACTION_NAME;
-    }
-
-    /**
-     * Resolve page view by requested URL.
-     * @param string $url
-     * @return string
-     */
-    private function parseView(string $url): string
-    {
-        $view = self::FRONTEND_VIEW;
-
-        if ($this->config->get('backend/enabled')) {
-            $url = '/' . trim(parse_url($url, PHP_URL_PATH), '/') . '/';
-            $backendFrontName = $this->config->get(self::BACKEND_FRONT_NAME_CONFIG);
-
-            $view = preg_match('/^\/' . $backendFrontName . '\//', $url) ? self::BACKEND_VIEW : $view;
-        }
-
-        return $view;
     }
 }

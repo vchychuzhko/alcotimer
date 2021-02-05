@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Awesome\Frontend\Block;
 
 use Awesome\Framework\Model\Config;
-use Awesome\Framework\Model\Http;
+use Awesome\Framework\Model\Http\Request;
 use Awesome\Frontend\Model\Context;
 
 class Header extends \Awesome\Frontend\Block\Template
@@ -49,6 +49,6 @@ class Header extends \Awesome\Frontend\Block\Template
             $handles = $layout->getHandles();
         }
 
-        return in_array(Http::ROOT_ACTION_NAME, $handles, true);
+        return in_array(Request::ROOT_ACTION_NAME, $handles, true);
     }
 }
