@@ -72,6 +72,12 @@
     <Files README.md>
         Require all denied
     </Files>
+    <Files composer.json>
+        Require all denied
+    </Files>
+    <Files composer.lock>
+        Require all denied
+    </Files>
 
 # For 404s and 403s redirect to index
 ErrorDocument 403 /pub/pages/403.html
