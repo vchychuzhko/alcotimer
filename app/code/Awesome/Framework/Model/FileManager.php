@@ -8,7 +8,7 @@ class FileManager implements \Awesome\Framework\Model\SingletonInterface
     private const DEFAULT_ACCESS_MODE = 0777;
 
     /**
-     * Create file recursively.
+     * Create file.
      * @param string $path
      * @param string $content
      * @param bool $replace
@@ -30,6 +30,30 @@ class FileManager implements \Awesome\Framework\Model\SingletonInterface
         }
 
         return @file_put_contents($path, $content) !== false;
+    }
+
+    /**
+     * Create symlink.
+     * Fallback to hard link in case symlink is not permitted to be created on Windows.
+     * @param string $target
+     * @param string $link
+     * @param bool $replace
+     * @return bool
+     * @throws \RuntimeException
+     */
+    public function createSymlink(string $target, string $link, bool $replace = false): bool
+    {
+        if (file_exists($link)) {
+            if (!$replace) {
+                throw new \RuntimeException(sprintf('Provided link path "%s" already exists and cannot be replaced', $link));
+            }
+            $this->removeFile($link);
+        }
+        if (!is_dir(dirname($link))) {
+            $this->createDirectory(dirname($link));
+        }
+
+        return (@symlink($target, $link) ?: @link($target, $link)) !== false;
     }
 
     /**

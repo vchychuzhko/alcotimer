@@ -23,8 +23,6 @@ class StaticContent implements \Awesome\Framework\Model\SingletonInterface
     private const STATIC_FILE_PATTERN = '/(.*\/)app\/code\/(\w+)\/(\w+)\/view\/(\w+)\/web\/(.*)$/';
     private const LIB_FILE_PATTERN = '/\/lib\/\w+\/.*$/';
 
-    private const PUB_FOLDER_TRIGGER = '{@pubDir}';
-
     /**
      * @var CssMinifier $cssMinifier
      */
@@ -261,24 +259,35 @@ class StaticContent implements \Awesome\Framework\Model\SingletonInterface
      */
     private function generateCssFile(string $path, string $view, bool $minify = false): self
     {
-        $content = $this->fileManager->readFile($path);
-        $content = $this->parsePubDirPath($content);
+        $staticPath = BP . self::STATIC_FOLDER_PATH . $view . preg_replace(self::STATIC_FILE_PATTERN, '/$2_$3/$5', $path);
 
-        $staticPath = preg_replace(self::STATIC_FILE_PATTERN, '/$2_$3/$5', $path);
+        if ($this->frontendState->useSymlinkForCss()) {
+            if ($minify) {
+                if (StaticContentHelper::minifiedVersionExists($path)) {
+                    $path = StaticContentHelper::addMinificationFlag($path);
+                }
 
-        if ($minify) {
-            if (StaticContentHelper::minifiedVersionExists($path)) {
-                $path = StaticContentHelper::addMinificationFlag($path);
-
-                $content = $this->fileManager->readFile($path);
-                $content = $this->parsePubDirPath($content);
-            } else {
-                $content = $this->cssMinifier->minify($content);
+                $staticPath = StaticContentHelper::addMinificationFlag($staticPath);
             }
-            $staticPath = StaticContentHelper::addMinificationFlag($staticPath);
-        }
 
-        $this->fileManager->createFile(BP . self::STATIC_FOLDER_PATH . $view . $staticPath, $content);
+            $this->fileManager->createSymlink($path, $staticPath);
+        } else {
+            $content = $this->fileManager->readFile($path);
+
+            if ($minify) {
+                if (StaticContentHelper::minifiedVersionExists($path)) {
+                    $path = StaticContentHelper::addMinificationFlag($path);
+
+                    $content = $this->fileManager->readFile($path);
+                } else {
+                    $content = $this->cssMinifier->minify($content);
+                }
+
+                $staticPath = StaticContentHelper::addMinificationFlag($staticPath);
+            }
+
+            $this->fileManager->createFile($staticPath, $content);
+        }
 
         return $this;
     }
@@ -293,22 +302,35 @@ class StaticContent implements \Awesome\Framework\Model\SingletonInterface
      */
     private function generateJsFile(string $path, string $view, bool $minify = false): self
     {
-        $content = $this->fileManager->readFile($path);
+        $staticPath = BP . self::STATIC_FOLDER_PATH . $view . preg_replace(self::STATIC_FILE_PATTERN, '/$2_$3/$5', $path);
 
-        $staticPath = preg_replace(self::STATIC_FILE_PATTERN, '/$2_$3/$5', $path);
+        if ($this->frontendState->useSymlinkForJs()) {
+            if ($minify) {
+                if (StaticContentHelper::minifiedVersionExists($path)) {
+                    $path = StaticContentHelper::addMinificationFlag($path);
+                }
 
-        if ($minify) {
-            if (StaticContentHelper::minifiedVersionExists($path)) {
-                $path = StaticContentHelper::addMinificationFlag($path);
-
-                $content = $this->fileManager->readFile($path);
-            } else {
-                $content = $this->jsMinifier->minify($content);
+                $staticPath = StaticContentHelper::addMinificationFlag($staticPath);
             }
-            $staticPath = StaticContentHelper::addMinificationFlag($staticPath);
-        }
 
-        $this->fileManager->createFile(BP . self::STATIC_FOLDER_PATH . $view . $staticPath, $content);
+            $this->fileManager->createSymlink($path, $staticPath);
+        } else {
+            $content = $this->fileManager->readFile($path);
+
+            if ($minify) {
+                if (StaticContentHelper::minifiedVersionExists($path)) {
+                    $path = StaticContentHelper::addMinificationFlag($path);
+
+                    $content = $this->fileManager->readFile($path);
+                } else {
+                    $content = $this->jsMinifier->minify($content);
+                }
+
+                $staticPath = StaticContentHelper::addMinificationFlag($staticPath);
+            }
+
+            $this->fileManager->createFile($staticPath, $content);
+        }
 
         return $this;
     }
@@ -323,30 +345,31 @@ class StaticContent implements \Awesome\Framework\Model\SingletonInterface
      */
     private function generateLibFile(string $path, string $view, bool $minify = false): self
     {
-        $staticPath = str_replace(BP, '', $path);
+        $staticPath = BP . self::STATIC_FOLDER_PATH . $view . str_replace(BP, '', $path);
 
-        if ($minify) {
-            if (StaticContentHelper::minifiedVersionExists($path)) {
-                $path = StaticContentHelper::addMinificationFlag($path);
+        if ($this->frontendState->useSymlinkForJs()) {
+            if ($minify) {
+                if (StaticContentHelper::minifiedVersionExists($path)) {
+                    $path = StaticContentHelper::addMinificationFlag($path);
+                }
+
+                $staticPath = StaticContentHelper::addMinificationFlag($staticPath);
             }
-            $staticPath = StaticContentHelper::addMinificationFlag($staticPath);
+
+            $this->fileManager->createSymlink($path, $staticPath);
+        } else {
+            if ($minify) {
+                if (StaticContentHelper::minifiedVersionExists($path)) {
+                    $path = StaticContentHelper::addMinificationFlag($path);
+                }
+
+                $staticPath = StaticContentHelper::addMinificationFlag($staticPath);
+            }
+
+            $this->fileManager->copyFile($path, $staticPath);
         }
 
-        $this->fileManager->copyFile($path, BP . self::STATIC_FOLDER_PATH . $view . $staticPath);
-
         return $this;
-    }
-
-    /**
-     * Replace pub dir placeholder with the current pub URL path.
-     * @param string $content
-     * @return string
-     */
-    private function parsePubDirPath(string $content): string
-    {
-        $pubPath = $this->frontendState->isPubRoot() ? '/' : '/pub/';
-
-        return str_replace(self::PUB_FOLDER_TRIGGER, $pubPath, $content);
     }
 
     /**
