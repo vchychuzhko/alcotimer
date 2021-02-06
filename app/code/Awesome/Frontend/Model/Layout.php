@@ -6,6 +6,7 @@ namespace Awesome\Frontend\Model;
 use Awesome\Cache\Model\Cache;
 use Awesome\Framework\Helper\DataHelper;
 use Awesome\Framework\Model\Http;
+use Awesome\Frontend\Model\AbstractBlock;
 use Awesome\Frontend\Model\BlockInterface;
 use Awesome\Frontend\Model\TemplateEngine\Php as TemplateEngine;
 use Awesome\Frontend\Model\XmlParser\LayoutXmlParser;
@@ -109,11 +110,11 @@ class Layout
         if ($elementData = DataHelper::arrayGetByKeyRecursive($this->structure, $nameInLayout)) {
             $elementId = $elementData['class'];
 
-            /** @var BlockInterface $templateClass */
-            $element = $this->blockFactory->create($elementId, [
-                'data' => $elementData['data'] ?? []
-            ]);
-            $element->init($this, $nameInLayout, $elementData['template']);
+            $element = $this->blockFactory->create($elementId, ['data' => $elementData['data'] ?? []]);
+
+            if ($element instanceof AbstractBlock) {
+                $element->init($this, $nameInLayout, $elementData['template']);
+            }
 
             $html = $element->toHtml();
         }

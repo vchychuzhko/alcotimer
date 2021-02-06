@@ -4,20 +4,20 @@ declare(strict_types=1);
 namespace Awesome\Frontend\Block;
 
 use Awesome\Frontend\Model\Context;
+use Awesome\Frontend\Model\DeployedVersion;
 use Awesome\Frontend\Model\FrontendState;
-use Awesome\Frontend\Model\StaticContent;
 
 class Template extends \Awesome\Frontend\Model\AbstractBlock
 {
     /**
+     * @var DeployedVersion $deployedVersion
+     */
+    protected $deployedVersion;
+
+    /**
      * @var FrontendState $frontendState
      */
     protected $frontendState;
-
-    /**
-     * @var StaticContent $staticContent
-     */
-    protected $staticContent;
 
     /**
      * @var string $mediaUrl
@@ -39,8 +39,8 @@ class Template extends \Awesome\Frontend\Model\AbstractBlock
         array $data = []
     ) {
         parent::__construct($data);
+        $this->deployedVersion = $context->getDeployedVersion();
         $this->frontendState = $context->getFrontendState();
-        $this->staticContent = $context->getStaticContent();
     }
 
     /**
@@ -85,13 +85,12 @@ class Template extends \Awesome\Frontend\Model\AbstractBlock
         if ($this->staticUrl === '' && $layout = $this->getLayout()) {
             $view = $layout->getView();
 
-            if (!$deployedVersion = $this->staticContent->getDeployedVersion()) {
-                $deployedVersion = $this->staticContent->deploy($view)
-                    ->getDeployedVersion();
+            if (!$this->deployedVersion->getVersion()) {
+                $this->deployedVersion->generateVersion();
             }
 
             $this->staticUrl = $this->getPubUrl(
-                'static/' . ($deployedVersion ? 'version' . $deployedVersion . '/' : '') . $view . '/'
+                'static/version' . $this->deployedVersion->getVersion() . '/' . $view . '/'
             );
         }
 

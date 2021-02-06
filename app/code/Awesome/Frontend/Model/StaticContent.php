@@ -7,14 +7,15 @@ use Awesome\Framework\Model\FileManager;
 use Awesome\Framework\Model\Http;
 use Awesome\Framework\Model\Logger;
 use Awesome\Frontend\Helper\StaticContentHelper;
+use Awesome\Frontend\Model\DeployedVersion;
 use Awesome\Frontend\Model\Css\CssMinifier;
 use Awesome\Frontend\Model\Js\JsMinifier;
+use Awesome\Frontend\Model\RequireJs;
 
-class StaticContent
+class StaticContent implements \Awesome\Framework\Model\SingletonInterface
 {
     public const STATIC_FOLDER_PATH = '/pub/static/';
     public const LIB_FOLDER_PATH = 'lib';
-    private const DEPLOYED_VERSION_FILE = 'deployed_version.txt';
 
     private const STATIC_PATH_PATTERN = '/*/*/view/%s/web/%s';
     private const LIB_PATH_PATTERN = '/lib/*/*.js';
@@ -27,6 +28,11 @@ class StaticContent
      * @var CssMinifier $cssMinifier
      */
     private $cssMinifier;
+
+    /**
+     * @var DeployedVersion $deployedVersion
+     */
+    private $deployedVersion;
 
     /**
      * @var FileManager $fileManager
@@ -54,13 +60,9 @@ class StaticContent
     private $requireJs;
 
     /**
-     * @var int $deployedVersion
-     */
-    private $deployedVersion;
-
-    /**
      * StaticContent constructor.
      * @param CssMinifier $cssMinifier
+     * @param DeployedVersion $deployedVersion
      * @param FileManager $fileManager
      * @param FrontendState $frontendState
      * @param JsMinifier $jsMinifier
@@ -69,6 +71,7 @@ class StaticContent
      */
     public function __construct(
         CssMinifier $cssMinifier,
+        DeployedVersion $deployedVersion,
         FileManager $fileManager,
         FrontendState $frontendState,
         JsMinifier $jsMinifier,
@@ -76,6 +79,7 @@ class StaticContent
         RequireJs $requireJs
     ) {
         $this->cssMinifier = $cssMinifier;
+        $this->deployedVersion = $deployedVersion;
         $this->fileManager = $fileManager;
         $this->frontendState = $frontendState;
         $this->jsMinifier = $jsMinifier;
@@ -91,7 +95,7 @@ class StaticContent
      */
     public function deploy(string $view = ''): self
     {
-        $this->generateDeployedVersion();
+        $this->deployedVersion->generateVersion();
 
         if ($view === '') {
             foreach ([Http::FRONTEND_VIEW, Http::BACKEND_VIEW] as $httpView) {
@@ -115,7 +119,7 @@ class StaticContent
         $this->fileManager->createDirectory(BP . self::STATIC_FOLDER_PATH . $view);
 
         $this->generate($view);
-        $this->requireJs->generate($view, $this->getDeployedVersion());
+        $this->requireJs->generate($view);
         $this->logger->info(sprintf('Static files were deployed for "%s" view', $view));
 
         return $this;
@@ -182,7 +186,7 @@ class StaticContent
         }
 
         if ($path === RequireJs::RESULT_FILENAME) {
-            $this->requireJs->generate($view, $this->getDeployedVersion());
+            $this->requireJs->generate($view);
         } else {
             $path = BP . '/' . ltrim(str_replace(BP, '', $path), '/');
             $extension = pathinfo($path, PATHINFO_EXTENSION);
@@ -246,7 +250,7 @@ class StaticContent
     private function generateCssFile(string $path, string $view, bool $minify = false): self
     {
         $content = $this->fileManager->readFile($path);
-        $this->parsePubDirPath($content);
+        $content = $this->parsePubDirPath($content);
 
         $staticPath = preg_replace(self::STATIC_FILE_PATTERN, '/$2_$3/$5', $path);
 
@@ -255,7 +259,7 @@ class StaticContent
                 $path = StaticContentHelper::addMinificationFlag($path);
 
                 $content = $this->fileManager->readFile($path);
-                $this->parsePubDirPath($content);
+                $content = $this->parsePubDirPath($content);
             } else {
                 $content = $this->cssMinifier->minify($content);
             }
@@ -324,39 +328,13 @@ class StaticContent
     /**
      * Replace pub dir placeholder with the current pub URL path.
      * @param string $content
-     * @return void
+     * @return string
      */
-    private function parsePubDirPath(string &$content): void
+    private function parsePubDirPath(string $content): string
     {
         $pubPath = $this->frontendState->isPubRoot() ? '/' : '/pub/';
 
-        $content = str_replace(self::PUB_FOLDER_TRIGGER, $pubPath, $content);
-    }
-
-    /**
-     * Generate static deployed version and save it.
-     * @return $this
-     */
-    public function generateDeployedVersion(): self
-    {
-        $this->deployedVersion = time();
-        $this->fileManager->createFile(BP . self::STATIC_FOLDER_PATH . self::DEPLOYED_VERSION_FILE, (string) $this->deployedVersion, true);
-
-        return $this;
-    }
-
-    /**
-     * Get current static deployed version.
-     * @return int|null
-     */
-    public function getDeployedVersion(): ?int
-    {
-        if (!$this->deployedVersion) {
-            $deployedVersion = $this->fileManager->readFile(BP . self::STATIC_FOLDER_PATH . self::DEPLOYED_VERSION_FILE, true);
-            $this->deployedVersion = $deployedVersion ? (int) $deployedVersion : null;
-        }
-
-        return $this->deployedVersion;
+        return str_replace(self::PUB_FOLDER_TRIGGER, $pubPath, $content);
     }
 
     /**
