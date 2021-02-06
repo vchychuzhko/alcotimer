@@ -8,6 +8,7 @@ use Awesome\Framework\Model\Http;
 use Awesome\Framework\Model\Serializer\Json;
 use Awesome\Frontend\Helper\StaticContentHelper;
 use Awesome\Frontend\Model\DeployedVersion;
+use Awesome\Frontend\Model\Js\JsMinifier;
 
 class RequireJs
 {
@@ -30,6 +31,11 @@ class RequireJs
     private $frontendState;
 
     /**
+     * @var JsMinifier $jsMinifier
+     */
+    private $jsMinifier;
+
+    /**
      * @var Json $json
      */
     private $json;
@@ -39,17 +45,20 @@ class RequireJs
      * @param DeployedVersion $deployedVersion
      * @param FileManager $fileManager
      * @param FrontendState $frontendState
+     * @param JsMinifier $jsMinifier
      * @param Json $json
      */
     public function __construct(
         DeployedVersion $deployedVersion,
         FileManager $fileManager,
         FrontendState $frontendState,
+        JsMinifier $jsMinifier,
         Json $json
     ) {
         $this->deployedVersion = $deployedVersion;
         $this->fileManager = $fileManager;
         $this->frontendState = $frontendState;
+        $this->jsMinifier = $jsMinifier;
         $this->json = $json;
     }
 
@@ -60,40 +69,57 @@ class RequireJs
      */
     public function generate(string $view): void
     {
+        $resultFile = self::RESULT_FILENAME;
         $requirePaths = [];
 
         foreach (glob(APP_DIR . sprintf(self::REQUIREJS_CONFIG_PATTERN, Http::BASE_VIEW, $view), GLOB_BRACE) as $configFile) {
             $config = $this->json->decode($this->fileManager->readFile($configFile));
 
             if (isset($config['paths'])) {
-                $paths = $config['paths'];
-
-                if ($this->frontendState->isJsMinificationEnabled()) {
-                    foreach ($paths as $module => $path) {
-                        $paths[$module] = StaticContentHelper::addMinificationFlag($path);
-                    }
-                }
-                $requirePaths = array_replace_recursive($requirePaths, $paths);
+                $requirePaths = array_replace($requirePaths, $config['paths']);
             }
         }
         $deployedVersion = $this->deployedVersion->getVersion();
 
-        $config = [
+        $config = $this->json->prettyEncode([
             'baseUrl' => ($this->frontendState->isPubRoot() ? '' : '/pub')
                 . '/static/' . ($deployedVersion ? 'version' . $deployedVersion . '/' : '/') . $view,
             'paths'   => $requirePaths,
-        ];
+        ]);
+        $content = <<<JS
+requirejs.config($config);
+
+JS;
 
         if ($this->frontendState->isJsMinificationEnabled()) {
-            $config = $this->json->encode($config);
-        } else {
-            $config = $this->json->prettyEncode($config);
+            $content .= $this->getMinResolver();
+
+            $content = $this->jsMinifier->minify($content);
+            $resultFile = StaticContentHelper::addMinificationFlag($resultFile);
         }
 
         $this->fileManager->createFile(
-            BP . StaticContent::STATIC_FOLDER_PATH . $view . '/' . self::RESULT_FILENAME,
-            'requirejs.config(' . $config . ');' . "\n",
+            BP . StaticContent::STATIC_FOLDER_PATH . $view . '/' . $resultFile,
+            $content,
             true
         );
+    }
+
+    /**
+     * Get min file path resolver for requirejs configuration.
+     * @return string
+     */
+    private function getMinResolver(): string
+    {
+        return <<<JS
+let context = require.s.contexts._,
+    originalNameToUrl = context.nameToUrl;
+
+context.nameToUrl = function () {
+    let url = originalNameToUrl.apply(context, arguments);
+
+    return url.replace(/(\.min)?\.js$/, '.min.js');
+};
+JS;
     }
 }
