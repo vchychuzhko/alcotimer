@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "893fb8eb5d30b44db21ad6677ae44511",
+    "content-hash": "f0ec0ae1d16faf6c9db9b91aa4b5a42a",
     "packages": [
         {
             "name": "tedivm/jshrink",
@@ -118,6 +118,71 @@
                 "source": "https://github.com/tubalmartin/YUI-CSS-compressor-PHP-port"
             },
             "time": "2018-01-15T15:26:51+00:00"
+        },
+        {
+            "name": "wikimedia/less.php",
+            "version": "v2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/wikimedia/less.php.git",
+                "reference": "c1affb4d4472c9e100fc80bf456b4334862ace3c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/wikimedia/less.php/zipball/c1affb4d4472c9e100fc80bf456b4334862ace3c",
+                "reference": "c1affb4d4472c9e100fc80bf456b4334862ace3c",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "7.5.14"
+            },
+            "bin": [
+                "bin/lessc"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Less": "lib/"
+                },
+                "classmap": [
+                    "lessc.inc.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Josh Schmidt",
+                    "homepage": "https://github.com/oyejorge"
+                },
+                {
+                    "name": "Matt Agar",
+                    "homepage": "https://github.com/agar"
+                },
+                {
+                    "name": "Martin Jantošovič",
+                    "homepage": "https://github.com/Mordred"
+                }
+            ],
+            "description": "PHP port of the Javascript version of LESS http://lesscss.org (Originally maintained by Josh Schmidt)",
+            "keywords": [
+                "css",
+                "less",
+                "less.js",
+                "lesscss",
+                "php",
+                "stylesheet"
+            ],
+            "support": {
+                "issues": "https://github.com/wikimedia/less.php/issues",
+                "source": "https://github.com/wikimedia/less.php/tree/v2.0.0"
+            },
+            "time": "2020-02-04T22:36:29+00:00"
         }
     ],
     "packages-dev": [],

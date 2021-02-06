@@ -35,4 +35,14 @@ class CssMinifier
     {
         return $this->minifier->run($css);
     }
+
+    /**
+     * Wrap TubalMartin keepSourceMapComment method.
+     * @param bool $keepSourceMap
+     * @return void
+     */
+    public function keepSourceMap(bool $keepSourceMap = true): void
+    {
+        $this->minifier->keepSourceMapComment($keepSourceMap);
+    }
 }

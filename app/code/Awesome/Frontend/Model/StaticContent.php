@@ -11,6 +11,7 @@ use Awesome\Frontend\Model\DeployedVersion;
 use Awesome\Frontend\Model\Css\CssMinifier;
 use Awesome\Frontend\Model\Js\JsMinifier;
 use Awesome\Frontend\Model\RequireJs;
+use Awesome\Frontend\Model\Styles;
 
 class StaticContent implements \Awesome\Framework\Model\SingletonInterface
 {
@@ -60,6 +61,11 @@ class StaticContent implements \Awesome\Framework\Model\SingletonInterface
     private $requireJs;
 
     /**
+     * @var Styles $styles
+     */
+    private $styles;
+
+    /**
      * StaticContent constructor.
      * @param CssMinifier $cssMinifier
      * @param DeployedVersion $deployedVersion
@@ -68,6 +74,7 @@ class StaticContent implements \Awesome\Framework\Model\SingletonInterface
      * @param JsMinifier $jsMinifier
      * @param Logger $logger
      * @param RequireJs $requireJs
+     * @param Styles $styles
      */
     public function __construct(
         CssMinifier $cssMinifier,
@@ -76,7 +83,8 @@ class StaticContent implements \Awesome\Framework\Model\SingletonInterface
         FrontendState $frontendState,
         JsMinifier $jsMinifier,
         Logger $logger,
-        RequireJs $requireJs
+        RequireJs $requireJs,
+        Styles $styles
     ) {
         $this->cssMinifier = $cssMinifier;
         $this->deployedVersion = $deployedVersion;
@@ -85,6 +93,7 @@ class StaticContent implements \Awesome\Framework\Model\SingletonInterface
         $this->jsMinifier = $jsMinifier;
         $this->logger = $logger;
         $this->requireJs = $requireJs;
+        $this->styles = $styles;
     }
 
     /**
@@ -120,6 +129,7 @@ class StaticContent implements \Awesome\Framework\Model\SingletonInterface
 
         $this->generate($view);
         $this->requireJs->generate($view);
+        $this->styles->generate($view);
         $this->logger->info(sprintf('Static files were deployed for "%s" view', $view));
 
         return $this;
@@ -187,6 +197,8 @@ class StaticContent implements \Awesome\Framework\Model\SingletonInterface
 
         if ($path === RequireJs::RESULT_FILENAME) {
             $this->requireJs->generate($view);
+        } elseif ($path === Styles::RESULT_FILENAME) {
+            $this->styles->generate($view);
         } else {
             $path = BP . '/' . ltrim(str_replace(BP, '', $path), '/');
             $extension = pathinfo($path, PATHINFO_EXTENSION);
