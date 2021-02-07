@@ -32,7 +32,7 @@ class StaticDeploy extends \Awesome\Console\Model\AbstractCommand
     {
         return parent::configure()
             ->setDescription('Generate static files (assets)')
-            ->addArgument('view', InputDefinition::ARGUMENT_OPTIONAL, 'Generate static only for a specified view');
+            ->addArgument('view', InputDefinition::ARGUMENT_OPTIONAL, 'Generate static only for provided view');
     }
 
     /**
