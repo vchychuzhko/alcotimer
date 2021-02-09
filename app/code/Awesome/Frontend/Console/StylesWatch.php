@@ -55,7 +55,7 @@ class StylesWatch extends \Awesome\Console\Model\AbstractCommand
     {
         $definedViews = [Http::FRONTEND_VIEW, Http::BACKEND_VIEW];
         $view = $input->getArgument('view');
-        $interval = ($input->getOption('interval') ?: 1) * 1000000;
+        $interval = ((int) $input->getOption('interval') ?: 1);
 
         if ($view) {
             if (!in_array($view, $definedViews, true)) {
@@ -71,28 +71,26 @@ class StylesWatch extends \Awesome\Console\Model\AbstractCommand
         } else {
             $views = $definedViews;
         }
-        $output->writeln('Watching...');
         $lastUpdate = time();
-        $SourceFolderPattern = APP_DIR . sprintf(self::SOURCE_FOLDER_PATTERN, '{' . Http::BASE_VIEW . ',' . implode(',', $views) . '}');
+        $sourceFolderPattern = APP_DIR . sprintf(self::SOURCE_FOLDER_PATTERN, '{' . Http::BASE_VIEW . ',' . implode(',', $views) . '}');
+
+        $output->writeln('Use "Ctrl+C" to terminate.');
+        $output->writeln('Watching...');
 
         while (true) {
             clearstatcache();
             $updated = false;
             $modifiedFile = null;
 
-            foreach (glob($SourceFolderPattern, GLOB_BRACE) as $sourceFolder) {
+            foreach (glob($sourceFolderPattern, GLOB_BRACE) as $sourceFolder) {
                 $files = $this->fileManager->scanDirectory($sourceFolder, true, 'less');
 
                 foreach ($files as $file) {
                     if (filemtime($file) > $lastUpdate) {
                         $updated = true;
                         $modifiedFile = $file;
-                        break;
+                        break 2;
                     }
-                }
-
-                if ($updated) {
-                    break;
                 }
             }
 
@@ -100,7 +98,7 @@ class StylesWatch extends \Awesome\Console\Model\AbstractCommand
                 $lastUpdate = time();
                 $output->writeln(sprintf('File has been changed: "%s"', $modifiedFile));
                 $fileView = preg_replace(
-                    sprintf(self::FILE_VIEW_PATTERN, Http::FRONTEND_VIEW . '|' . Http::BACKEND_VIEW . '|' . Http::BACKEND_VIEW),
+                    sprintf(self::FILE_VIEW_PATTERN, Http::FRONTEND_VIEW . '|' . Http::BACKEND_VIEW . '|' . Http::BASE_VIEW),
                     '$2',
                     $modifiedFile
                 );
@@ -117,13 +115,13 @@ class StylesWatch extends \Awesome\Console\Model\AbstractCommand
                         $output->writeln($output->colourText(sprintf('Styles were regenerated for "%s" view', $modifiedView)));
                     }
                 } catch (\Exception $e) {
-                    $output->writeln($output->colourText('Error occurred: ' . $e->getMessage(), Output::RED));
+                    $output->writeln($output->colourText($e->getMessage(), Output::RED));
                 }
 
                 $output->writeln('Watching...');
             }
 
-            usleep($interval);
+            sleep($interval);
         }
     }
 }

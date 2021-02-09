@@ -210,15 +210,14 @@ class Cli
                         $options[$option] = $value;
                     }
                 } elseif (strpos($arg, '-') === 0) {
-                    $shortcuts = substr($arg, 1);
+                    $value = substr($arg, 2);
+                    $shortcut = substr($arg, 1, 1);
 
-                    foreach (str_split($shortcuts) as $shortcut) {
-                        if (!isset($commandShortcuts[$shortcut])) {
-                            throw new \InvalidArgumentException(sprintf('Unknown shortcut "%s"', $shortcut));
-                        }
-                        $option = $commandShortcuts[$shortcut];
-                        $options[$option] = $commandOptions[$option]['default'];
+                    if (!isset($commandShortcuts[$shortcut])) {
+                        throw new \InvalidArgumentException(sprintf('Unknown shortcut "%s"', $shortcut));
                     }
+                    $option = $commandShortcuts[$shortcut];
+                    $options[$option] = $value ?: $commandOptions[$option]['default'];
                 } else {
                     $collectedArguments[$argumentPosition++] = $arg;
                 }

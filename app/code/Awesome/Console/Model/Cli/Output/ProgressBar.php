@@ -47,7 +47,7 @@ class ProgressBar
      * @param string $title
      * @return $this
      */
-    public function start(string $title = ''): self
+    public function init(string $title = ''): self
     {
         if ($title) {
             $this->write($title, true);
