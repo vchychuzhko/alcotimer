@@ -12,6 +12,7 @@ use Awesome\Frontend\Model\Action\StaticGenerationHandler;
 use Awesome\Frontend\Model\FrontendState;
 use Awesome\Frontend\Model\RequireJs;
 use Awesome\Frontend\Model\StaticContent;
+use Awesome\Frontend\Model\Styles;
 
 class StaticGenerationObserver implements \Awesome\Framework\Model\Event\ObserverInterface
 {
@@ -60,7 +61,7 @@ class StaticGenerationObserver implements \Awesome\Framework\Model\Event\Observe
                 if (StaticContentHelper::isFileMinified($requestPath) === $minify) {
                     $actionResolver->addAction(StaticGenerationHandler::class, ['requested_file' => $requestedFile]);
                 }
-            } elseif ($requestedFile === RequireJs::RESULT_FILENAME) {
+            } elseif ($requestedFile === RequireJs::RESULT_FILENAME || $requestedFile === Styles::RESULT_FILENAME) {
                 $actionResolver->addAction(StaticGenerationHandler::class, ['requested_file' => $requestedFile]);
             }
         }
@@ -94,7 +95,7 @@ class StaticGenerationObserver implements \Awesome\Framework\Model\Event\Observe
             $matches
         );
         @list($unused, $pub, $static, $version, $view, $module, $file) = $matches;
-        $file = StaticContentHelper::removeMinificationFlag($file);
+        $file = StaticContentHelper::removeMinificationFlag((string) $file);
 
         if ($module === StaticContent::LIB_FOLDER_PATH) {
             $path = BP . '/' . StaticContent::LIB_FOLDER_PATH . '/' . $file;
@@ -105,7 +106,7 @@ class StaticGenerationObserver implements \Awesome\Framework\Model\Event\Observe
                 $path = preg_replace('/(\/view\/)(\w+)(\/)/', '$1' . Http::BASE_VIEW . '$3', $path);
             }
         } else {
-            $path = (string) $file;
+            $path = $file;
         }
 
         return $path;

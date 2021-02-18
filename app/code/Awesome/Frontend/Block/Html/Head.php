@@ -92,14 +92,14 @@ class Head extends \Awesome\Frontend\Block\Template
     }
 
     /**
-     * Resolve static assets path including minification flag.
+     * Resolve static assets path including minification flag if needed.
      * @param string $path
      * @param bool $minified
      * @return string
      */
     private function resolveAssetPath(string $path, bool $minified = false): string
     {
-        if ($minified && $path !== RequireJs::RESULT_FILENAME && !StaticContentHelper::isFileMinified($path)) {
+        if ($minified) {
             $path = StaticContentHelper::addMinificationFlag($path);
         }
 

@@ -14,10 +14,12 @@ return [
         'js' => [
             'minify' => 1,
             'merge' => 0,
+            'symlink' => 1, // Use symbolic link in developer mode
         ],
         'css' => [
             'minify' => 1,
             'merge' => 0,
+            'symlink' => 1, // Use symbolic link in developer mode
         ],
     ],
     'cache' => [

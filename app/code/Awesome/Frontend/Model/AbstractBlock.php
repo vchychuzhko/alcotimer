@@ -31,7 +31,11 @@ abstract class AbstractBlock extends \Awesome\Framework\Model\DataObject impleme
     }
 
     /**
-     * @inheritDoc
+     * Initialize block fields.
+     * @param Layout $layout
+     * @param string $nameInLayout
+     * @param string|null $template
+     * @return void
      */
     public function init(Layout $layout, string $nameInLayout = '', ?string $template = null): void
     {
@@ -55,7 +59,10 @@ abstract class AbstractBlock extends \Awesome\Framework\Model\DataObject impleme
     }
 
     /**
-     * @inheritDoc
+     * Get child element content.
+     * Render all children if no name is specified.
+     * @param string $childName
+     * @return string
      */
     public function getChildHtml(string $childName = ''): string
     {
@@ -79,7 +86,8 @@ abstract class AbstractBlock extends \Awesome\Framework\Model\DataObject impleme
     }
 
     /**
-     * @inheritDoc
+     * Get element name.
+     * @return string
      */
     public function getNameInLayout(): string
     {
@@ -87,7 +95,8 @@ abstract class AbstractBlock extends \Awesome\Framework\Model\DataObject impleme
     }
 
     /**
-     * @inheritDoc
+     * Get element template.
+     * @return string|null
      */
     public function getTemplate(): ?string
     {
@@ -95,7 +104,8 @@ abstract class AbstractBlock extends \Awesome\Framework\Model\DataObject impleme
     }
 
     /**
-     * @inheritDoc
+     * Get page layout if already set.
+     * @return Layout|null
      */
     public function getLayout(): ?Layout
     {

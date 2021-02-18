@@ -35,7 +35,7 @@
     RewriteRule ^(.*)\/$ /$1 [R=302,L]
 
 ############################################
-## Never rewrite for existing files, directories and links
+## Never rewrite for existing files and links
 
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-l
@@ -65,21 +65,23 @@
 </IfModule>
 
 ###########################################
-## Deny access to files that begin with a dot
+## Deny access to system files
     <FilesMatch "^\.">
         Require all denied
     </FilesMatch>
     <Files README.md>
         Require all denied
     </Files>
+    <Files composer.json>
+        Require all denied
+    </Files>
+    <Files composer.lock>
+        Require all denied
+    </Files>
 
 # For 404s and 403s redirect to index
-ErrorDocument 403 /pub/pages/403.html
-ErrorDocument 404 /pub/pages/404.html
-
-# For 500s that aren't handled by the application, show plain response
-ErrorDocument 500 /pub/pages/internal_error.html
-ErrorDocument 503 /pub/pages/maintenance.html
+ErrorDocument 403 /
+ErrorDocument 404 /
 
 <IfModule mod_headers.c>
     ############################################

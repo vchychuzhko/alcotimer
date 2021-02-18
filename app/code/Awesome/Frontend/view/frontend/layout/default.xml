@@ -3,9 +3,7 @@
       xsi:noNamespaceSchemaLocation="../../../../Frontend/Schema/page_layout.xsd">
     <head>
         <favicon src="images/favicon.png"/>
-        <css src="Awesome_Frontend/css/base.css"/>
-        <css src="Awesome_Frontend/css/header.css"/>
-        <css src="Awesome_Frontend/css/footer.css"/>
+        <css src="styles.css"/>
         <css src="Awesome_Frontend/css/menu.css"/>
         <css src="Awesome_Frontend/css/message.css"/>
         <script src="lib/require/require.js"/>

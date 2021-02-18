@@ -3,32 +3,32 @@ declare(strict_types=1);
 
 namespace Awesome\Frontend\Model;
 
+use Awesome\Frontend\Model\DeployedVersion;
 use Awesome\Frontend\Model\FrontendState;
-use Awesome\Frontend\Model\StaticContent;
 
 class Context implements \Awesome\Framework\Model\SingletonInterface
 {
+    /**
+     * @var DeployedVersion $deployedVersion
+     */
+    private $deployedVersion;
+
     /**
      * @var FrontendState $frontendState
      */
     private $frontendState;
 
     /**
-     * @var StaticContent $staticContent
-     */
-    private $staticContent;
-
-    /**
      * Template Context constructor.
+     * @param DeployedVersion $deployedVersion
      * @param FrontendState $frontendState
-     * @param StaticContent $staticContent
      */
     public function __construct(
-        FrontendState $frontendState,
-        StaticContent $staticContent
+        DeployedVersion $deployedVersion,
+        FrontendState $frontendState
     ) {
+        $this->deployedVersion = $deployedVersion;
         $this->frontendState = $frontendState;
-        $this->staticContent = $staticContent;
     }
 
     /**
@@ -41,11 +41,11 @@ class Context implements \Awesome\Framework\Model\SingletonInterface
     }
 
     /**
-     * Get static content object.
-     * @return StaticContent
+     * Get deployed version object.
+     * @return DeployedVersion
      */
-    public function getStaticContent(): StaticContent
+    public function getDeployedVersion(): DeployedVersion
     {
-        return $this->staticContent;
+        return $this->deployedVersion;
     }
 }

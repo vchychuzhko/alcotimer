@@ -37,7 +37,7 @@ class StaticContentHelper
     {
         $path = self::addMinificationFlag($path);
 
-        return file_exists($path) && is_file($path);
+        return is_file($path);
     }
 
     /**

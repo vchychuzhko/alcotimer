@@ -8,6 +8,9 @@ class FrontendState extends \Awesome\Framework\Model\AppState
     private const CSS_MINIFY_CONFIG = 'web/css/minify';
     private const JS_MINIFY_CONFIG = 'web/js/minify';
 
+    private const CSS_SYMLINK_CONFIG = 'web/css/symlink';
+    private const JS_SYMLINK_CONFIG = 'web/js/symlink';
+
     /**
      * @var bool $isCssMinificationEnabled
      */
@@ -17,6 +20,16 @@ class FrontendState extends \Awesome\Framework\Model\AppState
      * @var bool $isJsMinificationEnabled
      */
     private $isJsMinificationEnabled;
+
+    /**
+     * @var bool $useSymlinkForCss
+     */
+    private $useSymlinkForCss;
+
+    /**
+     * @var bool $useSymlinkForJs
+     */
+    private $useSymlinkForJs;
 
     /**
      * Check if css minification is enabled.
@@ -42,5 +55,33 @@ class FrontendState extends \Awesome\Framework\Model\AppState
         }
 
         return $this->isJsMinificationEnabled;
+    }
+
+    /**
+     * Check if symbolic links should be used for css files.
+     * Allowed only in developer mode.
+     * @return bool
+     */
+    public function useSymlinkForCss(): bool
+    {
+        if ($this->useSymlinkForCss === null) {
+            $this->useSymlinkForCss = (bool) $this->config->get(self::CSS_SYMLINK_CONFIG) && $this->isDeveloperMode();
+        }
+
+        return $this->useSymlinkForCss;
+    }
+
+    /**
+     * Check if symbolic links should be used for js files.
+     * Allowed only in developer mode.
+     * @return bool
+     */
+    public function useSymlinkForJs(): bool
+    {
+        if ($this->useSymlinkForJs === null) {
+            $this->useSymlinkForJs = (bool) $this->config->get(self::JS_SYMLINK_CONFIG) && $this->isDeveloperMode();
+        }
+
+        return $this->useSymlinkForJs;
     }
 }
