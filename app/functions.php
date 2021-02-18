@@ -1,24 +1,6 @@
 <?php
 declare(strict_types=1);
 
-if (!function_exists('array_key_first')) {
-    /**
-     * Get first key in array.
-     * @link https://www.php.net/manual/en/function.array-key-first.php#refsect1-function.array-key-first-notes
-     * A polyfill for PHP versions below 7.3
-     * @param array $array
-     * @return mixed
-     */
-    function array_key_first(array $array)
-    {
-        foreach ($array as $key => $unused) {
-            return $key;
-        }
-
-        return null;
-    }
-}
-
 if (!function_exists('get_class_name')) {
     /**
      * Get class name with no namespace.
@@ -107,5 +89,18 @@ if (!function_exists('array_export')) {
         }
 
         echo $export;
+    }
+}
+
+if (!function_exists('__')) {
+    /**
+     * Translate given phrase with replacement arguments.
+     * @param string $phrase
+     * @param mixed ...$args
+     * @return string
+     */
+    function __(string $phrase, ...$args)
+    {
+        return new \Awesome\Framework\Model\Phrase($phrase, $args);
     }
 }

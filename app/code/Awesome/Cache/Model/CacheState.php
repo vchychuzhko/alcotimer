@@ -64,6 +64,7 @@ class CacheState
             Cache::ETC_CACHE_KEY,
             Cache::LAYOUT_CACHE_KEY,
             Cache::FULL_PAGE_CACHE_KEY,
+            Cache::TRANSLATIONS_CACHE_KEY,
         ];
     }
 }

@@ -10,12 +10,13 @@ use Awesome\Framework\Model\Config;
 use Awesome\Framework\Model\Event\EventManager;
 use Awesome\Framework\Model\Http\Request;
 use Awesome\Framework\Model\Http\ActionResolver;
+use Awesome\Framework\Model\Locale;
 use Awesome\Framework\Model\Logger;
 use Awesome\Framework\Model\Maintenance;
 
 class Http
 {
-    public const VERSION = '0.5.0';
+    public const VERSION = '0.5.1';
 
     public const FRONTEND_VIEW = 'frontend';
     public const BACKEND_VIEW = 'adminhtml';
@@ -45,6 +46,11 @@ class Http
     private $eventManager;
 
     /**
+     * @var Locale $locale
+     */
+    private $locale;
+
+    /**
      * @var Logger $logger
      */
     private $logger;
@@ -65,6 +71,7 @@ class Http
      * @param AppState $appState
      * @param Config $config
      * @param EventManager $eventManager
+     * @param Locale $locale
      * @param Logger $logger
      * @param Maintenance $maintenance
      */
@@ -73,6 +80,7 @@ class Http
         AppState $appState,
         Config $config,
         EventManager $eventManager,
+        Locale $locale,
         Logger $logger,
         Maintenance $maintenance
     ) {
@@ -80,6 +88,7 @@ class Http
         $this->appState = $appState;
         $this->config = $config;
         $this->eventManager = $eventManager;
+        $this->locale = $locale;
         $this->logger = $logger;
         $this->maintenance = $maintenance;
     }
@@ -92,6 +101,8 @@ class Http
     {
         try {
             $request = $this->getRequest();
+
+            $this->locale->init($request);
             $this->logger->logVisitor($request);
 
             if (!$this->isMaintenance()) {

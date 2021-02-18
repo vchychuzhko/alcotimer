@@ -3,6 +3,7 @@
 namespace Awesome\Frontend\Model;
 
 use Awesome\Cache\Model\Cache;
+use Awesome\Framework\Model\Locale;
 use Awesome\Frontend\Model\Layout;
 
 /**
@@ -10,6 +11,7 @@ use Awesome\Frontend\Model\Layout;
  * @method string getHandle()
  * @method string getView()
  * @method array getHandles()
+ * @method string|null getLocale()
  */
 class Page extends \Awesome\Framework\Model\DataObject
 {
@@ -24,16 +26,23 @@ class Page extends \Awesome\Framework\Model\DataObject
     private $layout;
 
     /**
+     * @var Locale $locale
+     */
+    private $locale;
+
+    /**
      * Page constructor.
      * @param Cache $cache
      * @param Layout $layout
+     * @param Locale $locale
      * @param array $data
      */
-    public function __construct(Cache $cache, Layout $layout, $data = [])
+    public function __construct(Cache $cache, Layout $layout, Locale $locale, $data = [])
     {
         parent::__construct($data, true);
         $this->cache = $cache;
         $this->layout = $layout;
+        $this->locale = $locale;
     }
 
     /**
@@ -47,11 +56,12 @@ class Page extends \Awesome\Framework\Model\DataObject
         $handle = $this->getHandle();
         $view = $this->getView();
         $handles = $this->getHandles() ?: [$handle];
+        $locale = $this->getLocale() ?: $this->locale->getLocale();
 
         if ($handle && $view) {
             $content = $this->cache->get(
                 Cache::FULL_PAGE_CACHE_KEY,
-                implode('/', $handles) . '//' . $view,
+                implode('/', $handles) . '//' . $view . '//' . $locale,
                 function () use ($handle, $view, $handles) {
                     $this->layout->init($handle, $view, $handles);
 

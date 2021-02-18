@@ -123,7 +123,6 @@ class StaticContent implements \Awesome\Framework\Model\SingletonInterface
     private function processView(string $view): self
     {
         $this->fileManager->removeDirectory(BP . self::STATIC_FOLDER_PATH . $view);
-        $this->fileManager->createDirectory(BP . self::STATIC_FOLDER_PATH . $view);
 
         $this->generate($view);
         $this->requireJs->generate($view);
@@ -134,7 +133,7 @@ class StaticContent implements \Awesome\Framework\Model\SingletonInterface
     }
 
     /**
-     * Collect, parse and generate css/js files for requested view.
+     * Collect, parse and generate static files for specified view.
      * @param string $view
      * @return $this
      */
@@ -189,10 +188,6 @@ class StaticContent implements \Awesome\Framework\Model\SingletonInterface
      */
     public function deployFile(string $path, string $view): self
     {
-        if (!is_dir(BP . self::STATIC_FOLDER_PATH . $view)) {
-            $this->fileManager->createDirectory(BP . self::STATIC_FOLDER_PATH . $view);
-        }
-
         if ($path === RequireJs::RESULT_FILENAME) {
             $this->requireJs->generate($view);
         } elseif ($path === Styles::RESULT_FILENAME) {

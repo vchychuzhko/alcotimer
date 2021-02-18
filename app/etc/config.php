@@ -26,6 +26,7 @@ return [
         'etc' => 1,
         'layout' => 1,
         'full_page' => 1,
+        'translations' => 1,
     ],
     'timer_config' => [
         'show_hint' => 1,
