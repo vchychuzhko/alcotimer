@@ -6,18 +6,18 @@ namespace Awesome\Framework\Model\FileManager;
 class PhpFileManager extends \Awesome\Framework\Model\FileManager
 {
     /**
-     * Include and parsePHP array file.
+     * Include and parse PHP array file.
      * @param string $path
      * @param bool $graceful
      * @return array
      * @throws \RuntimeException
      */
-    public function readArrayFile(string $path, bool $graceful = false): array
+    public function parseArrayFile(string $path, bool $graceful = false): array
     {
         if (!is_file($path)) {
             if (!$graceful) {
                 throw new \RuntimeException(
-                    sprintf('Provided path "%s" does not exist or is not a file and cannot be included', $path)
+                    sprintf('Provided path "%s" does not exist or is not a file and cannot be parsed', $path)
                 );
             }
             $array = [];
