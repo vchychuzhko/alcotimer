@@ -186,9 +186,9 @@ class LayoutHandler extends \Awesome\Framework\Model\AbstractAction
                 self::PAGE_HANDLES_CACHE_TAG_PREFIX . $view,
                 function () use ($view) {
                     $handles = [];
-                    $pattern = sprintf(self::LAYOUT_XML_PATH_PATTERN, $view);
+                    $pattern = APP_DIR . sprintf(self::LAYOUT_XML_PATH_PATTERN, $view);
 
-                    foreach (glob(APP_DIR . $pattern) as $collectedHandle) {
+                    foreach (glob($pattern) as $collectedHandle) {
                         $handles[] = basename($collectedHandle, '.xml');
                     }
 

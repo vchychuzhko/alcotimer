@@ -163,13 +163,14 @@ class Layout
         $path = $module;
 
         if (isset($file)) {
-            $path = '/' . str_replace('_', '/', $module) . '/view/' . $this->view . '/templates/' . $file;
+            $path = APP_DIR . '/' . str_replace('_', '/', $module) . '/view/' . $this->view . '/templates/' . $file;
 
-            if (!file_exists(APP_DIR . $path)) {
+            if (!file_exists($path)) {
                 $path = preg_replace('/(\/view\/)(\w+)(\/)/', '$1' . Http::BASE_VIEW . '$3', $path);
             }
+        } else {
+            $path = APP_DIR . $path;
         }
-        $path = APP_DIR . $path;
 
         if (!is_file($path)) {
             throw new \LogicException(

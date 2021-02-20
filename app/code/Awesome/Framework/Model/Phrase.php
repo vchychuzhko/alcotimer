@@ -71,7 +71,7 @@ class Phrase
      * Get phrase base text.
      * @return string
      */
-    private function getText(): string
+    public function getText(): string
     {
         return $this->text;
     }
@@ -80,7 +80,7 @@ class Phrase
      * Get phrase message arguments.
      * @return array
      */
-    private function getArguments(): array
+    public function getArguments(): array
     {
         return $this->arguments;
     }

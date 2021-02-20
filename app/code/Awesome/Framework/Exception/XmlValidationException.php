@@ -3,4 +3,6 @@ declare(strict_types=1);
 
 namespace Awesome\Framework\Exception;
 
-class XmlValidationException extends \LogicException {}
+use Awesome\Framework\Exception\LocalizedException;
+
+class XmlValidationException extends LocalizedException {}

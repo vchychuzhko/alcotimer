@@ -80,13 +80,13 @@ class LayoutXmlParser
     public function getLayoutStructure(string $handle, string $view, array $handles = []): array
     {
         $handles = $handles ?: [$handle];
-        $pattern = sprintf(
+        $pattern = APP_DIR . sprintf(
             self::LAYOUT_XML_PATH_PATTERN, $view, '{' . self::DEFAULT_HANDLE_NAME . ',' . implode(',', $handles) . '}'
         );
         $head = [];
         $body = [];
 
-        foreach (glob(APP_DIR . $pattern, GLOB_BRACE) as $layoutXmlFile) {
+        foreach (glob($pattern, GLOB_BRACE) as $layoutXmlFile) {
             $layoutData = $this->xmlFileManager->parseXmlFile($layoutXmlFile, APP_DIR . self::LAYOUT_XSD_SCHEMA_PATH);
 
             if ($headNode = XmlParsingHelper::getChildNode($layoutData, 'head')) {
@@ -97,7 +97,6 @@ class LayoutXmlParser
             }
         }
 
-        // @TODO: Add check for merge enabled and replace links
         $this->filterRemovedAssets();
         XmlParsingHelper::applySortOrder($this->collectedAssets);
         $head = [
@@ -247,7 +246,7 @@ class LayoutXmlParser
                 }
 
                 if (in_array($elementName, $this->processedElements, true)) {
-                    throw new XmlValidationException(sprintf('Block "%s" is declared twice', $elementName));
+                    throw new XmlValidationException(__('Block "%1" is already declared', $elementName));
                 }
                 $this->processedElements[] = $elementName;
                 break;
@@ -284,7 +283,7 @@ class LayoutXmlParser
                 }
 
                 if (in_array($elementName, $this->processedElements, true)) {
-                    throw new XmlValidationException(sprintf('Container "%s" is declared twice', $elementName));
+                    throw new XmlValidationException(__('Container "%1" is already declared', $elementName));
                 }
                 $this->processedElements[] = $elementName;
                 break;

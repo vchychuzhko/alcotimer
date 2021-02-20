@@ -35,7 +35,7 @@ class XmlFileManager extends \Awesome\Framework\Model\FileManager
         $content = $this->readFile($path);
 
         if (!$this->xmlValidator->valid($content)) {
-            throw new XmlValidationException(sprintf('Provided file "%s" does not contain valid XML', $path));
+            throw new XmlValidationException(__('Provided file "%1" does not contain valid XML', $path));
         }
         if ($schemaFile) {
             $schema = $this->readFile($schemaFile);
@@ -52,9 +52,7 @@ class XmlFileManager extends \Awesome\Framework\Model\FileManager
                     $errorMessage = trim($error->message);
                     libxml_clear_errors();
 
-                    throw new XmlValidationException(
-                        sprintf('File "%s" is not valid against XSD scheme: "%s"', $path, $errorMessage)
-                    );
+                    throw new XmlValidationException(__('File "%1" is not valid against XSD scheme: "%2"', $path, $errorMessage));
                 }
             }
         }

@@ -97,9 +97,9 @@ if (!function_exists('__')) {
      * Translate given phrase with replacement arguments.
      * @param string $phrase
      * @param mixed ...$args
-     * @return string
+     * @return \Awesome\Framework\Model\Phrase
      */
-    function __(string $phrase, ...$args)
+    function __(string $phrase, ...$args): \Awesome\Framework\Model\Phrase
     {
         return new \Awesome\Framework\Model\Phrase($phrase, $args);
     }

@@ -139,9 +139,9 @@ class StaticContent implements \Awesome\Framework\Model\SingletonInterface
      */
     private function generate(string $view): self
     {
-        $fontPattern = sprintf(self::STATIC_PATH_PATTERN, '{' . Http::BASE_VIEW . ',' . $view . '}', 'fonts');
+        $fontPattern = APP_DIR . sprintf(self::STATIC_PATH_PATTERN, '{' . Http::BASE_VIEW . ',' . $view . '}', 'fonts');
 
-        foreach (glob(APP_DIR . $fontPattern, GLOB_ONLYDIR | GLOB_BRACE) as $folder) {
+        foreach (glob($fontPattern, GLOB_ONLYDIR | GLOB_BRACE) as $folder) {
             $files = $this->fileManager->scanDirectory($folder, true, ['eot', 'ttf', 'otf', 'woff', 'woff2']);
 
             foreach ($files as $file) {
@@ -149,10 +149,10 @@ class StaticContent implements \Awesome\Framework\Model\SingletonInterface
             }
         }
 
-        $cssPattern = sprintf(self::STATIC_PATH_PATTERN, '{' . Http::BASE_VIEW . ',' . $view . '}', 'css');
+        $cssPattern = APP_DIR . sprintf(self::STATIC_PATH_PATTERN, '{' . Http::BASE_VIEW . ',' . $view . '}', 'css');
         $cssMinify = $this->frontendState->isCssMinificationEnabled();
 
-        foreach ($this->globWithoutMinifiedFiles(APP_DIR . $cssPattern, GLOB_ONLYDIR | GLOB_BRACE) as $folder) {
+        foreach ($this->globWithoutMinifiedFiles($cssPattern, GLOB_ONLYDIR | GLOB_BRACE) as $folder) {
             $files = $this->fileManager->scanDirectory($folder, true, 'css');
 
             foreach ($files as $file) {
@@ -160,10 +160,10 @@ class StaticContent implements \Awesome\Framework\Model\SingletonInterface
             }
         }
 
-        $jsPattern = sprintf(self::STATIC_PATH_PATTERN, '{' . Http::BASE_VIEW . ',' . $view . '}', 'js');
+        $jsPattern = APP_DIR . sprintf(self::STATIC_PATH_PATTERN, '{' . Http::BASE_VIEW . ',' . $view . '}', 'js');
         $jsMinify = $this->frontendState->isJsMinificationEnabled();
 
-        foreach ($this->globWithoutMinifiedFiles(APP_DIR . $jsPattern, GLOB_ONLYDIR | GLOB_BRACE) as $folder) {
+        foreach ($this->globWithoutMinifiedFiles($jsPattern, GLOB_ONLYDIR | GLOB_BRACE) as $folder) {
             $files = $this->fileManager->scanDirectory($folder, true, 'js');
 
             foreach ($files as $file) {
