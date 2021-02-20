@@ -8,7 +8,6 @@ use Awesome\Frontend\Model\RequireJs;
 
 /**
  * Class Head
- * @method string|null getTitle()
  * @method string|null getDescription()
  * @method string|null getKeywords()
  * @method string|null getFavicon()
@@ -19,6 +18,15 @@ class Head extends \Awesome\Frontend\Block\Template
      * @inheritDoc
      */
     protected $template = 'Awesome_Frontend::html/head.phtml';
+
+    /**
+     * Get page title, translating it if possible.
+     * @return string
+     */
+    public function getTitle()
+    {
+        return __($this->getData('title'));
+    }
 
     /**
      * Get resources to be preloaded, resolving their paths.

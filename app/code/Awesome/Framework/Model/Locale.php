@@ -8,7 +8,7 @@ use Awesome\Framework\Model\Http\Request;
 class Locale implements \Awesome\Framework\Model\SingletonInterface
 {
     public const LOCALE_COOKIE = 'locale_code';
-    public const DEFAULT_LOCALE = 'en_US';
+    public const DEFAULT_LOCALE = 'uk_UA';
 
     private const ALLOWED_LOCALES = [
         'en_US',

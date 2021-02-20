@@ -116,7 +116,7 @@ class Config implements \Awesome\Framework\Model\SingletonInterface
     private function loadConfig(bool $reload = false): array
     {
         if ($this->config === null || $reload) {
-            $this->config = $this->phpFileManager->readArrayFile(BP . self::CONFIG_FILE_PATH, true);
+            $this->config = $this->phpFileManager->parseArrayFile(BP . self::CONFIG_FILE_PATH);
         }
 
         return $this->config;
