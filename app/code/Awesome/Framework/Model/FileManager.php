@@ -86,7 +86,7 @@ class FileManager implements \Awesome\Framework\Model\SingletonInterface
      * @return bool
      * @throws \RuntimeException
      */
-    public function writeFile(string $path, string $content, bool $append = false): bool
+    public function writeToFile(string $path, string $content, bool $append = true): bool
     {
         if (file_exists($path)) {
             if (!is_file($path)) {

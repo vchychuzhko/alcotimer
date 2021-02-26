@@ -103,7 +103,6 @@ class Http
             $request = $this->getRequest();
 
             $this->locale->init($request);
-            $this->logger->logVisitor($request);
 
             if (!$this->isMaintenance()) {
                 $this->eventManager->dispatch(
