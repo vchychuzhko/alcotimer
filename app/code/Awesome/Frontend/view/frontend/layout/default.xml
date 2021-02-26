@@ -11,6 +11,7 @@
         <script src="Awesome_Frontend/js/main.js"/>
     </head>
     <body>
+        <container name="head.additional" disabled="true"/>
         <block name="menu" class="Awesome\Frontend\Block\Menu" template="Awesome_Frontend::menu.phtml" sortOrder="1"/>
         <container name="page-wrapper" htmlTag="main" htmlClass="page-wrapper" sortOrder="5">
             <block name="header"

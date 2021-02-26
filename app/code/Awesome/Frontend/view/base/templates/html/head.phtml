@@ -23,4 +23,5 @@
 <?php foreach($block->getScripts() as $script): ?>
     <script src="<?= $script['src']; ?>"<?= $script['async'] ? ' async' : ''; ?><?= $script['defer'] ? ' defer' : ''; ?>></script>
 <?php endforeach; ?>
+    <?= $block->getHeadAdditional(); ?>
 </head>

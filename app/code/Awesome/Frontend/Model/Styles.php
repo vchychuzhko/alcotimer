@@ -37,7 +37,7 @@ class Styles
     private $lessParser;
 
     /**
-     * RequireJs constructor.
+     * Styles constructor.
      * @param CssMinifier $cssMinifier
      * @param FileManager $fileManager
      * @param FrontendState $frontendState

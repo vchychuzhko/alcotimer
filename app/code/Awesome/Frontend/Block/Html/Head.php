@@ -14,6 +14,8 @@ use Awesome\Frontend\Model\RequireJs;
  */
 class Head extends \Awesome\Frontend\Block\Template
 {
+    private const HEAD_ADDITIONAL_BLOCK = 'head.additional';
+
     /**
      * @inheritDoc
      */
@@ -97,6 +99,21 @@ class Head extends \Awesome\Frontend\Block\Template
         }
 
         return $scripts;
+    }
+
+    /**
+     * Render additional head block.
+     * @return string
+     */
+    public function getHeadAdditional(): string
+    {
+        $headAdditionalContent = '';
+
+        if ($layout = $this->getLayout()) {
+            $headAdditionalContent = $layout->render(self::HEAD_ADDITIONAL_BLOCK);
+        }
+
+        return $headAdditionalContent;
     }
 
     /**

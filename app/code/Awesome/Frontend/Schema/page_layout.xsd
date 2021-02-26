@@ -61,7 +61,9 @@
                                     <xs:attribute name="type" use="required">
                                         <xs:simpleType>
                                             <xs:restriction base="xs:string">
-                                                <xs:pattern value="font|style|script"/>
+                                                <xs:enumeration value="font"/>
+                                                <xs:enumeration value="style"/>
+                                                <xs:enumeration value="script"/>
                                             </xs:restriction>
                                         </xs:simpleType>
                                     </xs:attribute>
@@ -157,6 +159,7 @@
                 </xs:restriction>
             </xs:simpleType>
         </xs:attribute>
+        <xs:attribute name="disabled" type="xs:boolean" default="false"/>
         <xs:attribute name="sortOrder" type="xs:nonNegativeInteger"/>
     </xs:complexType>
     <xs:complexType name="containerType">
@@ -206,6 +209,7 @@
                 </xs:restriction>
             </xs:simpleType>
         </xs:attribute>
+        <xs:attribute name="disabled" type="xs:boolean" default="false"/>
         <xs:attribute name="sortOrder" type="xs:nonNegativeInteger"/>
     </xs:complexType>
     <xs:complexType name="referenceType">

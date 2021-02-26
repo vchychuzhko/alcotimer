@@ -132,7 +132,9 @@ class Layout
         $childNames = [];
 
         if ($elementData = DataHelper::arrayGetByKeyRecursive($this->structure, $nameInLayout)) {
-            $childNames = array_keys($elementData['children']);
+            $childNames = array_keys(array_filter($elementData['children'], function ($child) {
+                return $child['disabled'] !== true;
+            }));
         }
 
         return $childNames;

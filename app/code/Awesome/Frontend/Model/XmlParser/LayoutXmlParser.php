@@ -102,6 +102,7 @@ class LayoutXmlParser
         $head = [
             'name'     => 'head',
             'class'    => Head::class,
+            'disabled' => false,
             'template' => null,
             'children' => [],
             'data'     => array_merge($head, $this->collectedAssets),
@@ -110,6 +111,7 @@ class LayoutXmlParser
         $body = [
             'name'     => 'body',
             'class'    => Body::class,
+            'disabled' => false,
             'template' => null,
             'children' => $body,
         ];
@@ -120,6 +122,7 @@ class LayoutXmlParser
             'root' => [
                 'name'     => 'root',
                 'class'    => Root::class,
+                'disabled' => false,
                 'template' => null,
                 'children' => [
                     'head' => $head,
@@ -231,6 +234,7 @@ class LayoutXmlParser
                 $parsedItemNode = [
                     'name'     => $elementName,
                     'class'    => XmlParsingHelper::getNodeAttribute($elementNode, 'class'),
+                    'disabled' => XmlParsingHelper::isDisabled($elementNode),
                     'template' => XmlParsingHelper::getNodeAttribute($elementNode, 'template') ?: null,
                     'children' => [],
                 ];
@@ -260,6 +264,7 @@ class LayoutXmlParser
                 $parsedItemNode = [
                     'name'     => $elementName,
                     'class'    => Container::class,
+                    'disabled' => XmlParsingHelper::isDisabled($elementNode),
                     'template' => null,
                     'children' => [],
                 ];
