@@ -7,11 +7,13 @@ use Awesome\Framework\Model\FileManager;
 use Awesome\Framework\Model\Http;
 use Awesome\Framework\Model\Logger;
 use Awesome\Frontend\Helper\StaticContentHelper;
+use Awesome\Frontend\Helper\TranslationFileHelper;
 use Awesome\Frontend\Model\DeployedVersion;
 use Awesome\Frontend\Model\Css\CssMinifier;
 use Awesome\Frontend\Model\Js\JsMinifier;
 use Awesome\Frontend\Model\RequireJs;
 use Awesome\Frontend\Model\Styles;
+use Awesome\Frontend\Model\Translation;
 
 class StaticContent implements \Awesome\Framework\Model\SingletonInterface
 {
@@ -64,6 +66,11 @@ class StaticContent implements \Awesome\Framework\Model\SingletonInterface
     private $styles;
 
     /**
+     * @var Translation $translation
+     */
+    private $translation;
+
+    /**
      * StaticContent constructor.
      * @param CssMinifier $cssMinifier
      * @param DeployedVersion $deployedVersion
@@ -73,6 +80,7 @@ class StaticContent implements \Awesome\Framework\Model\SingletonInterface
      * @param Logger $logger
      * @param RequireJs $requireJs
      * @param Styles $styles
+     * @param Translation $translation
      */
     public function __construct(
         CssMinifier $cssMinifier,
@@ -82,7 +90,8 @@ class StaticContent implements \Awesome\Framework\Model\SingletonInterface
         JsMinifier $jsMinifier,
         Logger $logger,
         RequireJs $requireJs,
-        Styles $styles
+        Styles $styles,
+        Translation $translation
     ) {
         $this->cssMinifier = $cssMinifier;
         $this->deployedVersion = $deployedVersion;
@@ -92,6 +101,7 @@ class StaticContent implements \Awesome\Framework\Model\SingletonInterface
         $this->logger = $logger;
         $this->requireJs = $requireJs;
         $this->styles = $styles;
+        $this->translation = $translation;
     }
 
     /**
@@ -127,6 +137,7 @@ class StaticContent implements \Awesome\Framework\Model\SingletonInterface
         $this->generate($view);
         $this->requireJs->generate($view);
         $this->styles->generate($view);
+        $this->translation->generate($view);
         $this->logger->info(sprintf('Static files were deployed for "%s" view', $view));
 
         return $this;
@@ -192,6 +203,8 @@ class StaticContent implements \Awesome\Framework\Model\SingletonInterface
             $this->requireJs->generate($view);
         } elseif ($path === Styles::RESULT_FILENAME) {
             $this->styles->generate($view);
+        } elseif (TranslationFileHelper::isTranslationFile($path)) {
+            $this->translation->generateLocale($view, TranslationFileHelper::getLocaleByPath($path));
         } else {
             $path = BP . '/' . ltrim(str_replace(BP, '', $path), '/');
             $extension = pathinfo($path, PATHINFO_EXTENSION);

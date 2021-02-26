@@ -7,7 +7,9 @@ use Awesome\Framework\Model\Event;
 use Awesome\Framework\Model\Http;
 use Awesome\Framework\Model\Http\ActionResolver;
 use Awesome\Framework\Model\Http\Request;
+use Awesome\Framework\Model\Locale;
 use Awesome\Frontend\Helper\StaticContentHelper;
+use Awesome\Frontend\Helper\TranslationFileHelper;
 use Awesome\Frontend\Model\Action\StaticGenerationHandler;
 use Awesome\Frontend\Model\FrontendState;
 use Awesome\Frontend\Model\RequireJs;
@@ -25,12 +27,19 @@ class StaticGenerationObserver implements \Awesome\Framework\Model\Event\Observe
     private $frontendState;
 
     /**
+     * @var Locale $locale
+     */
+    private $locale;
+
+    /**
      * StaticGenerationObserver constructor.
      * @param FrontendState $frontendState
+     * @param Locale $locale
      */
-    public function __construct(FrontendState $frontendState)
+    public function __construct(FrontendState $frontendState, Locale $locale)
     {
         $this->frontendState = $frontendState;
+        $this->locale = $locale;
     }
 
     /**
@@ -61,7 +70,11 @@ class StaticGenerationObserver implements \Awesome\Framework\Model\Event\Observe
                 if (StaticContentHelper::isFileMinified($requestPath) === $minify) {
                     $actionResolver->addAction(StaticGenerationHandler::class, ['requested_file' => $requestedFile]);
                 }
-            } elseif ($requestedFile === RequireJs::RESULT_FILENAME || $requestedFile === Styles::RESULT_FILENAME) {
+            } elseif ($requestedFile === RequireJs::RESULT_FILENAME
+                || $requestedFile === Styles::RESULT_FILENAME
+                || (TranslationFileHelper::isTranslationFile($requestedFile)
+                    && in_array(TranslationFileHelper::getLocaleByPath($requestedFile), $this->locale->getAllLocales(), true))
+            ) {
                 $actionResolver->addAction(StaticGenerationHandler::class, ['requested_file' => $requestedFile]);
             }
         }

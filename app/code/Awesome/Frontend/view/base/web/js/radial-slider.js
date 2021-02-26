@@ -148,7 +148,7 @@ define([
 
         /**
          * Get value by controller position
-         * @return {number}
+         * @returns {number}
          */
         getValueFromController: function () {
             let $controller = $(this.element).find('.radial-controller'),
@@ -162,7 +162,7 @@ define([
          * Get angle by coordinates
          * @param {number} x
          * @param {number} y
-         * @return {number}
+         * @returns {number}
          */
         getAngleByCoordinates: function (x, y) {
             let angle,

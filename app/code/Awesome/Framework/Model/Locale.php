@@ -47,6 +47,15 @@ class Locale implements \Awesome\Framework\Model\SingletonInterface
     }
 
     /**
+     * Get all registered locale codes.
+     * @return array
+     */
+    public function getAllLocales(): array
+    {
+        return self::ALLOWED_LOCALES;
+    }
+
+    /**
      * Set locale code, checking if it's registered.
      * @param string $locale
      * @return $this
@@ -54,7 +63,7 @@ class Locale implements \Awesome\Framework\Model\SingletonInterface
     public function setLocale(string $locale): self
     {
         if (!in_array($locale, self::ALLOWED_LOCALES, true)) {
-            throw new \RuntimeException(sprintf('Cannot set unrecognized locale: %s', $locale));
+            throw new \RuntimeException(sprintf('Cannot set not registered locale: %s', $locale));
         }
         $this->locale = $locale;
 

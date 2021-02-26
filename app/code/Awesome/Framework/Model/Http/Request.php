@@ -186,6 +186,15 @@ class Request extends \Awesome\Framework\Model\DataObject implements \Awesome\Fr
     }
 
     /**
+     * Check if request is POST.
+     * @return bool
+     */
+    public function isPost(): bool
+    {
+        return $this->getMethod() === self::HTTP_METHOD_POST;
+    }
+
+    /**
      * Get request parameter by key.
      * @param string $key
      * @param bool $typeCast

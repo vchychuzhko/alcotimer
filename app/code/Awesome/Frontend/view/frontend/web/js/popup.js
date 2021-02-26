@@ -72,7 +72,7 @@ define([
 
         /**
          * Prepare and return modal-wrapper element
-         * @return {jQuery|HTMLElement}
+         * @returns {jQuery|HTMLElement}
          */
         getModalWrapper: function () {
             let $modalWrapper = $('.modal-wrapper');
