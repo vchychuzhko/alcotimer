@@ -15,7 +15,7 @@ use Awesome\Framework\Model\Http\Request;
  */
 class HttpErrorAction extends \Awesome\Framework\Model\DataObject
 {
-    private const INTERNALERROR_PAGE_PATH = '/pub/pages/internal_error.html';
+    private const INTERNALERROR_PAGE_PATH = '/pub/pages/internal_error.php';
 
     /**
      * Show internal error response according to accept type.
@@ -55,6 +55,13 @@ class HttpErrorAction extends \Awesome\Framework\Model\DataObject
      */
     private function getInternalErrorPage(): ?string
     {
-        return @file_get_contents(BP . self::INTERNALERROR_PAGE_PATH) ?: null;
+        if (is_file(BP . self::INTERNALERROR_PAGE_PATH)) {
+            ob_start();
+            include BP . self::INTERNALERROR_PAGE_PATH;
+
+            return ob_get_clean();
+        }
+
+        return null;
     }
 }

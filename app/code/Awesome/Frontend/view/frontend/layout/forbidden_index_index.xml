@@ -2,7 +2,7 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="../../../../Frontend/Schema/page_layout.xsd">
     <head>
-        <title><![CDATA[Forbidden]]></title>
+        <title><![CDATA[Forbidden Page]]></title>
         <css src="Awesome_Frontend/css/pages/errors.css"/>
     </head>
     <body>

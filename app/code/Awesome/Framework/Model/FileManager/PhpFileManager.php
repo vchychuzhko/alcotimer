@@ -33,6 +33,37 @@ class PhpFileManager extends \Awesome\Framework\Model\FileManager
 
         return $array;
     }
+    /**
+     * Include PHP file.
+     * @param string $path
+     * @param bool $return
+     * @param bool $graceful
+     * @return void|string
+     * @throws \RuntimeException
+     */
+    public function includeFile(string $path, bool $return = false, bool $graceful = false)
+    {
+        if (!is_file($path)) {
+            if (!$graceful) {
+                throw new \RuntimeException(
+                    sprintf('Provided path "%s" does not exist or is not a file and cannot be included', $path)
+                );
+            }
+
+            if ($return) {
+                return '';
+            }
+        } else {
+            if ($return) {
+                ob_start();
+                include $path;
+
+                return ob_get_clean();
+            }
+
+            include $path;
+        }
+    }
 
     /**
      * Generate PHP array file.

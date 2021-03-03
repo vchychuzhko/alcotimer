@@ -4,15 +4,15 @@ declare(strict_types=1);
 namespace Awesome\Framework\Model\Action;
 
 use Awesome\Framework\Model\AppState;
-use Awesome\Framework\Model\FileManager;
+use Awesome\Framework\Model\FileManager\PhpFileManager;
 use Awesome\Framework\Model\Http\Request;
 use Awesome\Framework\Model\ResponseInterface;
 use Awesome\Framework\Model\Result\ResponseFactory;
 
 class HttpDefaultAction extends \Awesome\Framework\Model\AbstractAction
 {
-    private const FORBIDDEN_PAGE_PATH = '/pub/pages/403.html';
-    private const NOTFOUND_PAGE_PATH = '/pub/pages/404.html';
+    private const FORBIDDEN_PAGE_PATH = '/pub/pages/403.php';
+    private const NOTFOUND_PAGE_PATH = '/pub/pages/404.php';
 
     /**
      * @var AppState $appState
@@ -20,21 +20,21 @@ class HttpDefaultAction extends \Awesome\Framework\Model\AbstractAction
     private $appState;
 
     /**
-     * @var FileManager $fileManager
+     * @var PhpFileManager $phpFileManager
      */
-    private $fileManager;
+    private $phpFileManager;
 
     /**
      * HttpDefaultAction constructor.
      * @param AppState $appState
-     * @param FileManager $fileManager
+     * @param PhpFileManager $phpFileManager
      * @param ResponseFactory $responseFactory
      */
-    public function __construct(AppState $appState, FileManager $fileManager, ResponseFactory $responseFactory)
+    public function __construct(AppState $appState, PhpFileManager $phpFileManager, ResponseFactory $responseFactory)
     {
         parent::__construct($responseFactory);
         $this->appState = $appState;
-        $this->fileManager = $fileManager;
+        $this->phpFileManager = $phpFileManager;
     }
 
     /**
@@ -51,32 +51,30 @@ class HttpDefaultAction extends \Awesome\Framework\Model\AbstractAction
                     ->setData([
                         'status'  => 'FORBIDDEN',
                         'message' => 'Requested path is not allowed.',
-                    ])
-                    ->setStatusCode(ResponseInterface::FORBIDDEN_STATUS_CODE);
+                    ]);
             } elseif ($request->getAcceptType() === Request::HTML_ACCEPT_HEADER && $content = $this->getForbiddenPage()) {
                 $response = $this->responseFactory->create(ResponseFactory::TYPE_HTML)
-                    ->setContent($content)
-                    ->setStatusCode(ResponseInterface::FORBIDDEN_STATUS_CODE);
+                    ->setContent($content);
             } else {
-                $response = $this->responseFactory->create()
-                    ->setStatusCode(ResponseInterface::FORBIDDEN_STATUS_CODE);
+                $response = $this->responseFactory->create();
             }
+
+            $response->setStatusCode(ResponseInterface::FORBIDDEN_STATUS_CODE);
         } else {
             if ($request->getAcceptType() === Request::JSON_ACCEPT_HEADER) {
                 $response = $this->responseFactory->create(ResponseFactory::TYPE_JSON)
                     ->setData([
                         'status'  => 'NOTFOUND',
                         'message' => 'Requested path was not found.',
-                    ])
-                    ->setStatusCode(ResponseInterface::NOTFOUND_STATUS_CODE);
+                    ]);
             } elseif ($request->getAcceptType() === Request::HTML_ACCEPT_HEADER && $content = $this->getNotfoundPage()) {
                 $response = $this->responseFactory->create(ResponseFactory::TYPE_HTML)
-                    ->setContent($content)
-                    ->setStatusCode(ResponseInterface::NOTFOUND_STATUS_CODE);
+                    ->setContent($content);
             } else {
-                $response = $this->responseFactory->create()
-                    ->setStatusCode(ResponseInterface::NOTFOUND_STATUS_CODE);
+                $response = $this->responseFactory->create();
             }
+
+            $response->setStatusCode(ResponseInterface::NOTFOUND_STATUS_CODE);
         }
 
         return $response;
@@ -88,7 +86,7 @@ class HttpDefaultAction extends \Awesome\Framework\Model\AbstractAction
      */
     private function getForbiddenPage()
     {
-        return $this->fileManager->readFile(BP . self::FORBIDDEN_PAGE_PATH, true);
+        return $this->phpFileManager->includeFile(BP . self::FORBIDDEN_PAGE_PATH, true, true);
     }
 
     /**
@@ -97,6 +95,6 @@ class HttpDefaultAction extends \Awesome\Framework\Model\AbstractAction
      */
     private function getNotfoundPage()
     {
-        return $this->fileManager->readFile(BP . self::NOTFOUND_PAGE_PATH, true);
+        return $this->phpFileManager->includeFile(BP . self::NOTFOUND_PAGE_PATH, true, true);
     }
 }
