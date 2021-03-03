@@ -164,7 +164,7 @@ class Http
             $cookies = $_COOKIE;
             $redirectStatus = isset($_SERVER['REDIRECT_STATUS']) ? (int) $_SERVER['REDIRECT_STATUS'] : null;
             $acceptType = isset($_SERVER['HTTP_ACCEPT']) && $_SERVER['HTTP_ACCEPT'] !== '*/*'
-                ? substr($_SERVER['HTTP_ACCEPT'], 0, strpos($_SERVER['HTTP_ACCEPT'], ','))
+                ? strtok($_SERVER['HTTP_ACCEPT'], ',')
                 : null;
             $userIp = $_SERVER['REMOTE_ADDR'];
             $view = self::FRONTEND_VIEW;
@@ -176,7 +176,7 @@ class Http
                 $view = preg_match('/^' . $backendFrontName . '\//', $path) ? self::BACKEND_VIEW : $view;
                 $path = preg_replace('/^' . $backendFrontName . '\//', '', $path);
             }
-            @list($route, $entity, $action) = explode('/', $path);
+            @list($route, $entity, $action) = explode('/', $path, 3);
 
             $this->request = new Request($url, $method, $parameters, $cookies, $redirectStatus, [
                 'accept_type' => $acceptType,

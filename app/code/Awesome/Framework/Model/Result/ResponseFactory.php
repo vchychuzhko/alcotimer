@@ -27,7 +27,7 @@ class ResponseFactory extends \Awesome\Framework\Model\AbstractFactory
     ];
 
     /**
-     * Create response object.
+     * Create response object according to provided type.
      * @param string $type
      * @param array $params
      * @return ResponseInterface
@@ -35,7 +35,7 @@ class ResponseFactory extends \Awesome\Framework\Model\AbstractFactory
     public function create(string $type = self::TYPE_RAW, array $params = []): ResponseInterface
     {
         if (!isset($this->typeMap[$type])) {
-            throw new \LogicException(sprintf('Response type "%s" is not recognized', $type));
+            throw new \LogicException(sprintf('Response type "%s" is not registered', $type));
         }
 
         return $this->invoker->create($this->typeMap[$type], $params);

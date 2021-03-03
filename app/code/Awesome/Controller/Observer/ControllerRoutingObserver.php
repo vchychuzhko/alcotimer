@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Awesome\Controller\Observer;
 
+use Awesome\Controller\Model\PostControllerInterface;
 use Awesome\Framework\Helper\DataHelper;
 use Awesome\Framework\Model\Event;
 use Awesome\Framework\Model\FileManager\PhpFileManager;
@@ -70,7 +71,9 @@ class ControllerRoutingObserver implements \Awesome\Framework\Model\Event\Observ
                 $className .= '\\' . self::DEFAULT_CONTROLLER_NAME;
             }
 
-            if ($this->phpFileManager->objectFileExists($className)) {
+            if ($this->phpFileManager->objectFileExists($className)
+                && is_a($className, PostControllerInterface::class, true) === $request->isPost()
+            ) {
                 $actionResolver->addAction($className);
             }
         }
