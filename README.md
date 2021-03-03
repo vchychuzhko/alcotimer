@@ -4,15 +4,18 @@
 Web application for people, who would like to make drinking process become really challenging.  
 
 ### Requirements
-* Apache 2.4+
+* Web server (Apache/Nginx) pointed to `pub` folder
 * PHP 7.1+
-* [Composer](https://getcomposer.org/download/)
+* Composer
 
 ### Installation
-Install dependencies using composer:
+* Install dependencies using composer:
 ```bash
 composer install
 ```
+
+* File `nginx.conf.sample` contain needed configurations, including secure connection nad redirects.  
+Just replace 'domain.com' for you needed domain.
 
 ### Usage
 Run below command to see possible console commands:  

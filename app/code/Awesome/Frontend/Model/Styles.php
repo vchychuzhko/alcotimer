@@ -65,7 +65,6 @@ class Styles
     {
         $resultFile = self::RESULT_FILENAME;
         $this->lessParser->reset();
-        $this->lessParser->setVariables([self::PUBLIC_DIRECTORY_VARIABLE => $this->getPubDir()]);
 
         if ($this->frontendState->isDeveloperMode()) {
             $this->lessParser->enableSourceMap();
@@ -90,14 +89,5 @@ class Styles
             $content,
             true
         );
-    }
-
-    /**
-     * Get public directory variable value.
-     * @return string
-     */
-    private function getPubDir(): string
-    {
-        return $this->frontendState->isPubRoot() ? '"/"' : '"/pub/"';
     }
 }

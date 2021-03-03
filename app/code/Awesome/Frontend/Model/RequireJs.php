@@ -82,8 +82,7 @@ class RequireJs
         $deployedVersion = $this->deployedVersion->getVersion();
 
         $config = $this->json->prettyEncode([
-            'baseUrl' => ($this->frontendState->isPubRoot() ? '' : '/pub')
-                . '/static/' . ($deployedVersion ? 'version' . $deployedVersion . '/' : '/') . $view,
+            'baseUrl' => '/static/' . ($deployedVersion ? 'version' . $deployedVersion . '/' : '/') . $view,
             'paths'   => $requirePaths,
         ]);
         $content = <<<JS

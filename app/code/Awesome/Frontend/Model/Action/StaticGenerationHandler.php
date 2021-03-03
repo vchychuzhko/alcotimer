@@ -16,7 +16,7 @@ use Awesome\Frontend\Model\StaticContent;
  */
 class StaticGenerationHandler extends \Awesome\Framework\Model\AbstractAction
 {
-    private const STATIC_FILE_PATTERN = '/^(\/pub)?(\/static\/)(version.+?\/)?(%s|%s)\/(.*)$/';
+    private const STATIC_FILE_PATTERN = '/^(\/static\/)(version.+?\/)?(%s|%s)\/(.*)$/';
 
     /**
      * Mime types for static files.
@@ -70,13 +70,13 @@ class StaticGenerationHandler extends \Awesome\Framework\Model\AbstractAction
     {
         $path = $this->getRequestedFile();
         $view = preg_replace(
-            sprintf(self::STATIC_FILE_PATTERN, Http::FRONTEND_VIEW, Http::BACKEND_VIEW), '$4', $request->getPath()
+            sprintf(self::STATIC_FILE_PATTERN, Http::FRONTEND_VIEW, Http::BACKEND_VIEW), '$3', $request->getPath()
         );
 
         $this->staticContent->deployFile($path, $view);
 
         $staticPath = preg_replace(
-            sprintf(self::STATIC_FILE_PATTERN, Http::FRONTEND_VIEW, Http::BACKEND_VIEW), '$5', $request->getPath()
+            sprintf(self::STATIC_FILE_PATTERN, Http::FRONTEND_VIEW, Http::BACKEND_VIEW), '$4', $request->getPath()
         );
 
         $content = $this->fileManager->readFile(BP . StaticContent::STATIC_FOLDER_PATH . $view . '/' . $staticPath);

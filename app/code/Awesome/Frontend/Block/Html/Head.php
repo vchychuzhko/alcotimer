@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace Awesome\Frontend\Block\Html;
 
 use Awesome\Frontend\Helper\StaticContentHelper;
+use Awesome\Frontend\Model\Context;
+use Awesome\Frontend\Model\FrontendState;
 use Awesome\Frontend\Model\RequireJs;
 
 /**
@@ -17,9 +19,26 @@ class Head extends \Awesome\Frontend\Block\Template
     private const HEAD_ADDITIONAL_BLOCK = 'head.additional';
 
     /**
+     * @var FrontendState $frontendState
+     */
+    private $frontendState;
+
+    /**
      * @inheritDoc
      */
     protected $template = 'Awesome_Frontend::html/head.phtml';
+
+    /**
+     * Head constructor.
+     * @param Context $context
+     * @param FrontendState $frontendState
+     * @param array $data
+     */
+    public function __construct(Context $context, FrontendState $frontendState, array $data = [])
+    {
+        parent::__construct($context, $data);
+        $this->frontendState = $frontendState;
+    }
 
     /**
      * Get page title, translating it if possible.

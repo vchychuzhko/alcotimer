@@ -18,8 +18,8 @@ use Awesome\Frontend\Model\Styles;
 
 class StaticGenerationObserver implements \Awesome\Framework\Model\Event\ObserverInterface
 {
-    private const STATIC_FILE_PATTERN = '/^(\/pub)?(\/static\/)(version.+?\/)?(%s|%s)\/(%s|\w+_\w+)?\/?(.*)$/';
-    private const STATIC_REQUEST_PATTERN = '/^(\/pub)?\/static\/(version.+?\/)?(%s|%s)\/(.*)$/';
+    private const STATIC_FILE_PATTERN = '/^(\/static\/)(version.+?\/)?(%s|%s)\/(%s|\w+_\w+)?\/?(.*)$/';
+    private const STATIC_REQUEST_PATTERN = '/^\/static\/(version.+?\/)?(%s|%s)\/(.*)$/';
 
     /**
      * @var FrontendState $frontendState
@@ -87,12 +87,7 @@ class StaticGenerationObserver implements \Awesome\Framework\Model\Event\Observe
      */
     private function isStaticFileRequest(string $requestPath): bool
     {
-        $match = (bool) preg_match(
-            sprintf(self::STATIC_REQUEST_PATTERN, Http::FRONTEND_VIEW, Http::BACKEND_VIEW), $requestPath, $matches
-        );
-        @list($unused, $pub) = $matches;
-
-        return $match && (($pub === '') === $this->frontendState->isPubRoot());
+        return (bool) preg_match(sprintf(self::STATIC_REQUEST_PATTERN, Http::FRONTEND_VIEW, Http::BACKEND_VIEW), $requestPath);
     }
 
     /**
@@ -107,7 +102,7 @@ class StaticGenerationObserver implements \Awesome\Framework\Model\Event\Observe
             $requestPath,
             $matches
         );
-        @list($unused, $pub, $static, $version, $view, $module, $file) = $matches;
+        @list($unused, $static, $version, $view, $module, $file) = $matches;
         $file = StaticContentHelper::removeMinificationFlag((string) $file);
 
         if ($module === StaticContent::LIB_FOLDER_PATH) {
