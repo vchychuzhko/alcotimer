@@ -1,35 +1,27 @@
 <?php
 declare(strict_types=1);
 
-namespace Awesome\Frontend\Model;
+namespace Awesome\Frontend\Model\Generator;
 
 use Awesome\Framework\Model\FileManager;
 use Awesome\Framework\Model\Http;
 use Awesome\Frontend\Helper\StaticContentHelper;
 use Awesome\Frontend\Model\Css\CssMinifier;
 use Awesome\Frontend\Model\Css\LessParser;
+use Awesome\Frontend\Model\FrontendState;
+use Awesome\Frontend\Model\GeneratorInterface;
 
-class Styles
+class Styles extends \Awesome\Frontend\Model\AbstractGenerator
 {
     private const MODULE_LESS_PATTERN = '/*/*/view/{%s,%s}/web/css/source/module.less';
     public const RESULT_FILENAME = 'styles.css';
-
-    private const PUBLIC_DIRECTORY_VARIABLE = 'pubDir';
+    // public const STYLES_DESKTOP_FILENAME = 'styles-d.css'; // @todo: seems to be useless
+    // @todo: check if media queries can be read from parsed less files
 
     /**
      * @var CssMinifier $cssMinifier
      */
     private $cssMinifier;
-
-    /**
-     * @var FileManager $fileManager
-     */
-    private $fileManager;
-
-    /**
-     * @var FrontendState $frontendState
-     */
-    private $frontendState;
 
     /**
      * @var LessParser $lessParser
@@ -49,19 +41,17 @@ class Styles
         FrontendState $frontendState,
         LessParser $lessParser
     ) {
+        parent::__construct($fileManager, $frontendState);
         $this->cssMinifier = $cssMinifier;
-        $this->fileManager = $fileManager;
-        $this->frontendState = $frontendState;
         $this->lessParser = $lessParser;
     }
 
     /**
-     * Generate styles css file.
+     * Generate styles css file for specified view..
      * If developer mode is active, source map will be attached.
-     * @param string $view
-     * @return void
+     * @inheritDoc
      */
-    public function generate(string $view): void
+    public function generate(string $path, string $view): GeneratorInterface
     {
         $resultFile = self::RESULT_FILENAME;
         $this->lessParser->reset();
@@ -85,9 +75,19 @@ class Styles
         }
 
         $this->fileManager->createFile(
-            BP . StaticContent::STATIC_FOLDER_PATH . $view . '/' . $resultFile,
+            $this->getStaticPath($resultFile, $view, true),
             $content,
             true
         );
+
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public static function match(string $path): bool
+    {
+        return $path === self::RESULT_FILENAME;
     }
 }

@@ -12,7 +12,6 @@ class ActionFactory extends \Awesome\Framework\Model\AbstractFactory
      * @param string $actionId
      * @param array $data
      * @return ActionInterface
-     * @throws \Exception
      */
     public function create(string $actionId, array $data = []): ActionInterface
     {

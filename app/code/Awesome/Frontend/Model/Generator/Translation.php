@@ -1,37 +1,25 @@
 <?php
 declare(strict_types=1);
 
-namespace Awesome\Frontend\Model;
+namespace Awesome\Frontend\Model\Generator;
 
 use Awesome\Framework\Model\FileManager;
 use Awesome\Framework\Model\Http;
 use Awesome\Framework\Model\Locale;
 use Awesome\Framework\Model\Locale\Translator;
 use Awesome\Framework\Model\Serializer\Json;
+use Awesome\Frontend\Model\FrontendState;
+use Awesome\Frontend\Model\GeneratorInterface;
 
-class Translation
+class Translation extends \Awesome\Frontend\Model\AbstractGenerator
 {
     private const JS_FOLDERS_PATTERN = '/*/*/view/{%s,%s}/web/js';
-
-    /**
-     * @var FileManager $fileManager
-     */
-    private $fileManager;
-
-    /**
-     * @var FrontendState $frontendState
-     */
-    private $frontendState;
+    private const TRANSLATION_FILE_PATTERN = '/\/?i18n\/([a-z]{2}_[A-Z]{2})\.json$/';
 
     /**
      * @var Json $json
      */
     private $json;
-
-    /**
-     * @var Locale $locale
-     */
-    private $locale;
 
     /**
      * @var Translator $translator
@@ -43,45 +31,26 @@ class Translation
      * @param FileManager $fileManager
      * @param FrontendState $frontendState
      * @param Json $json
-     * @param Locale $locale
      * @param Translator $translator
      */
     public function __construct(
         FileManager $fileManager,
         FrontendState $frontendState,
         Json $json,
-        Locale $locale,
         Translator $translator
     ) {
-        $this->fileManager = $fileManager;
-        $this->frontendState = $frontendState;
+        parent::__construct($fileManager, $frontendState);
         $this->json = $json;
-        $this->locale = $locale;
         $this->translator = $translator;
     }
 
     /**
-     * Generate translations file for all locales.
-     * @param string $view
-     * @return void
+     * Generate translations file for specified view and locale.
+     * @inheritDoc
      */
-    public function generate(string $view): void
+    public function generate(string $path, string $view): GeneratorInterface
     {
-        foreach ($this->locale->getAllLocales() as $locale) {
-            $this->generateLocale($view, $locale);
-        }
-    }
-
-    /**
-     * Generate translations file for specified locale.
-     * Current or default locale will be used if not provided.
-     * @param string $view
-     * @param string|null $locale
-     * @return void
-     */
-    public function generateLocale(string $view, ?string $locale = null): void
-    {
-        $locale = $locale ?: $this->locale->getLocale();
+        $locale = self::getLocaleByPath($path);
         $dictionary = [];
         $phrases = [];
 
@@ -119,9 +88,51 @@ class Translation
         }
 
         $this->fileManager->createFile(
-            BP . StaticContent::STATIC_FOLDER_PATH . $view . '/i18n/' . $locale . '.json',
+            $this->getStaticPath('/i18n/' . $locale . '.json', $view, true),
             $content,
             true
         );
+
+        return $this;
+    }
+
+    /**
+     * Generate translations file for all locales.
+     * @param string $view
+     * @return void
+     */
+    public function generateAll(string $view): void
+    {
+        foreach (Locale::getAllLocales() as $locale) {
+            $this->generate(self::getPathByLocale($locale), $view);
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public static function match(string $path): bool
+    {
+        return in_array(self::getLocaleByPath($path), Locale::getAllLocales(), true);
+    }
+
+    /**
+     * Get locale by translation file path, if any.
+     * @param string $path
+     * @return string|null
+     */
+    private static function getLocaleByPath(string $path): ?string
+    {
+        return preg_match(self::TRANSLATION_FILE_PATTERN, $path, $matches) ? $matches[1] : null;
+    }
+
+    /**
+     * Get translation file path by by locale.
+     * @param string $locale
+     * @return string
+     */
+    private static function getPathByLocale(string $locale): string
+    {
+        return '/i18n/' . $locale . '.json';
     }
 }

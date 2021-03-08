@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title><?= __('Forbidden Page'); ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <link rel="shortcut icon" type="image/png" href="../media/images/favicon.png"/>
+    <link rel="shortcut icon" type="image/png" href="/media/images/favicon.png"/>
     <style>
         * {
             margin: 0;

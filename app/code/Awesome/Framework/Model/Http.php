@@ -28,42 +28,42 @@ class Http
     /**
      * @var ActionResolver $actionResolver
      */
-    private $actionResolver;
+    protected $actionResolver;
 
     /**
      * @var AppState $appState
      */
-    private $appState;
+    protected $appState;
 
     /**
      * @var Config $config
      */
-    private $config;
+    protected $config;
 
     /**
      * @var EventManager $eventManager
      */
-    private $eventManager;
+    protected $eventManager;
 
     /**
      * @var Locale $locale
      */
-    private $locale;
+    protected $locale;
 
     /**
      * @var Logger $logger
      */
-    private $logger;
+    protected $logger;
 
     /**
      * @var Maintenance $maintenance
      */
-    private $maintenance;
+    protected $maintenance;
 
     /**
      * @var Request $request
      */
-    private $request;
+    protected $request;
 
     /**
      * Http app constructor.
@@ -141,7 +141,7 @@ class Http
      * Check if maintenance mode is active for user IP address.
      * @return bool
      */
-    private function isMaintenance(): bool
+    protected function isMaintenance(): bool
     {
         $ip = $this->getRequest()->getUserIp();
 
@@ -152,7 +152,7 @@ class Http
      * Parse and return http request.
      * @return Request
      */
-    private function getRequest(): Request
+    protected function getRequest(): Request
     {
         if (!$this->request) {
             $scheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] === 443
@@ -176,7 +176,7 @@ class Http
                 $view = preg_match('/^' . $backendFrontName . '\//', $path) ? self::BACKEND_VIEW : $view;
                 $path = preg_replace('/^' . $backendFrontName . '\//', '', $path);
             }
-            @list($route, $entity, $action) = explode('/', $path, 3);
+            @list($route, $entity, $action) = explode('/', $path);
 
             $this->request = new Request($url, $method, $parameters, $cookies, $redirectStatus, [
                 'accept_type' => $acceptType,

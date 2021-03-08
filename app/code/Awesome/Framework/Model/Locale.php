@@ -50,7 +50,7 @@ class Locale implements \Awesome\Framework\Model\SingletonInterface
      * Get all registered locale codes.
      * @return array
      */
-    public function getAllLocales(): array
+    public static function getAllLocales(): array
     {
         return self::ALLOWED_LOCALES;
     }

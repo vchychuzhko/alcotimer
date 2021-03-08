@@ -3,3 +3,4 @@
 /pub/.well-known/*
 /pub/static/*
 !/pub/static/.htaccess
+!/pub/static/get.php

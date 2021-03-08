@@ -11,7 +11,6 @@ class BlockFactory extends \Awesome\Framework\Model\AbstractFactory
      * @param string $blockId
      * @param array $params
      * @return BlockInterface
-     * @throws \Exception
      */
     public function create(string $blockId, array $params = []): BlockInterface
     {

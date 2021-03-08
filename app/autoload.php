@@ -2,10 +2,8 @@
 /**
  * Register autoloader.
  */
-$vendorAutoload = BP . '/vendor/autoload.php';
-
-if (!is_file($vendorAutoload)) {
+if (!is_file(BP . '/vendor/autoload.php')) {
     throw new \Exception('Vendor autoload was not found. Please run "composer install" under application root directory.');
 }
 
-require $vendorAutoload;
+require BP . '/vendor/autoload.php';
