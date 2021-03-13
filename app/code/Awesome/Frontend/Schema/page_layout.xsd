@@ -58,7 +58,15 @@
                             </xs:element>
                             <xs:element name="preload" minOccurs="0" maxOccurs="unbounded">
                                 <xs:complexType>
-                                    <xs:attribute name="type" use="required">
+                                    <xs:attribute name="href" use="required">
+                                        <xs:simpleType>
+                                            <xs:restriction base="xs:string">
+                                                <xs:minLength value="1"/>
+                                                <xs:pattern value="[a-zA-Z0-9\-_/.]*"/>
+                                            </xs:restriction>
+                                        </xs:simpleType>
+                                    </xs:attribute>
+                                    <xs:attribute name="as" use="required">
                                         <xs:simpleType>
                                             <xs:restriction base="xs:string">
                                                 <xs:enumeration value="font"/>
@@ -67,11 +75,11 @@
                                             </xs:restriction>
                                         </xs:simpleType>
                                     </xs:attribute>
-                                    <xs:attribute name="href" use="required">
+                                    <xs:attribute name="type">
                                         <xs:simpleType>
                                             <xs:restriction base="xs:string">
                                                 <xs:minLength value="1"/>
-                                                <xs:pattern value="[a-zA-Z\-_/.]*"/>
+                                                <xs:pattern value="[a-zA-Z0-9/]*"/>
                                             </xs:restriction>
                                         </xs:simpleType>
                                     </xs:attribute>

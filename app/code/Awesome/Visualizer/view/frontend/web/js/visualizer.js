@@ -85,7 +85,7 @@ define([
         /**
          * Convert degree value to radians.
          * @param {number} angle
-         * @return {number}
+         * @returns {number}
          */
         degreesToRadians: function (angle) {
             return (Math.PI / 180) * angle;

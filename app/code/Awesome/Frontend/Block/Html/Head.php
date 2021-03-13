@@ -59,9 +59,7 @@ class Head extends \Awesome\Frontend\Block\Template
         $preloadData = $this->getData('preloads') ?: [];
 
         foreach ($preloadData as $preload => $data) {
-            $type = $data['type'];
-
-            switch ($type) {
+            switch ($as = $data['as']) {
                 case 'style':
                     $minified = $this->frontendState->isCssMinificationEnabled();
                     break;
@@ -72,8 +70,9 @@ class Head extends \Awesome\Frontend\Block\Template
                     $minified = false;
             }
             $preloads[] = [
-                'type' => $type,
+                'as'   => $as,
                 'href' => $this->resolveAssetPath($preload, $minified),
+                'type' => $data['type'] ?? null,
             ];
         }
 

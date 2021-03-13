@@ -15,13 +15,18 @@
     <link rel="shortcut icon" type="image/png" href="<?= $block->getMediaUrl($favicon); ?>"/>
 <?php endif; ?>
 <?php foreach($block->getPreloads() as $preload): ?>
-    <link rel="preload" href="<?= $preload['href']; ?>" as="<?= $preload['type']; ?>" crossorigin="anonymous"/>
+    <link rel="preload" href="<?= $preload['href']; ?>"
+          as="<?= $preload['as']; ?>"
+          <?= $preload['type'] ? 'type="' . $preload['type'] . '"' : ''; ?>
+          crossorigin="anonymous"/>
 <?php endforeach; ?>
 <?php foreach($block->getStyles() as $css): ?>
     <link rel="stylesheet" type="text/css" href="<?= $css['src']; ?>"/>
 <?php endforeach; ?>
 <?php foreach($block->getScripts() as $script): ?>
-    <script src="<?= $script['src']; ?>"<?= $script['async'] ? ' async' : ''; ?><?= $script['defer'] ? ' defer' : ''; ?>></script>
+    <script src="<?= $script['src']; ?>"
+            <?= $script['async'] ? ' async' : ''; ?>
+            <?= $script['defer'] ? ' defer' : ''; ?>></script>
 <?php endforeach; ?>
     <?= $block->getHeadAdditional(); ?>
 </head>

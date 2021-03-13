@@ -176,10 +176,13 @@ class LayoutXmlParser
                     break;
                 case 'preload':
                     $parsedAsset = [
-                        'type' => XmlParsingHelper::getNodeAttribute($child, 'type'),
+                        'as'   => XmlParsingHelper::getNodeAttribute($child, 'as'),
                         'href' => XmlParsingHelper::getNodeAttribute($child, 'href'),
                     ];
 
+                    if ($type = XmlParsingHelper::getNodeAttribute($child, 'type')) {
+                        $parsedAsset['type'] = $type;
+                    }
                     if ($sortOrder = XmlParsingHelper::getNodeAttribute($child, 'sortOrder')) {
                         $parsedAsset['sortOrder'] = $sortOrder;
                     }

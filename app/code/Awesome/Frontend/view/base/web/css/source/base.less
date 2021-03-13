@@ -3,11 +3,15 @@
     padding: 0;
 }
 
+body {
+    font-family: Georgia, serif;
+}
+
 .noscroll {
     overflow: hidden;
 }
 
-.no-select {
+.noselect {
     -webkit-user-select: none;
     -moz-user-select: none;
     user-select: none;
@@ -27,7 +31,13 @@ a:hover {
 }
 
 button {
+    font-family: inherit;
     outline: none; // @TODO: temporary solution, add some kind of focus effect
+}
+
+textarea {
+    font-family: inherit;
+    font-size: inherit;
 }
 
 input[type="number"]::-webkit-inner-spin-button,

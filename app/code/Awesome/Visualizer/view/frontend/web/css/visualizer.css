@@ -1,15 +1,9 @@
-@font-face {
-    font-family: Rockwell;
-    src: url('../fonts/rockwell.ttf');
-}
-
 .visualizer {
     background-color: black;
     background-attachment: fixed;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    font-family: Rockwell, sans-serif;
     height: 100%;
     left: 0;
     overflow: hidden;
