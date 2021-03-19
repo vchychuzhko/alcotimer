@@ -27,7 +27,7 @@ class XmlParsingHelper
     }
 
     /**
-     * Get node child by name.
+     * Get child node by name.
      * Return the first one if several nodes found.
      * @param \SimpleXMLElement $node
      * @param string $childNodeName
@@ -43,6 +43,16 @@ class XmlParsingHelper
         }
 
         return $childNode;
+    }
+
+    /**
+     * Get node inner content.
+     * @param \SimpleXMLElement $node
+     * @return string
+     */
+    public static function getNodeContent(\SimpleXMLElement $node): string
+    {
+        return (string) $node;
     }
 
     /**

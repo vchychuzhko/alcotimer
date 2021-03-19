@@ -109,8 +109,9 @@ class Layout
 
         if ($elementData = DataHelper::arrayGetByKeyRecursive($this->structure, $nameInLayout)) {
             $elementId = $elementData['class'];
+            $params = array_merge($elementData['arguments'], ['data' => $elementData['data']]);
 
-            $element = $this->blockFactory->create($elementId, ['data' => $elementData['data'] ?? []]);
+            $element = $this->blockFactory->create($elementId, $params);
 
             if ($element instanceof AbstractBlock) {
                 $element->init($this, $nameInLayout, $elementData['template']);

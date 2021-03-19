@@ -35,9 +35,9 @@ class DataHelper
      * @param array $array
      * @param string $elementKeyToUpdate
      * @param mixed $newValue
-     * @return void
+     * @return array
      */
-    public static function arrayReplaceByKeyRecursive(array &$array, string $elementKeyToUpdate, $newValue): void
+    public static function arrayReplaceByKeyRecursive(array $array, string $elementKeyToUpdate, $newValue): array
     {
         foreach ($array as $key => $value) {
             if ($key === $elementKeyToUpdate) {
@@ -47,9 +47,11 @@ class DataHelper
                     $array[$key] = $newValue;
                 }
             } elseif (is_array($value)) {
-                self::arrayReplaceByKeyRecursive($array[$key], $elementKeyToUpdate, $newValue);
+                $array[$key] = self::arrayReplaceByKeyRecursive($array[$key], $elementKeyToUpdate, $newValue);
             }
         }
+
+        return $array;
     }
 
     /**
@@ -57,17 +59,19 @@ class DataHelper
      * @link https://www.php.net/manual/en/function.array-walk-recursive.php#114574
      * @param array $array
      * @param string $elementKeyToRemove
-     * @return void
+     * @return array
      */
-    public static function arrayRemoveByKeyRecursive(array &$array, string $elementKeyToRemove): void
+    public static function arrayRemoveByKeyRecursive(array $array, string $elementKeyToRemove): array
     {
         foreach ($array as $key => $value) {
             if ($key === $elementKeyToRemove) {
                 unset($array[$key]);
             } elseif (is_array($value)) {
-                self::arrayRemoveByKeyRecursive($array[$key], $elementKeyToRemove);
+                $array[$key] = self::arrayRemoveByKeyRecursive($array[$key], $elementKeyToRemove);
             }
         }
+
+        return $array;
     }
 
     /**
@@ -83,7 +87,7 @@ class DataHelper
 
     /**
      * Cast value to a corresponding type.
-     * String like "true" or "false" are treated as bool type, not case sensitive.
+     * String like "true" or "false" are treated as bool type, case insensitive.
      * @param mixed $value
      * @return mixed
      */

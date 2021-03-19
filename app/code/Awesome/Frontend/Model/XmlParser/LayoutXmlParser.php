@@ -91,34 +91,39 @@ class LayoutXmlParser
         $this->filterRemovedAssets($head);
         XmlParsingHelper::applySortOrder($head);
         $head = [
-            'name'     => 'head',
-            'class'    => Head::class,
-            'disabled' => false,
-            'template' => null,
-            'children' => [],
-            'data'     => $head,
+            'name'      => 'head',
+            'class'     => Head::class,
+            'disabled'  => false,
+            'template'  => null,
+            'children'  => [],
+            'arguments' => [],
+            'data'      => $head,
         ];
 
-        $body = [
-            'name'     => 'body',
-            'class'    => Body::class,
-            'disabled' => false,
-            'template' => null,
-            'children' => $body,
-        ];
         $this->applyReferences($body);
         XmlParsingHelper::applySortOrder($body);
+        $body = [
+            'name'      => 'body',
+            'class'     => Body::class,
+            'disabled'  => false,
+            'template'  => null,
+            'children'  => $body,
+            'arguments' => [],
+            'data'      => [],
+        ];
 
         return [
             'root' => [
-                'name'     => 'root',
-                'class'    => Root::class,
-                'disabled' => false,
-                'template' => null,
-                'children' => [
+                'name'      => 'root',
+                'class'     => Root::class,
+                'disabled'  => false,
+                'template'  => null,
+                'children'  => [
                     'head' => $head,
                     'body' => $body
                 ],
+                'arguments' => [],
+                'data'      => [],
             ]
         ];
     }
@@ -227,11 +232,13 @@ class LayoutXmlParser
                 }
 
                 $parsedItemNode = [
-                    'name'     => $elementName,
-                    'class'    => XmlParsingHelper::getNodeAttribute($elementNode, 'class'),
-                    'disabled' => XmlParsingHelper::isDisabled($elementNode),
-                    'template' => XmlParsingHelper::getNodeAttribute($elementNode, 'template') ?: null,
-                    'children' => [],
+                    'name'      => $elementName,
+                    'class'     => XmlParsingHelper::getNodeAttribute($elementNode, 'class'),
+                    'disabled'  => XmlParsingHelper::isDisabled($elementNode),
+                    'template'  => XmlParsingHelper::getNodeAttribute($elementNode, 'template') ?: null,
+                    'children'  => [],
+                    'arguments' => [],
+                    'data'      => [],
                 ];
 
                 if ($sortOrder = XmlParsingHelper::getNodeAttribute($elementNode, 'sortOrder')) {
@@ -239,7 +246,11 @@ class LayoutXmlParser
                 }
 
                 foreach ($elementNode->children() as $child) {
-                    if ($parsedChild = $this->parseElement($child)) {
+                    if ($child->getName() === 'arguments') {
+                        foreach ($child->children() as $argument) {
+                            $parsedItemNode['arguments'][XmlParsingHelper::getNodeAttributeName($argument)] = XmlParsingHelper::getNodeContent($argument);
+                        }
+                    } elseif ($parsedChild = $this->parseElement($child)) {
                         $parsedItemNode['children'][XmlParsingHelper::getNodeAttributeName($child)] = $parsedChild;
                     }
                 }
@@ -257,18 +268,20 @@ class LayoutXmlParser
                 }
 
                 $parsedItemNode = [
-                    'name'     => $elementName,
-                    'class'    => Container::class,
-                    'disabled' => XmlParsingHelper::isDisabled($elementNode),
-                    'template' => null,
-                    'children' => [],
+                    'name'      => $elementName,
+                    'class'     => Container::class,
+                    'disabled'  => XmlParsingHelper::isDisabled($elementNode),
+                    'template'  => null,
+                    'children'  => [],
+                    'arguments' => [],
+                    'data'      => [],
                 ];
 
                 if ($htmlTag = XmlParsingHelper::getNodeAttribute($elementNode, 'htmlTag')) {
                     $parsedItemNode['data'] = [
                         'html_tag'   => $htmlTag,
-                        'html_class' => XmlParsingHelper::getNodeAttribute($elementNode, 'htmlClass'),
-                        'html_id'    => XmlParsingHelper::getNodeAttribute($elementNode, 'htmlId'),
+                        'html_class' => XmlParsingHelper::getNodeAttribute($elementNode, 'htmlClass') ?: null,
+                        'html_id'    => XmlParsingHelper::getNodeAttribute($elementNode, 'htmlId') ?: null,
                     ];
                 }
 
@@ -340,11 +353,11 @@ class LayoutXmlParser
     private function applyReferences(array &$bodyStructure): void
     {
         foreach ($this->references as $reference) {
-            DataHelper::arrayReplaceByKeyRecursive($bodyStructure, $reference['name'], $reference['data']);
+            $bodyStructure = DataHelper::arrayReplaceByKeyRecursive($bodyStructure, $reference['name'], $reference['data']);
         }
 
         foreach ($this->referencesToRemove as $referenceToRemove) {
-            DataHelper::arrayRemoveByKeyRecursive($bodyStructure, $referenceToRemove);
+            $bodyStructure = DataHelper::arrayRemoveByKeyRecursive($bodyStructure, $referenceToRemove);
         }
     }
 }
