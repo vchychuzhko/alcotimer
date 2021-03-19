@@ -32,13 +32,13 @@ class Get extends \Awesome\Framework\Model\Http
     private const MIME_TYPES = [
         'css'   => 'text/css',
         'html'  => 'text/html',
-        'js'    => 'application/javascript',
+        'js'    => 'text/javascript',
         'json'  => 'application/json',
         'eot'   => 'application/vnd.ms-fontobject',
-        'ttf'   => 'application/x-font-ttf',
-        'otf'   => 'application/x-font-otf',
-        'woff'  => 'application/x-font-woff',
-        'woff2' => 'application/font-woff2',
+        'ttf'   => 'font/ttf',
+        'otf'   => 'font/otf',
+        'woff'  => 'font/woff',
+        'woff2' => 'font/woff2',
     ];
 
     /**

@@ -51,11 +51,11 @@ class Head extends \Awesome\Frontend\Block\Template
 
     /**
      * Get resources to be preloaded, resolving their paths.
-     * @return array
+     * @return string
      */
-    public function getPreloads(): array
+    public function getPreloadsHtml(): string
     {
-        $preloads = [];
+        $preloadsHtml = '';
         $preloadData = $this->getData('preloads') ?: [];
 
         foreach ($preloadData as $preload => $data) {
@@ -69,54 +69,63 @@ class Head extends \Awesome\Frontend\Block\Template
                 default:
                     $minified = false;
             }
-            $preloads[] = [
-                'as'   => $as,
-                'href' => $this->resolveAssetPath($preload, $minified),
-                'type' => $data['type'] ?? null,
-            ];
+            $href = $this->resolveAssetPath($preload, $minified);
+            $type = $data['type'] ? ' type="' . $data['type'] . '"' : '';
+
+            $preloadsHtml .= <<<HTML
+<link rel="preload" href="$href" as="$as"{$type} crossorigin="anonymous"/>
+
+HTML;
         }
 
-        return $preloads;
+        return $preloadsHtml;
     }
 
     /**
      * Get styles, resolving their paths.
-     * @return array
+     * @return string
      */
-    public function getStyles(): array
+    public function getStylesHtml(): string
     {
-        $styles = [];
+        $stylesHtml = '';
         $stylesData = $this->getData('styles') ?: [];
         $minified = $this->frontendState->isCssMinificationEnabled();
 
         foreach ($stylesData as $style => $data) {
-            $styles[] = [
-                'src' => $this->resolveAssetPath($style, $minified),
-            ];
+            $href = $this->resolveAssetPath($style, $minified);
+            $media = $data['media'] ? ' media="' . $data['media'] . '"' : '';
+
+            $stylesHtml .= <<<HTML
+<link rel="stylesheet" type="text/css" href="$href"{$media}/>
+
+HTML;
         }
 
-        return $styles;
+        return $stylesHtml;
     }
 
     /**
      * Get scripts, resolving their paths.
-     * @return array
+     * @return string
      */
-    public function getScripts(): array
+    public function getScriptsHtml(): string
     {
-        $scripts = [];
+        $scriptsHtml = '';
         $scriptsData = $this->getData('scripts') ?: [];
         $minified = $this->frontendState->isJsMinificationEnabled();
 
         foreach ($scriptsData as $script => $data) {
-            $scripts[] = [
-                'src'   => $this->resolveAssetPath($script, $minified),
-                'async' => $data['async'] ?? false,
-                'defer' => $data['defer'] ?? false,
-            ];
+            $src = $this->resolveAssetPath($script, $minified);
+            $async = $data['async'] ? ' async' : '';
+            $defer = $data['defer'] ? ' defer' : '';
+
+            $scriptsHtml .= <<<HTML
+<script src="$src"{$async}{$defer}></script>
+
+HTML;
         }
 
-        return $scripts;
+        return $scriptsHtml;
     }
 
     /**

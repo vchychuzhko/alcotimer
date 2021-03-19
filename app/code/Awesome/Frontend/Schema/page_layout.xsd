@@ -53,6 +53,14 @@
                                             </xs:restriction>
                                         </xs:simpleType>
                                     </xs:attribute>
+                                    <xs:attribute name="media">
+                                        <xs:simpleType>
+                                            <xs:restriction base="xs:string">
+                                                <xs:minLength value="1"/>
+                                                <xs:pattern value="[a-z0-9\-: (),]*"/>
+                                            </xs:restriction>
+                                        </xs:simpleType>
+                                    </xs:attribute>
                                     <xs:attribute name="sortOrder" type="xs:nonNegativeInteger"/>
                                 </xs:complexType>
                             </xs:element>
@@ -110,12 +118,8 @@
                             <xs:element ref="referenceContainer" minOccurs="0" maxOccurs="unbounded"/>
                         </xs:sequence>
                     </xs:complexType>
-                    <xs:unique name="blockName">
-                        <xs:selector xpath=".//block"/>
-                        <xs:field xpath="@name"/>
-                    </xs:unique>
-                    <xs:unique name="containerName">
-                        <xs:selector xpath=".//container"/>
+                    <xs:unique name="elementName">
+                        <xs:selector xpath=".//block|.//container"/>
                         <xs:field xpath="@name"/>
                     </xs:unique>
                 </xs:element>

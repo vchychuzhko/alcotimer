@@ -5,9 +5,9 @@ namespace Awesome\Frontend\Model\XmlParser;
 
 use Awesome\Framework\Exception\XmlValidationException;
 use Awesome\Framework\Helper\DataHelper;
+use Awesome\Framework\Helper\XmlParsingHelper;
 use Awesome\Framework\Model\Config;
 use Awesome\Framework\Model\FileManager\XmlFileManager;
-use Awesome\Framework\Helper\XmlParsingHelper;
 use Awesome\Frontend\Block\Container;
 use Awesome\Frontend\Block\Html\Body;
 use Awesome\Frontend\Block\Html\Head;
@@ -33,15 +33,6 @@ class LayoutXmlParser
      * @var array $processedElements
      */
     private $processedElements = [];
-
-    /**
-     * @var array $collectedAssets
-     */
-    private $collectedAssets = [
-        'preloads' => [],
-        'scripts'  => [],
-        'styles'   => [],
-    ];
 
     /**
      * @var array $assetsToRemove
@@ -97,15 +88,15 @@ class LayoutXmlParser
             }
         }
 
-        $this->filterRemovedAssets();
-        XmlParsingHelper::applySortOrder($this->collectedAssets);
+        $this->filterRemovedAssets($head);
+        XmlParsingHelper::applySortOrder($head);
         $head = [
             'name'     => 'head',
             'class'    => Head::class,
             'disabled' => false,
             'template' => null,
             'children' => [],
-            'data'     => array_merge($head, $this->collectedAssets),
+            'data'     => $head,
         ];
 
         $body = [
@@ -139,54 +130,55 @@ class LayoutXmlParser
      */
     private function parseHeadNode(\SimpleXMLElement $headNode): array
     {
-        $data = [];
+        $headData = [
+            'scripts'  => [],
+            'styles'   => [],
+            'preloads' => [],
+        ];
 
         foreach ($headNode->children() as $child) {
             switch ($childName = $child->getName()) {
                 case 'title':
                 case 'description':
                 case 'keywords':
-                    $data[$childName] = (string) $child;
+                    $headData[$childName] = (string) $child;
                     break;
                     //@TODO: Move above attributes to page-related config, they should not be defined in XML
                 case 'favicon':
-                    $data[$childName] = XmlParsingHelper::getNodeAttribute($child, 'src');
+                    $headData[$childName] = XmlParsingHelper::getNodeAttribute($child, 'src');
                     break;
                 case 'script':
-                    $parsedAsset = [];
+                    $parsedAsset = [
+                        'async' => XmlParsingHelper::isAttributeBooleanTrue($child, 'async'),
+                        'defer' => XmlParsingHelper::isAttributeBooleanTrue($child, 'defer'),
+                    ];
 
                     if ($sortOrder = XmlParsingHelper::getNodeAttribute($child, 'sortOrder')) {
                         $parsedAsset['sortOrder'] = $sortOrder;
                     }
-                    if (XmlParsingHelper::isAttributeBooleanTrue($child, 'async')) {
-                        $parsedAsset['async'] = true;
-                    }
-                    if (XmlParsingHelper::isAttributeBooleanTrue($child, 'defer')) {
-                        $parsedAsset['defer'] = true;
-                    }
-                    $this->collectedAssets['scripts'][XmlParsingHelper::getNodeAttribute($child, 'src')] = $parsedAsset;
+                    $headData['scripts'][XmlParsingHelper::getNodeAttribute($child, 'src')] = $parsedAsset;
                     break;
                 case 'css':
-                    $parsedAsset = [];
+                    $parsedAsset = [
+                        'media' => XmlParsingHelper::getNodeAttribute($child, 'media') ?: null,
+                    ];
 
                     if ($sortOrder = XmlParsingHelper::getNodeAttribute($child, 'sortOrder')) {
                         $parsedAsset['sortOrder'] = $sortOrder;
                     }
-                    $this->collectedAssets['styles'][XmlParsingHelper::getNodeAttribute($child, 'src')] = $parsedAsset;
+                    $headData['styles'][XmlParsingHelper::getNodeAttribute($child, 'src')] = $parsedAsset;
                     break;
                 case 'preload':
                     $parsedAsset = [
                         'as'   => XmlParsingHelper::getNodeAttribute($child, 'as'),
                         'href' => XmlParsingHelper::getNodeAttribute($child, 'href'),
+                        'type' => XmlParsingHelper::getNodeAttribute($child, 'type') ?: null,
                     ];
 
-                    if ($type = XmlParsingHelper::getNodeAttribute($child, 'type')) {
-                        $parsedAsset['type'] = $type;
-                    }
                     if ($sortOrder = XmlParsingHelper::getNodeAttribute($child, 'sortOrder')) {
                         $parsedAsset['sortOrder'] = $sortOrder;
                     }
-                    $this->collectedAssets['preloads'][XmlParsingHelper::getNodeAttribute($child, 'href')] = $parsedAsset;
+                    $headData['preloads'][XmlParsingHelper::getNodeAttribute($child, 'href')] = $parsedAsset;
                     break;
                 case 'remove':
                     $this->assetsToRemove[] = XmlParsingHelper::getNodeAttribute($child, 'src');
@@ -194,7 +186,7 @@ class LayoutXmlParser
             }
         }
 
-        return $data;
+        return $headData;
     }
 
     /**
@@ -326,13 +318,16 @@ class LayoutXmlParser
 
     /**
      * Filter collected assets according to remove references.
+     * @param array $headStructure
      * @return void
      */
-    private function filterRemovedAssets(): void
+    private function filterRemovedAssets(array &$headStructure): void
     {
         foreach ($this->assetsToRemove as $assetToRemove) {
-            foreach ($this->collectedAssets as $assetType => $unused) {
-                unset($this->collectedAssets[$assetType][$assetToRemove]);
+            foreach ($headStructure as $headField => $unused) {
+                if (in_array($headField, ['scripts', 'styles', 'preloads'], true)) {
+                    unset($headStructure[$headField][$assetToRemove]);
+                }
             }
         }
     }
