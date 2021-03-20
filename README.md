@@ -14,7 +14,7 @@ Web application for people, who would like to make drinking process become reall
 composer install
 ```
 
-* File `nginx.conf.sample` contain needed configurations, including secure connection nad redirects.  
+* File `nginx.conf.sample` contain needed configurations, including secure connection and redirects.  
 Just replace 'domain.com' for you needed domain.
 
 ### Usage

@@ -2,7 +2,7 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="../../../../Frontend/Schema/page_layout.xsd">
     <head>
-        <favicon src="images/favicon.png"/>
+        <favicon src="/media/images/favicon.png" type="image/png"/>
         <css src="styles.css"/>
         <css src="Awesome_Frontend/css/menu.css"/>
         <css src="Awesome_Frontend/css/message.css"/>

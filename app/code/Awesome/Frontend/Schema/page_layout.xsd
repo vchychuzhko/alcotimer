@@ -5,16 +5,33 @@
             <xs:sequence>
                 <xs:element name="head" minOccurs="0">
                     <xs:complexType>
-                        <xs:sequence minOccurs="0" maxOccurs="unbounded">
-                            <xs:element name="title" type="xs:string" minOccurs="0"/>
-                            <xs:element name="description" type="xs:string" minOccurs="0"/>
+                        <xs:choice minOccurs="0" maxOccurs="unbounded">
+                            <xs:element name="title" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:simpleContent>
+                                        <xs:extension base="xs:string">
+                                            <xs:attribute name="translate" type="xs:boolean" default="true"/>
+                                        </xs:extension>
+                                    </xs:simpleContent>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="description" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:simpleContent>
+                                        <xs:extension base="xs:string">
+                                            <xs:attribute name="translate" type="xs:boolean" default="true"/>
+                                        </xs:extension>
+                                    </xs:simpleContent>
+                                </xs:complexType>
+                            </xs:element>
                             <xs:element name="keywords" minOccurs="0">
-                                <xs:simpleType>
-                                    <xs:restriction base="xs:string">
-                                        <xs:minLength value="1"/>
-                                        <xs:pattern value="[a-zA-Z0-9,]*"/>
-                                    </xs:restriction>
-                                </xs:simpleType>
+                                <xs:complexType>
+                                    <xs:simpleContent>
+                                        <xs:extension base="xs:string">
+                                            <xs:attribute name="translate" type="xs:boolean" default="true"/>
+                                        </xs:extension>
+                                    </xs:simpleContent>
+                                </xs:complexType>
                             </xs:element>
                             <xs:element name="favicon" minOccurs="0">
                                 <xs:complexType>
@@ -23,6 +40,14 @@
                                             <xs:restriction base="xs:string">
                                                 <xs:minLength value="1"/>
                                                 <xs:pattern value="[a-zA-Z0-9\-_/.]*"/>
+                                            </xs:restriction>
+                                        </xs:simpleType>
+                                    </xs:attribute>
+                                    <xs:attribute name="type">
+                                        <xs:simpleType>
+                                            <xs:restriction base="xs:string">
+                                                <xs:minLength value="1"/>
+                                                <xs:pattern value="[a-zA-Z0-9/]*"/>
                                             </xs:restriction>
                                         </xs:simpleType>
                                     </xs:attribute>
@@ -66,7 +91,7 @@
                             </xs:element>
                             <xs:element name="preload" minOccurs="0" maxOccurs="unbounded">
                                 <xs:complexType>
-                                    <xs:attribute name="href" use="required">
+                                    <xs:attribute name="src" use="required">
                                         <xs:simpleType>
                                             <xs:restriction base="xs:string">
                                                 <xs:minLength value="1"/>
@@ -106,8 +131,12 @@
                                     </xs:attribute>
                                 </xs:complexType>
                             </xs:element>
-                        </xs:sequence>
+                        </xs:choice>
                     </xs:complexType>
+                    <xs:unique name="elementSource">
+                        <xs:selector xpath=".//style|.//script|.//preload|.//remove"/>
+                        <xs:field xpath="@src"/>
+                    </xs:unique>
                 </xs:element>
                 <xs:element name="body" minOccurs="0">
                     <xs:complexType>

@@ -146,11 +146,17 @@ class LayoutXmlParser
                 case 'title':
                 case 'description':
                 case 'keywords':
-                    $headData[$childName] = (string) $child;
+                    $headData[$childName] = [
+                        'content'   => XmlParsingHelper::getNodeContent($child),
+                        'translate' => XmlParsingHelper::isAttributeBooleanTrue($child, 'translate', true),
+                    ];
                     break;
                     //@TODO: Move above attributes to page-related config, they should not be defined in XML
                 case 'favicon':
-                    $headData[$childName] = XmlParsingHelper::getNodeAttribute($child, 'src');
+                    $headData['favicon'] = [
+                        'src'  => XmlParsingHelper::getNodeAttribute($child, 'src'),
+                        'type' => XmlParsingHelper::getNodeAttribute($child, 'type') ?: null,
+                    ];
                     break;
                 case 'script':
                     $parsedAsset = [
@@ -176,14 +182,13 @@ class LayoutXmlParser
                 case 'preload':
                     $parsedAsset = [
                         'as'   => XmlParsingHelper::getNodeAttribute($child, 'as'),
-                        'href' => XmlParsingHelper::getNodeAttribute($child, 'href'),
                         'type' => XmlParsingHelper::getNodeAttribute($child, 'type') ?: null,
                     ];
 
                     if ($sortOrder = XmlParsingHelper::getNodeAttribute($child, 'sortOrder')) {
                         $parsedAsset['sortOrder'] = $sortOrder;
                     }
-                    $headData['preloads'][XmlParsingHelper::getNodeAttribute($child, 'href')] = $parsedAsset;
+                    $headData['preloads'][XmlParsingHelper::getNodeAttribute($child, 'src')] = $parsedAsset;
                     break;
                 case 'remove':
                     $this->assetsToRemove[] = XmlParsingHelper::getNodeAttribute($child, 'src');

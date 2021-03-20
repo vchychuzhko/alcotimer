@@ -6,14 +6,7 @@ namespace Awesome\Frontend\Block\Html;
 use Awesome\Frontend\Helper\StaticContentHelper;
 use Awesome\Frontend\Model\Context;
 use Awesome\Frontend\Model\FrontendState;
-use Awesome\Frontend\Model\RequireJs;
 
-/**
- * Class Head
- * @method string|null getDescription()
- * @method string|null getKeywords()
- * @method string|null getFavicon()
- */
 class Head extends \Awesome\Frontend\Block\Template
 {
     private const HEAD_ADDITIONAL_BLOCK = 'head.additional';
@@ -41,12 +34,91 @@ class Head extends \Awesome\Frontend\Block\Template
     }
 
     /**
-     * Get page title, translating it if possible.
+     * Get page title, translating it.
      * @return string
      */
-    public function getTitle()
+    public function getTitleHtml(): string
     {
-        return __($this->getData('title'));
+        $titleHtml = '';
+
+        if ($data = $this->getData('title')) {
+            $title = $data['translate'] ? __($data['content']) : $data['content'];
+
+            $titleHtml = <<<HTML
+<title>$title</title>
+
+HTML;
+        }
+
+        return $titleHtml;
+    }
+
+    /**
+     * Get page description, translating it.
+     * @return string
+     */
+    public function getDescriptionHtml(): string
+    {
+        $descriptionHtml = '';
+
+        if ($data = $this->getData('description')) {
+            $description = $data['translate'] ? __($data['content']) : $data['content'];
+
+            $descriptionHtml = <<<HTML
+<meta name="description" content="$description"/>
+
+HTML;
+        }
+
+        return $descriptionHtml;
+    }
+
+    /**
+     * Get page keywords, translating them one by one.
+     * @return string
+     */
+    public function getKeywordsHtml(): string
+    {
+        $keywordsHtml = '';
+
+        if ($data = $this->getData('keywords')) {
+            $keywords = $data['content'];
+
+            if ($data['translate']) {
+                $keywords = implode(',', array_map(static function ($keyword) {
+                    return __($keyword);
+                }, explode(',', $keywords)));
+            }
+
+            $keywordsHtml = <<<HTML
+<meta name="keywords" content="$keywords"/>
+
+HTML;
+        }
+
+        return $keywordsHtml;
+    }
+
+    /**
+     * Get page favicon.
+     * @return string
+     */
+    public function getFaviconHtml(): string
+    {
+        $faviconHtml = '';
+
+        if ($data = $this->getData('favicon')) {
+            $href = $data['src'];
+            $type = $data['type'] ? ' type="' . $data['type'] . '"' : '';
+
+            $faviconHtml = <<<HTML
+<link rel="shortcut icon" href="$href"{$type}/>
+
+HTML;
+        }
+        // @todo: add type resolving
+
+        return $faviconHtml;
     }
 
     /**

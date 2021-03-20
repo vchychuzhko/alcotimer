@@ -1,19 +1,11 @@
 <?php /** @var \Awesome\Frontend\Block\Html\Head $block */ ?>
 <head>
     <meta charset="UTF-8">
-<?php if ($title = $block->getTitle()): ?>
-    <title><?= $title; ?></title>
-<?php endif; ?>
-<?php if ($description = $block->getDescription()): ?>
-    <meta name="description" content="<?= $description; ?>"/>
-<?php endif; ?>
-<?php if ($keywords = $block->getKeywords()): ?>
-    <meta name="keywords" content="<?= $keywords; ?>"/>
-<?php endif; ?>
+    <?= $block->getTitleHtml(); ?>
+    <?= $block->getDescriptionHtml(); ?>
+    <?= $block->getKeywordsHtml(); ?>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<?php if ($favicon = $block->getFavicon()): ?>
-    <link rel="shortcut icon" type="image/png" href="<?= $block->getMediaUrl($favicon); ?>"/>
-<?php endif; ?>
+    <?= $block->getFaviconHtml(); ?>
     <?= $block->getPreloadsHtml(); ?>
     <?= $block->getStylesHtml(); ?>
     <?= $block->getScriptsHtml(); ?>
