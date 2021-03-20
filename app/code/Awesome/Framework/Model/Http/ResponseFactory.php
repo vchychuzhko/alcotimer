@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Awesome\Framework\Model\Result;
+namespace Awesome\Framework\Model\Http;
 
 use Awesome\Framework\Model\ResponseInterface;
 use Awesome\Framework\Model\Result\HtmlResponse;

@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace Awesome\Framework\Model;
 
-use Awesome\Framework\Model\Result\ResponseFactory;
+use Awesome\Framework\Model\Http\ResponseFactory;
 
-abstract class AbstractAction extends \Awesome\Framework\Model\DataObject implements \Awesome\Framework\Model\ActionInterface
+abstract class AbstractAction implements \Awesome\Framework\Model\ActionInterface
 {
     /**
      * @var ResponseFactory $responseFactory
@@ -15,11 +15,9 @@ abstract class AbstractAction extends \Awesome\Framework\Model\DataObject implem
     /**
      * AbstractAction constructor.
      * @param ResponseFactory $responseFactory
-     * @param array $data
      */
-    public function __construct(ResponseFactory $responseFactory, array $data = [])
+    public function __construct(ResponseFactory $responseFactory)
     {
-        parent::__construct($data, true);
         $this->responseFactory = $responseFactory;
     }
 }

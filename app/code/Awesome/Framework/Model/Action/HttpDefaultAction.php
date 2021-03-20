@@ -6,8 +6,8 @@ namespace Awesome\Framework\Model\Action;
 use Awesome\Framework\Model\AppState;
 use Awesome\Framework\Model\FileManager\PhpFileManager;
 use Awesome\Framework\Model\Http\Request;
+use Awesome\Framework\Model\Http\ResponseFactory;
 use Awesome\Framework\Model\ResponseInterface;
-use Awesome\Framework\Model\Result\ResponseFactory;
 
 class HttpDefaultAction extends \Awesome\Framework\Model\AbstractAction
 {
@@ -43,41 +43,28 @@ class HttpDefaultAction extends \Awesome\Framework\Model\AbstractAction
      */
     public function execute(Request $request): ResponseInterface
     {
-        if ($request->getRedirectStatusCode() === Request::FORBIDDEN_REDIRECT_CODE
-            && $this->appState->showForbidden()
+        $forbidden = $request->getRedirectStatusCode() === Request::FORBIDDEN_REDIRECT_CODE && $this->appState->showForbidden();
+
+        if ($request->getAcceptType() === Request::JSON_ACCEPT_HEADER) {
+            $response = $this->responseFactory->create(ResponseFactory::TYPE_JSON)
+                ->setData([
+                    'status'  => $forbidden ? 'FORBIDDEN' : 'NOTFOUND',
+                    'message' => $forbidden ? 'Requested path is not allowed.' : 'Requested path was not found.',
+                ]);
+        } elseif ($request->getAcceptType() === Request::HTML_ACCEPT_HEADER
+            && $content = ($forbidden ? $this->getForbiddenPage() : $this->getNotfoundPage())
         ) {
-            if ($request->getAcceptType() === Request::JSON_ACCEPT_HEADER) {
-                $response = $this->responseFactory->create(ResponseFactory::TYPE_JSON)
-                    ->setData([
-                        'status'  => 'FORBIDDEN',
-                        'message' => 'Requested path is not allowed.',
-                    ]);
-            } elseif ($request->getAcceptType() === Request::HTML_ACCEPT_HEADER && $content = $this->getForbiddenPage()) {
-                $response = $this->responseFactory->create(ResponseFactory::TYPE_HTML)
-                    ->setContent($content);
-            } else {
-                $response = $this->responseFactory->create();
-            }
-
-            $response->setStatusCode(ResponseInterface::FORBIDDEN_STATUS_CODE);
+            $response = $this->responseFactory->create(ResponseFactory::TYPE_HTML)
+                ->setContent($content);
         } else {
-            if ($request->getAcceptType() === Request::JSON_ACCEPT_HEADER) {
-                $response = $this->responseFactory->create(ResponseFactory::TYPE_JSON)
-                    ->setData([
-                        'status'  => 'NOTFOUND',
-                        'message' => 'Requested path was not found.',
-                    ]);
-            } elseif ($request->getAcceptType() === Request::HTML_ACCEPT_HEADER && $content = $this->getNotfoundPage()) {
-                $response = $this->responseFactory->create(ResponseFactory::TYPE_HTML)
-                    ->setContent($content);
-            } else {
-                $response = $this->responseFactory->create();
-            }
-
-            $response->setStatusCode(ResponseInterface::NOTFOUND_STATUS_CODE);
+            $response = $this->responseFactory->create();
         }
 
-        return $response;
+        return $response->setStatusCode(
+            $forbidden
+                ? ResponseInterface::FORBIDDEN_STATUS_CODE
+                : ResponseInterface::NOTFOUND_STATUS_CODE
+        );
     }
 
     /**

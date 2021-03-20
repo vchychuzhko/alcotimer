@@ -5,8 +5,8 @@ namespace Awesome\Framework\Model\Action;
 
 use Awesome\Framework\Model\FileManager\PhpFileManager;
 use Awesome\Framework\Model\Http\Request;
+use Awesome\Framework\Model\Http\ResponseFactory;
 use Awesome\Framework\Model\ResponseInterface;
-use Awesome\Framework\Model\Result\ResponseFactory;
 
 class MaintenanceAction extends \Awesome\Framework\Model\AbstractAction
 {
@@ -38,19 +38,16 @@ class MaintenanceAction extends \Awesome\Framework\Model\AbstractAction
             $response = $this->responseFactory->create(ResponseFactory::TYPE_JSON)
                 ->setData([
                     'status'  => 'MAINTENANCE',
-                    'message' => 'Service is unavailable due to maintenance works',
-                ])
-                ->setStatusCode(ResponseInterface::INTERNAL_ERROR_STATUS_CODE);
+                    'message' => 'Service is unavailable due to maintenance works.',
+                ]);
         } elseif ($request->getAcceptType() === Request::HTML_ACCEPT_HEADER && $content = $this->getMaintenancePage()) {
             $response = $this->responseFactory->create(ResponseFactory::TYPE_HTML)
-                ->setContent($content)
-                ->setStatusCode(ResponseInterface::SERVICE_UNAVAILABLE_STATUS_CODE);
+                ->setContent($content);
         } else {
-            $response = $this->responseFactory->create()
-                ->setStatusCode(ResponseInterface::SERVICE_UNAVAILABLE_STATUS_CODE);
+            $response = $this->responseFactory->create();
         }
 
-        return $response;
+        return $response->setStatusCode(ResponseInterface::SERVICEUNAVAILABLE_STATUS_CODE);
     }
 
     /**

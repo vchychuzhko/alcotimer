@@ -60,18 +60,14 @@ class XmlParsingHelper
      * Return default value as false if attribute is not set.
      * @param \SimpleXMLElement $node
      * @param string $attribute
-     * @param bool $defaultValue
+     * @param bool $default
      * @return bool
      */
-    public static function isAttributeBooleanTrue(
-        \SimpleXMLElement $node,
-        string $attribute,
-        bool $defaultValue = false
-    ): bool
+    public static function isAttributeBooleanTrue(\SimpleXMLElement $node, string $attribute, bool $default = false): bool
     {
         return self::getNodeAttribute($node, $attribute)
             ? DataHelper::isStringBooleanTrue(self::getNodeAttribute($node, $attribute))
-            : $defaultValue;
+            : $default;
     }
 
     /**

@@ -10,10 +10,10 @@ use Awesome\Framework\Model\Event\EventManager;
 use Awesome\Framework\Model\FileManager;
 use Awesome\Framework\Model\Http;
 use Awesome\Framework\Model\Http\ActionResolver;
+use Awesome\Framework\Model\Http\ResponseFactory;
 use Awesome\Framework\Model\Locale;
 use Awesome\Framework\Model\Logger;
 use Awesome\Framework\Model\Maintenance;
-use Awesome\Framework\Model\Result\ResponseFactory;
 use Awesome\Frontend\Helper\StaticContentHelper;
 use Awesome\Frontend\Model\FrontendState;
 use Awesome\Frontend\Model\Generator\RequireJs;
@@ -170,7 +170,7 @@ class Get extends \Awesome\Framework\Model\Http
 
         if ($module === 'lib') {
             $file = BP . '/lib/' . $file;
-        } elseif (strpos($module, '_') !== false) {
+        } elseif ($module && strpos($module, '_') !== false) {
             $file = APP_DIR  . '/' . str_replace('_', '/', $module) . '/view/' . $view . '/web/' . $file;
 
             if (!file_exists($file)) {
