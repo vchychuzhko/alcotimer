@@ -4,7 +4,7 @@
     <head>
         <title><![CDATA[AlcoTimer]]></title>
         <description><![CDATA[Web App for people, who would like to make drinking process become really challenging.]]></description>
-        <keywords><![CDATA[Alcohol,Alco,Timer,AlcoTimer,Web,App,Drink]]></keywords>
+        <keywords><![CDATA[AlcoTimer,Alco,Timer,Drink]]></keywords>
         <css src="Awesome_Frontend/css/popup.css"/>
         <css src="Awesome_Frontend/css/radial-slider.css"/>
         <css src="Awesome_Frontend/css/range-slider.css"/>

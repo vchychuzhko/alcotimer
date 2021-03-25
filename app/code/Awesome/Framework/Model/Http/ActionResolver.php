@@ -5,6 +5,7 @@ namespace Awesome\Framework\Model\Http;
 
 use Awesome\Framework\Model\Action\HttpDefaultAction;
 use Awesome\Framework\Model\Action\MaintenanceAction;
+use Awesome\Framework\Model\Action\UnauthorizedAction;
 use Awesome\Framework\Model\ActionInterface;
 use Awesome\Framework\Model\Http\ActionFactory;
 
@@ -77,5 +78,15 @@ class ActionResolver
     public function getMaintenanceAction(): ActionInterface
     {
         return $this->actionFactory->create(MaintenanceAction::class);
+    }
+
+    /**
+     * Get unauthorized action.
+     * @return ActionInterface
+     * @throws \Exception
+     */
+    public function getUnauthorizedAction(): ActionInterface
+    {
+        return $this->actionFactory->create(UnauthorizedAction::class);
     }
 }

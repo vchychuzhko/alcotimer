@@ -100,7 +100,6 @@ class Get extends \Awesome\Framework\Model\Http
     {
         try {
             $request = $this->getRequest();
-
             $this->locale->init($request);
 
             if (!$this->isMaintenance()) {
@@ -141,11 +140,11 @@ class Get extends \Awesome\Framework\Model\Http
 
             $this->logger->error($errorMessage);
 
-            $errorAction = new HttpErrorAction([
-                'accept_type'       => isset($request) ? $request->getAcceptType() : null,
-                'error_message'     => $errorMessage,
-                'is_developer_mode' => $this->appState->isDeveloperMode(),
-            ]);
+            $errorAction = new HttpErrorAction(
+                $errorMessage,
+                $this->appState->isDeveloperMode(),
+                isset($request) ? $request->getAcceptType() : null
+            );
 
             $response = $errorAction->execute();
         }

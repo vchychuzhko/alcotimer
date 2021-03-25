@@ -32,7 +32,7 @@
 <body class="internalerror-index-index">
     <main class="page-wrapper">
         <div class="content">
-            <h1><?= __('Sorry, an internal error occurred during loading this page'); ?></h1>
+            <h1><?= __('An internal error occurred during loading this page.'); ?></h1>
             <p><?= __('Details are hidden due to security reasons and can be found in log files.'); ?></p>
         </div>
     </main>

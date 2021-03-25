@@ -82,13 +82,11 @@ HTML;
         $keywordsHtml = '';
 
         if ($data = $this->getData('keywords')) {
-            $keywords = $data['content'];
+            $keywords = implode(', ', array_map(static function ($keyword) use ($data) {
+                $keyword = trim($keyword);
 
-            if ($data['translate']) {
-                $keywords = implode(',', array_map(static function ($keyword) {
-                    return __($keyword);
-                }, explode(',', $keywords)));
-            }
+                return $data['translate'] ? __($keyword) : $keyword;
+            }, explode(',', $data['content'])));
 
             $keywordsHtml = <<<HTML
 <meta name="keywords" content="$keywords"/>
@@ -116,7 +114,6 @@ HTML;
 
 HTML;
         }
-        // @todo: add type resolving
 
         return $faviconHtml;
     }

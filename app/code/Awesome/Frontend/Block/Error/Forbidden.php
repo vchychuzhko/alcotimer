@@ -10,7 +10,7 @@ class Forbidden extends \Awesome\Frontend\Block\Template implements \Awesome\Fro
      */
     public function getErrorTitle()
     {
-        return '403: ' . __('Forbidden Page');
+        return '403: ' . __('Forbidden');
     }
 
     /**

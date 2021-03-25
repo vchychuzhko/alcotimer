@@ -32,7 +32,7 @@
 <body class="maintenance-index-index">
     <main class="page-wrapper">
         <div class="content">
-            <h1><?= __('Service is temporary unavailable'); ?></h1>
+            <h1><?= __('Service is temporary unavailable.'); ?></h1>
             <p><?= __('The site is down due to maintenance servicing and it will return to work soon.'); ?></p>
         </div>
     </main>

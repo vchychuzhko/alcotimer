@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 namespace Awesome\Framework\Model;
 
+use Awesome\Framework\Exception\UnauthorizedException;
 use Awesome\Framework\Model\Action\HttpErrorAction;
 use Awesome\Framework\Model\Action\MaintenanceAction;
+use Awesome\Framework\Model\Action\UnauthorizedAction;
 use Awesome\Framework\Model\AppState;
 use Awesome\Framework\Model\Config;
 use Awesome\Framework\Model\Event\EventManager;
@@ -101,7 +103,6 @@ class Http
     {
         try {
             $request = $this->getRequest();
-
             $this->locale->init($request);
 
             if (!$this->isMaintenance()) {
@@ -120,6 +121,13 @@ class Http
 
                 $response = $maintenanceAction->execute($request);
             }
+        } catch (UnauthorizedException $e) {
+            /** @var UnauthorizedAction $unauthorizedAction */
+            $unauthorizedAction = $this->actionResolver->getUnauthorizedAction();
+
+            $this->logger->info($e->getMessage());
+
+            $response = $unauthorizedAction->execute($request);
         } catch (\Exception $e) {
             $errorMessage = get_class_name($e) . ': ' . $e->getMessage() . "\n" . $e->getTraceAsString();
 

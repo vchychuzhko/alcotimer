@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title><?= __('Forbidden'); ?></title>
+    <title><?= __('Unauthorized'); ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="shortcut icon" type="image/png" href="/media/images/favicon.png"/>
     <style>
@@ -29,12 +29,12 @@
         }
     </style>
 </head>
-<body class="forbidden-index-index">
+<body class="unauthorized-index-index">
     <main class="page-wrapper">
         <div class="content">
-            <h1>403: <?= __('Forbidden'); ?></h1>
-            <p><?= __('The page or file you are trying to access is closed for viewing.'); ?></p>
-            <p><?= __('Please, try to start your journey from the <a href="/">Homepage</a>'); ?></p>
+            <h1>401: <?= __('Unauthorized'); ?></h1>
+            <p><?= __('Request\'s authorization was not correct.'); ?></p>
+            <p><?= __('Please, check it and try to resent your request.'); ?></p>
         </div>
     </main>
     <footer>

@@ -51,7 +51,7 @@ class HttpErrorAction
                     'status' => 'ERROR',
                     'message' => $this->isDeveloperMode
                         ? $this->errorMessage
-                        : 'Internal error occurred. Details are hidden and can be found in logs files.',
+                        : 'An internal error occurred. Details are hidden and can be found in logs files.',
                 ]),
                 ResponseInterface::INTERNALERROR_STATUS_CODE,
                 ['Content-Type' => 'application/json']
