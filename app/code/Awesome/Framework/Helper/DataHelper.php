@@ -130,13 +130,26 @@ class DataHelper
     }
 
     /**
-     * Converts snake_case to camelCase.
+     * Converts snake_case or kebab-case to camelCase, depending on provided separator.
+     * snake_case separator is used by default.
      * @param string $string
      * @param string $separator
      * @return string
      */
     public static function camelCase(string $string, string $separator = '_'): string
     {
-        return str_replace($separator, '', lcfirst(ucwords($string, $separator)));
+        return lcfirst(self::PascalCase($string, $separator));
+    }
+
+    /**
+     * Converts snake_case or kebab-case to PascalCase, depending on provided separator.
+     * snake_case separator is used by default.
+     * @param string $string
+     * @param string $separator
+     * @return string
+     */
+    public static function PascalCase(string $string, string $separator = '_'): string
+    {
+        return str_replace($separator, '', ucwords($string, $separator));
     }
 }
