@@ -19,6 +19,10 @@
             padding: 5px 20px;
         }
 
+        a {
+            color: inherit;
+        }
+
         footer {
             background: #ffffc2;
             bottom: 0;
