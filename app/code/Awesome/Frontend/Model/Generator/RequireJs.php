@@ -1,16 +1,18 @@
 <?php
 declare(strict_types=1);
 
-namespace Awesome\Frontend\Model;
+namespace Awesome\Frontend\Model\Generator;
 
 use Awesome\Framework\Model\FileManager;
 use Awesome\Framework\Model\Http;
 use Awesome\Framework\Model\Serializer\Json;
 use Awesome\Frontend\Helper\StaticContentHelper;
 use Awesome\Frontend\Model\DeployedVersion;
+use Awesome\Frontend\Model\FrontendState;
+use Awesome\Frontend\Model\GeneratorInterface;
 use Awesome\Frontend\Model\Js\JsMinifier;
 
-class RequireJs
+class RequireJs extends \Awesome\Frontend\Model\AbstractGenerator
 {
     private const REQUIREJS_CONFIG_PATTERN = '/*/*/view/{%s,%s}/requirejs-config.json';
     public const RESULT_FILENAME = 'requirejs-config.js';
@@ -19,16 +21,6 @@ class RequireJs
      * @var DeployedVersion $deployedVersion
      */
     private $deployedVersion;
-
-    /**
-     * @var FileManager $fileManager
-     */
-    private $fileManager;
-
-    /**
-     * @var FrontendState $frontendState
-     */
-    private $frontendState;
 
     /**
      * @var JsMinifier $jsMinifier
@@ -55,19 +47,17 @@ class RequireJs
         JsMinifier $jsMinifier,
         Json $json
     ) {
+        parent::__construct($fileManager, $frontendState);
         $this->deployedVersion = $deployedVersion;
-        $this->fileManager = $fileManager;
-        $this->frontendState = $frontendState;
         $this->jsMinifier = $jsMinifier;
         $this->json = $json;
     }
 
     /**
      * Generate requirejs config file.
-     * @param string $view
-     * @return void
+     * @inheritDoc
      */
-    public function generate(string $view): void
+    public function generate(string $path, string $view): GeneratorInterface
     {
         $resultFile = self::RESULT_FILENAME;
         $requirePaths = [];
@@ -82,8 +72,7 @@ class RequireJs
         $deployedVersion = $this->deployedVersion->getVersion();
 
         $config = $this->json->prettyEncode([
-            'baseUrl' => ($this->frontendState->isPubRoot() ? '' : '/pub')
-                . '/static/' . ($deployedVersion ? 'version' . $deployedVersion . '/' : '/') . $view,
+            'baseUrl' => '/static/' . ($deployedVersion ? 'version' . $deployedVersion . '/' : '/') . $view,
             'paths'   => $requirePaths,
         ]);
         $content = <<<JS
@@ -99,10 +88,20 @@ JS;
         }
 
         $this->fileManager->createFile(
-            BP . StaticContent::STATIC_FOLDER_PATH . $view . '/' . $resultFile,
+            $this->getStaticPath($resultFile, $view, true),
             $content,
             true
         );
+
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public static function match(string $path): bool
+    {
+        return $path === self::RESULT_FILENAME;
     }
 
     /**

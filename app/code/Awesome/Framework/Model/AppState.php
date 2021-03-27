@@ -12,7 +12,6 @@ class AppState implements \Awesome\Framework\Model\SingletonInterface
 
     private const DEVELOPER_MODE_CONFIG = 'developer_mode';
     private const SHOW_FORBIDDEN_CONFIG = 'show_forbidden';
-    private const WEB_ROOT_CONFIG = 'web/web_root_is_pub';
 
     /**
      * @var Config $config
@@ -63,19 +62,6 @@ class AppState implements \Awesome\Framework\Model\SingletonInterface
         }
 
         return $this->isDeveloperMode;
-    }
-
-    /**
-     * Check if application web root is configured to pub folder.
-     * @return bool
-     */
-    public function isPubRoot(): bool
-    {
-        if ($this->isPubRoot === null) {
-            $this->isPubRoot = (bool) $this->config->get(self::WEB_ROOT_CONFIG);
-        }
-
-        return $this->isPubRoot;
     }
 
     /**

@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace Awesome\Controller\Observer;
 
+use Awesome\Controller\Model\PostControllerInterface;
 use Awesome\Framework\Helper\DataHelper;
 use Awesome\Framework\Model\Event;
-use Awesome\Framework\Model\FileManager\PhpFileManager;
 use Awesome\Framework\Model\Http;
 use Awesome\Framework\Model\Http\ActionResolver;
 use Awesome\Framework\Model\Http\Request;
@@ -13,15 +13,10 @@ use Awesome\Framework\Model\Http\Router;
 
 class ControllerRoutingObserver implements \Awesome\Framework\Model\Event\ObserverInterface
 {
-    private const ADMINHTML_CONTROLLER_FOLDER = 'Controller/Adminhtml';
-    private const DEFAULT_CONTROLLER_FOLDER = 'Controller';
+    private const ADMINHTML_CONTROLLER_FOLDER = 'Adminhtml';
+    private const CONTROLLER_FOLDER = 'Controller';
 
     private const DEFAULT_CONTROLLER_NAME = 'Index';
-
-    /**
-     * @var PhpFileManager $phpFileManager
-     */
-    private $phpFileManager;
 
     /**
      * @var Router $router
@@ -30,12 +25,10 @@ class ControllerRoutingObserver implements \Awesome\Framework\Model\Event\Observ
 
     /**
      * ControllerRoutingObserver constructor.
-     * @param PhpFileManager $phpFileManager
      * @param Router $router
      */
-    public function __construct(PhpFileManager $phpFileManager, Router $router)
+    public function __construct(Router $router)
     {
-        $this->phpFileManager = $phpFileManager;
         $this->router = $router;
     }
 
@@ -52,25 +45,24 @@ class ControllerRoutingObserver implements \Awesome\Framework\Model\Event\Observ
         $view = $request->getView();
 
         if ($module = $this->router->getStandardRoute($request->getRoute(), $view)) {
-            $module = str_replace('_', '\\', $module);
-            $controllerFolder = $view === Http::BACKEND_VIEW
-                ? self::ADMINHTML_CONTROLLER_FOLDER
-                : self::DEFAULT_CONTROLLER_FOLDER;
-            $className = $module . '\\' . $controllerFolder;
+            $className = str_replace('_', '\\', $module) . '\\' . self::CONTROLLER_FOLDER
+                . ($view === Http::BACKEND_VIEW ? '\\' . self::ADMINHTML_CONTROLLER_FOLDER : '');
 
             if ($entity = $request->getEntity()) {
-                $className .= '\\' . ucfirst(DataHelper::camelCase($entity));
+                $className .= '\\' . DataHelper::PascalCase($entity);
             } else {
                 $className .= '\\' . self::DEFAULT_CONTROLLER_NAME;
             }
 
             if ($action = $request->getAction()) {
-                $className .= '\\' . ucfirst(DataHelper::camelCase($action));
-            } elseif (!$this->phpFileManager->objectFileExists($className)) {
+                $className .= '\\' . DataHelper::PascalCase($action);
+            } elseif (!class_exists($className)) {
                 $className .= '\\' . self::DEFAULT_CONTROLLER_NAME;
             }
 
-            if ($this->phpFileManager->objectFileExists($className)) {
+            if (class_exists($className)
+                && (!is_a($className, PostControllerInterface::class, true) || $request->isPost())
+            ) {
                 $actionResolver->addAction($className);
             }
         }

@@ -35,9 +35,9 @@ class DataHelper
      * @param array $array
      * @param string $elementKeyToUpdate
      * @param mixed $newValue
-     * @return void
+     * @return array
      */
-    public static function arrayReplaceByKeyRecursive(array &$array, string $elementKeyToUpdate, $newValue): void
+    public static function arrayReplaceByKeyRecursive(array $array, string $elementKeyToUpdate, $newValue): array
     {
         foreach ($array as $key => $value) {
             if ($key === $elementKeyToUpdate) {
@@ -47,9 +47,11 @@ class DataHelper
                     $array[$key] = $newValue;
                 }
             } elseif (is_array($value)) {
-                self::arrayReplaceByKeyRecursive($array[$key], $elementKeyToUpdate, $newValue);
+                $array[$key] = self::arrayReplaceByKeyRecursive($array[$key], $elementKeyToUpdate, $newValue);
             }
         }
+
+        return $array;
     }
 
     /**
@@ -57,17 +59,19 @@ class DataHelper
      * @link https://www.php.net/manual/en/function.array-walk-recursive.php#114574
      * @param array $array
      * @param string $elementKeyToRemove
-     * @return void
+     * @return array
      */
-    public static function arrayRemoveByKeyRecursive(array &$array, string $elementKeyToRemove): void
+    public static function arrayRemoveByKeyRecursive(array $array, string $elementKeyToRemove): array
     {
         foreach ($array as $key => $value) {
             if ($key === $elementKeyToRemove) {
                 unset($array[$key]);
             } elseif (is_array($value)) {
-                self::arrayRemoveByKeyRecursive($array[$key], $elementKeyToRemove);
+                $array[$key] = self::arrayRemoveByKeyRecursive($array[$key], $elementKeyToRemove);
             }
         }
+
+        return $array;
     }
 
     /**
@@ -83,7 +87,7 @@ class DataHelper
 
     /**
      * Cast value to a corresponding type.
-     * String like "true" or "false" are treated as bool type, not case sensitive.
+     * String like "true" or "false" are treated as bool type, case insensitive.
      * @param mixed $value
      * @return mixed
      */
@@ -126,13 +130,26 @@ class DataHelper
     }
 
     /**
-     * Converts snake_case to camelCase.
+     * Converts snake_case or kebab-case to camelCase, depending on provided separator.
+     * snake_case separator is used by default.
      * @param string $string
      * @param string $separator
      * @return string
      */
     public static function camelCase(string $string, string $separator = '_'): string
     {
-        return str_replace($separator, '', lcfirst(ucwords($string, $separator)));
+        return lcfirst(self::PascalCase($string, $separator));
+    }
+
+    /**
+     * Converts snake_case or kebab-case to PascalCase, depending on provided separator.
+     * snake_case separator is used by default.
+     * @param string $string
+     * @param string $separator
+     * @return string
+     */
+    public static function PascalCase(string $string, string $separator = '_'): string
+    {
+        return str_replace($separator, '', ucwords($string, $separator));
     }
 }

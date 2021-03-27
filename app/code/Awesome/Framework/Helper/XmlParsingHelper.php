@@ -27,7 +27,7 @@ class XmlParsingHelper
     }
 
     /**
-     * Get node child by name.
+     * Get child node by name.
      * Return the first one if several nodes found.
      * @param \SimpleXMLElement $node
      * @param string $childNodeName
@@ -46,14 +46,28 @@ class XmlParsingHelper
     }
 
     /**
+     * Get node inner content.
+     * @param \SimpleXMLElement $node
+     * @return string
+     */
+    public static function getNodeContent(\SimpleXMLElement $node): string
+    {
+        return (string) $node;
+    }
+
+    /**
      * Check if node attribute is a boolean "true".
+     * Return default value as false if attribute is not set.
      * @param \SimpleXMLElement $node
      * @param string $attribute
+     * @param bool $default
      * @return bool
      */
-    public static function isAttributeBooleanTrue(\SimpleXMLElement $node, string $attribute): bool
+    public static function isAttributeBooleanTrue(\SimpleXMLElement $node, string $attribute, bool $default = false): bool
     {
-        return DataHelper::isStringBooleanTrue(self::getNodeAttribute($node, $attribute));
+        return self::getNodeAttribute($node, $attribute)
+            ? DataHelper::isStringBooleanTrue(self::getNodeAttribute($node, $attribute))
+            : $default;
     }
 
     /**

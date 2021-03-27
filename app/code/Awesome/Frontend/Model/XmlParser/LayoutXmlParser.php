@@ -5,9 +5,9 @@ namespace Awesome\Frontend\Model\XmlParser;
 
 use Awesome\Framework\Exception\XmlValidationException;
 use Awesome\Framework\Helper\DataHelper;
+use Awesome\Framework\Helper\XmlParsingHelper;
 use Awesome\Framework\Model\Config;
 use Awesome\Framework\Model\FileManager\XmlFileManager;
-use Awesome\Framework\Helper\XmlParsingHelper;
 use Awesome\Frontend\Block\Container;
 use Awesome\Frontend\Block\Html\Body;
 use Awesome\Frontend\Block\Html\Head;
@@ -33,15 +33,6 @@ class LayoutXmlParser
      * @var array $processedElements
      */
     private $processedElements = [];
-
-    /**
-     * @var array $collectedAssets
-     */
-    private $collectedAssets = [
-        'preloads' => [],
-        'scripts'  => [],
-        'styles'   => [],
-    ];
 
     /**
      * @var array $assetsToRemove
@@ -80,13 +71,13 @@ class LayoutXmlParser
     public function getLayoutStructure(string $handle, string $view, array $handles = []): array
     {
         $handles = $handles ?: [$handle];
-        $pattern = sprintf(
+        $pattern = APP_DIR . sprintf(
             self::LAYOUT_XML_PATH_PATTERN, $view, '{' . self::DEFAULT_HANDLE_NAME . ',' . implode(',', $handles) . '}'
         );
         $head = [];
         $body = [];
 
-        foreach (glob(APP_DIR . $pattern, GLOB_BRACE) as $layoutXmlFile) {
+        foreach (glob($pattern, GLOB_BRACE) as $layoutXmlFile) {
             $layoutData = $this->xmlFileManager->parseXmlFile($layoutXmlFile, APP_DIR . self::LAYOUT_XSD_SCHEMA_PATH);
 
             if ($headNode = XmlParsingHelper::getChildNode($layoutData, 'head')) {
@@ -97,35 +88,42 @@ class LayoutXmlParser
             }
         }
 
-        // @TODO: Add check for merge enabled and replace links
-        $this->filterRemovedAssets();
-        XmlParsingHelper::applySortOrder($this->collectedAssets);
+        $this->filterRemovedAssets($head);
+        XmlParsingHelper::applySortOrder($head);
         $head = [
-            'name'     => 'head',
-            'class'    => Head::class,
-            'template' => null,
-            'children' => [],
-            'data'     => array_merge($head, $this->collectedAssets),
+            'name'      => 'head',
+            'class'     => Head::class,
+            'disabled'  => false,
+            'template'  => null,
+            'children'  => [],
+            'arguments' => [],
+            'data'      => $head,
         ];
 
-        $body = [
-            'name'     => 'body',
-            'class'    => Body::class,
-            'template' => null,
-            'children' => $body,
-        ];
         $this->applyReferences($body);
         XmlParsingHelper::applySortOrder($body);
+        $body = [
+            'name'      => 'body',
+            'class'     => Body::class,
+            'disabled'  => false,
+            'template'  => null,
+            'children'  => $body,
+            'arguments' => [],
+            'data'      => [],
+        ];
 
         return [
             'root' => [
-                'name'     => 'root',
-                'class'    => Root::class,
-                'template' => null,
-                'children' => [
+                'name'      => 'root',
+                'class'     => Root::class,
+                'disabled'  => false,
+                'template'  => null,
+                'children'  => [
                     'head' => $head,
                     'body' => $body
                 ],
+                'arguments' => [],
+                'data'      => [],
             ]
         ];
     }
@@ -137,51 +135,60 @@ class LayoutXmlParser
      */
     private function parseHeadNode(\SimpleXMLElement $headNode): array
     {
-        $data = [];
+        $headData = [
+            'scripts'  => [],
+            'styles'   => [],
+            'preloads' => [],
+        ];
 
         foreach ($headNode->children() as $child) {
             switch ($childName = $child->getName()) {
                 case 'title':
                 case 'description':
                 case 'keywords':
-                    $data[$childName] = (string) $child;
+                    $headData[$childName] = [
+                        'content'   => XmlParsingHelper::getNodeContent($child),
+                        'translate' => XmlParsingHelper::isAttributeBooleanTrue($child, 'translate', true),
+                    ];
                     break;
                     //@TODO: Move above attributes to page-related config, they should not be defined in XML
                 case 'favicon':
-                    $data[$childName] = XmlParsingHelper::getNodeAttribute($child, 'src');
+                    $headData['favicon'] = [
+                        'src'  => XmlParsingHelper::getNodeAttribute($child, 'src'),
+                        'type' => XmlParsingHelper::getNodeAttribute($child, 'type') ?: null,
+                    ];
                     break;
                 case 'script':
-                    $parsedAsset = [];
-
-                    if ($sortOrder = XmlParsingHelper::getNodeAttribute($child, 'sortOrder')) {
-                        $parsedAsset['sortOrder'] = $sortOrder;
-                    }
-                    if (XmlParsingHelper::isAttributeBooleanTrue($child, 'async')) {
-                        $parsedAsset['async'] = true;
-                    }
-                    if (XmlParsingHelper::isAttributeBooleanTrue($child, 'defer')) {
-                        $parsedAsset['defer'] = true;
-                    }
-                    $this->collectedAssets['scripts'][XmlParsingHelper::getNodeAttribute($child, 'src')] = $parsedAsset;
-                    break;
-                case 'css':
-                    $parsedAsset = [];
-
-                    if ($sortOrder = XmlParsingHelper::getNodeAttribute($child, 'sortOrder')) {
-                        $parsedAsset['sortOrder'] = $sortOrder;
-                    }
-                    $this->collectedAssets['styles'][XmlParsingHelper::getNodeAttribute($child, 'src')] = $parsedAsset;
-                    break;
-                case 'preload':
                     $parsedAsset = [
-                        'type' => XmlParsingHelper::getNodeAttribute($child, 'type'),
-                        'href' => XmlParsingHelper::getNodeAttribute($child, 'href'),
+                        'async' => XmlParsingHelper::isAttributeBooleanTrue($child, 'async'),
+                        'defer' => XmlParsingHelper::isAttributeBooleanTrue($child, 'defer'),
                     ];
 
                     if ($sortOrder = XmlParsingHelper::getNodeAttribute($child, 'sortOrder')) {
                         $parsedAsset['sortOrder'] = $sortOrder;
                     }
-                    $this->collectedAssets['preloads'][XmlParsingHelper::getNodeAttribute($child, 'href')] = $parsedAsset;
+                    $headData['scripts'][XmlParsingHelper::getNodeAttribute($child, 'src')] = $parsedAsset;
+                    break;
+                case 'css':
+                    $parsedAsset = [
+                        'media' => XmlParsingHelper::getNodeAttribute($child, 'media') ?: null,
+                    ];
+
+                    if ($sortOrder = XmlParsingHelper::getNodeAttribute($child, 'sortOrder')) {
+                        $parsedAsset['sortOrder'] = $sortOrder;
+                    }
+                    $headData['styles'][XmlParsingHelper::getNodeAttribute($child, 'src')] = $parsedAsset;
+                    break;
+                case 'preload':
+                    $parsedAsset = [
+                        'as'   => XmlParsingHelper::getNodeAttribute($child, 'as'),
+                        'type' => XmlParsingHelper::getNodeAttribute($child, 'type') ?: null,
+                    ];
+
+                    if ($sortOrder = XmlParsingHelper::getNodeAttribute($child, 'sortOrder')) {
+                        $parsedAsset['sortOrder'] = $sortOrder;
+                    }
+                    $headData['preloads'][XmlParsingHelper::getNodeAttribute($child, 'src')] = $parsedAsset;
                     break;
                 case 'remove':
                     $this->assetsToRemove[] = XmlParsingHelper::getNodeAttribute($child, 'src');
@@ -189,7 +196,7 @@ class LayoutXmlParser
             }
         }
 
-        return $data;
+        return $headData;
     }
 
     /**
@@ -230,10 +237,13 @@ class LayoutXmlParser
                 }
 
                 $parsedItemNode = [
-                    'name'     => $elementName,
-                    'class'    => XmlParsingHelper::getNodeAttribute($elementNode, 'class'),
-                    'template' => XmlParsingHelper::getNodeAttribute($elementNode, 'template') ?: null,
-                    'children' => [],
+                    'name'      => $elementName,
+                    'class'     => XmlParsingHelper::getNodeAttribute($elementNode, 'class'),
+                    'disabled'  => XmlParsingHelper::isDisabled($elementNode),
+                    'template'  => XmlParsingHelper::getNodeAttribute($elementNode, 'template') ?: null,
+                    'children'  => [],
+                    'arguments' => [],
+                    'data'      => [],
                 ];
 
                 if ($sortOrder = XmlParsingHelper::getNodeAttribute($elementNode, 'sortOrder')) {
@@ -241,13 +251,17 @@ class LayoutXmlParser
                 }
 
                 foreach ($elementNode->children() as $child) {
-                    if ($parsedChild = $this->parseElement($child)) {
+                    if ($child->getName() === 'arguments') {
+                        foreach ($child->children() as $argument) {
+                            $parsedItemNode['arguments'][XmlParsingHelper::getNodeAttributeName($argument)] = XmlParsingHelper::getNodeContent($argument);
+                        }
+                    } elseif ($parsedChild = $this->parseElement($child)) {
                         $parsedItemNode['children'][XmlParsingHelper::getNodeAttributeName($child)] = $parsedChild;
                     }
                 }
 
                 if (in_array($elementName, $this->processedElements, true)) {
-                    throw new XmlValidationException(sprintf('Block "%s" is declared twice', $elementName));
+                    throw new XmlValidationException(__('Block "%1" is already declared', $elementName));
                 }
                 $this->processedElements[] = $elementName;
                 break;
@@ -259,17 +273,20 @@ class LayoutXmlParser
                 }
 
                 $parsedItemNode = [
-                    'name'     => $elementName,
-                    'class'    => Container::class,
-                    'template' => null,
-                    'children' => [],
+                    'name'      => $elementName,
+                    'class'     => Container::class,
+                    'disabled'  => XmlParsingHelper::isDisabled($elementNode),
+                    'template'  => null,
+                    'children'  => [],
+                    'arguments' => [],
+                    'data'      => [],
                 ];
 
                 if ($htmlTag = XmlParsingHelper::getNodeAttribute($elementNode, 'htmlTag')) {
                     $parsedItemNode['data'] = [
                         'html_tag'   => $htmlTag,
-                        'html_class' => XmlParsingHelper::getNodeAttribute($elementNode, 'htmlClass'),
-                        'html_id'    => XmlParsingHelper::getNodeAttribute($elementNode, 'htmlId'),
+                        'html_class' => XmlParsingHelper::getNodeAttribute($elementNode, 'htmlClass') ?: null,
+                        'html_id'    => XmlParsingHelper::getNodeAttribute($elementNode, 'htmlId') ?: null,
                     ];
                 }
 
@@ -284,7 +301,7 @@ class LayoutXmlParser
                 }
 
                 if (in_array($elementName, $this->processedElements, true)) {
-                    throw new XmlValidationException(sprintf('Container "%s" is declared twice', $elementName));
+                    throw new XmlValidationException(__('Container "%1" is already declared', $elementName));
                 }
                 $this->processedElements[] = $elementName;
                 break;
@@ -319,13 +336,16 @@ class LayoutXmlParser
 
     /**
      * Filter collected assets according to remove references.
+     * @param array $headStructure
      * @return void
      */
-    private function filterRemovedAssets(): void
+    private function filterRemovedAssets(array &$headStructure): void
     {
         foreach ($this->assetsToRemove as $assetToRemove) {
-            foreach ($this->collectedAssets as $assetType => $unused) {
-                unset($this->collectedAssets[$assetType][$assetToRemove]);
+            foreach ($headStructure as $headField => $unused) {
+                if (in_array($headField, ['scripts', 'styles', 'preloads'], true)) {
+                    unset($headStructure[$headField][$assetToRemove]);
+                }
             }
         }
     }
@@ -338,11 +358,11 @@ class LayoutXmlParser
     private function applyReferences(array &$bodyStructure): void
     {
         foreach ($this->references as $reference) {
-            DataHelper::arrayReplaceByKeyRecursive($bodyStructure, $reference['name'], $reference['data']);
+            $bodyStructure = DataHelper::arrayReplaceByKeyRecursive($bodyStructure, $reference['name'], $reference['data']);
         }
 
         foreach ($this->referencesToRemove as $referenceToRemove) {
-            DataHelper::arrayRemoveByKeyRecursive($bodyStructure, $referenceToRemove);
+            $bodyStructure = DataHelper::arrayRemoveByKeyRecursive($bodyStructure, $referenceToRemove);
         }
     }
 }

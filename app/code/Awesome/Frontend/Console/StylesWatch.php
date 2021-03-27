@@ -8,7 +8,7 @@ use Awesome\Console\Model\Cli\Input\InputDefinition;
 use Awesome\Console\Model\Cli\Output;
 use Awesome\Framework\Model\FileManager;
 use Awesome\Framework\Model\Http;
-use Awesome\Frontend\Model\Styles;
+use Awesome\Frontend\Model\Generator\Styles;
 
 class StylesWatch extends \Awesome\Console\Model\AbstractCommand
 {
@@ -111,7 +111,7 @@ class StylesWatch extends \Awesome\Console\Model\AbstractCommand
 
                 try {
                     foreach ($modifiedViews as $modifiedView) {
-                        $this->styles->generate($modifiedView);
+                        $this->styles->generate(Styles::RESULT_FILENAME, $modifiedView);
                         $output->writeln($output->colourText(sprintf('Styles were regenerated for "%s" view', $modifiedView)));
                     }
                 } catch (\Exception $e) {

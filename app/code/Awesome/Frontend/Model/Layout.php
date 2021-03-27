@@ -109,8 +109,9 @@ class Layout
 
         if ($elementData = DataHelper::arrayGetByKeyRecursive($this->structure, $nameInLayout)) {
             $elementId = $elementData['class'];
+            $params = array_merge($elementData['arguments'], ['data' => $elementData['data']]);
 
-            $element = $this->blockFactory->create($elementId, ['data' => $elementData['data'] ?? []]);
+            $element = $this->blockFactory->create($elementId, $params);
 
             if ($element instanceof AbstractBlock) {
                 $element->init($this, $nameInLayout, $elementData['template']);
@@ -132,7 +133,9 @@ class Layout
         $childNames = [];
 
         if ($elementData = DataHelper::arrayGetByKeyRecursive($this->structure, $nameInLayout)) {
-            $childNames = array_keys($elementData['children']);
+            $childNames = array_keys(array_filter($elementData['children'], function ($child) {
+                return $child['disabled'] !== true;
+            }));
         }
 
         return $childNames;
@@ -163,13 +166,14 @@ class Layout
         $path = $module;
 
         if (isset($file)) {
-            $path = '/' . str_replace('_', '/', $module) . '/view/' . $this->view . '/templates/' . $file;
+            $path = APP_DIR . '/' . str_replace('_', '/', $module) . '/view/' . $this->view . '/templates/' . $file;
 
-            if (!file_exists(APP_DIR . $path)) {
+            if (!file_exists($path)) {
                 $path = preg_replace('/(\/view\/)(\w+)(\/)/', '$1' . Http::BASE_VIEW . '$3', $path);
             }
+        } else {
+            $path = APP_DIR . $path;
         }
-        $path = APP_DIR . $path;
 
         if (!is_file($path)) {
             throw new \LogicException(

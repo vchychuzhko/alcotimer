@@ -10,7 +10,6 @@ return [
     'web' => [
         'homepage' => 'timer/index/index',
         'logo' => 'pub/media/images/logo.png',
-        'web_root_is_pub' => 1, // 0 for project root
         'js' => [
             'minify' => 1,
             'merge' => 0,
@@ -26,6 +25,7 @@ return [
         'etc' => 1,
         'layout' => 1,
         'full_page' => 1,
+        'translations' => 1,
     ],
     'timer_config' => [
         'show_hint' => 1,

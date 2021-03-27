@@ -8,14 +8,12 @@ use Awesome\Framework\Model\ActionInterface;
 class ActionFactory extends \Awesome\Framework\Model\AbstractFactory
 {
     /**
-     * Create action object with provided data.
+     * Create action object.
      * @param string $actionId
-     * @param array $data
      * @return ActionInterface
-     * @throws \Exception
      */
-    public function create(string $actionId, array $data = []): ActionInterface
+    public function create(string $actionId): ActionInterface
     {
-        return $this->invoker->create($actionId, ['data' => $data]);
+        return $this->invoker->create($actionId);
     }
 }

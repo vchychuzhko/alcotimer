@@ -5,6 +5,7 @@ namespace Awesome\Framework\Model\Http;
 
 use Awesome\Framework\Model\Action\HttpDefaultAction;
 use Awesome\Framework\Model\Action\MaintenanceAction;
+use Awesome\Framework\Model\Action\UnauthorizedAction;
 use Awesome\Framework\Model\ActionInterface;
 use Awesome\Framework\Model\Http\ActionFactory;
 
@@ -35,22 +36,18 @@ class ActionResolver
     }
 
     /**
-     * Add action classname and additional parameters to list.
-     * @param string $id
-     * @param array $data
+     * Add action classname to actions list.
+     * @param string $actionId
      * @return $this
      * @throws \LogicException
      */
-    public function addAction(string $id, array $data = []): self
+    public function addAction(string $actionId): self
     {
-        if (!is_a($id, ActionInterface::class, true)) {
-            throw new \LogicException(sprintf('Provided action "%s" does not implement ActionInterface', $id));
+        if (!is_a($actionId, ActionInterface::class, true)) {
+            throw new \LogicException(sprintf('Provided action "%s" does not implement ActionInterface', $actionId));
         }
 
-        $this->actions[] = [
-            'id' => $id,
-            'data' => $data,
-        ];
+        $this->actions[] = $actionId;
 
         return $this;
     }
@@ -64,7 +61,7 @@ class ActionResolver
     {
         if ($this->action === null) {
             if ($action = reset($this->actions)) {
-                $this->action = $this->actionFactory->create($action['id'], $action['data']);
+                $this->action = $this->actionFactory->create($action);
             } else {
                 $this->action = $this->actionFactory->create(HttpDefaultAction::class);
             }
@@ -81,5 +78,15 @@ class ActionResolver
     public function getMaintenanceAction(): ActionInterface
     {
         return $this->actionFactory->create(MaintenanceAction::class);
+    }
+
+    /**
+     * Get unauthorized action.
+     * @return ActionInterface
+     * @throws \Exception
+     */
+    public function getUnauthorizedAction(): ActionInterface
+    {
+        return $this->actionFactory->create(UnauthorizedAction::class);
     }
 }

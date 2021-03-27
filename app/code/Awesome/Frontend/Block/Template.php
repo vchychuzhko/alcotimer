@@ -5,7 +5,6 @@ namespace Awesome\Frontend\Block;
 
 use Awesome\Frontend\Model\Context;
 use Awesome\Frontend\Model\DeployedVersion;
-use Awesome\Frontend\Model\FrontendState;
 
 class Template extends \Awesome\Frontend\Model\AbstractBlock
 {
@@ -13,16 +12,6 @@ class Template extends \Awesome\Frontend\Model\AbstractBlock
      * @var DeployedVersion $deployedVersion
      */
     protected $deployedVersion;
-
-    /**
-     * @var FrontendState $frontendState
-     */
-    protected $frontendState;
-
-    /**
-     * @var string $mediaUrl
-     */
-    protected $mediaUrl = '';
 
     /**
      * @var string $staticUrl
@@ -40,7 +29,6 @@ class Template extends \Awesome\Frontend\Model\AbstractBlock
     ) {
         parent::__construct($data);
         $this->deployedVersion = $context->getDeployedVersion();
-        $this->frontendState = $context->getFrontendState();
     }
 
     /**
@@ -51,13 +39,7 @@ class Template extends \Awesome\Frontend\Model\AbstractBlock
      */
     public function getMediaUrl(string $file = ''): string
     {
-        $file = ltrim($file, '/');
-
-        if ($this->mediaUrl === '') {
-            $this->mediaUrl = $this->getPubUrl('media/');
-        }
-
-        return $this->mediaUrl . $file;
+        return '/media/' . ltrim($file, '/');
     }
 
     /**
@@ -89,22 +71,9 @@ class Template extends \Awesome\Frontend\Model\AbstractBlock
                 $this->deployedVersion->generateVersion();
             }
 
-            $this->staticUrl = $this->getPubUrl(
-                'static/version' . $this->deployedVersion->getVersion() . '/' . $view . '/'
-            );
+            $this->staticUrl = '/static/version' . $this->deployedVersion->getVersion() . '/' . $view . '/';
         }
 
         return $this->staticUrl . $file;
-    }
-
-    /**
-     * Return URI path for file in the pub folder.
-     * If file is not specified, return pub folder URI path.
-     * @param string $file
-     * @return string
-     */
-    private function getPubUrl(string $file = ''): string
-    {
-        return ($this->frontendState->isPubRoot() ? '' : '/pub') . '/' . ltrim($file, '/');
     }
 }

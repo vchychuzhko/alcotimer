@@ -53,13 +53,13 @@ class ResultPageFactory extends \Awesome\Framework\Model\AbstractFactory
     public function create(?string $handle = null, ?string $view = null, array $handles = []): HtmlResponse
     {
         if (!$handle) {
-            if (!$this->request) {
+            if ($this->request === null) {
                 throw new \RuntimeException('Request object was not provided so result page handle cannot be retrieved');
             }
             $handle = $this->request->getFullActionName();
         }
         if (!$view) {
-            if (!$this->request) {
+            if ($this->request === null) {
                 throw new \RuntimeException('Request object was not provided so result page view cannot be retrieved');
             }
             $view = $this->request->getView();

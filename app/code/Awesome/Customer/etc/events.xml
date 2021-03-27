@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="../../Framework/Schema/events.xsd">
+    <event name="http_frontend_action">
+        <observer name="visitor_log" class="Awesome\Customer\Observer\VisitorLogObserver" sortOrder="2"/>
+    </event>
+</config>

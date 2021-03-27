@@ -1,8 +1,9 @@
 define([
     'jquery',
     'messenger',
+    'translator',
     'jquery/ui',
-], function ($, messenger) {
+], function ($, messenger, __) {
     'use strict'
 
     $.widget('awesome.copy', {
@@ -41,15 +42,15 @@ define([
         copyText: function ($target, event) {
             event.preventDefault();
 
-            let $temp = $('<input>');
+            let $temporaryInput = $('<input>');
 
-            $('body').append($temp);
-            $temp.val($target.text()).select();
+            $('body').append($temporaryInput);
+            $temporaryInput.val($target.text().trim()).select();
             document.execCommand('copy');
-            $temp.remove();
+            $temporaryInput.remove();
 
             if (this.options.showMessage) {
-                messenger.message('Copied to the clipboard!');
+                messenger.message(__('Copied to the clipboard!'));
             }
         }
     });

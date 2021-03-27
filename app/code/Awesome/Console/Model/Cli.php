@@ -13,7 +13,7 @@ use Awesome\Framework\Exception\XmlValidationException;
 
 class Cli
 {
-    public const VERSION = '0.5.0';
+    public const VERSION = '0.5.1';
 
     /**
      * @var CommandResolver $commandResolver
@@ -67,18 +67,6 @@ class Cli
                 $help->execute($input, $output);
             }
         } catch (NoSuchCommandException $e) {
-            $this->displayException($e);
-
-            if ($alternatives = $this->commandResolver->getAlternatives($e->getCommandName(), false)) {
-                $this->getOutput()->writeln('Did you mean one of these?', 2);
-
-                foreach ($alternatives as $alternative) {
-                    $this->getOutput()->writeln($this->getOutput()->colourText($alternative, Output::BROWN), 4);
-                }
-            } else {
-                $this->getOutput()->writeln('Try running application help, to see available commands.');
-            }
-
             exit(1);
         } catch (\InvalidArgumentException | XmlValidationException $e) {
             $this->displayException($e);
@@ -177,7 +165,20 @@ class Cli
 
             if ($commandName) {
                 if (!$this->commandResolver->commandExist($commandName)) {
-                    throw new NoSuchCommandException($commandName);
+                    $e = new NoSuchCommandException(__('Command "%1" was not recognized', $commandName));
+                    $this->displayException($e);
+
+                    if ($alternatives = $this->commandResolver->getAlternatives($commandName, false)) {
+                        $this->getOutput()->writeln('Did you mean one of these?', 2);
+
+                        foreach ($alternatives as $alternative) {
+                            $this->getOutput()->writeln($this->getOutput()->colourText($alternative, Output::BROWN), 4);
+                        }
+                    } else {
+                        $this->getOutput()->writeln('Try running application help, to see available commands.');
+                    }
+
+                    throw $e;
                 }
                 $command = $this->commandResolver->getCommandClass($commandName) ?: Help::class;
             } else {

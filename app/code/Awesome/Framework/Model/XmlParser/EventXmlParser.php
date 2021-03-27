@@ -37,9 +37,9 @@ class EventXmlParser
     public function getEventsData(string $view = ''): array
     {
         $eventsData = [];
-        $pattern = $view ? sprintf(self::EVENTS_XML_PATH_PATTERN, $view) : self::EVENTS_GLOBAL_XML_PATH_PATTERN;
+        $eventsXmlFilesPattern = APP_DIR . ($view ? sprintf(self::EVENTS_XML_PATH_PATTERN, $view) : self::EVENTS_GLOBAL_XML_PATH_PATTERN);
 
-        foreach (glob(APP_DIR . $pattern, GLOB_BRACE) as $eventsXmlFile) {
+        foreach (glob($eventsXmlFilesPattern, GLOB_BRACE) as $eventsXmlFile) {
             $parsedData = $this->parse($eventsXmlFile);
 
             foreach ($parsedData as $eventName => $eventObservers) {
@@ -47,9 +47,7 @@ class EventXmlParser
 
                 foreach ($eventObservers as $observerName => $observer) {
                     if (DataHelper::arrayGetByKeyRecursive($eventsData, $observerName)) {
-                        throw new XmlValidationException(
-                            sprintf('Observer with "%s" name is already defined', $observerName)
-                        );
+                        throw new XmlValidationException(__('Observer "%1" is already defined', $observerName));
                     }
 
                     $eventsData[$eventName][$observerName] = $observer;
@@ -79,12 +77,6 @@ class EventXmlParser
             foreach ($event->children() as $observer) {
                 if (!XmlParsingHelper::isDisabled($observer)) {
                     $observerName = XmlParsingHelper::getNodeAttributeName($observer);
-
-                    if (DataHelper::arrayGetByKeyRecursive($parsedNode, $observerName)) {
-                        throw new XmlValidationException(
-                            sprintf('Observer "%s" is defined twice in one file', $observerName)
-                        );
-                    }
 
                     $parsedNode[$eventName][$observerName] = [
                         'class' => '\\' . ltrim(XmlParsingHelper::getNodeAttribute($observer, 'class'), '\\'),

@@ -7,9 +7,9 @@ use Awesome\Cache\Model\Cache;
 use Awesome\Framework\Model\AppState;
 use Awesome\Framework\Model\Config;
 use Awesome\Framework\Model\Http\Request;
-use Awesome\Framework\Model\ResponseInterface;
 use Awesome\Framework\Model\Http\Router;
-use Awesome\Framework\Model\Result\ResponseFactory;
+use Awesome\Framework\Model\Http\ResponseFactory;
+use Awesome\Framework\Model\ResponseInterface;
 use Awesome\Frontend\Model\Result\ResultPageFactory;
 
 class LayoutHandler extends \Awesome\Framework\Model\AbstractAction
@@ -71,7 +71,6 @@ class LayoutHandler extends \Awesome\Framework\Model\AbstractAction
      * @param ResponseFactory $responseFactory
      * @param ResultPageFactory $resultPageFactory
      * @param Router $router
-     * @param array $data
      */
     public function __construct(
         AppState $appState,
@@ -79,10 +78,9 @@ class LayoutHandler extends \Awesome\Framework\Model\AbstractAction
         Config $config,
         ResponseFactory $responseFactory,
         ResultPageFactory $resultPageFactory,
-        Router $router,
-        array $data = []
+        Router $router
     ) {
-        parent::__construct($responseFactory, $data);
+        parent::__construct($responseFactory);
         $this->appState = $appState;
         $this->cache = $cache;
         $this->config = $config;
@@ -186,9 +184,9 @@ class LayoutHandler extends \Awesome\Framework\Model\AbstractAction
                 self::PAGE_HANDLES_CACHE_TAG_PREFIX . $view,
                 function () use ($view) {
                     $handles = [];
-                    $pattern = sprintf(self::LAYOUT_XML_PATH_PATTERN, $view);
+                    $pattern = APP_DIR . sprintf(self::LAYOUT_XML_PATH_PATTERN, $view);
 
-                    foreach (glob(APP_DIR . $pattern) as $collectedHandle) {
+                    foreach (glob($pattern) as $collectedHandle) {
                         $handles[] = basename($collectedHandle, '.xml');
                     }
 

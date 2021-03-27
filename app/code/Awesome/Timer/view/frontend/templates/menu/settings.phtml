@@ -3,38 +3,36 @@
     <ul>
         <li>
             <div class="random-time range-slider" data-awesome-init='{"rangeSlider": <?= $block->getSliderConfigJson(); ?>}'>
-                <h3>Set time range (mins):</h3>
+                <h3><?= __('Set time range (minutes):'); ?></h3>
                 <div class="range-controls">
                     <div class="controller min"></div>
                     <div class="controller max"></div>
                 </div>
                 <div class="range-inputs">
-                    <input type="number" class="value min" name="min-time-input" id="min-time-input">
-                    <label for="min-time-input" style="display: none">Minimum random time input value</label>
+                    <input type="number" class="value min" name="min-time-input" aria-label="<?= __('Minimum random time input value'); ?>">
                     <span class="input-separator">- to -</span>
-                    <input type="number" class="value max" name="max-time-input" id="max-time-input">
-                    <label for="max-time-input" style="display: none">Maximum random time input value</label>
+                    <input type="number" class="value max" name="max-time-input" aria-label="<?= __('Maximum random time input value'); ?>">
                 </div>
             </div>
         </li>
         <li>
             <div class="random-time checkbox">
                 <input type="checkbox" class="hide-random-time" name="hide-random-time" id="hide-random-time">
-                <label for="hide-random-time">Hide random time</label>
+                <label for="hide-random-time"><?= __('Hide random time'); ?></label>
             </div>
         </li>
         <li>
             <div class="loader-settings checkbox">
                 <input type="checkbox" class="show-loader" name="show-loader" id="show-loader" checked>
-                <label for="show-loader">Show loader on run</label>
+                <label for="show-loader"><?= __('Show loader on run'); ?></label>
             </div>
         </li>
     </ul>
     <div class="settings-buttons-container">
-        <button class="reset-button" type="button" name="settings-reset" value="Reset  settings">Reset</button>
-        <button class="apply-button" type="button" name="settings-apply" value="Apply Settings">Apply</button>
+        <button class="reset-button" type="button" name="settings-reset" value="Reset  settings"><?= __('Reset'); ?></button>
+        <button class="apply-button" type="button" name="settings-apply" value="Apply Settings"><?= __('Apply'); ?></button>
     </div>
 </div>
 <div class="hint-button-container">
-    <button type="button" class="hint-button">Show hint</button>
+    <button type="button" class="hint-button"><?= __('Show hint'); ?></button>
 </div>

@@ -10,7 +10,7 @@ define([
 
     /**
      * Prepare and return messages container element.
-     * @return {jQuery}
+     * @returns {jQuery}
      */
     function getMessagesContainer () {
         let $messagesContainer = $('.messages-container');

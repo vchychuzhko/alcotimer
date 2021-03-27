@@ -40,7 +40,7 @@ class CommandXmlParser
 
             foreach ($parsedData as $commandName => $commandClass) {
                 if (isset($this->commands[$commandName])) {
-                    throw new XmlValidationException(sprintf('Command "%s" is already defined', $commandName));
+                    throw new XmlValidationException(__('Command "%1" is already defined', $commandName));
                 }
 
                 $commandsClasses[$commandName] = $commandClass;
@@ -68,12 +68,6 @@ class CommandXmlParser
             foreach ($namespace->children() as $command) {
                 if (!XmlParsingHelper::isDisabled($command)) {
                     $commandName = $namespaceName . ':' . XmlParsingHelper::getNodeAttributeName($command);
-
-                    if (isset($parsedNode[$commandName])) {
-                        throw new XmlValidationException(
-                            sprintf('Command "%s" is defined twice in one file', $commandName)
-                        );
-                    }
 
                     $parsedNode[$commandName] = '\\' . ltrim(XmlParsingHelper::getNodeAttribute($command, 'class'), '\\');
                 }

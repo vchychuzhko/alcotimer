@@ -14,6 +14,7 @@ class Cache implements \Awesome\Framework\Model\SingletonInterface
     public const ETC_CACHE_KEY = 'etc';
     public const LAYOUT_CACHE_KEY = 'layout';
     public const FULL_PAGE_CACHE_KEY = 'full_page';
+    public const TRANSLATIONS_CACHE_KEY = 'translations';
 
     /**
      * @var CacheState $cacheState

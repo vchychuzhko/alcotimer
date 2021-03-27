@@ -7,15 +7,37 @@ use Awesome\Framework\Model\ResponseInterface;
 use Awesome\Framework\Model\Result\Response;
 use Awesome\Framework\Model\Http\Request;
 
-/**
- * Class HttpErrorAction
- * @method string|null getAcceptType()
- * @method string getErrorMessage()
- * @method bool getIsDeveloperMode()
- */
-class HttpErrorAction extends \Awesome\Framework\Model\DataObject
+class HttpErrorAction
 {
-    private const INTERNALERROR_PAGE_PATH = '/pub/pages/internal_error.html';
+    private const INTERNALERROR_PAGE_PATH = '/pub/pages/internal_error.php';
+
+    /**
+     * @var string $errorMessage
+     */
+    private $errorMessage;
+
+    /**
+     * @var bool $isDeveloperMode
+     */
+    private $isDeveloperMode;
+
+    /**
+     * @var string|null $acceptType
+     */
+    private $acceptType;
+
+    /**
+     * HttpErrorAction constructor.
+     * @param string $errorMessage
+     * @param bool $isDeveloperMode
+     * @param string|null $acceptType
+     */
+    public function __construct(string $errorMessage, bool $isDeveloperMode = false, ?string $acceptType = null)
+    {
+        $this->errorMessage = $errorMessage;
+        $this->isDeveloperMode = $isDeveloperMode;
+        $this->acceptType = $acceptType;
+    }
 
     /**
      * Show internal error response according to accept type.
@@ -23,27 +45,25 @@ class HttpErrorAction extends \Awesome\Framework\Model\DataObject
      */
     public function execute(): Response
     {
-        $errorMessage = $this->getErrorMessage();
-
-        if ($this->getAcceptType() === Request::JSON_ACCEPT_HEADER) {
+        if ($this->acceptType === Request::JSON_ACCEPT_HEADER) {
             $response = new Response(
                 json_encode([
                     'status' => 'ERROR',
-                    'message' => $this->getIsDeveloperMode()
-                        ? $errorMessage
-                        : 'Internal error occurred. Details are hidden and can be found in logs files.',
+                    'message' => $this->isDeveloperMode
+                        ? $this->errorMessage
+                        : 'An internal error occurred. Details are hidden and can be found in logs files.',
                 ]),
-                ResponseInterface::INTERNAL_ERROR_STATUS_CODE,
+                ResponseInterface::INTERNALERROR_STATUS_CODE,
                 ['Content-Type' => 'application/json']
             );
-        } elseif ($this->getAcceptType() === Request::HTML_ACCEPT_HEADER && $content = $this->getInternalErrorPage()) {
+        } elseif ($this->acceptType === Request::HTML_ACCEPT_HEADER && $content = $this->getInternalErrorPage()) {
             $response = new Response(
-                $this->getIsDeveloperMode() ? '<pre>' . $errorMessage . '</pre>' : $content,
-                ResponseInterface::INTERNAL_ERROR_STATUS_CODE,
+                $this->isDeveloperMode ? '<pre>' . $this->errorMessage . '</pre>' : $content,
+                ResponseInterface::INTERNALERROR_STATUS_CODE,
                 ['Content-Type' => 'text/html']
             );
         } else {
-            $response = new Response('', ResponseInterface::INTERNAL_ERROR_STATUS_CODE);
+            $response = new Response('', ResponseInterface::INTERNALERROR_STATUS_CODE);
         }
 
         return $response;
@@ -55,6 +75,13 @@ class HttpErrorAction extends \Awesome\Framework\Model\DataObject
      */
     private function getInternalErrorPage(): ?string
     {
-        return @file_get_contents(BP . self::INTERNALERROR_PAGE_PATH) ?: null;
+        if (is_file(BP . self::INTERNALERROR_PAGE_PATH)) {
+            ob_start();
+            include BP . self::INTERNALERROR_PAGE_PATH;
+
+            return ob_get_clean();
+        }
+
+        return null;
     }
 }

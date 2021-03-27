@@ -19,7 +19,7 @@
                                 </xs:complexType>
                             </xs:element>
                         </xs:sequence>
-                        <xs:attribute name="frontName" use="required">
+                        <xs:attribute name="name" use="required">
                             <xs:simpleType>
                                 <xs:restriction base="xs:string">
                                     <xs:minLength value="1"/>
@@ -30,8 +30,8 @@
                         <xs:attribute name="type" use="required">
                             <xs:simpleType>
                                 <xs:restriction base="xs:string">
-                                    <xs:minLength value="1"/>
-                                    <xs:pattern value="[a-z]*"/>
+                                    <xs:enumeration value="internal"/>
+                                    <xs:enumeration value="standard"/>
                                 </xs:restriction>
                             </xs:simpleType>
                         </xs:attribute>
@@ -40,9 +40,9 @@
                 </xs:element>
             </xs:sequence>
         </xs:complexType>
-        <xs:unique name="routeFrontName">
+        <xs:unique name="name">
             <xs:selector xpath=".//route"/>
-            <xs:field xpath="@frontName"/>
+            <xs:field xpath="@name"/>
         </xs:unique>
     </xs:element>
 </xs:schema>

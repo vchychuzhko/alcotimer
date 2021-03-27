@@ -112,7 +112,7 @@ class Request extends \Awesome\Framework\Model\DataObject implements \Awesome\Fr
     }
 
     /**
-     * Get URL scheme protocol.
+     * Get request scheme protocol.
      * @return string
      */
     private function getScheme(): string
@@ -122,6 +122,15 @@ class Request extends \Awesome\Framework\Model\DataObject implements \Awesome\Fr
         }
 
         return $this->scheme;
+    }
+
+    /**
+     * Check if request was performed via secure connection.
+     * @return bool
+     */
+    public function isSecure(): bool
+    {
+        return $this->getScheme() === self::SCHEME_HTTPS;
     }
 
     /**
@@ -168,21 +177,21 @@ class Request extends \Awesome\Framework\Model\DataObject implements \Awesome\Fr
     }
 
     /**
-     * Check if request was performed via secure connection.
-     * @return bool
-     */
-    public function isSecure(): bool
-    {
-        return $this->getScheme() === self::SCHEME_HTTPS;
-    }
-
-    /**
      * Get request method.
      * @return string
      */
     public function getMethod(): string
     {
         return $this->method;
+    }
+
+    /**
+     * Check if request is POST.
+     * @return bool
+     */
+    public function isPost(): bool
+    {
+        return $this->getMethod() === self::HTTP_METHOD_POST;
     }
 
     /**
@@ -217,6 +226,15 @@ class Request extends \Awesome\Framework\Model\DataObject implements \Awesome\Fr
         }
 
         return $values;
+    }
+
+    /**
+     * Get all request parameters.
+     * @return array
+     */
+    public function getParams(): array
+    {
+        return $this->parameters;
     }
 
     /**

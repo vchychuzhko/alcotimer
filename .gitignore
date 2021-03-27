@@ -1,10 +1,6 @@
 /.idea
 
+/pub/.well-known/*
 /pub/static/*
 !/pub/static/.htaccess
-
-/var/*
-!/var/.htaccess
-
-/vendor/*
-!/vendor/.htaccess
+!/pub/static/get.php

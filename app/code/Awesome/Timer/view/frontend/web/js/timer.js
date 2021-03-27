@@ -1,9 +1,10 @@
 define([
     'jquery',
     'messenger',
+    'translator',
     'jquery/ui',
     'howler',
-], function ($, messenger) {
+], function ($, messenger, __) {
     'use strict'
 
     const RUNNING_STATE = 'running',
@@ -205,7 +206,7 @@ define([
 
                 sound.play();
             } else {
-                messenger.message('It time to start!');
+                messenger.message(__('It time to start!'));
             }
         },
 

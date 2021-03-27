@@ -52,9 +52,12 @@ class DeployedVersion implements \Awesome\Framework\Model\SingletonInterface
      */
     public function getVersion(): ?int
     {
-        if (!$this->deployedVersion) {
+        if ($this->deployedVersion === null) {
             $deployedVersion = $this->fileManager->readFile(BP . StaticContent::STATIC_FOLDER_PATH . self::DEPLOYED_VERSION_FILE, true);
-            $this->deployedVersion = $deployedVersion ? (int) $deployedVersion : null;
+
+            if ($deployedVersion) {
+                $this->deployedVersion = (int) $deployedVersion;
+            }
         }
 
         return $this->deployedVersion;
