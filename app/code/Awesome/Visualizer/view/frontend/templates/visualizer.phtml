@@ -1,17 +1,17 @@
 <?php /** @var \Awesome\Visualizer\Block\Visualizer $block */ ?>
 <div class="visualizer">
-    <div class="legend">
-        <span class="trackname">-</span>
-        <span class="timecode">--:--:--</span>
+    <div class="visualizer__legend">
+        <span class="visualizer__name" data-name>-</span>
+        <span class="visualizer__time" data-time>--:--:--</span>
     </div>
-    <canvas class="canvas" height="900" width="900"></canvas>
-    <audio class="audio" controls="true" crossorigin="anonymous"></audio>
+    <canvas class="visualizer__canvas" height="900" width="900" data-canvas></canvas>
+    <audio class="visualizer__audio" controls="true" crossorigin="anonymous" data-audio></audio>
 </div>
 <script type="text/x-awesome-init">
 {
     ".visualizer": {
         "player": {
-            "playlistConfig": <?= $block->getPlaylistConfig(); ?>
+            "playlistConfig": <?= $block->getPlaylistJsonConfig() ?>
         }
     }
 }

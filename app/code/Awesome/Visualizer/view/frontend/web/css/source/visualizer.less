@@ -1,0 +1,115 @@
+.visualizer {
+    background-color: #111111;
+    background-position: center;
+    background-size: cover;
+    height: 100%;
+    left: 0;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    width: 100%;
+
+    &__legend {
+        color: #dddddd;
+        display: flex;
+        flex-direction: column;
+        font-size: 24px;
+        left: 10px;
+        padding: 5px;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    &__name {
+        &.in {
+            animation: in 0.3s ease-in-out;
+        }
+
+        &.out {
+            animation: out 0.3s ease-in-out;
+            animation-fill-mode: forwards;
+            position: absolute;
+        }
+    }
+
+    &__time:before {
+        background: linear-gradient(to right, #dddddd, transparent);
+        content: '';
+        display: block;
+        height: 5px;
+        margin: 10px 0 10px -15px;
+        width: 30vw;
+    }
+
+    &__canvas {
+        left: 75%;
+        position: absolute;
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    &__audio {
+        bottom: 10px;
+        left: 10px;
+        position: absolute;
+        width: ~'calc(100% - 20px)';
+    }
+
+    &.vertical &__legend {
+        left: 50%;
+        text-align: center;
+        top: 50px;
+        transform: translateX(-50%);
+    }
+
+    &.vertical &__time:before {
+        background: linear-gradient(to right, transparent, #dddddd, transparent);
+        margin: 10px 0;
+        width: 100%;
+    }
+
+    &.vertical &__canvas {
+        left: 50%;
+    }
+}
+
+@keyframes in {
+    0% {
+        opacity: 0;
+        transform: translateY(-100%);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes out {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(100%);
+    }
+}
+
+@media only screen and (min-width: 768px) {
+    .visualizer {
+        &__legend {
+            font-size: 32px;
+        }
+
+        &__audio:not(.nohide) {
+            opacity: 0;
+
+            &:hover, &:focus {
+                opacity: 1;
+            }
+        }
+    }
+}

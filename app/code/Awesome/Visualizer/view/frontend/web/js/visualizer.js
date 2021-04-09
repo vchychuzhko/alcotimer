@@ -7,19 +7,19 @@ define([
 
     return {
         analyzerNode: null,
-        $canvas: null,
+        canvas: null,
         data: [],
         initialized: false,
 
         /**
          * Init audio spectrum visualiser.
-         * @param {HTMLMediaElement} $audio
-         * @param {HTMLElement} $canvas
+         * @param {HTMLMediaElement} audio
+         * @param {HTMLElement} canvas
          * @param {number} numberOfPeaks
          */
-        init: function ($audio, $canvas, numberOfPeaks = NUMBER_OF_PEAKS) {
+        init: function (audio, canvas, numberOfPeaks = NUMBER_OF_PEAKS) {
             let audioContext = new (window.AudioContext || window.webkitAudioContext)(),
-                audioSource = audioContext.createMediaElementSource($audio);
+                audioSource = audioContext.createMediaElementSource(audio);
 
             this.analyzerNode = audioContext.createAnalyser();
             this.analyzerNode.fftSize = numberOfPeaks;
@@ -28,7 +28,7 @@ define([
             audioSource.connect(audioContext.destination);
 
             this.data = new Uint8Array(this.analyzerNode.frequencyBinCount);
-            this.$canvas = $canvas;
+            this.canvas = canvas;
 
             this.initialized = true;
         },
@@ -39,16 +39,17 @@ define([
         render: function () {
             this.analyzerNode.getByteFrequencyData(this.data);
 
-            this.paint();
+            this._paint();
         },
 
         /**
          * Render audio spectrum.
+         * @private
          */
-        paint: function () {
-            let context = this.$canvas.getContext('2d'),
-                height = this.$canvas.height,
-                width = this.$canvas.width,
+        _paint: function () {
+            let context = this.canvas.getContext('2d'),
+                height = this.canvas.height,
+                width = this.canvas.width,
                 average = (this.data.reduce((a, b) => a + b, 0) / this.analyzerNode.frequencyBinCount) / 255,
                 radius = height / 4 * (average / 2 + 1);
 
@@ -68,10 +69,10 @@ define([
                 value = (value / 255) * (height / 8);
 
                 let currentAngle = 360 * (index / this.analyzerNode.frequencyBinCount),
-                    x1 = (width / 2) + radius * Math.cos(this.degreesToRadians(currentAngle - 90)),
-                    x2 = (width / 2) + (radius + value) * Math.cos(this.degreesToRadians(currentAngle - 90)),
-                    y1 = (height / 2) + radius * Math.sin(this.degreesToRadians(currentAngle - 90)),
-                    y2 = (height / 2) + (radius + value) * Math.sin(this.degreesToRadians(currentAngle - 90));
+                    x1 = (width / 2) + radius * Math.cos(this._degreesToRadians(currentAngle - 90)),
+                    x2 = (width / 2) + (radius + value) * Math.cos(this._degreesToRadians(currentAngle - 90)),
+                    y1 = (height / 2) + radius * Math.sin(this._degreesToRadians(currentAngle - 90)),
+                    y2 = (height / 2) + (radius + value) * Math.sin(this._degreesToRadians(currentAngle - 90));
 
                 context.lineWidth = 2;
                 context.beginPath();
@@ -86,8 +87,9 @@ define([
          * Convert degree value to radians.
          * @param {number} angle
          * @returns {number}
+         * @private
          */
-        degreesToRadians: function (angle) {
+        _degreesToRadians: function (angle) {
             return (Math.PI / 180) * angle;
         },
     };

@@ -11,17 +11,13 @@ define([
 
     $.widget('awesome.player', {
         options: {
-            canvasSelector: '.canvas',
-            audioSelector: '.audio',
             playlistConfig: {},
-            timeSelector: '.timecode',
-            trackNameSelector: '.trackname',
         },
 
-        $audio: null,
+        audio: null,
         $canvas: null,
         $time: null,
-        $trackName: null,
+        $name: null,
 
         filename: null,
         state: null,
@@ -33,17 +29,17 @@ define([
             this.initFields();
             this.checkTouchScreen();
             this.initBindings();
-            this.calculateCanvasSize();
+            this.updateCanvasSize();
         },
 
         /**
          * Init widget fields.
          */
         initFields: function () {
-            this.$audio = this.element.get(0).querySelector(this.options.audioSelector);
-            this.$canvas = this.element.get(0).querySelector(this.options.canvasSelector);
-            this.$time = this.element.get(0).querySelector(this.options.timeSelector);
-            this.$trackName = this.element.get(0).querySelector(this.options.trackNameSelector);
+            this.audio = $('[data-audio]', this.element).get(0);
+            this.$canvas = $('[data-canvas]', this.element);
+            this.$time = $('[data-time]', this.element);
+            this.$name = $('[data-name]', this.element);
         },
 
         /**
@@ -51,7 +47,7 @@ define([
          */
         checkTouchScreen: function () {
             if ('ontouchstart' in document.documentElement) {
-                this.$audio.classList.add('nohide');
+                $(this.audio).addClass('nohide');
             }
         },
 
@@ -59,40 +55,40 @@ define([
          * Init event listeners.
          */
         initBindings: function () {
-            window.addEventListener('resize', this.calculateCanvasSize.bind(this));
+            $(window).on('resize', this.updateCanvasSize.bind(this));
 
-            document.addEventListener('dragover', function (event) {
+            $(document).on('dragover', function (event) {
                 event.preventDefault();
                 event.stopPropagation();
             });
 
-            document.addEventListener('drop', function (event) {
+            $(document).on('drop', function (event) {
                 event.preventDefault();
                 event.stopPropagation();
 
-                let file = event.dataTransfer.files[0];
+                let file = event.originalEvent.dataTransfer.files[0];
 
                 this.fileName = file.name.replace(/\.[^/.]+$/, '');
 
-                this.$audio.setAttribute('src', URL.createObjectURL(file));
+                $(this.audio).attr('src', URL.createObjectURL(file));
 
-                this.$audio.play();
+                this.audio.play();
             }.bind(this));
             // @TODO: Check lock screen play
 
-            this.$audio.addEventListener('timeupdate', function (event) {
+            $(this.audio).on('timeupdate', function (event) {
                 let currentTime = event.currentTarget.currentTime;
 
                 this.updateTrackName(this.fileName, currentTime);
                 this.updateTime(currentTime);
             }.bind(this));
 
-            this.$audio.addEventListener('play', this.play.bind(this));
+            $(this.audio).on('play', this.play.bind(this));
 
-            this.$audio.addEventListener('pause', this.pause.bind(this));
+            $(this.audio).on('pause', this.pause.bind(this));
 
-            document.addEventListener('keyup', function (event) {
-                if (!event.target.matches(this.options.playerSelector)) {
+            $(document).on('keyup', function (event) {
+                if ($('*:focus').length === 0) {
                     this.handlePlayerControls(event);
                 }
             }.bind(this));
@@ -101,30 +97,30 @@ define([
         /**
          * Update audio track name.
          * @param {string} trackName
-         * @param {number|null} timeCode
+         * @param {number} timeCode
          */
-        updateTrackName: function (trackName, timeCode = null) {
-            if (timeCode !== null && this.options.playlistConfig[trackName]) {
+        updateTrackName: function (trackName, timeCode) {
+            if (this.options.playlistConfig[trackName]) {
                 $.each(this.options.playlistConfig[trackName]['playlist'], function (code, name) {
                     if (code >= timeCode) return false;
                     trackName = name;
                 }.bind(this));
             }
 
-            if (trackName && this.$trackName.innerText !== trackName) {
-                let newTrackName = this.$trackName.cloneNode(),
-                    oldTrackName = this.$trackName;
+            if (this.$name.text() !== trackName) {
+                let newTrackName = this.$name.clone(),
+                    oldTrackName = this.$name;
 
-                this.$trackName = newTrackName;
-                this.$trackName.innerHTML = trackName;
+                this.$name = newTrackName;
+                this.$name.text(trackName);
 
-                oldTrackName.parentNode.prepend(newTrackName);
-                newTrackName.classList.add('in');
-                oldTrackName.classList.add('out');
+                oldTrackName.parent().prepend(newTrackName);
+                newTrackName.addClass('in');
+                oldTrackName.addClass('out');
 
                 setTimeout(function () {
                     oldTrackName.remove();
-                    this.$trackName.classList.remove('in');
+                    this.$name.removeClass('in');
                 }.bind(this), 400);
             }
         },
@@ -138,7 +134,7 @@ define([
                 minutes = ('00' + Math.floor(totalSeconds % 3600 / 60)).substr(-2, 2),
                 seconds = ('00' + Math.floor(totalSeconds % 60)).substr(-2, 2);
 
-            this.$time.innerText = `${hours}:${minutes}:${seconds}`;
+            this.$time.text(`${hours}:${minutes}:${seconds}`);
         },
 
         /**
@@ -148,7 +144,7 @@ define([
         play: function () {
             if (this.state !== RUNNING_STATE) {
                 if (!visualizer.initialized) {
-                    visualizer.init(this.$audio, this.$canvas);
+                    visualizer.init(this.audio, this.$canvas.get(0));
                 }
 
                 this.state = RUNNING_STATE;
@@ -185,63 +181,70 @@ define([
         /**
          * Recalculate canvas size to keep it squared.
          */
-        calculateCanvasSize: function () {
-            let container = this.element.get(0),
+        updateCanvasSize: function () {
+            let outerHeight = $(this.element).outerHeight(),
+                outerWidth = $(this.element).outerWidth(),
                 size;
 
-            if (container.offsetWidth > container.offsetHeight) {
-                size = Math.round(Math.min(container.offsetHeight * 0.9, container.offsetWidth * 0.4));
-                this.element.get(0).classList.remove('vertical');
-            } else if (container.offsetHeight > container.offsetWidth) {
-                size = Math.round(Math.min(container.offsetWidth * 0.9, container.offsetHeight * 0.6));
-                this.element.get(0).classList.add('vertical');
+            if (outerWidth > outerHeight) {
+                size = Math.round(Math.min(outerHeight * 0.9, outerWidth * 0.4));
+                $(this.element).removeClass('vertical');
+            } else if (outerHeight > outerWidth) {
+                size = Math.round(Math.min(outerWidth * 0.9, outerHeight * 0.6));
+                $(this.element).addClass('vertical');
             }
-            this.$canvas.style.height = size + 'px';
-            this.$canvas.style.width = size + 'px';
+            this.$canvas.height(size + 'px');
+            this.$canvas.width(size + 'px');
 
-            this.$canvas.height = size;
-            this.$canvas.width = size;
+            this.$canvas.attr('height', size);
+            this.$canvas.attr('width', size);
         },
 
         /**
          * Handle player control buttons.
-         * @param {object} event
+         * @param {Object} event
          */
         handlePlayerControls: function (event) {
             switch (event.key) {
                 case ' ':
                     event.preventDefault();
 
-                    if (!this.$audio.paused) {
-                        this.$audio.pause();
+                    if (!this.audio.paused) {
+                        this.audio.pause();
                     } else {
-                        this.$audio.play();
+                        this.audio.play();
                     }
                     break;
                 case 'ArrowLeft':
                     event.preventDefault();
 
-                    this.$audio.currentTime = Math.max(this.$audio.currentTime - 10, 0);
+                    this.audio.currentTime = Math.max(this.audio.currentTime - 10, 0);
                     break;
                 case 'ArrowRight':
                     event.preventDefault();
 
-                    this.$audio.currentTime = Math.min(this.$audio.currentTime + 10, Math.floor(this.$audio.duration));
-                    break;
-                case 'ArrowUp':
-                    event.preventDefault();
-
-                    this.$audio.volume = Math.min(this.$audio.volume + 0.1, 1);
-                    break;
-                case 'ArrowDown':
-                    event.preventDefault();
-
-                    this.$audio.volume = Math.max(this.$audio.volume - 0.1, 0);
+                    this.audio.currentTime = Math.min(this.audio.currentTime + 10, Math.floor(this.audio.duration));
                     break;
                 case '0':
                     event.preventDefault();
 
-                    this.$audio.currentTime = 0;
+                    this.audio.currentTime = 0;
+                    break;
+                case 'ArrowUp':
+                    event.preventDefault();
+
+                    this.audio.volume = Math.min(this.audio.volume + 0.1, 1);
+                    break;
+                case 'ArrowDown':
+                    event.preventDefault();
+
+                    this.audio.volume = Math.max(this.audio.volume - 0.1, 0);
+                    break;
+                case 'm':
+                case 'ь':
+                    event.preventDefault();
+
+                    this.audio.muted = !this.audio.muted;
                     break;
                 case 'f':
                 case 'а':
@@ -254,11 +257,11 @@ define([
 
                     // @TODO: Add exit from fullscreen browser mode (and returning header/footer)
                     break;
-                case 'm':
-                case 'ь':
+                case 'l':
+                case 'д':
                     event.preventDefault();
 
-                    this.$audio.muted = !this.$audio.muted;
+                    // @TODO: Add layout change
                     break;
             }
         },
