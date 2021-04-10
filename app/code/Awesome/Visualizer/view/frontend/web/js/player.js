@@ -47,7 +47,7 @@ define([
          */
         checkTouchScreen: function () {
             if ('ontouchstart' in document.documentElement) {
-                $(this.audio).addClass('nohide');
+                $(this.audio).addClass('visible');
             }
         },
 
@@ -55,14 +55,14 @@ define([
          * Init event listeners.
          */
         initBindings: function () {
-            $(window).on('resize', this.updateCanvasSize.bind(this));
+            $(window).on('resize', () => this.updateCanvasSize());
 
             $(document).on('dragover', function (event) {
                 event.preventDefault();
                 event.stopPropagation();
             });
 
-            $(document).on('drop', function (event) {
+            $(document).on('drop', (event) => {
                 event.preventDefault();
                 event.stopPropagation();
 
@@ -73,25 +73,25 @@ define([
                 $(this.audio).attr('src', URL.createObjectURL(file));
 
                 this.audio.play();
-            }.bind(this));
+            });
             // @TODO: Check lock screen play
 
-            $(this.audio).on('timeupdate', function (event) {
+            $(this.audio).on('timeupdate', (event) => {
                 let currentTime = event.currentTarget.currentTime;
 
                 this.updateTrackName(this.fileName, currentTime);
                 this.updateTime(currentTime);
-            }.bind(this));
+            });
 
-            $(this.audio).on('play', this.play.bind(this));
+            $(this.audio).on('play', () => this.startVisualization());
 
-            $(this.audio).on('pause', this.pause.bind(this));
+            $(this.audio).on('pause', () => this.stopVisualization());
 
-            $(document).on('keyup', function (event) {
+            $(document).on('keyup', (event) => {
                 if ($('*:focus').length === 0) {
                     this.handlePlayerControls(event);
                 }
-            }.bind(this));
+            });
         },
 
         /**
@@ -101,10 +101,10 @@ define([
          */
         updateTrackName: function (trackName, timeCode) {
             if (this.options.playlistConfig[trackName]) {
-                $.each(this.options.playlistConfig[trackName]['playlist'], function (code, name) {
+                $.each(this.options.playlistConfig[trackName]['playlist'], (code, name) => {
                     if (code >= timeCode) return false;
                     trackName = name;
-                }.bind(this));
+                });
             }
 
             if (this.$name.text() !== trackName) {
@@ -118,10 +118,10 @@ define([
                 newTrackName.addClass('in');
                 oldTrackName.addClass('out');
 
-                setTimeout(function () {
+                setTimeout(() => {
                     oldTrackName.remove();
                     this.$name.removeClass('in');
-                }.bind(this), 400);
+                }, 300);
             }
         },
 
@@ -141,41 +141,42 @@ define([
          * Start/resume audio visualization.
          * Init visualizer if was not yet.
          */
-        play: function () {
+        startVisualization: function () {
             if (this.state !== RUNNING_STATE) {
                 if (!visualizer.initialized) {
                     visualizer.init(this.audio, this.$canvas.get(0));
                 }
 
                 this.state = RUNNING_STATE;
-                this.run();
+                this._run();
             }
         },
 
         /**
-         * Pause audio visualization.
+         * Call render and request next frame.
+         * @private
          */
-        pause: function () {
+        _run: function () {
+            visualizer.render();
+
+            if (this.state !== STOPPED_STATE) {
+                requestAnimationFrame(() => this._run());
+            }
+        },
+
+        /**
+         * Stop/Pause audio visualization.
+         */
+        stopVisualization: function () {
             this.state = PAUSED_STATE;
 
-            setTimeout(function () {
+            setTimeout(() => {
                 // Timeout is needed to have "fade" effect on canvas
                 // Extra state is needed to solve goTo issue for audio element
                 if (this.state === PAUSED_STATE) {
                     this.state = STOPPED_STATE;
                 }
-            }.bind(this), 1000);
-        },
-
-        /**
-         * Call render and request next frame.
-         */
-        run: function () {
-            visualizer.render();
-
-            if (this.state !== STOPPED_STATE) {
-                requestAnimationFrame(this.run.bind(this));
-            }
+            }, 1000);
         },
 
         /**

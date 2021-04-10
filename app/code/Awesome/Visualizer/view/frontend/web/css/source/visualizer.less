@@ -1,6 +1,7 @@
 .visualizer {
     background-color: #111111;
     background-position: center;
+    background-repeat: no-repeat;
     background-size: cover;
     height: 100%;
     left: 0;
@@ -10,6 +11,7 @@
     width: 100%;
 
     &__legend {
+        box-sizing: border-box;
         color: #dddddd;
         display: flex;
         flex-direction: column;
@@ -39,7 +41,7 @@
         display: block;
         height: 5px;
         margin: 10px 0 10px -15px;
-        width: 30vw;
+        width: 60%;
     }
 
     &__canvas {
@@ -56,21 +58,25 @@
         width: ~'calc(100% - 20px)';
     }
 
-    &.vertical &__legend {
-        left: 50%;
-        text-align: center;
-        top: 50px;
-        transform: translateX(-50%);
-    }
+    &.vertical .visualizer {
+        &__legend {
+            left: 50%;
+            padding: 5px 10px;
+            text-align: center;
+            top: 50px;
+            transform: translateX(-50%);
+            width: 100%;
+        }
 
-    &.vertical &__time:before {
-        background: linear-gradient(to right, transparent, #dddddd, transparent);
-        margin: 10px 0;
-        width: 100%;
-    }
+        &__time:before {
+            background: linear-gradient(to right, transparent, #dddddd, transparent);
+            margin: 10px 0;
+            width: 100%;
+        }
 
-    &.vertical &__canvas {
-        left: 50%;
+        &__canvas {
+            left: 50%;
+        }
     }
 }
 
@@ -102,9 +108,10 @@
     .visualizer {
         &__legend {
             font-size: 32px;
+            width: 50%;
         }
 
-        &__audio:not(.nohide) {
+        &__audio:not(.visible) {
             opacity: 0;
 
             &:hover, &:focus {

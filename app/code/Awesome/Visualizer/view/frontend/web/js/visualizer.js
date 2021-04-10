@@ -62,7 +62,7 @@ define([
             context.stroke();
             context.closePath();
 
-            $.each(this.data, function (index, value) {
+            $.each(this.data, (index, value) => {
                 value = value * 2.5 - 255;
                 if (value < 0) value = 0; // @TODO: Add complex scale/slice/filter modifications
 
@@ -80,7 +80,7 @@ define([
                 context.lineTo(x2, y2);
                 context.stroke();
                 context.closePath();
-            }.bind(this));
+            });
         },
 
         /**
