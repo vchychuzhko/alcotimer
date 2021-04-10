@@ -1,8 +1,9 @@
 define([
     'jquery',
+    'Awesome_Visualizer/js/playlist',
     'Awesome_Visualizer/js/visualizer',
     'jquery/ui',
-], function ($, visualizer) {
+], function ($, playlist, visualizer) {
     'use strict'
 
     const RUNNING_STATE = 'running',
@@ -19,23 +20,26 @@ define([
         $time: null,
         $name: null,
 
-        filename: null,
+        fileId: null,
+        playlist: {},
         state: null,
 
         /**
          * Constructor.
          */
         _create: function () {
-            this.initFields();
+            this._initFields();
             this.checkTouchScreen();
-            this.initBindings();
+            this._initBindings();
             this.updateCanvasSize();
+            this._initPlaylist();
         },
 
         /**
          * Init widget fields.
+         * @private
          */
-        initFields: function () {
+        _initFields: function () {
             this.audio = $('[data-audio]', this.element).get(0);
             this.$canvas = $('[data-canvas]', this.element);
             this.$time = $('[data-time]', this.element);
@@ -52,9 +56,10 @@ define([
         },
 
         /**
-         * Init event listeners.
+         * Init widget event listeners.
+         * @private
          */
-        initBindings: function () {
+        _initBindings: function () {
             $(window).on('resize', () => this.updateCanvasSize());
 
             $(document).on('dragover', function (event) {
@@ -68,19 +73,15 @@ define([
 
                 let file = event.originalEvent.dataTransfer.files[0];
 
-                this.fileName = file.name.replace(/\.[^/.]+$/, '');
-
-                $(this.audio).attr('src', URL.createObjectURL(file));
-
-                this.audio.play();
+                this.playFile(file.name.replace(/\.[^/.]+$/, ''), URL.createObjectURL(file));
             });
             // @TODO: Check lock screen play
 
             $(this.audio).on('timeupdate', (event) => {
                 let currentTime = event.currentTarget.currentTime;
 
-                this.updateTrackName(this.fileName, currentTime);
-                this.updateTime(currentTime);
+                this._updateTrackName(this.fileId, currentTime);
+                this._updateTime(currentTime);
             });
 
             $(this.audio).on('play', () => this.startVisualization());
@@ -89,25 +90,61 @@ define([
 
             $(document).on('keyup', (event) => {
                 if ($('*:focus').length === 0) {
-                    this.handlePlayerControls(event);
+                    this._handlePlayerControls(event);
                 }
             });
         },
 
         /**
+         * Init player playlist.
+         * @private
+         */
+        _initPlaylist: function () {
+            playlist.init($(this.element), this.options.playlistConfig);
+
+            playlist.addSelectionCallback((id, data) => {
+                this.playFile(id, data.src, data);
+            });
+        },
+
+        /**
+         * Initialize and start playing file.
+         * @param {string} id
+         * @param {string} src
+         * @param {Object} data
+         * @private
+         */
+        playFile: function (id, src, data = {}) {
+            this.fileId = id;
+            $(this.audio).attr('src', src);
+
+            let background = data.background || playlist.getData(id, 'background');
+            $(this.element).css('background-image', background ? `url(${background})` : '');
+
+            this.playlist[id] = data.playlist || playlist.getData(id, 'playlist');
+
+            this.audio.play();
+        },
+
+        /**
          * Update audio track name.
+         * Playlist is used according to the timeCode if possible.
          * @param {string} trackName
          * @param {number} timeCode
+         * @private
          */
-        updateTrackName: function (trackName, timeCode) {
-            if (this.options.playlistConfig[trackName]) {
-                $.each(this.options.playlistConfig[trackName]['playlist'], (code, name) => {
-                    if (code >= timeCode) return false;
+        _updateTrackName: function (trackName, timeCode) {
+            if (this.playlist[trackName]) {
+                $.each(this.playlist[trackName], (code, name) => {
+                    if (code > timeCode) {
+                        return false;
+                    }
+
                     trackName = name;
                 });
             }
 
-            if (this.$name.text() !== trackName) {
+            if (trackName !== this.$name.text()) {
                 let newTrackName = this.$name.clone(),
                     oldTrackName = this.$name;
 
@@ -127,12 +164,13 @@ define([
 
         /**
          * Update formatted time.
-         * @param {number} totalSeconds
+         * @param {number} timeCode
+         * @private
          */
-        updateTime: function (totalSeconds) {
-            let hours   = ('00' + Math.floor(totalSeconds / 3600)).substr(-2, 2),
-                minutes = ('00' + Math.floor(totalSeconds % 3600 / 60)).substr(-2, 2),
-                seconds = ('00' + Math.floor(totalSeconds % 60)).substr(-2, 2);
+        _updateTime: function (timeCode) {
+            let hours   = ('00' + Math.floor(timeCode / 3600)).substr(-2, 2),
+                minutes = ('00' + Math.floor(timeCode % 3600 / 60)).substr(-2, 2),
+                seconds = ('00' + Math.floor(timeCode % 60)).substr(-2, 2);
 
             this.$time.text(`${hours}:${minutes}:${seconds}`);
         },
@@ -204,8 +242,9 @@ define([
         /**
          * Handle player control buttons.
          * @param {Object} event
+         * @private
          */
-        handlePlayerControls: function (event) {
+        _handlePlayerControls: function (event) {
             switch (event.key) {
                 case ' ':
                     event.preventDefault();
@@ -263,6 +302,12 @@ define([
                     event.preventDefault();
 
                     // @TODO: Add layout change
+                    break;
+                case 'p':
+                case 'з':
+                    event.preventDefault();
+
+                    playlist.togglePlaylist();
                     break;
             }
         },

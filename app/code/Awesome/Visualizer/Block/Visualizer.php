@@ -42,4 +42,13 @@ class Visualizer extends \Awesome\Frontend\Block\Template
     {
         return [];
     }
+
+    /**
+     * Get default playlist item thumbnail URL.
+     * @return string
+     */
+    public function getPlaylistDefaultThumbnail(): string
+    {
+        return $this->getMediaFileUrl('/pub/media/podcasts/thumbnails/default.png');
+    }
 }

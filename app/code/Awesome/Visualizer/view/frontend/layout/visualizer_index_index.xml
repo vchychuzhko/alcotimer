@@ -3,6 +3,8 @@
       xsi:noNamespaceSchemaLocation="../../../../Frontend/Schema/page_layout.xsd">
     <head>
         <title><![CDATA[Audio Spectrum]]></title>
+        <description><![CDATA[Web app to visualize your music in real time.]]></description>
+        <keywords translate="false"><![CDATA[AlcoTimer,Visualizer,Audio,Spectrum,Visualization,Visualize,Music,Podcast]]></keywords>
         <remove src="Awesome_Frontend/css/menu.css"/>
         <remove src="Awesome_Frontend/css/message.css"/>
     </head>
