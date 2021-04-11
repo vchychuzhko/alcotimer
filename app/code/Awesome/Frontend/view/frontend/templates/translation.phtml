@@ -1,0 +1,8 @@
+<?php /** @var \Awesome\Frontend\Block\Translation $block */ ?>
+<script type="application/javascript">
+    requirejs.config({
+        paths: {
+            dictionary: 'i18n/<?= $block->getLocaleCode() ?>'
+        }
+    });
+</script>

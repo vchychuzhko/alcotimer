@@ -35,6 +35,8 @@ define([
 
             $(window).on('mousemove touchmove', function (event) {
                 if (this.isDragging) {
+                    event.preventDefault();
+
                     try {
                         let touch = event.originalEvent.touches ? event.originalEvent.touches[0] : undefined,
                             targetX = (event.pageX || touch.pageX) - this.offsetLeft - this.borderWidth / 2,

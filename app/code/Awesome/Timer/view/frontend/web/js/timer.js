@@ -73,7 +73,7 @@ define([
          * Retrieve and update settings from the menu
          * @param {object} settings
          */
-        applySettings: function (settings  = {}) {
+        applySettings: function (settings = {}) {
             if ($.isEmptyObject(settings)) {
                 settings = JSON.parse(localStorage.getItem('settings'));
             }

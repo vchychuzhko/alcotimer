@@ -62,6 +62,8 @@ define([
 
             $(document).on('mousemove touchmove', function (event) {
                 if (this.dragging) {
+                    event.preventDefault();
+
                     try {
                         let touch = event.originalEvent.touches ? event.originalEvent.touches[0] : undefined,
                             pos = event.pageX || touch.pageX,

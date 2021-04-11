@@ -114,11 +114,7 @@ JS;
 let context = require.s.contexts._,
     originalNameToUrl = context.nameToUrl;
 
-context.nameToUrl = function () {
-    let url = originalNameToUrl.apply(context, arguments);
-
-    return url.replace(/(\.min)?\.js$/, '.min.js');
-};
+context.nameToUrl = (...args) => originalNameToUrl.apply(context, args).replace(/(\.min)?\.js$/, '.min.js');
 JS;
     }
 }

@@ -50,7 +50,7 @@ define([
             $temporaryInput.remove();
 
             if (this.options.showMessage) {
-                messenger.message(__('Copied to the clipboard!'));
+                messenger.message(__('Copied to the clipboard'));
             }
         }
     });

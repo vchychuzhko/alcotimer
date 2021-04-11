@@ -95,12 +95,17 @@ if (!function_exists('array_export')) {
 if (!function_exists('__')) {
     /**
      * Translate given phrase with replacement arguments.
+     * If second parameter is an array, it will be used as substitution map.
      * @param string $phrase
      * @param mixed ...$args
      * @return \Awesome\Framework\Model\Phrase
      */
     function __(string $phrase, ...$args): \Awesome\Framework\Model\Phrase
     {
+        if (!empty($args) && is_array($args[0])) {
+            $args = $args[0];
+        }
+
         return new \Awesome\Framework\Model\Phrase($phrase, $args);
     }
 }
