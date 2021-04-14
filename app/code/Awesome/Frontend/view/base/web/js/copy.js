@@ -8,50 +8,65 @@ define([
 
     $.widget('awesome.copy', {
         options: {
-            showMessage: 1,
-            target: '',
-            trigger: '',
+            showMessage: true,
         },
+
+        $target: null,
+        $trigger: null,
+
+        isInput: false,
 
         /**
          * Constructor.
          */
         _create: function () {
-            this.initBindings();
+            this._initFields();
+            this._initBindings();
+        },
+
+        /**
+         * Init widget fields.
+         * @private
+         */
+        _initFields: function () {
+            this.$trigger = $('[data-copy-trigger]', $(this.element)).length
+                ? $('[data-copy-trigger]', $(this.element))
+                : $(this.element);
+
+            this.$target = $('[data-copy-target]', $(this.element)).length
+                ? $('[data-copy-target]', $(this.element))
+                : $(this.element);
+            this.isInput = this.$target.is('input') || this.$target.is('textarea');
         },
 
         /**
          * Init event listeners.
+         * @private
          */
-        initBindings: function () {
-            let $trigger = !this.options.trigger || $(this.element).is(this.options.trigger)
-                    ? $(this.element)
-                    : $(this.options.trigger),
-                $target = !this.options.target || $(this.element).is(this.options.target)
-                    ? $(this.element)
-                    : $(this.options.target)
-
-            $trigger.on('click', this.copyText.bind(this, $target));
+        _initBindings: function () {
+            this.$trigger.on('click', () => this.copy());
         },
 
         /**
          * Copy text to the clipboard.
-         * @param {jQuery} $target
-         * @param {Object} event
          */
-        copyText: function ($target, event) {
-            event.preventDefault();
+        copy: function () {
+            let text;
 
-            let $temporaryInput = $('<input>');
-
-            $('body').append($temporaryInput);
-            $temporaryInput.val($target.text().trim()).select();
-            document.execCommand('copy');
-            $temporaryInput.remove();
-
-            if (this.options.showMessage) {
-                messenger.message(__('Copied to the clipboard'));
+            if (this.isInput) {
+                text = this.$target.val();
+                this.$target.select();
+            } else {
+                text = this.$target.text().trim();
             }
-        }
+
+            navigator.clipboard.writeText(text).then(() => {
+                if (this.options.showMessage) {
+                    messenger.info(__('Copied to the clipboard'));
+                }
+            }, () => {
+                console.error('Caller does not have permission to write to the clipboard.');
+            });
+        },
     });
 });

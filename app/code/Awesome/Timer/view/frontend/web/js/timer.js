@@ -206,7 +206,7 @@ define([
 
                 sound.play();
             } else {
-                messenger.message(__('It time to start!'));
+                messenger.info(__('It time to start!'));
             }
         },
 

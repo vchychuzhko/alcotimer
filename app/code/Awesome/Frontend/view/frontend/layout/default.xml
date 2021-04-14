@@ -5,7 +5,6 @@
         <favicon src="/media/images/favicon.png" type="image/png"/>
         <css src="styles.css"/>
         <css src="Awesome_Frontend/css/menu.css"/>
-        <css src="Awesome_Frontend/css/message.css"/>
         <script src="lib/require/require.js"/>
         <script src="requirejs-config.js"/>
         <script src="Awesome_Frontend/js/main.js"/>
