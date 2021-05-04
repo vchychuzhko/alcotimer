@@ -31,7 +31,7 @@ class Visualizer extends \Awesome\Frontend\Block\Template
      */
     public function getPlaylistJsonConfig(): string
     {
-        return $this->json->encode($this->getPlaylistConfig());
+        return $this->json->prettyEncode($this->getPlaylistConfig());
     }
 
     /**

@@ -36,13 +36,13 @@ class Json implements \Awesome\Framework\Model\SerializerInterface
     }
 
     /**
-     * Serialize data to json string with indentation and not escaped slashes.
+     * Serialize data to json string with indentation and not escaped slashes or unicode.
      * @param array $data
      * @param int $options
      * @return string
      * @throws \InvalidArgumentException
      */
-    public function prettyEncode(array $data, int $options = JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT): string
+    public function prettyEncode(array $data, int $options = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT): string
     {
         $result = json_encode($data, $options);
 
