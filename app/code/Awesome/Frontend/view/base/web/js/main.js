@@ -1,11 +1,11 @@
 require([
     'jquery',
 ], function ($) {
-    'use strict';
+    'use strict'
 
-    const dataAttribute = 'data-awesome-init',
-          nodeSelector = '[' + dataAttribute + ']',
-          scriptSelector = 'script[type="text/x-awesome-init"]';
+    const dataAttribute  = 'data-awesome-init';
+    const nodeSelector   = '[' + dataAttribute + ']';
+    const scriptSelector = 'script[type="text/x-awesome-init"]';
 
     let virtuals = [];
 

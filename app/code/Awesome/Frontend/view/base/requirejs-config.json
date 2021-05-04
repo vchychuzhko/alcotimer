@@ -2,7 +2,7 @@
     "paths": {
         "copy": "Awesome_Frontend/js/copy",
         "jquery": "lib/jquery/jquery",
-        "jquery/ui": "lib/jquery/jquery-ui",
+        "jquery/ui": "lib/jquery/widget",
         "messenger": "Awesome_Frontend/js/messenger",
         "radialSlider": "Awesome_Frontend/js/radial-slider",
         "rangeSlider": "Awesome_Frontend/js/range-slider",
