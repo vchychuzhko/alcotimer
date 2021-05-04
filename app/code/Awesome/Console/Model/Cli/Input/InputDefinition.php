@@ -91,6 +91,9 @@ class InputDefinition
             if ($type === self::OPTION_ARRAY) {
                 throw new \LogicException(sprintf('Array option "%s" cannot have shortcut', $name));
             }
+            if (strlen($shortcut) !== 1) {
+                throw new \LogicException(sprintf('Option shortcut "%s" must consist of 1 character', $shortcut));
+            }
             if (isset($this->shortcuts[$shortcut])) {
                 throw new \LogicException(sprintf('An option with shortcut "%s" already exists', $shortcut));
             }

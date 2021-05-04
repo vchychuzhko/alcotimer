@@ -11,14 +11,14 @@ class Config implements \Awesome\Framework\Model\SingletonInterface
     private const CONFIG_ANNOTATION = 'General configuration file';
 
     /**
-     * @var array $config
-     */
-    private $config;
-
-    /**
      * @var PhpFileManager $phpFileManager
      */
     private $phpFileManager;
+
+    /**
+     * @var array $config
+     */
+    private $config;
 
     /**
      * Config constructor.
@@ -37,15 +37,19 @@ class Config implements \Awesome\Framework\Model\SingletonInterface
      */
     public function get(string $path)
     {
-        $keys = explode('/', $path);
-        $config = $this->loadConfig();
+        $config = null;
 
-        foreach ($keys as $key) {
-            if (is_array($config) && isset($config[$key])) {
-                $config = $config[$key];
-            } else {
-                $config = null;
-                break;
+        if ($path) {
+            $keys = explode('/', $path);
+            $config = $this->getConfig();
+
+            foreach ($keys as $key) {
+                if (is_array($config) && isset($config[$key])) {
+                    $config = $config[$key];
+                } else {
+                    $config = null;
+                    break;
+                }
             }
         }
 
@@ -53,24 +57,27 @@ class Config implements \Awesome\Framework\Model\SingletonInterface
     }
 
     /**
-     * Check if provided config path exists.
+     * Check if provided config record exists.
      * Method consider the path as chain of keys: a/b/c => ['a']['b']['c']
      * @param string $path
      * @return mixed
      */
-    private function exists(string $path): bool
+    public function exists(string $path): bool
     {
         $exists = false;
-        $keys = explode('/', $path);
-        $config = $this->loadConfig();
 
-        foreach ($keys as $key) {
-            if (is_array($config) && isset($config[$key])) {
-                $config = $config[$key];
-                $exists = true;
-            } else {
-                $exists = false;
-                break;
+        if ($path) {
+            $keys = explode('/', $path);
+            $config = $this->getConfig();
+
+            foreach ($keys as $key) {
+                if (is_array($config) && array_key_exists($key, $config)) {
+                    $config = $config[$key];
+                    $exists = true;
+                } else {
+                    $exists = false;
+                    break;
+                }
             }
         }
 
@@ -78,7 +85,7 @@ class Config implements \Awesome\Framework\Model\SingletonInterface
     }
 
     /**
-     * Set config value by path.
+     * Set config value by path, creating a record if not yet.
      * Method consider the path as chain of keys: a/b/c => ['a']['b']['c']
      * @param string $path
      * @param mixed $value
@@ -88,20 +95,19 @@ class Config implements \Awesome\Framework\Model\SingletonInterface
     {
         $success = false;
 
-        if ($this->exists($path) !== null) {
-            $config = $this->loadConfig();
+        if ($path) {
             $keys = array_reverse(explode('/', $path));
             $newConfig = $value;
 
             foreach ($keys as $key) {
                 $newConfig = [
-                    $key => $newConfig
+                    $key => $newConfig,
                 ];
             }
-            $config = array_replace_recursive($config, $newConfig);
+            $config = array_replace_recursive($this->getConfig(), $newConfig);
 
             $success = $this->phpFileManager->createArrayFile(BP . self::CONFIG_FILE_PATH, $config, self::CONFIG_ANNOTATION);
-            $this->loadConfig(true);
+            $this->config = $config;
         }
 
         return $success;
@@ -109,13 +115,11 @@ class Config implements \Awesome\Framework\Model\SingletonInterface
 
     /**
      * Load and return config by including configuration file.
-     * Can be forced to reload the file.
-     * @param bool $reload
      * @return array
      */
-    private function loadConfig(bool $reload = false): array
+    private function getConfig(): array
     {
-        if ($this->config === null || $reload) {
+        if ($this->config === null) {
             $this->config = $this->phpFileManager->parseArrayFile(BP . self::CONFIG_FILE_PATH);
         }
 
