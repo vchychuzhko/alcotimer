@@ -153,7 +153,7 @@ class Http
     {
         $ip = $this->getRequest()->getUserIp();
 
-        return $this->maintenance->isMaintenance($ip);
+        return $this->maintenance->isActive($ip);
     }
 
     /**

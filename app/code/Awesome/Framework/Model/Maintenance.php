@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Awesome\Framework\Model;
 
-class Maintenance
+class Maintenance implements \Awesome\Framework\Model\SingletonInterface
 {
     private const MAINTENANCE_FILE = '/var/maintenance.flag';
 
@@ -11,6 +11,11 @@ class Maintenance
      * @var FileManager $fileManager
      */
     private $fileManager;
+
+    /**
+     * @var array $status
+     */
+    private $status;
 
     /**
      * Maintenance constructor.
@@ -23,12 +28,12 @@ class Maintenance
 
     /**
      * Enable maintenance mode.
-     * @param array $allowedIPs
+     * @param array $allowedIps
      * @return $this
      */
-    public function enable($allowedIPs = []): self
+    public function enable($allowedIps = []): self
     {
-        $this->fileManager->createFile(BP . self::MAINTENANCE_FILE, implode("\n", $allowedIPs), true);
+        $this->fileManager->createFile(BP . self::MAINTENANCE_FILE, implode("\n", $allowedIps), true);
 
         return $this;
     }
@@ -45,36 +50,50 @@ class Maintenance
     }
 
     /**
-     * Get current state of maintenance.
-     * @return array
-     */
-    public function getStatus(): array
-    {
-        $status = [
-            'enabled' => false
-        ];
-        $allowedIPs = $this->fileManager->readFile(BP . self::MAINTENANCE_FILE, true);
-
-        if ($allowedIPs !== false) {
-            $status = [
-                'enabled' => true,
-                'allowed_ips' => $allowedIPs ? explode("\n", $allowedIPs) : [],
-            ];
-        }
-
-        return $status;
-    }
-
-    /**
-     * Check if maintenance mode is currently enabled.
+     * Check if maintenance mode is currently active.
      * User IP address can be specified.
      * @param string $ip
      * @return bool
      */
-    public function isMaintenance(string $ip = ''): bool
+    public function isActive(string $ip = ''): bool
     {
-        $state = $this->getStatus();
+        $status = $this->getStatus();
 
-        return $state['enabled'] && !in_array($ip, $state['allowed_ips'], true);
+        return $status['active'] && !($ip && in_array($ip, $this->getAllowedIps(), true));
+    }
+
+    /**
+     * Get current state of maintenance.
+     * @return array
+     */
+    public function getAllowedIps(): array
+    {
+        $status = $this->getStatus();
+
+        return $status['allowed_ips'];
+    }
+
+    /**
+     * Load and return maintenance status by reading flag file.
+     * @return array
+     */
+    private function getStatus(): array
+    {
+        if ($this->status === null) {
+            $this->status = [
+                'active'      => false,
+                'allowed_ips' => [],
+            ];
+            $allowedIps = $this->fileManager->readFile(BP . self::MAINTENANCE_FILE, true);
+
+            if ($allowedIps !== false) {
+                $this->status = [
+                    'active'      => true,
+                    'allowed_ips' => $allowedIps ? explode("\n", $allowedIps) : [],
+                ];
+            }
+        }
+
+        return $this->status;
     }
 }
