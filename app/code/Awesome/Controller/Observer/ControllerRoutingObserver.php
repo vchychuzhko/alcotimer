@@ -42,9 +42,10 @@ class ControllerRoutingObserver implements \Awesome\Framework\Model\Event\Observ
         $actionResolver = $event->getActionResolver();
         /** @var Request $request */
         $request = $event->getRequest();
+        $route = $request->getRoute();
         $view = $request->getView();
 
-        if ($module = $this->router->getStandardRoute($request->getRoute(), $view)) {
+        if ($route && $module = $this->router->getStandardRoute($route, $view)) {
             $className = str_replace('_', '\\', $module) . '\\' . self::CONTROLLER_FOLDER
                 . ($view === Http::BACKEND_VIEW ? '\\' . self::ADMINHTML_CONTROLLER_FOLDER : '');
 

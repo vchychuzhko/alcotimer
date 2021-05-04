@@ -184,11 +184,11 @@ class Http
                 $view = preg_match('/^' . $backendFrontName . '\//', $path) ? self::BACKEND_VIEW : $view;
                 $path = preg_replace('/^' . $backendFrontName . '\//', '', $path);
             }
-            @list($route, $entity, $action) = explode('/', $path);
+            @list($route, $entity, $action) = explode('/', $path, 4);
 
             $this->request = new Request($url, $method, $parameters, $cookies, $redirectStatus, [
                 'accept_type' => $acceptType,
-                'route'       => $route ?: 'index',
+                'route'       => $route,
                 'entity'      => $entity,
                 'action'      => $action,
                 'user_ip'     => $userIp,

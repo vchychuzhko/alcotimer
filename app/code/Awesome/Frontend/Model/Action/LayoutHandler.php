@@ -131,7 +131,7 @@ class LayoutHandler extends \Awesome\Framework\Model\AbstractAction
      */
     private function isHomepage(Request $request): bool
     {
-        return $request->getFullActionName() === Request::ROOT_ACTION_NAME;
+        return $request->getFullActionName() === Request::ROOT_ACTION_NAME && $request->getRoute() !== Request::DEFAULT_ROUTE;
     }
 
     /**
@@ -154,7 +154,7 @@ class LayoutHandler extends \Awesome\Framework\Model\AbstractAction
     private function getHomepageRoute(): string
     {
         if ($this->homepageRoute === null) {
-            list($this->homepageRoute) = explode('/', $this->config->get(self::HOMEPAGE_HANDLE_CONFIG));
+            list($this->homepageRoute) = explode('/', $this->config->get(self::HOMEPAGE_HANDLE_CONFIG), 2);
         }
 
         return $this->homepageRoute;
