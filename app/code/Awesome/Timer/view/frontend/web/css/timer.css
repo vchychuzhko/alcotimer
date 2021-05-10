@@ -48,24 +48,14 @@
     background-color: red;
     border: none;
     border-radius: 50%;
-    -moz-box-shadow: 0 0 6px 4px #ab3c3c;
-    -webkit-box-shadow: 0 0 6px 4px #ab3c3c;
-    box-shadow: 0 0 6px 4px #ab3c3c;
-    cursor: pointer;
     height: 100%;
+    outline: none;
     width: 100%;
 }
 
-.page-wrapper .content .timer-container .timer-wrapper .timer-button-container .timer-button span {
-    display: none; /*@TODO: Temporary solution to hide text on the main button*/
-}
-
-.page-wrapper .content .timer-container .timer-wrapper .timer-button-container .timer-button:hover {
-    transform: scale(0.99);
-}
-
-.page-wrapper .content .timer-container .timer-wrapper .timer-button-container .timer-button:active {
-    transform: scale(0.98);
+.page-wrapper .content .timer-container .timer-wrapper .timer-button-container .timer-button:hover,
+.page-wrapper .content .timer-container .timer-wrapper .timer-button-container .timer-button:focus {
+    border: 1px solid #fff;
 }
 
 .page-wrapper .content .timer-container .timer-wrapper .timer-button-container .timer-button:before {
@@ -183,20 +173,14 @@
     background-color: blue;
     border: none;
     border-radius: 50%;
-    -moz-box-shadow: 0 0 5px 3px #3c69ab;
-    -webkit-box-shadow: 0 0 5px 3px #3c69ab;
-    box-shadow: 0 0 5px 3px #3c69ab;
-    cursor: pointer;
     height: 100%;
+    outline: none;
     width: 100%;
 }
 
-.page-wrapper .content .timer-container .random-button-container .random-button:hover {
-    transform: scale(0.98);
-}
-
-.page-wrapper .content .timer-container .random-button-container .random-button:active {
-    transform: scale(0.96);
+.page-wrapper .content .timer-container .random-button-container .random-button:hover,
+.page-wrapper .content .timer-container .random-button-container .random-button:focus {
+    border: 1px solid #fff;
 }
 
 @media only screen and (min-width: 768px) {

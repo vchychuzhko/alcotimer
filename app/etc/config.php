@@ -11,7 +11,7 @@ return [
     'default_locale' => 'uk_UA',
     'web' => [
         'homepage' => 'timer/index/index',
-        'logo' => 'pub/media/images/logo.png',
+        'logo' => 'pub/media/images/logo.svg',
         'js' => [
             'minify' => 1,
             'merge' => 0,
