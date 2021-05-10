@@ -2,7 +2,12 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="../../../../Frontend/Schema/page_layout.xsd">
     <head>
-        <favicon src="/media/images/favicon.png" type="image/png"/>
+        <favicon>
+            <icon rel="apple-touch-icon" href="/media/favicon/apple-touch-icon.png" sizes="180x180"/>
+            <icon rel="alternate icon" href="/media/favicon/favicon.png" type="image/png"/>
+            <icon href="/media/favicon/favicon.svg" type="image/svg+xml"/>
+        </favicon>
+        <manifest href="/manifest.json" themeColor="#ffffff"/>
         <css src="styles.css"/>
         <css src="Awesome_Frontend/css/menu.css"/>
         <script src="lib/require/require.js"/>

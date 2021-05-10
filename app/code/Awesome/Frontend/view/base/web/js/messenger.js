@@ -57,7 +57,7 @@ define([
             }
 
             this.messages.push($message);
-            this._getMessagesContainer().prepend($message);
+            this._getMessagesWrapper().prepend($message);
 
             let messageCloseTimeout = setTimeout(() => {
                     $message.off('click.message.close');
@@ -71,20 +71,20 @@ define([
         },
 
         /**
-         * Prepare and return messages container element.
+         * Prepare and return messages wrapper element.
          * @returns {jQuery}
          * @private
          */
-        _getMessagesContainer: function () {
-            let $messagesContainer = $('.messages__container');
+        _getMessagesWrapper: function () {
+            let $messagesWrapper = $('[data-message-wrapper]');
 
-            if ($messagesContainer.length === 0) {
-                $messagesContainer = $(`<div class="messages__container"></div>`);
+            if ($messagesWrapper.length === 0) {
+                $messagesWrapper = $(`<div class="messages-wrapper" data-message-wrapper></div>`);
 
-                $('body').append($messagesContainer);
+                $('body').append($messagesWrapper);
             }
 
-            return $messagesContainer;
+            return $messagesWrapper;
         },
 
         /**

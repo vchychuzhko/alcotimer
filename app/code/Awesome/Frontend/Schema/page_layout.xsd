@@ -5,7 +5,7 @@
             <xs:sequence>
                 <xs:element name="head" minOccurs="0">
                     <xs:complexType>
-                        <xs:choice minOccurs="0" maxOccurs="unbounded">
+                        <xs:sequence>
                             <xs:element name="title" minOccurs="0">
                                 <xs:complexType>
                                     <xs:simpleContent>
@@ -35,27 +35,49 @@
                             </xs:element>
                             <xs:element name="favicon" minOccurs="0">
                                 <xs:complexType>
-                                    <xs:attribute name="src" use="required">
-                                        <xs:simpleType>
-                                            <xs:restriction base="xs:string">
-                                                <xs:minLength value="1"/>
-                                                <xs:pattern value="[a-zA-Z0-9\-_/.]*"/>
-                                            </xs:restriction>
-                                        </xs:simpleType>
-                                    </xs:attribute>
-                                    <xs:attribute name="type">
-                                        <xs:simpleType>
-                                            <xs:restriction base="xs:string">
-                                                <xs:minLength value="1"/>
-                                                <xs:pattern value="[a-zA-Z0-9/]*"/>
-                                            </xs:restriction>
-                                        </xs:simpleType>
-                                    </xs:attribute>
+                                    <xs:sequence maxOccurs="unbounded">
+                                        <xs:element name="icon" minOccurs="0">
+                                            <xs:complexType>
+                                                <xs:attribute name="rel" default="icon">
+                                                    <xs:simpleType>
+                                                        <xs:restriction base="xs:string">
+                                                            <xs:minLength value="1"/>
+                                                            <xs:pattern value="[a-z\- ]*"/>
+                                                        </xs:restriction>
+                                                    </xs:simpleType>
+                                                </xs:attribute>
+                                                <xs:attribute name="href" use="required">
+                                                    <xs:simpleType>
+                                                        <xs:restriction base="xs:string">
+                                                            <xs:minLength value="1"/>
+                                                            <xs:pattern value="[a-zA-Z0-9\-_/.]*"/>
+                                                        </xs:restriction>
+                                                    </xs:simpleType>
+                                                </xs:attribute>
+                                                <xs:attribute name="type">
+                                                    <xs:simpleType>
+                                                        <xs:restriction base="xs:string">
+                                                            <xs:minLength value="1"/>
+                                                            <xs:pattern value="[a-zA-Z0-9+/]*"/>
+                                                        </xs:restriction>
+                                                    </xs:simpleType>
+                                                </xs:attribute>
+                                                <xs:attribute name="sizes">
+                                                    <xs:simpleType>
+                                                        <xs:restriction base="xs:string">
+                                                            <xs:minLength value="1"/>
+                                                            <xs:pattern value="[x0-9]*"/>
+                                                        </xs:restriction>
+                                                    </xs:simpleType>
+                                                </xs:attribute>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
                                 </xs:complexType>
                             </xs:element>
-                            <xs:element name="script" minOccurs="0" maxOccurs="unbounded">
+                            <xs:element name="manifest" minOccurs="0">
                                 <xs:complexType>
-                                    <xs:attribute name="src" use="required">
+                                    <xs:attribute name="href" use="required">
                                         <xs:simpleType>
                                             <xs:restriction base="xs:string">
                                                 <xs:minLength value="1"/>
@@ -63,30 +85,14 @@
                                             </xs:restriction>
                                         </xs:simpleType>
                                     </xs:attribute>
-                                    <xs:attribute name="async" type="xs:boolean"/>
-                                    <xs:attribute name="defer" type="xs:boolean"/>
-                                    <xs:attribute name="sortOrder" type="xs:nonNegativeInteger"/>
-                                </xs:complexType>
-                            </xs:element>
-                            <xs:element name="css" minOccurs="0" maxOccurs="unbounded">
-                                <xs:complexType>
-                                    <xs:attribute name="src" use="required">
+                                    <xs:attribute name="themeColor">
                                         <xs:simpleType>
                                             <xs:restriction base="xs:string">
                                                 <xs:minLength value="1"/>
-                                                <xs:pattern value="[a-zA-Z0-9\-_/.]*"/>
+                                                <xs:pattern value="[a-zA-Z0-9#]*"/>
                                             </xs:restriction>
                                         </xs:simpleType>
                                     </xs:attribute>
-                                    <xs:attribute name="media">
-                                        <xs:simpleType>
-                                            <xs:restriction base="xs:string">
-                                                <xs:minLength value="1"/>
-                                                <xs:pattern value="[a-z0-9\-: (),]*"/>
-                                            </xs:restriction>
-                                        </xs:simpleType>
-                                    </xs:attribute>
-                                    <xs:attribute name="sortOrder" type="xs:nonNegativeInteger"/>
                                 </xs:complexType>
                             </xs:element>
                             <xs:element name="preload" minOccurs="0" maxOccurs="unbounded">
@@ -119,6 +125,42 @@
                                     <xs:attribute name="sortOrder" type="xs:nonNegativeInteger"/>
                                 </xs:complexType>
                             </xs:element>
+                            <xs:element name="css" minOccurs="0" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:attribute name="src" use="required">
+                                        <xs:simpleType>
+                                            <xs:restriction base="xs:string">
+                                                <xs:minLength value="1"/>
+                                                <xs:pattern value="[a-zA-Z0-9\-_/.]*"/>
+                                            </xs:restriction>
+                                        </xs:simpleType>
+                                    </xs:attribute>
+                                    <xs:attribute name="media">
+                                        <xs:simpleType>
+                                            <xs:restriction base="xs:string">
+                                                <xs:minLength value="1"/>
+                                                <xs:pattern value="[a-z0-9\-: (),]*"/>
+                                            </xs:restriction>
+                                        </xs:simpleType>
+                                    </xs:attribute>
+                                    <xs:attribute name="sortOrder" type="xs:nonNegativeInteger"/>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="script" minOccurs="0" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:attribute name="src" use="required">
+                                        <xs:simpleType>
+                                            <xs:restriction base="xs:string">
+                                                <xs:minLength value="1"/>
+                                                <xs:pattern value="[a-zA-Z0-9\-_/.]*"/>
+                                            </xs:restriction>
+                                        </xs:simpleType>
+                                    </xs:attribute>
+                                    <xs:attribute name="async" type="xs:boolean"/>
+                                    <xs:attribute name="defer" type="xs:boolean"/>
+                                    <xs:attribute name="sortOrder" type="xs:nonNegativeInteger"/>
+                                </xs:complexType>
+                            </xs:element>
                             <xs:element name="remove" minOccurs="0" maxOccurs="unbounded">
                                 <xs:complexType>
                                     <xs:attribute name="src" use="required">
@@ -131,7 +173,7 @@
                                     </xs:attribute>
                                 </xs:complexType>
                             </xs:element>
-                        </xs:choice>
+                        </xs:sequence>
                     </xs:complexType>
                     <xs:unique name="elementSource">
                         <xs:selector xpath=".//style|.//script|.//preload|.//remove"/>
