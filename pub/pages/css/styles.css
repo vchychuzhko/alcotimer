@@ -1,0 +1,62 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    font-family: Tahoma, sans-serif;
+}
+
+header {
+    border-bottom: 1px solid #000000;
+    height: 50px;
+    position: relative;
+    width: 100%;
+}
+
+.logo {
+    box-sizing: border-box;
+    height: 100%;
+    padding: 3px 0;
+    text-align: center;
+}
+
+.logo__link {
+    display: inline-block;
+    height: 100%;
+}
+
+.logo__image {
+    height: 100%;
+}
+
+@media (max-width: 375px) {
+    .logo__container {
+        padding: 8px 0;
+    }
+}
+
+main {
+    flex-grow: 1;
+    padding: 20px;
+}
+
+h1 {
+    padding-bottom: 20px;
+}
+
+p {
+    padding: 5px 0;
+}
+
+footer {
+    background: #ffffc2;
+    padding: 10px;
+    text-align: center;
+}

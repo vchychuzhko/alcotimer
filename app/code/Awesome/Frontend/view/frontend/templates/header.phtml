@@ -1,11 +1,11 @@
 <?php /** @var \Awesome\Frontend\Block\Header $block */ ?>
 <header>
     <?= $block->getChildHtml('') ?>
-    <div class="logo__container">
+    <div class="logo">
         <?php if (!$isHomepage = $block->isHomepage()): ?>
-            <a href="/">
+            <a class="logo__link" href="/" title="<?= __('Homepage') ?>">
         <?php endif; ?>
-                <img class="logo__image" src="<?= $block->getLogo() ?>" alt="AlcoTimer Logo"/>
+                <img class="logo__image" src="<?= $block->getLogo() ?>" alt="<?= __('%1 logo', 'AlcoTimer') ?>"/>
         <?php if (!$isHomepage): ?>
             </a>
         <?php endif; ?>

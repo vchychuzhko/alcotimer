@@ -16,14 +16,14 @@ class Root extends \Awesome\Frontend\Block\Template
     ];
 
     /**
-     * @inheritDoc
-     */
-    protected $template = 'Awesome_Frontend::root.phtml';
-
-    /**
      * @var Locale $locale
      */
     private $locale;
+
+    /**
+     * @inheritDoc
+     */
+    protected $template = 'Awesome_Frontend::root.phtml';
 
     /**
      * @var string  $language
