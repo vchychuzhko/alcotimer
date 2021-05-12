@@ -9,7 +9,7 @@ use Awesome\Frontend\Model\Context;
 
 class Timer extends \Awesome\Frontend\Block\Template
 {
-    public const TIMER_CONFIG_PATH = 'timer_config';
+    public const TIMER_CONFIG_PATH = 'timer';
 
     /**
      * @var Config $config

@@ -29,7 +29,7 @@ return [
         'full_page' => 1,
         'translations' => 1,
     ],
-    'timer_config' => [
+    'timer' => [
         'show_hint' => 1,
         'general' => [
             'defaultTime' => 8,

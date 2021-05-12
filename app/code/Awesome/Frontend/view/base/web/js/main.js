@@ -50,7 +50,7 @@ require([
 
         return {
             element: element,
-            data: JSON.parse(data)
+            data:    JSON.parse(data)
         };
     }
     /**
@@ -61,7 +61,7 @@ require([
     function addVirtual(components) {
         virtuals.push({
             element: false,
-            data: components
+            data:    components
         });
     }
 

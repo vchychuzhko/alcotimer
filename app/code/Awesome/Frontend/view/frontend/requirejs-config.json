@@ -1,7 +1,6 @@
 {
     "paths": {
-        "menu": "Awesome_Frontend/js/menu",
-        "popup": "Awesome_Frontend/js/popup"
+        "menu": "Awesome_Frontend/js/menu"
     }
 }
 

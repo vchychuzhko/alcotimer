@@ -41,6 +41,5 @@
                    template="Awesome_Frontend::footer.phtml"
                    sortOrder="10"/>
         </container>
-        <container name="popup-init-section" htmlTag="div" htmlClass="popup-init-section" sortOrder="9"/>
     </body>
 </page>

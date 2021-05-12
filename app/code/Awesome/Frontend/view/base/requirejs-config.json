@@ -3,9 +3,11 @@
         "copy": "Awesome_Frontend/js/copy",
         "jquery": "lib/jquery/jquery",
         "jquery/ui": "lib/jquery/widget",
-        "messenger": "Awesome_Frontend/js/messenger",
+        "messenger": "Awesome_Frontend/js/ui/messenger",
+        "modal": "Awesome_Frontend/js/ui/modal",
         "radialSlider": "Awesome_Frontend/js/radial-slider",
         "rangeSlider": "Awesome_Frontend/js/range-slider",
+        "storage": "Awesome_Frontend/js/storage",
         "translator": "Awesome_Frontend/js/translator"
     }
 }

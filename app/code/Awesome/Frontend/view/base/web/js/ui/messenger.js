@@ -49,7 +49,7 @@ define([
             }
 
             if (error) {
-                $message.addClass('message--error');
+                $message.addClass('message_error');
             }
 
             if (this.messages.length >= MAX_MESSAGE_NUMBER) {
