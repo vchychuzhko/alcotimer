@@ -6,7 +6,6 @@ namespace Awesome\Frontend\Model;
 use Awesome\Framework\Model\FileManager;
 use Awesome\Framework\Model\Http;
 use Awesome\Frontend\Helper\StaticContentHelper;
-use Awesome\Frontend\Model\DeployedVersion;
 use Awesome\Frontend\Model\Generator\RequireJs;
 use Awesome\Frontend\Model\Generator\StaticFile;
 use Awesome\Frontend\Model\Generator\Styles;
@@ -18,11 +17,6 @@ class StaticContent implements \Awesome\Framework\Model\SingletonInterface
 
     private const STATIC_PATH_PATTERN = '/*/*/view/%s/web/%s';
     private const LIB_PATH_PATTERN = '/lib/*/*.js';
-
-    /**
-     * @var DeployedVersion $deployedVersion
-     */
-    private $deployedVersion;
 
     /**
      * @var FileManager $fileManager
@@ -51,7 +45,6 @@ class StaticContent implements \Awesome\Framework\Model\SingletonInterface
 
     /**
      * StaticContent constructor.
-     * @param DeployedVersion $deployedVersion
      * @param FileManager $fileManager
      * @param RequireJs $requireJs
      * @param StaticFile $staticFile
@@ -59,14 +52,12 @@ class StaticContent implements \Awesome\Framework\Model\SingletonInterface
      * @param Translation $translation
      */
     public function __construct(
-        DeployedVersion $deployedVersion,
         FileManager $fileManager,
         RequireJs $requireJs,
         StaticFile $staticFile,
         Styles $styles,
         Translation $translation
     ) {
-        $this->deployedVersion = $deployedVersion;
         $this->fileManager = $fileManager;
         $this->requireJs = $requireJs;
         $this->staticFile = $staticFile;
@@ -76,31 +67,10 @@ class StaticContent implements \Awesome\Framework\Model\SingletonInterface
 
     /**
      * Deploy static files for a specified view.
-     * Process both views if not specified.
      * @param string $view
      * @return $this
      */
-    public function deploy(string $view = ''): self
-    {
-        if ($view === '') {
-            foreach ([Http::FRONTEND_VIEW, Http::BACKEND_VIEW] as $httpView) {
-                $this->processView($httpView);
-            }
-        } else {
-            $this->processView($view);
-        }
-
-        $this->deployedVersion->generateVersion();
-
-        return $this;
-    }
-
-    /**
-     * Perform all needed steps for specified view.
-     * @param string $view
-     * @return $this
-     */
-    private function processView(string $view): self
+    public function deploy(string $view): self
     {
         $this->fileManager->removeDirectory(BP . self::STATIC_FOLDER_PATH . $view);
 

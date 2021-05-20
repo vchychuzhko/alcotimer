@@ -10,7 +10,7 @@ class DataObject
     /**
      * @var array $data
      */
-    protected $data;
+    private $data;
 
     /**
      * @var bool $readOnly
@@ -32,17 +32,17 @@ class DataObject
      * DataObject data getter.
      *
      * If $key is not defined will return all the data as an array.
-     * Otherwise it will return value of the element specified by $key.
+     * Otherwise it will return value of the property specified by $key.
      *
      * @param string $key
      * @return mixed
      */
     public function getData(string $key = '')
     {
-        if ($key === '') {
-            $data = $this->data;
-        } else {
-            $data = $this->data[$key] ?? null;
+        $data = $this->data;
+
+        if ($key !== '') {
+            $data = $data[$key] ?? null;
         }
 
         return $data;
@@ -51,8 +51,8 @@ class DataObject
     /**
      * DataObject data setter.
      *
-     * The $key parameter can be string or array.
-     * If $key is string, the attribute value will be overwritten by $value.
+     * The $key parameter can be string, number or array.
+     * If $key is a string, the property will be overwritten by $value.
      * If $key is an array, it will overwrite all the data in the object.
      *
      * @param string|array $key

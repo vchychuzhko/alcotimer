@@ -146,6 +146,18 @@ class Http
     }
 
     /**
+     * Get all defined application views.
+     * @return array
+     */
+    public static function getAllViews(): array
+    {
+        return [
+            self::FRONTEND_VIEW,
+            self::BACKEND_VIEW,
+        ];
+    }
+
+    /**
      * Check if maintenance mode is active for user IP address.
      * @return bool
      */

@@ -12,12 +12,6 @@ class Locale implements \Awesome\Framework\Model\SingletonInterface
 
     private const DEFAULT_LOCALE_CONFIG = 'default_locale';
 
-    private const ALLOWED_LOCALES = [
-        'en_US',
-        'uk_UA',
-        'ru_RU',
-    ];
-
     /**
      * @var Config $config
      */
@@ -66,12 +60,16 @@ class Locale implements \Awesome\Framework\Model\SingletonInterface
     }
 
     /**
-     * Get all registered locale codes.
+     * Get all defined locale codes.
      * @return array
      */
     public static function getAllLocales(): array
     {
-        return self::ALLOWED_LOCALES;
+        return [
+            'en_US',
+            'uk_UA',
+            'ru_RU',
+        ];
     }
 
     /**
@@ -81,7 +79,7 @@ class Locale implements \Awesome\Framework\Model\SingletonInterface
      */
     public function setLocale(string $locale): self
     {
-        if (!in_array($locale, self::ALLOWED_LOCALES, true)) {
+        if (!in_array($locale, self::getAllLocales(), true)) {
             throw new \RuntimeException(sprintf('Cannot set unregistered locale: %s', $locale));
         }
         $this->locale = $locale;
