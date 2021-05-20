@@ -11,12 +11,12 @@ class Template extends \Awesome\Frontend\Model\AbstractBlock
     /**
      * @var DeployedVersion $deployedVersion
      */
-    protected $deployedVersion;
+    private $deployedVersion;
 
     /**
      * @var string $staticUrl
      */
-    protected $staticUrl = '';
+    private $staticUrl = '';
 
     /**
      * Template constructor.

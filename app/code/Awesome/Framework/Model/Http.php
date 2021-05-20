@@ -18,7 +18,7 @@ use Awesome\Framework\Model\Maintenance;
 
 class Http
 {
-    public const VERSION = '0.5.1';
+    public const VERSION = '0.5.2';
 
     public const FRONTEND_VIEW = 'frontend';
     public const BACKEND_VIEW = 'adminhtml';
@@ -146,6 +146,18 @@ class Http
     }
 
     /**
+     * Get all defined application views.
+     * @return array
+     */
+    public static function getAllViews(): array
+    {
+        return [
+            self::FRONTEND_VIEW,
+            self::BACKEND_VIEW,
+        ];
+    }
+
+    /**
      * Check if maintenance mode is active for user IP address.
      * @return bool
      */
@@ -153,7 +165,7 @@ class Http
     {
         $ip = $this->getRequest()->getUserIp();
 
-        return $this->maintenance->isMaintenance($ip);
+        return $this->maintenance->isActive($ip);
     }
 
     /**
@@ -184,11 +196,11 @@ class Http
                 $view = preg_match('/^' . $backendFrontName . '\//', $path) ? self::BACKEND_VIEW : $view;
                 $path = preg_replace('/^' . $backendFrontName . '\//', '', $path);
             }
-            @list($route, $entity, $action) = explode('/', $path);
+            @list($route, $entity, $action) = explode('/', $path, 4);
 
             $this->request = new Request($url, $method, $parameters, $cookies, $redirectStatus, [
                 'accept_type' => $acceptType,
-                'route'       => $route ?: 'index',
+                'route'       => $route,
                 'entity'      => $entity,
                 'action'      => $action,
                 'user_ip'     => $userIp,

@@ -13,7 +13,7 @@ use Awesome\Framework\Exception\XmlValidationException;
 
 class Cli
 {
-    public const VERSION = '0.5.1';
+    public const VERSION = '0.5.2';
 
     /**
      * @var CommandResolver $commandResolver
@@ -211,14 +211,13 @@ class Cli
                         $options[$option] = $value;
                     }
                 } elseif (strpos($arg, '-') === 0) {
-                    $value = substr($arg, 2);
-                    $shortcut = substr($arg, 1, 1);
-
-                    if (!isset($commandShortcuts[$shortcut])) {
-                        throw new \InvalidArgumentException(sprintf('Unknown shortcut "%s"', $shortcut));
+                    foreach (str_split(substr($arg, 1)) as $shortcut) {
+                        if (!isset($commandShortcuts[$shortcut])) {
+                            throw new \InvalidArgumentException(sprintf('Unknown shortcut "%s"', $shortcut));
+                        }
+                        $option = $commandShortcuts[$shortcut];
+                        $options[$option] = $commandOptions[$option]['default'];
                     }
-                    $option = $commandShortcuts[$shortcut];
-                    $options[$option] = $value ?: $commandOptions[$option]['default'];
                 } else {
                     $collectedArguments[$argumentPosition++] = $arg;
                 }

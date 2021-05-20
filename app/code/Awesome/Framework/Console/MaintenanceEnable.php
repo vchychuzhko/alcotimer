@@ -38,7 +38,7 @@ class MaintenanceEnable extends \Awesome\Console\Model\AbstractCommand
     public static function configure(): InputDefinition
     {
         return parent::configure()
-            ->setDescription('Enable maintenance mode with a list of allowed IPs')
+            ->setDescription('Enable maintenance mode')
             ->addOption('force', 'f', InputDefinition::OPTION_OPTIONAL, 'Skip IP validation')
             ->addArgument('ips', InputDefinition::ARGUMENT_ARRAY, 'List of IP addresses to exclude');
     }
@@ -50,21 +50,26 @@ class MaintenanceEnable extends \Awesome\Console\Model\AbstractCommand
      */
     public function execute(Input $input, Output $output): void
     {
-        $allowedIPs = $input->getArgument('ips') ?: [];
+        $allowedIps = $input->getArgument('ips') ?: [];
 
-        if ($allowedIPs && !$input->getOption('force')) {
-            foreach ($allowedIPs as $allowedIP) {
-                if (!$this->ipValidator->valid($allowedIP)) {
-                    $output->write('Provided IP address is not valid, please, check it and try again: ');
-                    $output->writeln($output->colourText($allowedIP, Output::BROWN));
+        if ($allowedIps && !$input->getOption('force', true)) {
+            foreach ($allowedIps as $allowedIp) {
+                if (!$this->ipValidator->valid($allowedIp)) {
+                    $output->writeln(
+                        'Provided IP address is not valid, please, check it and try again: ' . $output->colourText($allowedIp, Output::BROWN)
+                    );
                     $output->writeln('Use -f/--force option if you want to proceed anyway.');
 
                     throw new \InvalidArgumentException('IP address validation failed');
                 }
             }
         }
-        $this->maintenance->enable($allowedIPs);
+        $this->maintenance->enable($allowedIps);
 
-        $output->writeln('Maintenance mode was enabled.');
+        $output->writeln('Maintenance mode has been enabled.');
+
+        if ($allowedIps) {
+            $output->writeln('Except for: ' . $output->colourText(implode(' ', $allowedIps), Output::BROWN));
+        }
     }
 }

@@ -52,7 +52,7 @@ class XmlFileManager extends \Awesome\Framework\Model\FileManager
                     $errorMessage = trim($error->message);
                     libxml_clear_errors();
 
-                    throw new XmlValidationException(__('File "%1" is not valid against XSD scheme: "%2"', $path, $errorMessage));
+                    throw new XmlValidationException(__('%1 In file "%2"', $errorMessage, $path));
                 }
             }
         }

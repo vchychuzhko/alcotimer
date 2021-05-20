@@ -98,24 +98,53 @@ HTML;
     }
 
     /**
-     * Get page favicon.
+     * Get page favicons.
      * @return string
      */
     public function getFaviconHtml(): string
     {
         $faviconHtml = '';
+        $icons = $this->getData('favicon') ?? [];
 
-        if ($data = $this->getData('favicon')) {
-            $href = $data['src'];
-            $type = $data['type'] ? ' type="' . $data['type'] . '"' : '';
+        foreach ($icons as $icon) {
+            $rel = $icon['rel'];
+            $href = $icon['href'];
+            $type = $icon['type'] ? ' type="' . $icon['type'] . '"' : '';
+            $sizes = $icon['sizes'] ? ' sizes="' . $icon['sizes'] . '"' : '';
 
-            $faviconHtml = <<<HTML
-<link rel="shortcut icon" href="$href"{$type}/>
+            $faviconHtml .= <<<HTML
+<link rel="$rel" href="$href"{$type}{$sizes}/>
 
 HTML;
         }
 
         return $faviconHtml;
+    }
+
+    /**
+     * Get app manifest.
+     * @return string
+     */
+    public function getManifestHtml(): string
+    {
+        $manifestHtml = '';
+
+        if ($manifest = $this->getData('manifest')) {
+            $href = $manifest['href'];
+
+            $manifestHtml = <<<HTML
+<link rel="manifest" href="$href">
+
+HTML;
+            if ($themeColor = $manifest['themeColor']) {
+                $manifestHtml .= <<<HTML
+<meta name="theme-color" content="$themeColor">
+
+HTML;
+            }
+        }
+
+        return $manifestHtml;
     }
 
     /**
@@ -125,26 +154,30 @@ HTML;
     public function getPreloadsHtml(): string
     {
         $preloadsHtml = '';
-        $preloadData = $this->getData('preloads') ?: [];
 
-        foreach ($preloadData as $preload => $data) {
-            switch ($as = $data['as']) {
-                case 'style':
-                    $minified = $this->frontendState->isCssMinificationEnabled();
-                    break;
-                case 'script':
-                    $minified = $this->frontendState->isJsMinificationEnabled();
-                    break;
-                default:
-                    $minified = false;
-            }
-            $href = $this->resolveAssetPath($preload, $minified);
-            $type = $data['type'] ? ' type="' . $data['type'] . '"' : '';
+        if ($preloads = $this->getData('preloads')) {
+            $cssMinified = $this->frontendState->isCssMinificationEnabled();
+            $jsMinified = $this->frontendState->isJsMinificationEnabled();
 
-            $preloadsHtml .= <<<HTML
+            foreach ($preloads as $preload => $data) {
+                switch ($as = $data['as']) {
+                    case 'style':
+                        $minified = $cssMinified;
+                        break;
+                    case 'script':
+                        $minified = $jsMinified;
+                        break;
+                    default:
+                        $minified = false;
+                }
+                $href = $this->resolveAssetPath($preload, $minified);
+                $type = $data['type'] ? ' type="' . $data['type'] . '"' : '';
+
+                $preloadsHtml .= <<<HTML
 <link rel="preload" href="$href" as="$as"{$type} crossorigin="anonymous"/>
 
 HTML;
+            }
         }
 
         return $preloadsHtml;
@@ -157,17 +190,19 @@ HTML;
     public function getStylesHtml(): string
     {
         $stylesHtml = '';
-        $stylesData = $this->getData('styles') ?: [];
-        $minified = $this->frontendState->isCssMinificationEnabled();
 
-        foreach ($stylesData as $style => $data) {
-            $href = $this->resolveAssetPath($style, $minified);
-            $media = $data['media'] ? ' media="' . $data['media'] . '"' : '';
+        if ($styles = $this->getData('styles')) {
+            $minified = $this->frontendState->isCssMinificationEnabled();
 
-            $stylesHtml .= <<<HTML
+            foreach ($styles as $style => $data) {
+                $href = $this->resolveAssetPath($style, $minified);
+                $media = $data['media'] ? ' media="' . $data['media'] . '"' : '';
+
+                $stylesHtml .= <<<HTML
 <link rel="stylesheet" type="text/css" href="$href"{$media}/>
 
 HTML;
+            }
         }
 
         return $stylesHtml;
@@ -180,18 +215,20 @@ HTML;
     public function getScriptsHtml(): string
     {
         $scriptsHtml = '';
-        $scriptsData = $this->getData('scripts') ?: [];
-        $minified = $this->frontendState->isJsMinificationEnabled();
 
-        foreach ($scriptsData as $script => $data) {
-            $src = $this->resolveAssetPath($script, $minified);
-            $async = $data['async'] ? ' async' : '';
-            $defer = $data['defer'] ? ' defer' : '';
+        if ($scripts = $this->getData('scripts')) {
+            $minified = $this->frontendState->isJsMinificationEnabled();
 
-            $scriptsHtml .= <<<HTML
+            foreach ($scripts as $script => $data) {
+                $src = $this->resolveAssetPath($script, $minified);
+                $async = $data['async'] ? ' async' : '';
+                $defer = $data['defer'] ? ' defer' : '';
+
+                $scriptsHtml .= <<<HTML
 <script src="$src"{$async}{$defer}></script>
 
 HTML;
+            }
         }
 
         return $scriptsHtml;

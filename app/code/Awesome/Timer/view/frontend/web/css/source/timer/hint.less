@@ -1,0 +1,29 @@
+.timer-hint {
+    position: absolute;
+    right: 20px;
+    top: 10px;
+
+    &__button {
+        background: none;
+        border: 5px solid;
+        border-radius: 50%;
+        box-sizing: border-box;
+        color: rgba(0, 0, 0, 0.4);
+        font-size: 30px;
+        font-weight: 600;
+        height: 50px;
+        outline: none;
+        width: 50px;
+
+        &:focus, &:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: rgba(0, 0, 0, 0.8);
+        }
+    }
+
+    &__content {
+        p {
+            margin: 10px 0;
+        }
+    }
+}

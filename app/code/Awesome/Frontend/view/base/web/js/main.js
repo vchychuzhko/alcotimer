@@ -1,31 +1,31 @@
 require([
     'jquery',
 ], function ($) {
-    'use strict';
+    'use strict'
 
-    const dataAttr = 'data-awesome-init',
-          nodeSelector = '[' + dataAttr + ']',
-          scriptSelector = 'script[type="text/x-awesome-init"]';
+    const dataAttribute  = 'data-awesome-init';
+    const nodeSelector   = '[' + dataAttribute + ']';
+    const scriptSelector = 'script[type="text/x-awesome-init"]';
 
     let virtuals = [];
 
     /**
-     * Initializes components assigned to a specified element via data-* attribute.
+     * Initialize components assigned to a specified element via data-* attribute.
      *
-     * @param {HTMLElement} elem - Element to initialize components with.
-     * @param {Object|String} config - Initial components' config.
-     * @param {String} component - Components' path.
+     * @param {HTMLElement} element - Element to initialize components with.
+     * @param {Object|string} config - Initial components' config.
+     * @param {string} component - Components' path.
      */
-    function init(elem, config, component) {
+    function init(element, config, component) {
         require([component], function (fn) {
             if (typeof fn === 'object') {
                 fn = fn[component].bind(fn);
             }
 
             if (typeof fn === 'function') {
-                fn(config, elem);
-            } else if ($(elem)[component]) {
-                $(elem)[component](config);
+                fn(config, element);
+            } else if ($(element)[component]) {
+                $(element)[component](config);
             }
         }, function (error) {
             if ('console' in window && typeof window.console.error === 'function') {
@@ -37,58 +37,55 @@ require([
     }
 
     /**
-     * Parses elements 'data-awesome-init' attribute as a valid JSON data.
-     * Note: data-awesome-init attribute will be removed.
+     * Parse elements 'data-awesome-init' attribute as a valid JSON data.
+     * Note: 'data-awesome-init' attribute will be removed.
      *
-     * @param {HTMLElement} elem - Element whose attribute should be parsed.
+     * @param {HTMLElement} element - Element whose attribute should be parsed.
      * @returns {Object}
      */
-    function getData(elem) {
-        let data = $(elem).attr(dataAttr);
+    function getData(element) {
+        let data = $(element).attr(dataAttribute);
 
-        $(elem).removeAttr(dataAttr);
+        $(element).removeAttr(dataAttribute);
 
         return {
-            elem: elem,
-            data: JSON.parse(data)
+            element: element,
+            data:    JSON.parse(data)
         };
     }
     /**
-     * Adds components to the virtual list.
+     * Add components to the virtual list.
      *
      * @param {Object} components
      */
     function addVirtual(components) {
         virtuals.push({
-            elem: false,
-            data: components
+            element: false,
+            data:    components
         });
     }
 
     /**
-     * Merges provided data with a current data
-     * of a elements' "data-awesome-init" attribute.
+     * Merge provided data with a current data of a elements' "data-awesome-init" attribute.
      *
      * @param {Object} components - Object with components and theirs configuration.
-     * @param {HTMLElement} elem - Element whose data should be modified.
+     * @param {HTMLElement} element - Element whose data should be modified.
      */
-    function setData(components, elem) {
-        let data = $(elem).attr(dataAttr);
+    function setData(components, element) {
+        let data = $(element).attr(dataAttribute);
 
-        data = data ? JSON.parse(data) : {};
+        data = $.extend(true, data ? JSON.parse(data) : {}, components);
 
-        data = $.extend(true, data, components);
-        data = JSON.stringify(data);
-        $(elem).attr(dataAttr, data);
+        $(element).attr(dataAttribute, JSON.stringify(data));
     }
 
     /**
      * Search for the elements by provided selector and extends theirs data.
      *
      * @param {Object} components - Object with components and theirs configuration.
-     * @param {String} selector - Selector for the elements.
+     * @param {string} selector - Selector for the elements.
      */
-    function processElems(selector, components) {
+    function processElements(selector, components) {
         if (selector === '*') {
             addVirtual(components);
         } else {
@@ -99,26 +96,24 @@ require([
     }
 
     /**
-     * Parses content of a provided script node.
-     * Note: node will be removed from DOM.
+     * Parse content of a provided script node.
+     * Note: Node will be removed from DOM.
      *
      * @param {HTMLScriptElement} node - Node to be processed.
      * @returns {Object}
      */
     function getNodeData(node) {
-        let data = node.textContent;
+        let data = $(node).text();
 
-        node.parentNode.removeChild(node);
+        $(node).remove();
 
         return JSON.parse(data);
     }
 
     /**
-     * Parses 'script' tags with a custom type attribute and moves it's data
+     * Parse 'script' tags with a custom type attribute and moves its data
      * to a 'data-awesome-init' attribute of an element found by provided selector.
      * Note: All found script nodes will be removed from DOM.
-     *
-     * @returns {Array} An array of components not assigned to the specific element.
      *
      * @example Sample declaration.
      *      <script type="text/x-awesome-init">
@@ -129,7 +124,7 @@ require([
      *          }
      *      </script>
      *
-     * @example Providing data without selector.
+     * @example Providing data virtually without selector.
      *      {
      *          "*": {
      *              "path/to/component": {"bar": "baz"}
@@ -137,32 +132,26 @@ require([
      *      }
      */
     function processScripts() {
-        let nodes = $(scriptSelector);
-
-        $.each($.map(nodes, getNodeData), function (index, item) {
-            $.each(item, processElems);
+        $.each($.map($(scriptSelector), getNodeData), function (index, item) {
+            $.each(item, processElements);
         });
-
-        return virtuals.splice(0, virtuals.length);
     }
 
     /**
-     * Initializes components assigned to HTML elements via [data-awesome-init].
+     * Initialize components assigned to HTML elements via [data-awesome-init].
+     * Note: All found attribute declarations will be removed from DOM.
      *
      * @example Sample 'data-awesome-init' declaration.
      *      data-awesome-init='{"path/to/component": {"foo": "bar"}}'
      */
     $(function () {
-        let virtuals = processScripts(),
-            nodes = $(nodeSelector);
+        processScripts();
 
         $.each(
-            $.merge($.map(nodes, getData), virtuals),
+            $.merge($.map($(nodeSelector), getData), virtuals),
             function (index, itemContainer) {
-                let element = itemContainer.elem;
-
                 $.each(itemContainer.data, function (obj, key) {
-                    init.call(null, element, key, obj);
+                    init(itemContainer.element, key, obj);
                 });
             }
         );

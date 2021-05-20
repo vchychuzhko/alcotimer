@@ -31,7 +31,8 @@ class ConfigSet extends \Awesome\Console\Model\AbstractCommand
     {
         return parent::configure()
             ->setDescription('Set configuration value by path')
-            ->addOption('type', null, InputDefinition::OPTION_OPTIONAL, 'Value type to be casted, lowercase')
+            ->addOption('create', 'c', InputDefinition::OPTION_OPTIONAL, 'Allow creating new record if configuration is not yet present')
+            ->addOption('type', null, InputDefinition::OPTION_OPTIONAL, 'Type for value to be casted to, in lowercase')
             ->addArgument('path', InputDefinition::ARGUMENT_REQUIRED, 'Config path to update')
             ->addArgument('value', InputDefinition::ARGUMENT_OPTIONAL, 'Config value to set. If omitted, considered as null');
     }
@@ -39,12 +40,11 @@ class ConfigSet extends \Awesome\Console\Model\AbstractCommand
     /**
      * Set config value.
      * @inheritDoc
-     * @throws \RuntimeException
+     * @throws \Exception
      */
     public function execute(Input $input, Output $output): void
     {
-        $path = $input->getArgument('path');
-
+        // @TODO: Add unset config command/method or add -r/--remove option
         if ($type = $input->getOption('type')) {
             if (!in_array($type, ['int', 'integer', 'float', 'double', 'bool', 'boolean', 'string'], true)) {
                 throw new \InvalidArgumentException(sprintf('Provided value type "%s" is not valid', $type));
@@ -54,13 +54,20 @@ class ConfigSet extends \Awesome\Console\Model\AbstractCommand
         } else {
             $value = $input->getArgument('value', true);
         }
+        $path = $input->getArgument('path');
 
-        if ($this->config->set($path, $value)) {
-            $output->writeln('Configuration was successfully updated.');
-        } else {
-            $output->writeln('Configuration was not updated. Please, check the provided config path.');
+        if (!$this->config->exists($path) && !$input->getOption('create', true)) {
+            $output->writeln('Use -c/--create option to allow creating new configuration record.');
 
-            throw new \InvalidArgumentException('Configuration was not updated');
+            throw new \InvalidArgumentException('Provided path is not yet registered');
         }
+
+        if (is_array($this->config->get($path))) {
+            throw new \InvalidArgumentException('Provided path points to configuration section and cannot be updated via CLI');
+        }
+
+        $this->config->set($path, $value);
+
+        $output->writeln('Configuration was successfully updated.');
     }
 }

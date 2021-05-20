@@ -9,11 +9,11 @@ class XmlParsingHelper
      * Get attribute value from the provided XML node.
      * @param \SimpleXMLElement $node
      * @param string $attribute
-     * @return string
+     * @return string|null
      */
-    public static function getNodeAttribute(\SimpleXMLElement $node, string $attribute): string
+    public static function getNodeAttribute(\SimpleXMLElement $node, string $attribute): ?string
     {
-        return (string) $node[$attribute];
+        return $node[$attribute] ? (string) $node[$attribute] : null;
     }
 
     /**

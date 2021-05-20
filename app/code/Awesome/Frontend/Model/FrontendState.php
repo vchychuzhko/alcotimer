@@ -59,13 +59,15 @@ class FrontendState extends \Awesome\Framework\Model\AppState
 
     /**
      * Check if symbolic links should be used for css files.
-     * Allowed only in developer mode.
+     * Allowed only in developer mode and if minification is disabled.
      * @return bool
      */
     public function useSymlinkForCss(): bool
     {
         if ($this->useSymlinkForCss === null) {
-            $this->useSymlinkForCss = (bool) $this->config->get(self::CSS_SYMLINK_CONFIG) && $this->isDeveloperMode();
+            $this->useSymlinkForCss = (bool) $this->config->get(self::CSS_SYMLINK_CONFIG)
+                && !$this->isCssMinificationEnabled()
+                && $this->isDeveloperMode();
         }
 
         return $this->useSymlinkForCss;
@@ -73,13 +75,15 @@ class FrontendState extends \Awesome\Framework\Model\AppState
 
     /**
      * Check if symbolic links should be used for js files.
-     * Allowed only in developer mode.
+     * Allowed only in developer mode and if minification is disabled.
      * @return bool
      */
     public function useSymlinkForJs(): bool
     {
         if ($this->useSymlinkForJs === null) {
-            $this->useSymlinkForJs = (bool) $this->config->get(self::JS_SYMLINK_CONFIG) && $this->isDeveloperMode();
+            $this->useSymlinkForJs = (bool) $this->config->get(self::JS_SYMLINK_CONFIG)
+                && !$this->isJsMinificationEnabled()
+                && $this->isDeveloperMode();
         }
 
         return $this->useSymlinkForJs;

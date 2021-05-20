@@ -8,13 +8,20 @@ use Awesome\Framework\Model\Http;
 use Awesome\Framework\Model\Locale;
 use Awesome\Framework\Model\Locale\Translator;
 use Awesome\Framework\Model\Serializer\Json;
+use Awesome\Frontend\Helper\StaticContentHelper;
 use Awesome\Frontend\Model\FrontendState;
 use Awesome\Frontend\Model\GeneratorInterface;
+use Awesome\Frontend\Model\Js\JsMinifier;
 
 class Translation extends \Awesome\Frontend\Model\AbstractGenerator
 {
     private const JS_FOLDERS_PATTERN = '/*/*/view/{%s,%s}/web/js';
-    private const TRANSLATION_FILE_PATTERN = '/\/?i18n\/([a-z]{2}_[A-Z]{2})\.json$/';
+    private const TRANSLATION_FILE_PATTERN = '/\/?i18n\/([a-z]{2}_[A-Z]{2})(\.min)?\.js$/';
+
+    /**
+     * @var JsMinifier $jsMinifier
+     */
+    private $jsMinifier;
 
     /**
      * @var Json $json
@@ -30,16 +37,19 @@ class Translation extends \Awesome\Frontend\Model\AbstractGenerator
      * Translation constructor.
      * @param FileManager $fileManager
      * @param FrontendState $frontendState
+     * @param JsMinifier $jsMinifier
      * @param Json $json
      * @param Translator $translator
      */
     public function __construct(
         FileManager $fileManager,
         FrontendState $frontendState,
+        JsMinifier $jsMinifier,
         Json $json,
         Translator $translator
     ) {
         parent::__construct($fileManager, $frontendState);
+        $this->jsMinifier = $jsMinifier;
         $this->json = $json;
         $this->translator = $translator;
     }
@@ -51,6 +61,7 @@ class Translation extends \Awesome\Frontend\Model\AbstractGenerator
     public function generate(string $path, string $view): GeneratorInterface
     {
         $locale = self::getLocaleByPath($path);
+        $resultFile = self::getPathByLocale($locale);
         $dictionary = [];
         $phrases = [];
 
@@ -81,14 +92,20 @@ class Translation extends \Awesome\Frontend\Model\AbstractGenerator
         }
         ksort($dictionary);
 
+        $dictionary = $this->json->prettyEncode($dictionary);
+
+        $content = <<<JS
+define(() => ($dictionary));
+
+JS;
+
         if ($this->frontendState->isJsMinificationEnabled()) {
-            $content = $this->json->encode($dictionary);
-        } else {
-            $content = $this->json->prettyEncode($dictionary);
+            $content = $this->jsMinifier->minify($content);
+            $resultFile = StaticContentHelper::addMinificationFlag($resultFile);
         }
 
         $this->fileManager->createFile(
-            $this->getStaticPath('/i18n/' . $locale . '.json', $view, true),
+            $this->getStaticPath($resultFile, $view, true),
             $content,
             true
         );
@@ -133,6 +150,6 @@ class Translation extends \Awesome\Frontend\Model\AbstractGenerator
      */
     private static function getPathByLocale(string $locale): string
     {
-        return '/i18n/' . $locale . '.json';
+        return '/i18n/' . $locale . '.js';
     }
 }

@@ -26,11 +26,29 @@ class Visualizer extends \Awesome\Frontend\Block\Template
     }
 
     /**
-     * Get predefined playlist configuration.
+     * Get registered playlist configuration encoding it.
      * @return string
      */
-    public function getPlaylistConfig(): string
+    public function getPlaylistJsonConfig(): string
     {
-        return $this->json->encode([]);
+        return $this->json->prettyEncode($this->getPlaylistConfig());
+    }
+
+    /**
+     * Get registered playlist configuration.
+     * @return array
+     */
+    public function getPlaylistConfig(): array
+    {
+        return [];
+    }
+
+    /**
+     * Get default playlist item thumbnail URL.
+     * @return string
+     */
+    public function getPlaylistDefaultThumbnail(): string
+    {
+        return $this->getMediaFileUrl('/pub/media/podcasts/thumbnails/default.png');
     }
 }

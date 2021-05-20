@@ -8,7 +8,7 @@ use Awesome\Framework\Helper\DataHelper;
 /**
  * Class Request
  * @method string getAcceptType()
- * @method string getRoute()
+ * @method string|null getRoute()
  * @method string|null getEntity()
  * @method string|null getAction()
  * @method string getUserIp()
@@ -27,7 +27,8 @@ class Request extends \Awesome\Framework\Model\DataObject implements \Awesome\Fr
     public const SCHEME_HTTP  = 'http';
     public const SCHEME_HTTPS = 'https';
 
-    public const ROOT_ACTION_NAME = 'index_index_index';
+    public const DEFAULT_ROUTE = 'main';
+    public const ROOT_ACTION_NAME = 'main_index_index';
 
     public const JSON_ACCEPT_HEADER = 'application/json';
     public const HTML_ACCEPT_HEADER = 'text/html';
@@ -167,7 +168,7 @@ class Request extends \Awesome\Framework\Model\DataObject implements \Awesome\Fr
     {
         if (!$this->fullActionName) {
             $this->fullActionName = implode('_', [
-                $this->getRoute(),
+                $this->getRoute() ?: self::DEFAULT_ROUTE,
                 $this->getEntity() ?: 'index',
                 $this->getAction() ?: 'index',
             ]);

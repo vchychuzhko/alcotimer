@@ -15,6 +15,8 @@ class StylesWatch extends \Awesome\Console\Model\AbstractCommand
     private const SOURCE_FOLDER_PATTERN = '/*/*/view/%s/web/css/source';
     private const FILE_VIEW_PATTERN = '/(.*)\/view\/(%s)\/(.*)$/';
 
+    private const DEFAULT_WATCH_INTERVAL = 1;
+
     /**
      * @var FileManager $fileManager
      */
@@ -43,7 +45,9 @@ class StylesWatch extends \Awesome\Console\Model\AbstractCommand
     {
         return parent::configure()
             ->setDescription('Watch after less files modification')
-            ->addOption('interval', 'i', InputDefinition::OPTION_OPTIONAL, 'Set watch interval in seconds (1 by default)')
+            ->addOption('interval', null, InputDefinition::OPTION_OPTIONAL, sprintf(
+                'Set watch interval in seconds (default: %s)', self::DEFAULT_WATCH_INTERVAL
+            ))
             ->addArgument('view', InputDefinition::ARGUMENT_OPTIONAL, 'Watch only after provided view');
     }
 
@@ -53,72 +57,74 @@ class StylesWatch extends \Awesome\Console\Model\AbstractCommand
      */
     public function execute(Input $input, Output $output): void
     {
-        $definedViews = [Http::FRONTEND_VIEW, Http::BACKEND_VIEW];
-        $view = $input->getArgument('view');
-        $interval = ((int) $input->getOption('interval') ?: 1);
+        $views = Http::getAllViews();
+        $requestedView = $input->getArgument('view');
 
-        if ($view) {
-            if (!in_array($view, $definedViews, true)) {
-                $output->writeln('Provided view was not recognized.');
+        if (!is_null($requestedView)) {
+            if (!in_array($requestedView, $views, true)) {
+                $output->writeln('Provided view is not registered.');
                 $output->writeln();
                 $output->writeln('Available views:');
-                $output->writeln($output->colourText(implode(', ', $definedViews)), 2);
+                $output->writeln($output->colourText(implode(', ', $views)), 2);
 
                 throw new \InvalidArgumentException('Invalid view name is provided');
             }
 
-            $views = [$view];
-        } else {
-            $views = $definedViews;
+            $views = [$requestedView];
         }
+
+        $interval = ((int) $input->getOption('interval') ?: self::DEFAULT_WATCH_INTERVAL);
         $lastUpdate = time();
-        $sourceFolderPattern = APP_DIR . sprintf(self::SOURCE_FOLDER_PATTERN, '{' . Http::BASE_VIEW . ',' . implode(',', $views) . '}');
+
+        $watchingLabel = $requestedView
+            ? sprintf('Watching after %s view...', $output->underline($requestedView))
+            : 'Watching...';
 
         $output->writeln('Use "Ctrl+C" to terminate.');
-        $output->writeln('Watching...');
+        $output->writeln($watchingLabel);
+
+        $sourceFolderPattern = APP_DIR . sprintf(self::SOURCE_FOLDER_PATTERN, '{' . Http::BASE_VIEW . ',' . implode(',', $views) . '}');
+        $fileViewPattern = sprintf(self::FILE_VIEW_PATTERN, Http::FRONTEND_VIEW . '|' . Http::BACKEND_VIEW . '|' . Http::BASE_VIEW);
 
         while (true) {
             clearstatcache();
-            $updated = false;
-            $modifiedFile = null;
+            $modified = [];
 
             foreach (glob($sourceFolderPattern, GLOB_BRACE) as $sourceFolder) {
                 $files = $this->fileManager->scanDirectory($sourceFolder, true, 'less');
 
                 foreach ($files as $file) {
                     if (filemtime($file) > $lastUpdate) {
-                        $updated = true;
-                        $modifiedFile = $file;
-                        break 2;
+                        $output->writeln(sprintf('File has been modified: "%s"', $file));
+
+                        preg_match($fileViewPattern, $file, $matches);
+                        $modified[] = $matches[2];
                     }
                 }
             }
 
-            if ($updated && $modifiedFile) {
+            if ($modified) {
                 $lastUpdate = time();
-                $output->writeln(sprintf('File has been changed: "%s"', $modifiedFile));
-                $fileView = preg_replace(
-                    sprintf(self::FILE_VIEW_PATTERN, Http::FRONTEND_VIEW . '|' . Http::BACKEND_VIEW . '|' . Http::BASE_VIEW),
-                    '$2',
-                    $modifiedFile
-                );
 
-                if ($fileView === Http::BASE_VIEW) {
-                    $modifiedViews = [Http::FRONTEND_VIEW, Http::BACKEND_VIEW];
+                if (in_array(Http::BASE_VIEW, $modified, true)) {
+                    $modified = $views;
                 } else {
-                    $modifiedViews = [$fileView];
+                    $modified = array_unique($modified);
                 }
 
                 try {
-                    foreach ($modifiedViews as $modifiedView) {
-                        $this->styles->generate(Styles::RESULT_FILENAME, $modifiedView);
-                        $output->writeln($output->colourText(sprintf('Styles were regenerated for "%s" view', $modifiedView)));
+                    foreach ($modified as $view) {
+                        $this->styles->generate(Styles::RESULT_FILENAME, $view);
+
+                        $output->writeln(
+                            $output->colourText(sprintf('Styles were regenerated for %s view', $output->underline($view)))
+                        );
                     }
                 } catch (\Exception $e) {
                     $output->writeln($output->colourText($e->getMessage(), Output::RED));
                 }
 
-                $output->writeln('Watching...');
+                $output->writeln($watchingLabel);
             }
 
             sleep($interval);

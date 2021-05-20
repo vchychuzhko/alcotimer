@@ -2,16 +2,25 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="../../../../Frontend/Schema/page_layout.xsd">
     <head>
-        <favicon src="/media/images/favicon.png" type="image/png"/>
+        <favicon>
+            <icon rel="apple-touch-icon" href="/media/favicon/apple-touch-icon.png" sizes="180x180"/>
+            <icon rel="alternate icon" href="/media/favicon/favicon.png" type="image/png"/>
+            <icon href="/media/favicon/favicon.svg" type="image/svg+xml"/>
+        </favicon>
+        <manifest href="/manifest.json" themeColor="#ffffff"/>
         <css src="styles.css"/>
         <css src="Awesome_Frontend/css/menu.css"/>
-        <css src="Awesome_Frontend/css/message.css"/>
         <script src="lib/require/require.js"/>
         <script src="requirejs-config.js"/>
         <script src="Awesome_Frontend/js/main.js"/>
     </head>
     <body>
-        <container name="head.additional" disabled="true"/>
+        <container name="head.additional" disabled="true">
+            <block name="translation"
+                   class="Awesome\Frontend\Block\Translation"
+                   template="Awesome_Frontend::translation.phtml"
+                   sortOrder="1"/>
+        </container>
         <block name="menu" class="Awesome\Frontend\Block\Menu" template="Awesome_Frontend::menu.phtml" sortOrder="1"/>
         <container name="page-wrapper" htmlTag="main" htmlClass="page-wrapper" sortOrder="5">
             <block name="header"
@@ -32,6 +41,5 @@
                    template="Awesome_Frontend::footer.phtml"
                    sortOrder="10"/>
         </container>
-        <container name="popup-init-section" htmlTag="div" htmlClass="popup-init-section" sortOrder="9"/>
     </body>
 </page>

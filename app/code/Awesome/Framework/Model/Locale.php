@@ -8,18 +8,29 @@ use Awesome\Framework\Model\Http\Request;
 class Locale implements \Awesome\Framework\Model\SingletonInterface
 {
     public const LOCALE_COOKIE = 'locale_code';
-    public const DEFAULT_LOCALE = 'uk_UA';
+    public const DEFAULT_LOCALE = 'en_US';
 
-    private const ALLOWED_LOCALES = [
-        'en_US',
-        'uk_UA',
-        'ru_RU',
-    ];
+    private const DEFAULT_LOCALE_CONFIG = 'default_locale';
+
+    /**
+     * @var Config $config
+     */
+    private $config;
 
     /**
      * @var string $locale
      */
     private $locale = self::DEFAULT_LOCALE;
+
+    /**
+     * Locale constructor.
+     * @param Config $config
+     */
+    public function __construct(
+        Config $config
+    ) {
+        $this->config = $config;
+    }
 
     /**
      * Initialize current locale according to request cookie.
@@ -28,7 +39,9 @@ class Locale implements \Awesome\Framework\Model\SingletonInterface
      */
     public function init(Request $request): self
     {
-        if ($locale = $request->getCookie(self::LOCALE_COOKIE)) {
+        $locale = $request->getCookie(self::LOCALE_COOKIE) ?: $this->config->get(self::DEFAULT_LOCALE_CONFIG);
+
+        if ($locale) {
             try {
                 $this->setLocale($locale);
             } catch (\RuntimeException $e) {}
@@ -47,23 +60,27 @@ class Locale implements \Awesome\Framework\Model\SingletonInterface
     }
 
     /**
-     * Get all registered locale codes.
+     * Get all defined locale codes.
      * @return array
      */
     public static function getAllLocales(): array
     {
-        return self::ALLOWED_LOCALES;
+        return [
+            'en_US',
+            'uk_UA',
+            'ru_RU',
+        ];
     }
 
     /**
-     * Set locale code, checking if it's registered.
+     * Set locale for current session, it must be registered.
      * @param string $locale
      * @return $this
      */
     public function setLocale(string $locale): self
     {
-        if (!in_array($locale, self::ALLOWED_LOCALES, true)) {
-            throw new \RuntimeException(sprintf('Cannot set not registered locale: %s', $locale));
+        if (!in_array($locale, self::getAllLocales(), true)) {
+            throw new \RuntimeException(sprintf('Cannot set unregistered locale: %s', $locale));
         }
         $this->locale = $locale;
 

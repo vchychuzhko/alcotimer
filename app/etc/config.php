@@ -5,11 +5,13 @@ return [
         'front_name' => 'admin',
     ],
     'developer_mode' => 0, // Show all errors and exceptions on the frontend
+    'visitor_log' => 1, // Log all requests
     'show_forbidden' => 0, // NotFound response will be returned instead
     'support_email_address' => '',
+    'default_locale' => 'uk_UA',
     'web' => [
         'homepage' => 'timer/index/index',
-        'logo' => 'pub/media/images/logo.png',
+        'logo' => 'pub/media/images/logo.svg',
         'js' => [
             'minify' => 1,
             'merge' => 0,
@@ -27,7 +29,7 @@ return [
         'full_page' => 1,
         'translations' => 1,
     ],
-    'timer_config' => [
+    'timer' => [
         'show_hint' => 1,
         'general' => [
             'defaultTime' => 8,

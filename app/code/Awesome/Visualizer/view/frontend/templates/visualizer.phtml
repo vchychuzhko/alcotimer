@@ -1,17 +1,49 @@
 <?php /** @var \Awesome\Visualizer\Block\Visualizer $block */ ?>
 <div class="visualizer">
-    <div class="legend">
-        <span class="trackname">-</span>
-        <span class="timecode">--:--:--</span>
+    <div class="visualizer__playlist playlist" data-playlist>
+        <button class="playlist__toggle hamburger" type="button" title="<?= __('Playlist') ?>" data-playlist-toggle>
+            <span class="hamburger__icon"></span>
+        </button>
+        <div class="playlist__wrapper">
+            <h2 class="playlist__title"><?= __('Playlist') ?></h2>
+            <?php if ($config = $block->getPlaylistConfig()): ?>
+                <ul class="playlist__list">
+                    <?php foreach ($config as $id => $track): ?>
+                        <li class="playlist__item">
+                            <a class="playlist__link"
+                               href="javascript:void(0);"
+                               title="<?= $track['title'] ?>"
+                               data-track-id="<?= $id ?>">
+                                <img class="playlist__item__thumb"
+                                     src="<?= $track['thumbnail'] ?? $block->getPlaylistDefaultThumbnail() ?>"
+                                     alt="<?= $track['title'] . ' Logo' ?>"/>
+                                <div class="playlist__item__meta">
+                                    <div class="playlist__item__meta__title"><?= $track['title'] ?></div>
+                                    <div class="playlist__item__meta__artist"><?= $track['artist'] ?></div>
+                                </div>
+                                <div class="playlist__item__duration"><?= $track['duration'] ?></div>
+                            </a>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            <?php else: ?>
+                <span class="playlist__message"><?= __('No audio tracks found') ?></span>
+            <?php endif; ?>
+            <span class="playlist__info"><?= __('You can just drag\'n\'drop audio file to this tab to play it') ?></span>
+        </div>
     </div>
-    <canvas class="canvas" height="900" width="900"></canvas>
-    <audio class="audio" controls="true" crossorigin="anonymous"></audio>
+    <div class="visualizer__legend">
+        <span class="visualizer__name" data-name>-</span>
+        <span class="visualizer__time" data-time>--:--:--</span>
+    </div>
+    <canvas class="visualizer__canvas" height="900" width="900" data-canvas></canvas>
+    <audio class="visualizer__audio" controls="true" crossorigin="anonymous" data-audio></audio>
 </div>
 <script type="text/x-awesome-init">
 {
     ".visualizer": {
         "player": {
-            "playlistConfig": <?= $block->getPlaylistConfig(); ?>
+            "playlistConfig": <?= $block->getPlaylistJsonConfig() ?>
         }
     }
 }

@@ -40,7 +40,7 @@ class Disable extends \Awesome\Console\Model\AbstractCommand
      */
     public function execute(Input $input, Output $output): void
     {
-        $definedTypes = $this->cacheState->getDefinedTypes();
+        $definedTypes = CacheState::getAllTypes();
         $types = $input->getArgument('types') ?: $definedTypes;
         $titleShown = false;
 

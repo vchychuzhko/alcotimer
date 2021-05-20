@@ -41,6 +41,6 @@ class MaintenanceDisable extends \Awesome\Console\Model\AbstractCommand
     {
         $this->maintenance->disable();
 
-        $output->writeln('Maintenance mode was disabled.');
+        $output->writeln('Maintenance mode has been disabled.');
     }
 }

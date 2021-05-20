@@ -9,14 +9,14 @@ use Awesome\Framework\Model\Invoker;
 class Phrase
 {
     /**
-     * @var array $arguments
-     */
-    private $arguments;
-
-    /**
      * @var string $text
      */
     private $text;
+
+    /**
+     * @var array $arguments
+     */
+    private $arguments;
 
     /**
      * @var Translator $translator
@@ -30,8 +30,8 @@ class Phrase
      */
     public function __construct(string $text, array $arguments = [])
     {
-        $this->arguments = $arguments;
         $this->text = $text;
+        $this->arguments = $arguments;
     }
 
     /**
@@ -46,8 +46,10 @@ class Phrase
             $text = self::getTranslator()->translate($text);
 
             if ($arguments = $this->getArguments()) {
-                $placeholders = array_map(static function ($key) {
-                    return '%' . (is_int($key) ? (string) ($key + 1) : $key);
+                $associative = array_keys($arguments) !== range(0, count($arguments) - 1);
+
+                $placeholders = array_map(static function ($placeholder) use ($associative) {
+                    return '%' . ($associative ? $placeholder : ($placeholder + 1));
                 }, array_keys($arguments));
 
                 $pairs = array_combine($placeholders, $arguments);

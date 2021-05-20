@@ -4,7 +4,7 @@
         <div class="timer-wrapper radial-container" data-awesome-init='{"radialSlider": {}}'>
             <div class="timer-button-container">
                 <button class="timer-button" type="button" name="start-stop" value="Start/Stop">
-                    <span class="timer-time noselect" style="display: block; bottom: 0; position: absolute; left: 50%; transform: translateX(-50%)"></span>
+                    <span class="timer-time" style="display: block; bottom: 0; position: absolute; left: 50%; transform: translateX(-50%)"></span>
                 </button>
             </div>
             <div class="radial-slider">
@@ -21,4 +21,5 @@
             </button>
         </div>
     </div>
+    <?= $block->getChildHtml('timer.hint') ?>
 </div>

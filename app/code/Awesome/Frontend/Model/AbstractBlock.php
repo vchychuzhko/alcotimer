@@ -69,13 +69,15 @@ abstract class AbstractBlock extends \Awesome\Framework\Model\DataObject impleme
         $html = '';
 
         if ($layout = $this->getLayout()) {
-            $childNames = $layout->getChildNames($this->getNameInLayout());
-
             if ($childName) {
+                $childNames = $layout->getChildNames($this->getNameInLayout(), true);
+
                 if (in_array($childName, $childNames, true)) {
                     $html = $this->layout->render($childName);
                 }
             } else {
+                $childNames = $layout->getChildNames($this->getNameInLayout());
+
                 foreach ($childNames as $child) {
                     $html .= $this->layout->render($child);
                 }

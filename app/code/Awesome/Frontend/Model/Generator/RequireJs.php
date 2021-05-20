@@ -17,6 +17,8 @@ class RequireJs extends \Awesome\Frontend\Model\AbstractGenerator
     private const REQUIREJS_CONFIG_PATTERN = '/*/*/view/{%s,%s}/requirejs-config.json';
     public const RESULT_FILENAME = 'requirejs-config.js';
 
+    public const MODULE_LOAD_TIMEOUT = 15;
+
     /**
      * @var DeployedVersion $deployedVersion
      */
@@ -72,8 +74,9 @@ class RequireJs extends \Awesome\Frontend\Model\AbstractGenerator
         $deployedVersion = $this->deployedVersion->getVersion();
 
         $config = $this->json->prettyEncode([
-            'baseUrl' => '/static/' . ($deployedVersion ? 'version' . $deployedVersion . '/' : '/') . $view,
-            'paths'   => $requirePaths,
+            'baseUrl'     => '/static/' . ($deployedVersion ? 'version' . $deployedVersion . '/' : '/') . $view,
+            'paths'       => $requirePaths,
+            'waitSeconds' => self::MODULE_LOAD_TIMEOUT,
         ]);
         $content = <<<JS
 requirejs.config($config);
@@ -114,11 +117,7 @@ JS;
 let context = require.s.contexts._,
     originalNameToUrl = context.nameToUrl;
 
-context.nameToUrl = function () {
-    let url = originalNameToUrl.apply(context, arguments);
-
-    return url.replace(/(\.min)?\.js$/, '.min.js');
-};
+context.nameToUrl = (...args) => originalNameToUrl.apply(context, args).replace(/(\.min)?\.js$/, '.min.js');
 JS;
     }
 }

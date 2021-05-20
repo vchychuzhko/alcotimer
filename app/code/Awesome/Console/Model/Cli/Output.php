@@ -9,7 +9,7 @@ class Output
 {
     /**
      * Foreground and background CLI colour constants.
-     * More info here: https://misc.flogisoft.com/bash/tip_colors_and_formatting
+     * @link https://misc.flogisoft.com/bash/tip_colors_and_formatting
      */
     public const BLACK         = '30';
     public const DARK_GREY     = '90';
@@ -170,50 +170,6 @@ class Output
     }
 
     /**
-     * Disable output.
-     * @return $this
-     */
-    public function mute(): self
-    {
-        $this->mute = true;
-
-        return $this;
-    }
-
-    /**
-     * Enable output.
-     * @return $this
-     */
-    public function unmute(): self
-    {
-        $this->mute = false;
-
-        return $this;
-    }
-
-    /**
-     * Disable interaction.
-     * @return $this
-     */
-    public function disableInteraction(): self
-    {
-        $this->interactive = false;
-
-        return $this;
-    }
-
-    /**
-     * Enable interaction.
-     * @return $this
-     */
-    public function enableInteraction(): self
-    {
-        $this->interactive = true;
-
-        return $this;
-    }
-
-    /**
      * Initialize progress bar.
      * If already in progress, new one will be created.
      * @param int $total
@@ -242,7 +198,7 @@ class Output
     {
         $backgroundColour = $backgroundColour ? ';' . $backgroundColour : '';
 
-        return "\e[" . $colour . $backgroundColour . "m" . $text . "\e[0m";
+        return "\e[" . $colour . $backgroundColour . "m" . $text . "\e[39;49m";
     }
 
     /**
@@ -252,7 +208,7 @@ class Output
      */
     public function bold(string $text): string
     {
-        return "\e[1m" . $text . "\e[0m";
+        return "\e[1m" . $text . "\e[21m";
     }
 
     /**
@@ -262,6 +218,6 @@ class Output
      */
     public function underline(string $text): string
     {
-        return "\e[4m" . $text . "\e[0m";
+        return "\e[4m" . $text . "\e[24m";
     }
 }

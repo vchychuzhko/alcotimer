@@ -55,10 +55,10 @@ class CacheState
     }
 
     /**
-     * Get defined cache types.
+     * Get all defined cache types.
      * @return array
      */
-    public function getDefinedTypes(): array
+    public static function getAllTypes(): array
     {
         return [
             Cache::ETC_CACHE_KEY,

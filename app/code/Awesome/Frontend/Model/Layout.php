@@ -107,17 +107,21 @@ class Layout
     {
         $html = '';
 
-        if ($elementData = DataHelper::arrayGetByKeyRecursive($this->structure, $nameInLayout)) {
-            $elementId = $elementData['class'];
-            $params = array_merge($elementData['arguments'], ['data' => $elementData['data']]);
+        if ($element = DataHelper::arrayGetByKeyRecursive($this->structure, $nameInLayout)) {
+            $elementId = $element['class'];
+            $params = $element['arguments'] ?? [];
 
-            $element = $this->blockFactory->create($elementId, $params);
-
-            if ($element instanceof AbstractBlock) {
-                $element->init($this, $nameInLayout, $elementData['template']);
+            if (isset($element['data'])) {
+                $params = array_merge($params, ['data' => $element['data']]);
             }
 
-            $html = $element->toHtml();
+            $block = $this->blockFactory->create($elementId, $params);
+
+            if ($block instanceof AbstractBlock) {
+                $block->init($this, $nameInLayout, $element['template'] ?? null);
+            }
+
+            $html = $block->toHtml();
         }
 
         return $html;
@@ -126,16 +130,23 @@ class Layout
     /**
      * Get element's child names.
      * @param string $nameInLayout
+     * @param bool $includeDisabled
      * @return array
      */
-    public function getChildNames(string $nameInLayout): array
+    public function getChildNames(string $nameInLayout, bool $includeDisabled = false): array
     {
         $childNames = [];
 
-        if ($elementData = DataHelper::arrayGetByKeyRecursive($this->structure, $nameInLayout)) {
-            $childNames = array_keys(array_filter($elementData['children'], function ($child) {
-                return $child['disabled'] !== true;
-            }));
+        if ($element = DataHelper::arrayGetByKeyRecursive($this->structure, $nameInLayout)) {
+            $children = $element['children'] ?? [];
+
+            if (!$includeDisabled) {
+                $children = array_filter($children, static function ($child) {
+                    return ($child['disabled'] ?? false) !== true;
+                });
+            }
+
+            $childNames = array_keys($children);
         }
 
         return $childNames;

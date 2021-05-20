@@ -17,7 +17,7 @@ class StaticFile extends \Awesome\Frontend\Model\AbstractGenerator
     /**
      * @inheritDoc
      */
-    public static $extensions = [
+    protected static $extensions = [
         'css',
         'js',
         'eot',
@@ -120,7 +120,7 @@ class StaticFile extends \Awesome\Frontend\Model\AbstractGenerator
             $staticPath = StaticContentHelper::addMinificationFlag($staticPath);
         }
 
-        if ($this->frontendState->useSymlinkForJs()) {
+        if ($this->frontendState->useSymlinkForCss()) {
             $this->fileManager->createSymlink($path, $staticPath);
         } else {
             $content = $this->fileManager->readFile($path);

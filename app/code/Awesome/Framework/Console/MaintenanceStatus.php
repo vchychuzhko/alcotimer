@@ -30,7 +30,7 @@ class MaintenanceStatus extends \Awesome\Console\Model\AbstractCommand
     public static function configure(): InputDefinition
     {
         return parent::configure()
-            ->setDescription('View current state of maintenance');
+            ->setDescription('Show maintenance mode status');
     }
 
     /**
@@ -39,18 +39,10 @@ class MaintenanceStatus extends \Awesome\Console\Model\AbstractCommand
      */
     public function execute(Input $input, Output $output): void
     {
-        $status = 'Maintenance mode is disabled.';
-        $state = $this->maintenance->getStatus();
+        $output->writeln($this->maintenance->isActive() ? 'Maintenance mode is active.' : 'Maintenance mode is disabled.');
 
-        if ($state['enabled']) {
-            $status = 'Maintenance mode is enabled.';
-
-            if ($state['allowed_ips']) {
-                $allowedIPs = implode(', ', $state['allowed_ips']);
-                $status .= "\n" . 'Allowed IP addresses: ' . $output->colourText($allowedIPs, Output::BROWN);
-            }
+        if ($allowedIps = $this->maintenance->getAllowedIps()) {
+            $output->writeln('Allowed IP addresses: ' . $output->colourText(implode(', ', $allowedIps), Output::BROWN));
         }
-
-        $output->writeln($status);
     }
 }
