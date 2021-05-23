@@ -101,7 +101,7 @@
                                         <xs:simpleType>
                                             <xs:restriction base="xs:string">
                                                 <xs:minLength value="1"/>
-                                                <xs:pattern value="[a-zA-Z0-9\-_/.]*"/>
+                                                <xs:pattern value="[a-zA-Z0-9\-_/:.]*"/>
                                             </xs:restriction>
                                         </xs:simpleType>
                                     </xs:attribute>
@@ -131,7 +131,7 @@
                                         <xs:simpleType>
                                             <xs:restriction base="xs:string">
                                                 <xs:minLength value="1"/>
-                                                <xs:pattern value="[a-zA-Z0-9\-_/.]*"/>
+                                                <xs:pattern value="[a-zA-Z0-9\-_/:.]*"/>
                                             </xs:restriction>
                                         </xs:simpleType>
                                     </xs:attribute>
@@ -152,7 +152,7 @@
                                         <xs:simpleType>
                                             <xs:restriction base="xs:string">
                                                 <xs:minLength value="1"/>
-                                                <xs:pattern value="[a-zA-Z0-9\-_/.]*"/>
+                                                <xs:pattern value="[a-zA-Z0-9\-_/:.]*"/>
                                             </xs:restriction>
                                         </xs:simpleType>
                                     </xs:attribute>
@@ -167,7 +167,7 @@
                                         <xs:simpleType>
                                             <xs:restriction base="xs:string">
                                                 <xs:minLength value="1"/>
-                                                <xs:pattern value="[a-zA-Z0-9\-_/.]*"/>
+                                                <xs:pattern value="[a-zA-Z0-9\-_/:.]*"/>
                                             </xs:restriction>
                                         </xs:simpleType>
                                     </xs:attribute>

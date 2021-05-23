@@ -251,16 +251,21 @@ HTML;
 
     /**
      * Resolve static assets path including minification flag if needed.
+     * Absolute paths remain unaffected.
      * @param string $path
      * @param bool $minified
      * @return string
      */
     private function resolveAssetPath(string $path, bool $minified = false): string
     {
-        if ($minified) {
-            $path = StaticContentHelper::addMinificationFlag($path);
+        if (!preg_match('/^(https?:)?\/\//i', $path)) {
+            $path = $this->getStaticUrl($path);
+
+            if ($minified) {
+                $path = StaticContentHelper::addMinificationFlag($path);
+            }
         }
 
-        return $this->getStaticUrl($path);
+        return $path;
     }
 }

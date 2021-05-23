@@ -1,5 +1,5 @@
 # AlcoTimer
-*0.5.2-beta*
+*0.5.3-beta*
 
 Web application for people, who would like to make drinking process become really challenging.  
 
