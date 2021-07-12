@@ -11,7 +11,7 @@ class Logger extends \Awesome\Framework\Model\AbstractLogger
     private const SYSTEM_LOG_FILE = 'system.log';
 
     /**
-     * Write an error to a log file.
+     * Write an error to log file.
      * @param Phrase|string $errorMessage
      * @return $this
      */
@@ -21,7 +21,7 @@ class Logger extends \Awesome\Framework\Model\AbstractLogger
     }
 
     /**
-     * Write a system info message to a log file.
+     * Write a system info message to log file.
      * @param Phrase|string $message
      * @return $this
      */

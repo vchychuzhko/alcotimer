@@ -62,7 +62,7 @@ class ControllerRoutingObserver implements \Awesome\Framework\Model\Event\Observ
             }
 
             if (class_exists($className)
-                && (!is_a($className, PostControllerInterface::class, true) || $request->isPost())
+                && is_a($className, PostControllerInterface::class, true) === $request->isPost()
             ) {
                 $actionResolver->addAction($className);
             }

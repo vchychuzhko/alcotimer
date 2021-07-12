@@ -1,18 +1,18 @@
 .hamburger-button(
     @primary: #dddddd,
     @secondary: #333333,
-    @duration: 0.3s
+    @duration: 0.3s,
+    @weight: 4px
 ) {
     background: none;
     border: none;
     height: 40px;
-    position: absolute;
     width: 50px;
 
     & .hamburger__icon {
         background: @primary;
-        border-radius: 4px;
-        height: 4px;
+        border-radius: @weight;
+        height: @weight;
         position: absolute;
         transform: translate(-50%, -50%);
         transition: height @duration ease-in-out;
@@ -20,9 +20,9 @@
 
         &:before, &:after {
             background: @primary;
-            border-radius: 4px;
+            border-radius: @weight;
             content: '';
-            height: 4px;
+            height: @weight;
             left: 0;
             position: absolute;
             width: 40px;

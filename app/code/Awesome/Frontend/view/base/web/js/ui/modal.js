@@ -58,6 +58,7 @@ define([
             this._initModal();
             this._initFocusableElements();
             this._initBindings();
+            this._initModalState();
         },
 
         /**
@@ -65,18 +66,6 @@ define([
          * @private
          */
         _initBindings: function () {
-            $(document).ready(() => {
-                if (this.options.autoOpen) {
-                    setTimeout(() => this.open(), this.options.autoOpenDelay);
-                } else if (this.options.id && window.location.hash) {
-                    let matches = window.location.hash.match(/#(.*?)(\?|$)/);
-
-                    if (matches[1] && matches[1] === this.options.id) {
-                        setTimeout(() => this.open(), this.options.autoOpenDelay);
-                    }
-                }
-            });
-
             $('[data-modal-trigger]', this.element).on('click', () => this.open());
 
             if (this.options.closeOnOverlay) {
@@ -88,6 +77,24 @@ define([
             }
 
             $('[data-modal-close]', this.$modal).on('click', () => this.close());
+        },
+
+        /**
+         * Init modal window state.
+         * @private
+         */
+        _initModalState: function () {
+            $(document).ready(() => {
+                if (this.options.autoOpen) {
+                    setTimeout(() => this.open(), this.options.autoOpenDelay);
+                } else if (this.options.id && window.location.hash) {
+                    let matches = window.location.hash.match(/#(.*?)(\?|$)/);
+
+                    if (matches[1] && matches[1] === this.options.id) {
+                        setTimeout(() => this.open(), this.options.autoOpenDelay);
+                    }
+                }
+            });
         },
 
         /**
