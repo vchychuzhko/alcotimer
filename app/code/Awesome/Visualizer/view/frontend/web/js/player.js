@@ -2,21 +2,25 @@ define([
     'jquery',
     'Awesome_Visualizer/js/playlist',
     'Awesome_Visualizer/js/visualizer',
+    'translator',
     'jquery/ui',
-], function ($, playlist, visualizer) {
+], function ($, playlist, visualizer, __) {
     'use strict'
 
-    const RUNNING_STATE = 'running',
-          PAUSED_STATE  = 'paused',
-          STOPPED_STATE = 'stopped';
+    const RUNNING_STATE = 'running';
+    const PAUSED_STATE  = 'paused';
+    const STOPPED_STATE = 'stopped';
 
     $.widget('awesome.player', {
         options: {
             playlistConfig: {},
         },
 
+        $player: null,
+
         audio: null,
         $canvas: null,
+        $canvasControl: null,
         $time: null,
         $name: null,
 
@@ -30,8 +34,8 @@ define([
         _create: function () {
             this._initFields();
             this.checkTouchScreen();
-            this._initBindings();
             this.updateCanvasSize();
+            this._initBindings();
             this._initPlaylist();
         },
 
@@ -40,8 +44,11 @@ define([
          * @private
          */
         _initFields: function () {
+            this.$player = $('[data-player]', this.element);
+
             this.audio = $('[data-audio]', this.element).get(0);
             this.$canvas = $('[data-canvas]', this.element);
+            this.$canvasControl = $('[data-canvas-control]', this.element);
             this.$time = $('[data-time]', this.element);
             this.$name = $('[data-name]', this.element);
         },
@@ -62,7 +69,7 @@ define([
         _initBindings: function () {
             $(window).on('resize', () => this.updateCanvasSize());
 
-            $(document).on('dragover', function (event) {
+            $(document).on('dragover', (event) => {
                 event.preventDefault();
                 event.stopPropagation();
             });
@@ -75,18 +82,39 @@ define([
 
                 this.playFile(file.name.replace(/\.[^/.]+$/, ''), URL.createObjectURL(file));
             });
-            // @TODO: Check lock screen play
 
-            $(this.audio).on('timeupdate', (event) => {
-                let currentTime = event.currentTarget.currentTime;
+            $(this.audio).on('timeupdate', () => {
+                let currentTime = this.audio.currentTime;
 
                 this._updateTrackName(this.fileId, currentTime);
                 this._updateTime(currentTime);
             });
 
-            $(this.audio).on('play', () => this.startVisualization());
+            $(this.audio).on('play', () => {
+                this.startVisualization();
 
-            $(this.audio).on('pause', () => this.stopVisualization());
+                this.$canvasControl.removeClass('pause');
+                this.$canvasControl.outerWidth(); // workaround to trigger animation
+                this.$canvasControl.attr('title', __('Play'));
+                this.$canvasControl.addClass('play');
+            });
+
+            $(this.audio).on('pause', () => {
+                this.stopVisualization();
+
+                this.$canvasControl.removeClass('play');
+                this.$canvasControl.outerWidth(); // workaround to trigger animation
+                this.$canvasControl.attr('title', __('Pause'));
+                this.$canvasControl.addClass('pause');
+            });
+
+            $(this.$canvasControl).on('click', () => {
+                if (!this.audio.paused) {
+                    this.audio.pause();
+                } else {
+                    this.audio.play();
+                }
+            });
 
             $(document).on('keyup', (event) => {
                 if ($('*:focus').length === 0) {
@@ -119,7 +147,7 @@ define([
             $(this.audio).attr('src', src);
 
             let background = data.background || playlist.getData(id, 'background');
-            $(this.element).css('background-image', background ? `url(${background})` : '');
+            this.$player.css('background-image', background ? `url(${background})` : '');
 
             this.playlist[id] = data.playlist || playlist.getData(id, 'playlist');
 
@@ -145,14 +173,12 @@ define([
             }
 
             if (trackName !== this.$name.text()) {
-                let newTrackName = this.$name.clone(),
-                    oldTrackName = this.$name;
+                let oldTrackName = this.$name;
 
-                this.$name = newTrackName;
-                this.$name.text(trackName);
+                this.$name = this.$name.clone().text(trackName);
 
-                oldTrackName.parent().prepend(newTrackName);
-                newTrackName.addClass('in');
+                oldTrackName.parent().prepend(this.$name);
+                this.$name.addClass('in');
                 oldTrackName.addClass('out');
 
                 setTimeout(() => {
@@ -163,14 +189,14 @@ define([
         },
 
         /**
-         * Update formatted time.
+         * Format and update elapsed time.
          * @param {number} timeCode
          * @private
          */
         _updateTime: function (timeCode) {
-            let hours   = ('00' + Math.floor(timeCode / 3600)).substr(-2, 2),
-                minutes = ('00' + Math.floor(timeCode % 3600 / 60)).substr(-2, 2),
-                seconds = ('00' + Math.floor(timeCode % 60)).substr(-2, 2);
+            let hours   = ('00' + Math.floor(timeCode / 3600)).substr(-2);
+            let minutes = ('00' + Math.floor(timeCode % 3600 / 60)).substr(-2);
+            let seconds = ('00' + Math.floor(timeCode % 60)).substr(-2);
 
             this.$time.text(`${hours}:${minutes}:${seconds}`);
         },
@@ -221,19 +247,15 @@ define([
          * Recalculate canvas size to keep it squared.
          */
         updateCanvasSize: function () {
-            let outerHeight = $(this.element).outerHeight(),
-                outerWidth = $(this.element).outerWidth(),
-                size;
+            let height = this.$player.outerHeight();
+            let width = this.$player.outerWidth();
+            let size;
 
-            if (outerWidth > outerHeight) {
-                size = Math.round(Math.min(outerHeight * 0.9, outerWidth * 0.4));
-                $(this.element).removeClass('vertical');
-            } else if (outerHeight > outerWidth) {
-                size = Math.round(Math.min(outerWidth * 0.9, outerHeight * 0.6));
-                $(this.element).addClass('vertical');
+            if (width > height) {
+                size = Math.round(Math.min(height * 0.9, width * 0.4));
+            } else if (height > width) {
+                size = Math.round(Math.min(width * 0.9, height * 0.6));
             }
-            this.$canvas.height(size + 'px');
-            this.$canvas.width(size + 'px');
 
             this.$canvas.attr('height', size);
             this.$canvas.attr('width', size);
@@ -290,12 +312,15 @@ define([
                 case 'а':
                     event.preventDefault();
 
-                    // @TODO: Add hiding header/footer functionality along with going fullscreen browser mode
+                    if (!document.fullscreenElement) {
+                        document.documentElement.requestFullscreen();
+                    } else if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    }
+                    // @TODO: Add hiding header/footer functionality, for Esc as well
                     break;
                 case 'Escape':
-                    event.preventDefault();
-
-                    // @TODO: Add exit from fullscreen browser mode (and returning header/footer)
+                    playlist.togglePlaylist(false);
                     break;
                 case 'l':
                 case 'д':

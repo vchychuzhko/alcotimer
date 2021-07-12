@@ -1,6 +1,6 @@
 <?php /** @var \Awesome\Visualizer\Block\Visualizer $block */ ?>
 <div class="visualizer">
-    <div class="visualizer__playlist playlist" data-playlist>
+    <div class="playlist" data-playlist>
         <button class="playlist__toggle hamburger" type="button" title="<?= __('Playlist') ?>" data-playlist-toggle>
             <span class="hamburger__icon"></span>
         </button>
@@ -29,15 +29,20 @@
             <?php else: ?>
                 <span class="playlist__message"><?= __('No audio tracks found') ?></span>
             <?php endif; ?>
-            <span class="playlist__info"><?= __('You can just drag\'n\'drop audio file to this tab to play it') ?></span>
+            <span class="playlist__info"><?= __('Just drag\'n\'drop audio file to this tab to play it') ?></span>
         </div>
     </div>
-    <div class="visualizer__legend">
-        <span class="visualizer__name" data-name>-</span>
-        <span class="visualizer__time" data-time>--:--:--</span>
+    <div class="player" data-player>
+        <div class="player__legend">
+            <span class="player__name" data-name><?= __('Select audio from playlist or drag\'n\'drop a file here') ?></span>
+            <span class="player__time" data-time>--:--:--</span>
+        </div>
+        <div class="player__scene">
+            <canvas class="player__canvas" height="900" width="900" data-canvas></canvas>
+            <button class="player__control" type="button" title="<?= __('Play') ?>" tabindex="-1" data-canvas-control></button>
+        </div>
+        <audio class="player__audio" controls="true" crossorigin="anonymous" data-audio></audio>
     </div>
-    <canvas class="visualizer__canvas" height="900" width="900" data-canvas></canvas>
-    <audio class="visualizer__audio" controls="true" crossorigin="anonymous" data-audio></audio>
 </div>
 <script type="text/x-awesome-init">
 {

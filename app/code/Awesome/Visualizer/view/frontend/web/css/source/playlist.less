@@ -2,8 +2,15 @@
     &__toggle {
         .hamburger-button();
         left: 10px;
+        opacity: 0.8;
+        position: absolute;
         top: 5px;
+        transition: opacity 0.2s ease-in-out;
         z-index: 2;
+
+        &:hover, &:focus {
+            opacity: 1;
+        }
     }
 
     &__wrapper {
@@ -22,20 +29,23 @@
         z-index: 1;
     }
 
-    &__list {
-        flex-grow: 1;
-        overflow: auto;
-    }
-
     &.active &__wrapper {
         transform: translateX(0);
         visibility: visible;
     }
 
     &__title {
+        box-shadow: -10px 0 10px 0 #000000;
         line-height: 30px;
         padding: 10px;
         text-align: center;
+        z-index: 2;
+    }
+
+    &__list {
+        flex-grow: 1;
+        overflow: auto;
+        z-index: 1;
     }
 
     &__link {
@@ -81,11 +91,21 @@
     }
 
     &__info {
+        box-shadow: -10px 0 10px 0 #000000;
         box-sizing: border-box;
         display: inline-block;
         line-height: 20px;
         padding: 10px;
         text-align: center;
         width: 100%;
+        z-index: 2;
+    }
+}
+
+@media only screen and (max-width: 480px) {
+    .playlist {
+        &__title, &__info {
+            box-shadow: 0 0 10px 0 #000000;
+        }
     }
 }
