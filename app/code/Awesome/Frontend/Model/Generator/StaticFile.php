@@ -12,6 +12,11 @@ use Awesome\Frontend\Model\Js\JsMinifier;
 
 class StaticFile extends \Awesome\Frontend\Model\AbstractGenerator
 {
+    public const CSS_FOLDER = 'css';
+    public const FONTS_FOLDER = 'fonts';
+    public const IMAGES_FOLDER = 'images';
+    public const JS_FOLDER = 'js';
+
     private const LIB_FILE_PATTERN = '/(\/)?lib\/.*\.js$/';
 
     /**
@@ -25,6 +30,7 @@ class StaticFile extends \Awesome\Frontend\Model\AbstractGenerator
         'otf',
         'woff',
         'woff2',
+        'svg',
     ];
 
     /**
@@ -70,6 +76,10 @@ class StaticFile extends \Awesome\Frontend\Model\AbstractGenerator
                 $this->generateFontFile($path, $view);
                 break;
             }
+            case 'svg': {
+                $this->generateImageFile($path, $view);
+                break;
+            }
             case 'css': {
                 $this->generateCssFile($path, $view);
                 break;
@@ -94,6 +104,21 @@ class StaticFile extends \Awesome\Frontend\Model\AbstractGenerator
      * @return $this
      */
     public function generateFontFile(string $path, string $view): self
+    {
+        $staticPath = $this->getStaticPath($path, $view);
+
+        $this->fileManager->copyFile($path, $staticPath);
+
+        return $this;
+    }
+
+    /**
+     * Deploy image file for specified view.
+     * @param string $path
+     * @param string $view
+     * @return $this
+     */
+    public function generateImageFile(string $path, string $view): self
     {
         $staticPath = $this->getStaticPath($path, $view);
 
