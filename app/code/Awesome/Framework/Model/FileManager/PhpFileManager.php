@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Awesome\Framework\Model\FileManager;
 
+use Awesome\Framework\Exception\FileSystemException;
+
 class PhpFileManager extends \Awesome\Framework\Model\FileManager
 {
     /**
@@ -10,14 +12,15 @@ class PhpFileManager extends \Awesome\Framework\Model\FileManager
      * @param string $path
      * @param bool $graceful
      * @return array
+     * @throws FileSystemException
      * @throws \RuntimeException
      */
     public function parseArrayFile(string $path, bool $graceful = false): array
     {
         if (!is_file($path)) {
             if (!$graceful) {
-                throw new \RuntimeException(
-                    sprintf('Provided path "%s" does not exist or is not a file and cannot be parsed', $path)
+                throw new FileSystemException(
+                    __('Provided path "%s" does not exist or is not a file and cannot be parsed', $path)
                 );
             }
             $array = [];
@@ -33,20 +36,21 @@ class PhpFileManager extends \Awesome\Framework\Model\FileManager
 
         return $array;
     }
+
     /**
      * Include PHP file.
      * @param string $path
      * @param bool $return
      * @param bool $graceful
      * @return void|string
-     * @throws \RuntimeException
+     * @throws FileSystemException
      */
     public function includeFile(string $path, bool $return = false, bool $graceful = false)
     {
         if (!is_file($path)) {
             if (!$graceful) {
-                throw new \RuntimeException(
-                    sprintf('Provided path "%s" does not exist or is not a file and cannot be included', $path)
+                throw new FileSystemException(
+                    __('Provided path "%s" does not exist or is not a file and cannot be included', $path)
                 );
             }
 
@@ -72,7 +76,7 @@ class PhpFileManager extends \Awesome\Framework\Model\FileManager
      * @param array $data
      * @param string $annotation
      * @return bool
-     * @throws \RuntimeException
+     * @throws FileSystemException
      */
     public function createArrayFile(string $path, array $data, string $annotation = ''): bool
     {
