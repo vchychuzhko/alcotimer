@@ -11,6 +11,8 @@ define([
          */
         messages: [],
 
+        $notificationsWrapper: null,
+
         /**
          * Show informative message.
          * @param {string} message
@@ -32,7 +34,7 @@ define([
         },
 
         /**
-         * Add message to the list and container.
+         * Add message and show it.
          * @param {string} content
          * @param {number} duration
          * @param {boolean} error
@@ -40,7 +42,7 @@ define([
          * @private
          */
         _pushMessage: function (content, duration = 3000, error = false, preprocessed = false) {
-            let $message = $(`<div class="message"></div>`);
+            let $message = $(`<div class="notification"></div>`);
 
             if (preprocessed) {
                 $message.append(content);
@@ -49,7 +51,7 @@ define([
             }
 
             if (error) {
-                $message.addClass('message_error');
+                $message.addClass('notification--error');
             }
 
             if (this.messages.length >= MAX_MESSAGE_NUMBER) {
@@ -57,34 +59,36 @@ define([
             }
 
             this.messages.push($message);
-            this._getMessagesWrapper().prepend($message);
+            this._getNotificationsWrapper().prepend($message);
 
             let messageCloseTimeout = setTimeout(() => {
-                    $message.off('click.message.close');
+                    $message.off('click.notification.close');
                     this._removeMessage($message);
                 }, duration);
 
-            $message.one('click.message.close', () => {
+            $message.one('click.notification.close', () => {
                 clearTimeout(messageCloseTimeout);
                 this._removeMessage($message);
             });
         },
 
         /**
-         * Prepare and return messages wrapper element.
+         * Prepare and return notifications wrapper element.
          * @returns {jQuery}
          * @private
          */
-        _getMessagesWrapper: function () {
-            let $messagesWrapper = $('[data-message-wrapper]');
+        _getNotificationsWrapper: function () {
+            if (!this.$notificationsWrapper) {
+                this.$notificationsWrapper = $('[data-notifications-wrapper]');
 
-            if ($messagesWrapper.length === 0) {
-                $messagesWrapper = $(`<div class="messages-wrapper" data-message-wrapper></div>`);
+                if (this.$notificationsWrapper.length === 0) {
+                    this.$notificationsWrapper = $(`<div class="notifications-wrapper" data-notifications-wrapper></div>`);
 
-                $('body').append($messagesWrapper);
+                    $('body').append(this.$notificationsWrapper);
+                }
             }
 
-            return $messagesWrapper;
+            return this.$notificationsWrapper;
         },
 
         /**
@@ -100,9 +104,7 @@ define([
                 $message = this.messages.shift();
             }
 
-            $message.fadeOut(300, function () {
-                $(this).remove();
-            });
+            $message.fadeOut(300, () => $message.remove());
         },
     };
 });

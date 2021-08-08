@@ -160,10 +160,10 @@ define([
          * @private
          */
         _getModalsWrapper: function () {
-            let $modalsWrapper = $('[data-modal-wrapper]');
+            let $modalsWrapper = $('[data-modals-wrapper]');
 
             if ($modalsWrapper.length === 0) {
-                $modalsWrapper = $(`<div class="modals-wrapper" data-modal-wrapper></div>`);
+                $modalsWrapper = $(`<div class="modals-wrapper" data-modals-wrapper></div>`);
 
                 $('body').append($modalsWrapper);
             }
@@ -262,3 +262,5 @@ define([
         },
     });
 });
+// @todo: add css loading via require.js to exclude files from style.less - ?
+//      https://github.com/pickware/RequireCSS

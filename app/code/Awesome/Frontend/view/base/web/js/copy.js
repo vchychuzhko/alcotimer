@@ -1,9 +1,9 @@
 define([
     'jquery',
-    'messenger',
+    'notification',
     'translator',
     'jquery/ui',
-], function ($, messenger, __) {
+], function ($, notification, __) {
     'use strict'
 
     $.widget('awesome.copy', {
@@ -62,7 +62,7 @@ define([
 
             navigator.clipboard.writeText(text).then(() => {
                 if (this.options.showMessage) {
-                    messenger.info(__('Copied to the clipboard'));
+                    notification.info(__('Copied to the clipboard'));
                 }
             }, () => {
                 console.error('Caller does not have permission to write to the clipboard.');
