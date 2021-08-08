@@ -75,6 +75,17 @@ class DataHelper
     }
 
     /**
+     * Check if array is associative.
+     * @link https://stackoverflow.com/a/173479
+     * @param array $array
+     * @return bool
+     */
+    public static function isAssociativeArray(array $array): bool
+    {
+        return $array && array_keys($array) !== range(0, count($array) - 1);
+    }
+
+    /**
      * Check if string is a boolean "true", otherwise return false.
      * Case insensitive.
      * @param string $string

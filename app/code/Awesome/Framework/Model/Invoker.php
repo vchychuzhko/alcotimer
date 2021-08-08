@@ -39,8 +39,8 @@ final class Invoker implements \Awesome\Framework\Model\SingletonInterface
 
                 if (isset($parameters[$parameterName])) {
                     $arguments[] = $parameters[$parameterName];
-                } elseif ($type = $parameter->getClass()) {
-                    $arguments[] = $this->get($type->getName());
+                } elseif ($class = $parameter->getClass()) {
+                    $arguments[] = $this->get($class->getName());
                 } elseif ($parameter->isOptional()) {
                     $arguments[] = $parameter->getDefaultValue();
                 } else {
@@ -77,6 +77,33 @@ final class Invoker implements \Awesome\Framework\Model\SingletonInterface
         }
 
         return $object;
+    }
+
+    /**
+     * Add singletone to registry.
+     * Overriding is not allowed and will throw an exception by default.
+     * @param SingletonInterface $object
+     * @param bool $graceful
+     * @return $this
+     * @throws \Exception
+     */
+    public function register($object, $graceful = false)
+    {
+        $id = get_class($object);
+
+        if (!($object instanceof SingletonInterface)) {
+            throw new \Exception(sprintf('Object "%s" must be an instance of "%s" to be registered', $id, SingletonInterface::class));
+        }
+
+        if (isset(self::$instances[$id])) {
+            if (!$graceful) {
+                throw new \Exception(sprintf('Instance of "%s" is already set', $id));
+            }
+        } else {
+            self::$instances[$id] = $object;
+        }
+
+        return $this;
     }
 
     /**

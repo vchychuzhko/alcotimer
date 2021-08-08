@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Awesome\Framework\Model;
 
+use Awesome\Framework\Helper\DataHelper;
 use Awesome\Framework\Model\Locale\Translator;
 use Awesome\Framework\Model\Invoker;
 
@@ -46,7 +47,7 @@ class Phrase
             $text = self::getTranslator()->translate($text);
 
             if ($arguments = $this->getArguments()) {
-                $associative = array_keys($arguments) !== range(0, count($arguments) - 1);
+                $associative = DataHelper::isAssociativeArray($arguments);
 
                 $placeholders = array_map(static function ($placeholder) use ($associative) {
                     return '%' . ($associative ? $placeholder : ($placeholder + 1));
