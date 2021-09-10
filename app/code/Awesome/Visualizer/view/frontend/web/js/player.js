@@ -121,9 +121,11 @@ define([
 
             $(this.$fullscreenControl).on('click', () => this.toggleFullscreen());
 
-            $(document).on('keyup', (event) => {
-                if ($('*:focus').length === 0) {
-                    this._handlePlayerControls(event);
+            $(document).on('keydown', (event) => {
+                this._handlePlayerControls(event);
+
+                if ($('*:focus').length === 0 && this.fileId) {
+                    this._handleAudioControls(event);
                 }
             });
         },
@@ -264,46 +266,6 @@ define([
          */
         _handlePlayerControls: function (event) {
             switch (event.key) {
-                case ' ':
-                    event.preventDefault();
-
-                    if (!this.audio.paused) {
-                        this.audio.pause();
-                    } else {
-                        this.audio.play();
-                    }
-                    break;
-                case 'ArrowLeft':
-                    event.preventDefault();
-
-                    this.audio.currentTime = Math.max(this.audio.currentTime - 10, 0);
-                    break;
-                case 'ArrowRight':
-                    event.preventDefault();
-
-                    this.audio.currentTime = Math.min(this.audio.currentTime + 10, Math.floor(this.audio.duration));
-                    break;
-                case '0':
-                    event.preventDefault();
-
-                    this.audio.currentTime = 0;
-                    break;
-                case 'ArrowUp':
-                    event.preventDefault();
-
-                    this.audio.volume = Math.min(this.audio.volume + 0.1, 1);
-                    break;
-                case 'ArrowDown':
-                    event.preventDefault();
-
-                    this.audio.volume = Math.max(this.audio.volume - 0.1, 0);
-                    break;
-                case 'm':
-                case 'ь':
-                    event.preventDefault();
-
-                    this.audio.muted = !this.audio.muted;
-                    break;
                 case 'f':
                 case 'а':
                     this.toggleFullscreen();
@@ -314,13 +276,47 @@ define([
                     break;
                 case 'l':
                 case 'д':
-                    event.preventDefault();
-
                     // @TODO: Add layout change
                     break;
                 case 'p':
                 case 'з':
                     this.playlist.togglePlaylist();
+                    break;
+            }
+        },
+
+        /**
+         * Handle player audio control buttons.
+         * @param {Object} event
+         * @private
+         */
+        _handleAudioControls: function (event) {
+            switch (event.key) {
+                case ' ':
+                    if (!this.audio.paused) {
+                        this.audio.pause();
+                    } else {
+                        this.audio.play();
+                    }
+                    break;
+                case 'ArrowLeft':
+                    this.audio.currentTime = Math.max(this.audio.currentTime - 10, 0);
+                    break;
+                case 'ArrowRight':
+                    this.audio.currentTime = Math.min(this.audio.currentTime + 10, Math.floor(this.audio.duration));
+                    break;
+                case '0':
+                    this.audio.currentTime = 0;
+                    break;
+                case 'ArrowUp':
+                    this.audio.volume = Math.min(this.audio.volume + 0.1, 1);
+                    break;
+                case 'ArrowDown':
+                    this.audio.volume = Math.max(this.audio.volume - 0.1, 0);
+                    break;
+                case 'm':
+                case 'ь':
+                    this.audio.muted = !this.audio.muted;
                     break;
             }
         },
