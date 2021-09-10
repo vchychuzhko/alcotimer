@@ -3,9 +3,7 @@
  * Environment initialization.
  */
 error_reporting(E_ALL & ~E_DEPRECATED);
-$config = include __DIR__ . '/etc/config.php';
-ini_set('display_errors', (bool) ($config['developer_mode'] ?? 0));
-unset($config);
+ini_set('display_errors', false);
 
 if (PHP_VERSION_ID < 70100) { // check for 7.1.0 compatibility
     if (PHP_SAPI === 'cli') {

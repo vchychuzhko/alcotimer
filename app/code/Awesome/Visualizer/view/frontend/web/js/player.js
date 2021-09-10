@@ -14,6 +14,7 @@ define([
     $.widget('awesome.player', {
         options: {
             playlistConfig: {},
+            title: null,
         },
 
         $player: null,
@@ -178,6 +179,7 @@ define([
                 let oldTrackName = this.$name;
 
                 this.$name = this.$name.clone().text(trackName);
+                document.title = trackName + (this.options.title ? ' | ' + this.options.title : '');
 
                 oldTrackName.parent().prepend(this.$name);
                 this.$name.addClass('in');
@@ -248,21 +250,11 @@ define([
         },
 
         /**
-         * Recalculate canvas size to keep it squared.
+         * Update canvas size attributes.
          */
         updateCanvasSize: function () {
-            let height = this.$player.outerHeight();
-            let width = this.$player.outerWidth();
-            let size;
-
-            if (width > height) {
-                size = Math.round(Math.min(height * 0.9, width * 0.4));
-            } else if (height > width) {
-                size = Math.round(Math.min(width * 0.9, height * 0.6));
-            }
-
-            this.$canvas.attr('height', size);
-            this.$canvas.attr('width', size);
+            this.$canvas.attr('height', this.$canvas.height());
+            this.$canvas.attr('width', this.$canvas.width());
         },
 
         /**

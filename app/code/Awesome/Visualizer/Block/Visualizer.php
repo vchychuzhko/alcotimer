@@ -3,11 +3,19 @@ declare(strict_types=1);
 
 namespace Awesome\Visualizer\Block;
 
+use Awesome\Framework\Model\Config;
 use Awesome\Framework\Model\Serializer\Json;
 use Awesome\Frontend\Model\Context;
 
 class Visualizer extends \Awesome\Frontend\Block\Template
 {
+    private const TITLE_CONFIG_PATH = 'visualizer/title';
+
+    /**
+     * @var Config $config
+     */
+    private $config;
+
     /**
      * @var Json $json
      */
@@ -19,9 +27,14 @@ class Visualizer extends \Awesome\Frontend\Block\Template
      * @param Json $json
      * @param array $data
      */
-    public function __construct(Context $context, Json $json, array $data = [])
-    {
+    public function __construct(
+        Config $config,
+        Context $context,
+        Json $json,
+        array $data = []
+    ) {
         parent::__construct($context, $data);
+        $this->config = $config;
         $this->json = $json;
     }
 
@@ -32,6 +45,15 @@ class Visualizer extends \Awesome\Frontend\Block\Template
     public function getPlaylistJsonConfig(): string
     {
         return $this->json->prettyEncode($this->getPlaylistConfig());
+    }
+
+    /**
+     * Get visualizer page title.
+     * @return string
+     */
+    public function getTitle(): string
+    {
+        return (string) $this->config->get(self::TITLE_CONFIG_PATH);
     }
 
     /**

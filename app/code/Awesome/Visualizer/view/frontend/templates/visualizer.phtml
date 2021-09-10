@@ -69,7 +69,8 @@
 {
     ".visualizer": {
         "player": {
-            "playlistConfig": <?= $block->getPlaylistJsonConfig() ?>
+            "playlistConfig": <?= $block->getPlaylistJsonConfig() ?>,
+            "title": "<?= $block->getTitle() ?>"
         }
     }
 }
