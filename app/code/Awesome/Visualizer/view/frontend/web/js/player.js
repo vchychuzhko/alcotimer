@@ -26,9 +26,11 @@ define([
         $name: null,
 
         fileId: null,
-        playlist: {},
         state: null,
         stopInterval: null,
+
+        playlist: null,
+        visualizer: null,
 
         /**
          * Constructor.
@@ -131,9 +133,9 @@ define([
          * @private
          */
         _initPlaylist: function () {
-            playlist.init($(this.element), this.options.playlistConfig);
+            this.playlist = playlist.init($(this.element), this.options.playlistConfig);
 
-            playlist.addSelectionCallback((id, data) => {
+            this.playlist.addSelectionCallback((id, data) => {
                 this._initFile(id, data.src, data);
 
                 this.audio.play();
@@ -151,10 +153,8 @@ define([
             this.fileId = id;
             $(this.audio).attr('src', src);
 
-            let background = data.background || playlist.getData(id, 'background');
+            let background = data.background || this.playlist.getData(id, 'background');
             this.$player.css('background-image', background ? `url(${background})` : '');
-
-            this.playlist[id] = data.playlist || playlist.getData(id, 'playlist');
         },
 
         /**
@@ -165,8 +165,8 @@ define([
          * @private
          */
         _updateTrackName: function (trackName, timeCode) {
-            if (this.playlist[trackName]) {
-                $.each(this.playlist[trackName], (code, name) => {
+            if (this.options.playlistConfig[trackName]) {
+                $.each(this.options.playlistConfig[trackName].playlist, (code, name) => {
                     if (code > timeCode) {
                         return false;
                     }
@@ -211,8 +211,8 @@ define([
          */
         startVisualization: function () {
             if (this.state !== RUNNING_STATE) {
-                if (!visualizer.initialized) {
-                    visualizer.init(this.audio, this.$canvas.get(0));
+                if (!this.visualizer) {
+                    this.visualizer = visualizer.init(this.audio, this.$canvas.get(0));
                     this.$playerControl.show();
                 }
 
@@ -226,7 +226,7 @@ define([
          * @private
          */
         _run: function () {
-            visualizer.render();
+            this.visualizer.render();
 
             if (this.state !== STOPPED_STATE) {
                 clearInterval(this.stopInterval);
@@ -310,7 +310,7 @@ define([
                     // @TODO: Add hiding header/footer functionality, for Esc as well
                     break;
                 case 'Escape':
-                    playlist.togglePlaylist(false);
+                    this.playlist.togglePlaylist(false);
                     break;
                 case 'l':
                 case 'д':
@@ -320,9 +320,7 @@ define([
                     break;
                 case 'p':
                 case 'з':
-                    event.preventDefault();
-
-                    playlist.togglePlaylist();
+                    this.playlist.togglePlaylist();
                     break;
             }
         },
