@@ -5,7 +5,6 @@
     background-repeat: no-repeat;
     background-size: cover;
     height: 100%;
-    transition: background-image 0.5s ease-in-out;
     width: 100%;
 
     &__legend {
@@ -13,16 +12,17 @@
         color: #dddddd;
         display: flex;
         flex-direction: column;
-        font-size: 2vw;
+        font-size: 1.5rem;
         left: 0;
         padding: 5px 5px 5px 15px;
         position: absolute;
-        text-shadow: 0 0 10px black;
+        text-shadow: 0 0 10px #000000;
         top: 50%;
         transform: translateY(-50%);
+        width: 50%;
     }
 
-    &__name {
+    &__trackname {
         &.in {
             animation: appear-slide-in 0.3s ease-in-out;
         }
@@ -32,9 +32,33 @@
             animation-fill-mode: forwards;
             position: absolute;
         }
+
+        @keyframes appear-slide-in {
+            0% {
+                opacity: 0;
+                transform: translateY(-100%);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fade-slide-out {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(100%);
+            }
+        }
     }
 
-    &__time:before {
+    &__tracktime:before {
         background: linear-gradient(to right, #dddddd, transparent);
         content: '';
         display: block;
@@ -60,48 +84,77 @@
     &__control {
         background: none;
         border: none;
-        height: 100%;
-        left: 0;
+        display: none;
+        height: 50%;
+        left: 50%;
         outline: none;
         position: absolute;
-        top: 0;
-        width: 100%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 50%;
+
+        &:before {
+            background: #ffffff;
+            clip-path: polygon(0 0, 100% 50%, 0 100%);
+            content: '';
+            height: 40%;
+            left: 50%;
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 40%;
+        }
 
         &.play, &.pause {
-            animation: fade-in-out 0.75s ease-in-out forwards;
+            opacity: 0;
         }
 
         &.play {
-            &:before {
-                background: #ffffff;
-                clip-path: polygon(0 0, 100% 50%, 0 100%);
-                content: '';
-                height: 20%;
-                left: 50%;
-                position: absolute;
-                top: 50%;
-                transform: translate(-50%, -50%);
-                width: 20%;
-            }
+            animation: fade-in-out--play 0.75s ease-in-out forwards;
+        }
+
+        &.pause {
+            animation: fade-in-out--pause 0.75s ease-in-out forwards;
         }
 
         &.pause {
             &:before, &:after {
                 background: #ffffff;
                 content: '';
-                height: 20%;
+                height: 40%;
                 position: absolute;
                 top: 50%;
                 transform: translate(-50%, -50%);
-                width: 5%;
+                width: 10%;
             }
 
             &:before {
-                left: 45%;
+                clip-path: initial;
+                left: 40%;
             }
 
             &:after {
-                left: 55%;
+                left: 60%;
+            }
+        }
+
+        @keyframes fade-in-out--play {
+            from {
+                opacity: 1;
+            }
+
+            to {
+                opacity: 0;
+            }
+        }
+
+        @keyframes fade-in-out--pause {
+            from {
+                opacity: 1;
+            }
+
+            to {
+                opacity: 0;
             }
         }
     }
@@ -109,53 +162,34 @@
     &__audio {
         bottom: 10px;
         left: 10px;
+        opacity: 0;
         position: absolute;
         width: ~'calc(100% - 20px)';
-    }
-}
 
-@keyframes appear-slide-in {
-    0% {
-        opacity: 0;
-        transform: translateY(-100%);
+        &:hover, &:focus {
+            opacity: 1;
+        }
     }
 
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
+    &__fullscreen {
+        opacity: 0.8;
+        position: absolute;
+        right: 10px;
+        top: 5px;
+        transition: opacity 0.1s ease-in-out;
 
-@keyframes fade-slide-out {
-    0% {
-        opacity: 1;
-        transform: translateY(0);
-    }
+        --button-size: 40px;
+        --button-icon-size: 30px;
 
-    100% {
-        opacity: 0;
-        transform: translateY(100%);
-    }
-}
-
-@keyframes fade-in-out {
-    0% {
-        opacity: 0;
-    }
-
-    10% {
-        opacity: 1;
-    }
-
-    100% {
-        opacity: 0;
+        &:hover, &:focus {
+            opacity: 1;
+        }
     }
 }
 
 @media (orientation: portrait) {
     .player {
         &__legend {
-            font-size: 6vw;
             left: 50%;
             padding: 5px 10px;
             text-align: center;

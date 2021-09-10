@@ -1,8 +1,12 @@
 <?php /** @var \Awesome\Visualizer\Block\Visualizer $block */ ?>
 <div class="visualizer">
     <div class="playlist" data-playlist>
-        <button class="playlist__toggle hamburger" type="button" title="<?= __('Playlist') ?>" data-playlist-toggle>
-            <span class="hamburger__icon"></span>
+        <button class="playlist__control button-hamburger" type="button" title="<?= __('Playlist') . ' (P)' ?>" data-playlist-control>
+            <svg class="button-hamburger__icon" viewBox="0 0 40 40" fill="none" stroke-linecap="round">
+                <path class="button-hamburger__slice button-hamburger__slice-1" d="M4 10 h32"/>
+                <path class="button-hamburger__slice button-hamburger__slice-2" d="M4 20 h32"/>
+                <path class="button-hamburger__slice button-hamburger__slice-3" d="M4 30 h32"/>
+            </svg>
         </button>
         <div class="playlist__wrapper">
             <h2 class="playlist__title"><?= __('Playlist') ?></h2>
@@ -13,6 +17,7 @@
                             <a class="playlist__link"
                                href="javascript:void(0);"
                                title="<?= $track['title'] ?>"
+                               data-playlist-track
                                data-track-id="<?= $id ?>">
                                 <img class="playlist__item__thumb"
                                      src="<?= $track['thumbnail'] ?? $block->getPlaylistDefaultThumbnail() ?>"
@@ -29,19 +34,35 @@
             <?php else: ?>
                 <span class="playlist__message"><?= __('No audio tracks found') ?></span>
             <?php endif; ?>
-            <span class="playlist__info"><?= __('Just drag\'n\'drop audio file to this tab to play it') ?></span>
+            <span class="playlist__info"><?= __("Just drag'n'drop audio file to this tab to play it") ?></span>
         </div>
     </div>
     <div class="player" data-player>
         <div class="player__legend">
-            <span class="player__name" data-name><?= __('Select audio from playlist or drag\'n\'drop a file here') ?></span>
-            <span class="player__time" data-time>--:--:--</span>
+            <span class="player__trackname" data-player-trackname><?= __("Select audio from playlist or drag'n'drop a file here") ?></span>
+            <span class="player__tracktime" data-player-tracktime>--:--:--</span>
         </div>
         <div class="player__scene">
-            <canvas class="player__canvas" height="900" width="900" data-canvas></canvas>
-            <button class="player__control" type="button" title="<?= __('Play') ?>" tabindex="-1" data-canvas-control></button>
+            <canvas class="player__canvas" height="900" width="900" data-player-canvas></canvas>
+            <button class="player__control" type="button" title="<?= __('Play') . ' (Space)' ?>" tabindex="-1" data-player-control></button>
         </div>
-        <audio class="player__audio" controls="true" crossorigin="anonymous" data-audio></audio>
+        <audio class="player__audio" controls="true" crossorigin="anonymous" data-player-audio></audio>
+        <button class="player__fullscreen button-fullscreen" type="button" title="<?= __('Fullscreen') . ' (F)' ?>" data-player-fullscreen>
+            <svg class="button-fullscreen__icon" viewBox="0 0 20 20" fill="none">
+                <g class="button-fullscreen__icon_group">
+                    <path class="button-fullscreen__icon_corner button-fullscreen__icon_corner-1" d="M2 7 v-5 h5"/>
+                    <path class="button-fullscreen__icon_corner button-fullscreen__icon_corner-2" d="M18 7 v-5 h-5"/>
+                    <path class="button-fullscreen__icon_corner button-fullscreen__icon_corner-3" d="M18 13 v5 h-5"/>
+                    <path class="button-fullscreen__icon_corner button-fullscreen__icon_corner-4" d="M2 13 v5 h5"/>
+                </g>
+                <g class="button-fullscreen__icon_group--active">
+                    <path class="button-fullscreen__icon_corner button-fullscreen__icon_corner-1" d="M13 18 v-5 h5"/>
+                    <path class="button-fullscreen__icon_corner button-fullscreen__icon_corner-2" d="M7 18 v-5 h-5"/>
+                    <path class="button-fullscreen__icon_corner button-fullscreen__icon_corner-3" d="M7 2 v5 h-5"/>
+                    <path class="button-fullscreen__icon_corner button-fullscreen__icon_corner-4" d="M13 2 v5 h5"/>
+                </g>
+            </svg>
+        </button>
     </div>
 </div>
 <script type="text/x-awesome-init">

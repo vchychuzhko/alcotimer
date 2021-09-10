@@ -20,13 +20,14 @@ define([
 
         audio: null,
         $canvas: null,
-        $canvasControl: null,
+        $playerControl: null,
         $time: null,
         $name: null,
 
         fileId: null,
         playlist: {},
         state: null,
+        stopInterval: null,
 
         /**
          * Constructor.
@@ -46,11 +47,12 @@ define([
         _initFields: function () {
             this.$player = $('[data-player]', this.element);
 
-            this.audio = $('[data-audio]', this.element).get(0);
-            this.$canvas = $('[data-canvas]', this.element);
-            this.$canvasControl = $('[data-canvas-control]', this.element);
-            this.$time = $('[data-time]', this.element);
-            this.$name = $('[data-name]', this.element);
+            this.audio = $('[data-player-audio]', this.element).get(0);
+            this.$canvas = $('[data-player-canvas]', this.element);
+            this.$playerControl = $('[data-player-control]', this.element);
+            this.$fullscreenControl = $('[data-player-fullscreen]', this.element);
+            this.$time = $('[data-player-tracktime]', this.element);
+            this.$name = $('[data-player-trackname]', this.element);
         },
 
         /**
@@ -80,7 +82,9 @@ define([
 
                 let file = event.originalEvent.dataTransfer.files[0];
 
-                this.playFile(file.name.replace(/\.[^/.]+$/, ''), URL.createObjectURL(file));
+                this._initFile(file.name.replace(/\.[^/.]+$/, ''), URL.createObjectURL(file));
+
+                this.audio.play();
             });
 
             $(this.audio).on('timeupdate', () => {
@@ -93,28 +97,26 @@ define([
             $(this.audio).on('play', () => {
                 this.startVisualization();
 
-                this.$canvasControl.removeClass('pause');
-                this.$canvasControl.outerWidth(); // workaround to trigger animation
-                this.$canvasControl.attr('title', __('Play'));
-                this.$canvasControl.addClass('play');
+                this.$playerControl.removeClass('pause').addClass('play');
+                this.$playerControl.attr('title', __('Pause') + ' (Space)');
             });
 
             $(this.audio).on('pause', () => {
                 this.stopVisualization();
 
-                this.$canvasControl.removeClass('play');
-                this.$canvasControl.outerWidth(); // workaround to trigger animation
-                this.$canvasControl.attr('title', __('Pause'));
-                this.$canvasControl.addClass('pause');
+                this.$playerControl.removeClass('play').addClass('pause');
+                this.$playerControl.attr('title', __('Play') + ' (Space)');
             });
 
-            $(this.$canvasControl).on('click', () => {
+            $(this.$playerControl).on('click', () => {
                 if (!this.audio.paused) {
                     this.audio.pause();
                 } else {
                     this.audio.play();
                 }
             });
+
+            $(this.$fullscreenControl).on('click', () => this.toggleFullscreen());
 
             $(document).on('keyup', (event) => {
                 if ($('*:focus').length === 0) {
@@ -131,18 +133,20 @@ define([
             playlist.init($(this.element), this.options.playlistConfig);
 
             playlist.addSelectionCallback((id, data) => {
-                this.playFile(id, data.src, data);
+                this._initFile(id, data.src, data);
+
+                this.audio.play();
             });
         },
 
         /**
-         * Initialize and start playing file.
+         * Initialize playing file.
          * @param {string} id
          * @param {string} src
          * @param {Object} data
          * @private
          */
-        playFile: function (id, src, data = {}) {
+        _initFile: function (id, src, data = {}) {
             this.fileId = id;
             $(this.audio).attr('src', src);
 
@@ -150,8 +154,6 @@ define([
             this.$player.css('background-image', background ? `url(${background})` : '');
 
             this.playlist[id] = data.playlist || playlist.getData(id, 'playlist');
-
-            this.audio.play();
         },
 
         /**
@@ -209,6 +211,7 @@ define([
             if (this.state !== RUNNING_STATE) {
                 if (!visualizer.initialized) {
                     visualizer.init(this.audio, this.$canvas.get(0));
+                    this.$playerControl.show();
                 }
 
                 this.state = RUNNING_STATE;
@@ -224,6 +227,7 @@ define([
             visualizer.render();
 
             if (this.state !== STOPPED_STATE) {
+                clearInterval(this.stopInterval);
                 requestAnimationFrame(() => this._run());
             }
         },
@@ -234,7 +238,7 @@ define([
         stopVisualization: function () {
             this.state = PAUSED_STATE;
 
-            setTimeout(() => {
+            this.stopInterval = setTimeout(() => {
                 // Timeout is needed to have "fade" effect on canvas
                 // Extra state is needed to solve goTo issue for audio element
                 if (this.state === PAUSED_STATE) {
@@ -310,13 +314,7 @@ define([
                     break;
                 case 'f':
                 case 'а':
-                    event.preventDefault();
-
-                    if (!document.fullscreenElement) {
-                        document.documentElement.requestFullscreen();
-                    } else if (document.exitFullscreen) {
-                        document.exitFullscreen();
-                    }
+                    this.toggleFullscreen();
                     // @TODO: Add hiding header/footer functionality, for Esc as well
                     break;
                 case 'Escape':
@@ -334,6 +332,19 @@ define([
 
                     playlist.togglePlaylist();
                     break;
+            }
+        },
+
+        /**
+         * Set or reset fullscreen mode.
+         */
+        toggleFullscreen: function () {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+                this.$fullscreenControl.addClass('active');
+            } else if (document.exitFullscreen) {
+                document.exitFullscreen();
+                this.$fullscreenControl.removeClass('active');
             }
         },
     });

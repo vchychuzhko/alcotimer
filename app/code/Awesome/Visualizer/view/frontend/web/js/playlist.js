@@ -28,7 +28,7 @@ define([
          * @private
          */
         _initFields: function ($context) {
-            this.$playlistToggle = $('[data-playlist-toggle]', $context);
+            this.$playlistToggle = $('[data-playlist-control]', $context);
             this.$playlist = $('[data-playlist]', $context);
         },
 
@@ -48,6 +48,7 @@ define([
 
         /**
          * Open/Close playlist menu.
+         * State can be forced.
          * @param {boolean|null} open
          */
         togglePlaylist: function (open = null) {
@@ -70,7 +71,7 @@ define([
          * @param {function} callback
          */
         addSelectionCallback: function (callback) {
-            $('[data-track-id]', this.$playlist).on('click', (event) => {
+            $('[data-playlist-track]', this.$playlist).on('click', (event) => {
                 let id = $(event.currentTarget).data('track-id');
 
                 callback(id, this.getData(id));

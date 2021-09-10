@@ -11,7 +11,7 @@ define([
             autoOpenDelay: 300,
             buttons: [{
                 text: __('Ok'),
-                class: 'primary',
+                class: 'button button--primary',
                 attributes: {},
 
                 /**
