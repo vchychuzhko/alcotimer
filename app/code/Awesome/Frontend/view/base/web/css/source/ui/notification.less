@@ -1,0 +1,64 @@
+.notifications-wrapper {
+    align-items: flex-end;
+    display: flex;
+    flex-direction: column;
+    margin: 0 25px;
+    max-width: 480px;
+    position: fixed;
+    right: 0;
+    top: 20px;
+    width: auto;
+    z-index: 99;
+
+    .notification {
+        align-items: center;
+        animation: appear-slide-down 0.3s ease-in-out;
+        background-color: #f9edbe;
+        border: 1px solid #f0c36d;
+        box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.7);
+        box-sizing: border-box;
+        cursor: pointer;
+        display: flex;
+        margin: 5px 0;
+        min-width: 200px;
+        padding: 10px 20px;
+
+        &:before {
+            content: '\00a1';
+            font-weight: 600;
+            font-size: 30px;
+            vertical-align: middle;
+            margin-right: 20px;
+        }
+
+        &--success {
+            background-color: #a5ffc3;
+            border: 1px solid #45ff58;
+
+            &:before {
+                content: '\2713';
+            }
+        }
+
+        &--error {
+            background-color: #ffa5a8;
+            border: 1px solid #ff6b45;
+
+            &:before {
+                content: '\0021';
+            }
+        }
+    }
+}
+
+@keyframes appear-slide-down {
+    0% {
+        margin-top: -20px;
+        opacity: 0;
+    }
+
+    100% {
+        margin-top: 0;
+        opacity: 1;
+    }
+}

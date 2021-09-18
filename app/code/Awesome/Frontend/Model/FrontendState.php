@@ -65,7 +65,7 @@ class FrontendState extends \Awesome\Framework\Model\AppState
     public function useSymlinkForCss(): bool
     {
         if ($this->useSymlinkForCss === null) {
-            $this->useSymlinkForCss = (bool) $this->config->get(self::CSS_SYMLINK_CONFIG)
+            $this->useSymlinkForCss = $this->config->get(self::CSS_SYMLINK_CONFIG)
                 && !$this->isCssMinificationEnabled()
                 && $this->isDeveloperMode();
         }
@@ -81,7 +81,7 @@ class FrontendState extends \Awesome\Framework\Model\AppState
     public function useSymlinkForJs(): bool
     {
         if ($this->useSymlinkForJs === null) {
-            $this->useSymlinkForJs = (bool) $this->config->get(self::JS_SYMLINK_CONFIG)
+            $this->useSymlinkForJs = $this->config->get(self::JS_SYMLINK_CONFIG)
                 && !$this->isJsMinificationEnabled()
                 && $this->isDeveloperMode();
         }

@@ -20,30 +20,41 @@ class VisitorLogObserver implements \Awesome\Framework\Model\Event\ObserverInter
     /**
      * @var VisitorLogger $visitorLogger
      */
-    private $visitorLogger;
+    private $visitLogger;
 
     /**
-     * VisitorLogObserver constructor.
+     * VisitLogObserver constructor.
      * @param Config $config
      * @param VisitorLogger $visitorLogger
      */
-    public function __construct(Config $config, VisitorLogger $visitorLogger)
-    {
+    public function __construct(
+        Config $config,
+        VisitorLogger $visitorLogger
+    ) {
         $this->config = $config;
-        $this->visitorLogger = $visitorLogger;
+        $this->visitLogger = $visitorLogger;
     }
 
     /**
-     * Resolve controller routing.
+     * Log visitor request information.
      * @inheritDoc
      */
     public function execute(Event $event): void
     {
-        if ($this->config->get(self::VISITOR_LOG_CONFIG_PATH)) {
+        if ($this->isEnabled()) {
             /** @var Request $request */
             $request = $event->getRequest();
 
-            $this->visitorLogger->logVisitor($request->getUserIp() . ' - ' . $request->getUrl());
+            $this->visitLogger->logVisit($request->getUserIp() . ' - ' . $request->getUrl());
         }
+    }
+
+    /**
+     * Check if visitor logging is enabled.
+     * @return bool
+     */
+    private function isEnabled(): bool
+    {
+        return (bool) $this->config->get(self::VISITOR_LOG_CONFIG_PATH);
     }
 }

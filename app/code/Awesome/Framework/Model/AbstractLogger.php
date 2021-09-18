@@ -41,7 +41,7 @@ abstract class AbstractLogger
     {
         $this->fileManager->writeToFile(
             BP . self::LOG_DIRECTORY . '/' . $logFile,
-            '[' . $this->datetime->getCurrentTime() . '] ' . $message . "\n"
+            '[' . $this->datetime->getTime() . '] ' . $message . "\n"
         );
 
         return $this;

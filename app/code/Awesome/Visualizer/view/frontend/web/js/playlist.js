@@ -3,64 +3,64 @@ define([
 ], function ($) {
     'use strict'
 
-    return {
-        playlistConfig: {},
+    class Playlist {
+        _playlistConfig;
 
-        $playlist: null,
-        $playlistToggle: null,
+        _$playlist;
+        _$playlistToggle;
 
         /**
-         * Initialize player playlist with registered audio tracks.
+         * Player playlist constructor.
          * @param {jQuery} $context
          * @param {Object} playlistConfig
          */
-        init: function ($context, playlistConfig) {
-            this.playlistConfig = playlistConfig;
+        constructor($context, playlistConfig) {
+            this._playlistConfig = playlistConfig;
 
             this._initFields($context);
             this._initBindings();
-            // @TODO: Make play on page load by hash in URL, use <a> link for this
-        },
+        }
 
         /**
          * Initialize playlist fields.
          * @param {jQuery} $context
          * @private
          */
-        _initFields: function ($context) {
-            this.$playlistToggle = $('[data-playlist-toggle]', $context);
-            this.$playlist = $('[data-playlist]', $context);
-        },
+        _initFields ($context) {
+            this._$playlistToggle = $('[data-playlist-control]', $context);
+            this._$playlist = $('[data-playlist]', $context);
+        }
 
         /**
          * Initialize playlist listeners.
          * @private
          */
-        _initBindings: function () {
-            this.$playlistToggle.on('click', () => this.togglePlaylist());
+        _initBindings () {
+            this._$playlistToggle.on('click', () => this.togglePlaylist());
 
             $(document).on('click', (event) => {
-                if (!$(event.target).closest(this.$playlist).length) {
+                if (!$(event.target).closest(this._$playlist).length) {
                     this.togglePlaylist(false);
                 }
             });
-        },
+        }
 
         /**
          * Open/Close playlist menu.
+         * State can be forced.
          * @param {boolean|null} open
          */
-        togglePlaylist: function (open = null) {
-            open = open !== null ? open : !this.$playlist.is('.active');
+        togglePlaylist (open = null) {
+            open = open !== null ? open : !this._$playlist.is('.active');
 
             if (open) {
-                this.$playlistToggle.addClass('active');
-                this.$playlist.addClass('active');
+                this._$playlistToggle.addClass('active');
+                this._$playlist.addClass('active');
             } else {
-                this.$playlistToggle.removeClass('active');
-                this.$playlist.removeClass('active');
+                this._$playlistToggle.removeClass('active');
+                this._$playlist.removeClass('active');
             }
-        },
+        }
 
         /**
          * Attach a callback on track selection.
@@ -69,13 +69,13 @@ define([
          *      'data' - object with all track data.
          * @param {function} callback
          */
-        addSelectionCallback: function (callback) {
-            $('[data-track-id]', this.$playlist).on('click', (event) => {
+        addSelectionCallback (callback) {
+            $('[data-playlist-track]', this._$playlist).on('click', (event) => {
                 let id = $(event.currentTarget).data('track-id');
 
                 callback(id, this.getData(id));
             });
-        },
+        }
 
         /**
          * Retrieve track data by id and key.
@@ -85,14 +85,26 @@ define([
          * @returns {Object|null}
          * @private
          */
-        getData: function (id, key = '') {
-            let data = this.playlistConfig[id] || null;
+        getData (id, key = '') {
+            let data = this._playlistConfig[id] || null;
 
             if (data && key !== '') {
                 data = data[key] || null;
             }
 
             return data;
-        },
+        }
+    }
+
+    return {
+        /**
+         * Initialize player playlist with registered audio tracks.
+         * @param {jQuery} $context
+         * @param {Object} playlistConfig
+         * @returns {Playlist}
+         */
+        init: function ($context, playlistConfig) {
+            return new Playlist($context, playlistConfig);
+        }
     }
 });

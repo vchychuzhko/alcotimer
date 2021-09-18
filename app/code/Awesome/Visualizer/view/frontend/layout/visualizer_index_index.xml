@@ -3,7 +3,7 @@
       xsi:noNamespaceSchemaLocation="../../../../Frontend/Schema/page_layout.xsd">
     <head>
         <title><![CDATA[Audio Spectrum]]></title>
-        <description><![CDATA[Web app to visualize your music in real time.]]></description>
+        <description><![CDATA[Web app to visualize the music in real time.]]></description>
         <keywords translate="false"><![CDATA[AlcoTimer,Visualizer,Audio,Spectrum,Visualization,Visualize,Music,Podcast]]></keywords>
         <remove src="Awesome_Frontend/css/menu.css"/>
     </head>
@@ -11,6 +11,7 @@
         <referenceBlock name="menu" remove="true"/>
         <referenceContainer name="page-wrapper">
             <referenceBlock name="header" remove="true"/>
+            <referenceBlock name="menu-toggler" remove="true"/>
             <referenceBlock name="menu-overlay" remove="true"/>
             <block name="visualizer.content"
                    class="Awesome\Visualizer\Block\Visualizer"

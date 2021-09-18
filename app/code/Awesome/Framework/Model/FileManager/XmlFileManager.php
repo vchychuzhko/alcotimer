@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Awesome\Framework\Model\FileManager;
 
+use Awesome\Framework\Exception\FileSystemException;
 use Awesome\Framework\Exception\XmlValidationException;
 use Awesome\Framework\Model\Validator\XmlValidator;
 
@@ -28,7 +29,8 @@ class XmlFileManager extends \Awesome\Framework\Model\FileManager
      * @param string $path
      * @param string|null $schemaFile
      * @return \SimpleXMLElement|false
-     * @throws \Exception
+     * @throws FileSystemException
+     * @throws XmlValidationException
      */
     public function parseXmlFile(string $path, ?string $schemaFile = null)
     {

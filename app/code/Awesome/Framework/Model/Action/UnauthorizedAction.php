@@ -38,7 +38,7 @@ class UnauthorizedAction extends \Awesome\Framework\Model\AbstractAction
             $response = $this->responseFactory->create(ResponseFactory::TYPE_JSON)
                 ->setData([
                     'status'  => 'UNAUTHORIZED',
-                    'message' => 'Request\'s authorization failed.',
+                    'message' => "Request's authorization failed.",
                 ]);
         } elseif ($request->getAcceptType() === Request::HTML_ACCEPT_HEADER && $content = $this->getUnauthorizedPage()) {
             $response = $this->responseFactory->create(ResponseFactory::TYPE_HTML)

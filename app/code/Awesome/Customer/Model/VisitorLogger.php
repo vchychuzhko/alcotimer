@@ -8,14 +8,12 @@ class VisitorLogger extends \Awesome\Framework\Model\AbstractLogger
     private const VISITOR_LOG_FILE = 'visitor.log';
 
     /**
-     * Log visited pages.
-     * @param string $visitorInfo
+     * Log visit information.
+     * @param string $visitInfo
      * @return $this
      */
-    public function logVisitor(string $visitorInfo): self
+    public function logVisit(string $visitInfo): self
     {
-        $this->write(self::VISITOR_LOG_FILE, $visitorInfo);
-
-        return $this;
+        return $this->write(self::VISITOR_LOG_FILE, $visitInfo);
     }
 }

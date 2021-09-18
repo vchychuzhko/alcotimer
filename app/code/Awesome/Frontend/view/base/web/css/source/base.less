@@ -19,14 +19,18 @@ a {
 button {
     cursor: pointer;
     font-family: inherit;
+
+    &:disabled {
+        cursor: default;
+    }
 }
 
-textarea {
+input, textarea {
     font-family: inherit;
 }
 
-input {
-    font-family: inherit;
+label {
+    cursor: pointer;
 }
 
 ul {

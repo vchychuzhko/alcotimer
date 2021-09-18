@@ -46,5 +46,8 @@ return [
             'maxValue' => 15,
             'minValue' => 1,
         ]
-    ]
+    ],
+    'visualizer' => [
+        'title' => 'Audio Spectrum',
+    ],
 ];

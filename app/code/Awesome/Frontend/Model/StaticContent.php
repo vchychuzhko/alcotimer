@@ -90,7 +90,7 @@ class StaticContent implements \Awesome\Framework\Model\SingletonInterface
      */
     private function generateFiles(string $view): self
     {
-        $fontPattern = APP_DIR . sprintf(self::STATIC_PATH_PATTERN, '{' . Http::BASE_VIEW . ',' . $view . '}', 'fonts');
+        $fontPattern = APP_DIR . sprintf(self::STATIC_PATH_PATTERN, '{' . Http::BASE_VIEW . ',' . $view . '}', StaticFile::FONTS_FOLDER);
 
         foreach (glob($fontPattern, GLOB_ONLYDIR | GLOB_BRACE) as $folder) {
             $files = $this->fileManager->scanDirectory($folder, true, ['eot', 'ttf', 'otf', 'woff', 'woff2']);
@@ -100,7 +100,7 @@ class StaticContent implements \Awesome\Framework\Model\SingletonInterface
             }
         }
 
-        $cssPattern = APP_DIR . sprintf(self::STATIC_PATH_PATTERN, '{' . Http::BASE_VIEW . ',' . $view . '}', 'css');
+        $cssPattern = APP_DIR . sprintf(self::STATIC_PATH_PATTERN, '{' . Http::BASE_VIEW . ',' . $view . '}', StaticFile::CSS_FOLDER);
 
         foreach ($this->globWithoutMinifiedFiles($cssPattern, GLOB_ONLYDIR | GLOB_BRACE) as $folder) {
             $files = $this->fileManager->scanDirectory($folder, true, 'css');
@@ -110,7 +110,7 @@ class StaticContent implements \Awesome\Framework\Model\SingletonInterface
             }
         }
 
-        $jsPattern = APP_DIR . sprintf(self::STATIC_PATH_PATTERN, '{' . Http::BASE_VIEW . ',' . $view . '}', 'js');
+        $jsPattern = APP_DIR . sprintf(self::STATIC_PATH_PATTERN, '{' . Http::BASE_VIEW . ',' . $view . '}', StaticFile::JS_FOLDER);
 
         foreach ($this->globWithoutMinifiedFiles($jsPattern, GLOB_ONLYDIR | GLOB_BRACE) as $folder) {
             $files = $this->fileManager->scanDirectory($folder, true, 'js');
@@ -124,6 +124,16 @@ class StaticContent implements \Awesome\Framework\Model\SingletonInterface
 
         foreach ($libFiles as $libFile) {
             $this->staticFile->generateLibFile($libFile, $view);
+        }
+
+        $imagesPattern = APP_DIR . sprintf(self::STATIC_PATH_PATTERN, '{' . Http::BASE_VIEW . ',' . $view . '}', StaticFile::IMAGES_FOLDER);
+
+        foreach (glob($imagesPattern, GLOB_ONLYDIR | GLOB_BRACE) as $folder) {
+            $files = $this->fileManager->scanDirectory($folder, true, 'svg');
+
+            foreach ($files as $file) {
+                $this->staticFile->generateImageFile($file, $view);
+            }
         }
 
         return $this;

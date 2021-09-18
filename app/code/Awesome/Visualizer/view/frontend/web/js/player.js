@@ -2,27 +2,35 @@ define([
     'jquery',
     'Awesome_Visualizer/js/playlist',
     'Awesome_Visualizer/js/visualizer',
+    'translator',
     'jquery/ui',
-], function ($, playlist, visualizer) {
+], function ($, playlist, visualizer, __) {
     'use strict'
 
-    const RUNNING_STATE = 'running',
-          PAUSED_STATE  = 'paused',
-          STOPPED_STATE = 'stopped';
+    const RUNNING_STATE = 'running';
+    const PAUSED_STATE  = 'paused';
+    const STOPPED_STATE = 'stopped';
 
     $.widget('awesome.player', {
         options: {
             playlistConfig: {},
+            title: null,
         },
+
+        $player: null,
 
         audio: null,
         $canvas: null,
+        $playerControl: null,
         $time: null,
         $name: null,
 
         fileId: null,
-        playlist: {},
         state: null,
+        stopInterval: null,
+
+        playlist: null,
+        visualizer: null,
 
         /**
          * Constructor.
@@ -30,9 +38,10 @@ define([
         _create: function () {
             this._initFields();
             this.checkTouchScreen();
-            this._initBindings();
             this.updateCanvasSize();
+            this._initBindings();
             this._initPlaylist();
+            this._initPlayerState();
         },
 
         /**
@@ -40,10 +49,14 @@ define([
          * @private
          */
         _initFields: function () {
-            this.audio = $('[data-audio]', this.element).get(0);
-            this.$canvas = $('[data-canvas]', this.element);
-            this.$time = $('[data-time]', this.element);
-            this.$name = $('[data-name]', this.element);
+            this.$player = $('[data-player]', this.element);
+
+            this.audio = $('[data-player-audio]', this.element).get(0);
+            this.$canvas = $('[data-player-canvas]', this.element);
+            this.$playerControl = $('[data-player-control]', this.element);
+            this.$fullscreenControl = $('[data-player-fullscreen]', this.element);
+            this.$time = $('[data-player-tracktime]', this.element);
+            this.$name = $('[data-player-trackname]', this.element);
         },
 
         /**
@@ -62,7 +75,7 @@ define([
         _initBindings: function () {
             $(window).on('resize', () => this.updateCanvasSize());
 
-            $(document).on('dragover', function (event) {
+            $(document).on('dragover', (event) => {
                 event.preventDefault();
                 event.stopPropagation();
             });
@@ -73,24 +86,69 @@ define([
 
                 let file = event.originalEvent.dataTransfer.files[0];
 
-                this.playFile(file.name.replace(/\.[^/.]+$/, ''), URL.createObjectURL(file));
-            });
-            // @TODO: Check lock screen play
+                this._initFile(file.name.replace(/\.[^/.]+$/, ''), URL.createObjectURL(file));
 
-            $(this.audio).on('timeupdate', (event) => {
-                let currentTime = event.currentTarget.currentTime;
+                this.audio.play();
+            });
+
+            $(this.audio).on('timeupdate', () => {
+                let currentTime = this.audio.currentTime;
 
                 this._updateTrackName(this.fileId, currentTime);
                 this._updateTime(currentTime);
             });
 
-            $(this.audio).on('play', () => this.startVisualization());
+            $(this.audio).on('play', () => {
+                this.startVisualization();
 
-            $(this.audio).on('pause', () => this.stopVisualization());
+                this.$playerControl.removeClass(['pause', 'active']).addClass('play');
+                this.$playerControl.attr('title', __('Pause') + ' (Space)');
+            });
 
-            $(document).on('keyup', (event) => {
-                if ($('*:focus').length === 0) {
-                    this._handlePlayerControls(event);
+            $(this.audio).on('pause', () => {
+                this.stopVisualization();
+
+                this.$playerControl.removeClass('play').addClass(['pause', 'active']);
+                this.$playerControl.attr('title', __('Play') + ' (Space)');
+            });
+
+            $(this.$playerControl).on('click', () => {
+                if (!this.audio.paused) {
+                    this.audio.pause();
+                } else {
+                    this.audio.play();
+                }
+            });
+
+            $(this.$fullscreenControl).on('click', () => this.toggleFullscreen());
+
+            $(document).on('keydown', (event) => {
+                this._handlePlayerControls(event);
+
+                if ($('*:focus').length === 0 && this.fileId) {
+                    this._handleAudioControls(event);
+                }
+            });
+        },
+
+        /**
+         * Init player state.
+         * @private
+         */
+        _initPlayerState: function () {
+            $(document).ready(() => {
+                if (window.location.hash) {
+                    let matches = window.location.hash.match(/#(.*?)(\?|$)/);
+
+                    if (matches[1] && this.options.playlistConfig[matches[1]]) {
+                        let data = this.playlist.getData(matches[1]);
+
+                        this._initFile(matches[1], data.src, data);
+                        this._updateTrackName(data.title, -1);
+                        this.$playerControl.show();
+
+                        // @TODO: Add timecode query param parsing
+                    }
                 }
             });
         },
@@ -100,30 +158,28 @@ define([
          * @private
          */
         _initPlaylist: function () {
-            playlist.init($(this.element), this.options.playlistConfig);
+            this.playlist = playlist.init($(this.element), this.options.playlistConfig);
 
-            playlist.addSelectionCallback((id, data) => {
-                this.playFile(id, data.src, data);
+            this.playlist.addSelectionCallback((id, data) => {
+                this._initFile(id, data.src, data);
+
+                this.audio.play();
             });
         },
 
         /**
-         * Initialize and start playing file.
+         * Initialize playing file.
          * @param {string} id
          * @param {string} src
          * @param {Object} data
          * @private
          */
-        playFile: function (id, src, data = {}) {
+        _initFile: function (id, src, data = {}) {
             this.fileId = id;
             $(this.audio).attr('src', src);
 
-            let background = data.background || playlist.getData(id, 'background');
-            $(this.element).css('background-image', background ? `url(${background})` : '');
-
-            this.playlist[id] = data.playlist || playlist.getData(id, 'playlist');
-
-            this.audio.play();
+            let background = data.background || this.playlist.getData(id, 'background');
+            this.$player.css('background-image', background ? `url(${background})` : '');
         },
 
         /**
@@ -134,8 +190,8 @@ define([
          * @private
          */
         _updateTrackName: function (trackName, timeCode) {
-            if (this.playlist[trackName]) {
-                $.each(this.playlist[trackName], (code, name) => {
+            if (this.options.playlistConfig[trackName]) {
+                $.each(this.options.playlistConfig[trackName].playlist, (code, name) => {
                     if (code > timeCode) {
                         return false;
                     }
@@ -145,14 +201,13 @@ define([
             }
 
             if (trackName !== this.$name.text()) {
-                let newTrackName = this.$name.clone(),
-                    oldTrackName = this.$name;
+                let oldTrackName = this.$name;
 
-                this.$name = newTrackName;
-                this.$name.text(trackName);
+                this.$name = this.$name.clone().text(trackName);
+                document.title = trackName + (this.options.title ? ' | ' + this.options.title : '');
 
-                oldTrackName.parent().prepend(newTrackName);
-                newTrackName.addClass('in');
+                oldTrackName.parent().prepend(this.$name);
+                this.$name.addClass('in');
                 oldTrackName.addClass('out');
 
                 setTimeout(() => {
@@ -163,14 +218,14 @@ define([
         },
 
         /**
-         * Update formatted time.
+         * Format and update elapsed time.
          * @param {number} timeCode
          * @private
          */
         _updateTime: function (timeCode) {
-            let hours   = ('00' + Math.floor(timeCode / 3600)).substr(-2, 2),
-                minutes = ('00' + Math.floor(timeCode % 3600 / 60)).substr(-2, 2),
-                seconds = ('00' + Math.floor(timeCode % 60)).substr(-2, 2);
+            let hours   = ('00' + Math.floor(timeCode / 3600)).substr(-2);
+            let minutes = ('00' + Math.floor(timeCode % 3600 / 60)).substr(-2);
+            let seconds = ('00' + Math.floor(timeCode % 60)).substr(-2);
 
             this.$time.text(`${hours}:${minutes}:${seconds}`);
         },
@@ -181,8 +236,9 @@ define([
          */
         startVisualization: function () {
             if (this.state !== RUNNING_STATE) {
-                if (!visualizer.initialized) {
-                    visualizer.init(this.audio, this.$canvas.get(0));
+                if (!this.visualizer) {
+                    this.visualizer = visualizer.init(this.audio, this.$canvas.get(0));
+                    this.$playerControl.show();
                 }
 
                 this.state = RUNNING_STATE;
@@ -195,9 +251,10 @@ define([
          * @private
          */
         _run: function () {
-            visualizer.render();
+            this.visualizer.render();
 
             if (this.state !== STOPPED_STATE) {
+                clearInterval(this.stopInterval);
                 requestAnimationFrame(() => this._run());
             }
         },
@@ -208,7 +265,7 @@ define([
         stopVisualization: function () {
             this.state = PAUSED_STATE;
 
-            setTimeout(() => {
+            this.stopInterval = setTimeout(() => {
                 // Timeout is needed to have "fade" effect on canvas
                 // Extra state is needed to solve goTo issue for audio element
                 if (this.state === PAUSED_STATE) {
@@ -218,25 +275,11 @@ define([
         },
 
         /**
-         * Recalculate canvas size to keep it squared.
+         * Update canvas size attributes.
          */
         updateCanvasSize: function () {
-            let outerHeight = $(this.element).outerHeight(),
-                outerWidth = $(this.element).outerWidth(),
-                size;
-
-            if (outerWidth > outerHeight) {
-                size = Math.round(Math.min(outerHeight * 0.9, outerWidth * 0.4));
-                $(this.element).removeClass('vertical');
-            } else if (outerHeight > outerWidth) {
-                size = Math.round(Math.min(outerWidth * 0.9, outerHeight * 0.6));
-                $(this.element).addClass('vertical');
-            }
-            this.$canvas.height(size + 'px');
-            this.$canvas.width(size + 'px');
-
-            this.$canvas.attr('height', size);
-            this.$canvas.attr('width', size);
+            this.$canvas.attr('height', this.$canvas.height());
+            this.$canvas.attr('width', this.$canvas.width());
         },
 
         /**
@@ -246,9 +289,33 @@ define([
          */
         _handlePlayerControls: function (event) {
             switch (event.key) {
-                case ' ':
-                    event.preventDefault();
+                case 'f':
+                case 'а':
+                    this.toggleFullscreen();
+                    // @TODO: Add hiding header/footer functionality, for Esc as well
+                    break;
+                case 'Escape':
+                    this.playlist.togglePlaylist(false);
+                    break;
+                case 'l':
+                case 'д':
+                    // @TODO: Add layout change
+                    break;
+                case 'p':
+                case 'з':
+                    this.playlist.togglePlaylist();
+                    break;
+            }
+        },
 
+        /**
+         * Handle player audio control buttons.
+         * @param {Object} event
+         * @private
+         */
+        _handleAudioControls: function (event) {
+            switch (event.key) {
+                case ' ':
                     if (!this.audio.paused) {
                         this.audio.pause();
                     } else {
@@ -256,59 +323,37 @@ define([
                     }
                     break;
                 case 'ArrowLeft':
-                    event.preventDefault();
-
                     this.audio.currentTime = Math.max(this.audio.currentTime - 10, 0);
                     break;
                 case 'ArrowRight':
-                    event.preventDefault();
-
                     this.audio.currentTime = Math.min(this.audio.currentTime + 10, Math.floor(this.audio.duration));
                     break;
                 case '0':
-                    event.preventDefault();
-
                     this.audio.currentTime = 0;
                     break;
                 case 'ArrowUp':
-                    event.preventDefault();
-
                     this.audio.volume = Math.min(this.audio.volume + 0.1, 1);
                     break;
                 case 'ArrowDown':
-                    event.preventDefault();
-
                     this.audio.volume = Math.max(this.audio.volume - 0.1, 0);
                     break;
                 case 'm':
                 case 'ь':
-                    event.preventDefault();
-
                     this.audio.muted = !this.audio.muted;
                     break;
-                case 'f':
-                case 'а':
-                    event.preventDefault();
+            }
+        },
 
-                    // @TODO: Add hiding header/footer functionality along with going fullscreen browser mode
-                    break;
-                case 'Escape':
-                    event.preventDefault();
-
-                    // @TODO: Add exit from fullscreen browser mode (and returning header/footer)
-                    break;
-                case 'l':
-                case 'д':
-                    event.preventDefault();
-
-                    // @TODO: Add layout change
-                    break;
-                case 'p':
-                case 'з':
-                    event.preventDefault();
-
-                    playlist.togglePlaylist();
-                    break;
+        /**
+         * Set or reset fullscreen mode.
+         */
+        toggleFullscreen: function () {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+                this.$fullscreenControl.addClass('active');
+            } else if (document.exitFullscreen) {
+                document.exitFullscreen();
+                this.$fullscreenControl.removeClass('active');
             }
         },
     });

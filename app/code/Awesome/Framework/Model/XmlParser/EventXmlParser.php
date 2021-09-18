@@ -79,12 +79,9 @@ class EventXmlParser
                     $observerName = XmlParsingHelper::getNodeAttributeName($observer);
 
                     $parsedNode[$eventName][$observerName] = [
-                        'class' => '\\' . ltrim(XmlParsingHelper::getNodeAttribute($observer, 'class'), '\\'),
+                        'class'     => '\\' . ltrim(XmlParsingHelper::getNodeAttribute($observer, 'class'), '\\'),
+                        'sortOrder' => XmlParsingHelper::getNodeAttribute($observer, 'sortOrder'),
                     ];
-
-                    if ($sortOrder = XmlParsingHelper::getNodeAttribute($observer, 'sortOrder')) {
-                        $parsedNode[$eventName][$observerName]['sortOrder'] = $sortOrder;
-                    }
                 }
             }
         }

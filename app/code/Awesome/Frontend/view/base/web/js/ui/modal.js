@@ -11,7 +11,7 @@ define([
             autoOpenDelay: 300,
             buttons: [{
                 text: __('Ok'),
-                class: 'primary',
+                class: 'button button--primary',
                 attributes: {},
 
                 /**
@@ -58,6 +58,7 @@ define([
             this._initModal();
             this._initFocusableElements();
             this._initBindings();
+            this._initModalState();
         },
 
         /**
@@ -65,18 +66,6 @@ define([
          * @private
          */
         _initBindings: function () {
-            $(document).ready(() => {
-                if (this.options.autoOpen) {
-                    setTimeout(() => this.open(), this.options.autoOpenDelay);
-                } else if (this.options.id && window.location.hash) {
-                    let matches = window.location.hash.match(/#(.*?)(\?|$)/);
-
-                    if (matches[1] && matches[1] === this.options.id) {
-                        setTimeout(() => this.open(), this.options.autoOpenDelay);
-                    }
-                }
-            });
-
             $('[data-modal-trigger]', this.element).on('click', () => this.open());
 
             if (this.options.closeOnOverlay) {
@@ -88,6 +77,24 @@ define([
             }
 
             $('[data-modal-close]', this.$modal).on('click', () => this.close());
+        },
+
+        /**
+         * Init modal window state.
+         * @private
+         */
+        _initModalState: function () {
+            $(document).ready(() => {
+                if (this.options.autoOpen) {
+                    setTimeout(() => this.open(), this.options.autoOpenDelay);
+                } else if (this.options.id && window.location.hash) {
+                    let matches = window.location.hash.match(/#(.*?)(\?|$)/);
+
+                    if (matches[1] && matches[1] === this.options.id) {
+                        setTimeout(() => this.open(), this.options.autoOpenDelay);
+                    }
+                }
+            });
         },
 
         /**
@@ -153,10 +160,10 @@ define([
          * @private
          */
         _getModalsWrapper: function () {
-            let $modalsWrapper = $('[data-modal-wrapper]');
+            let $modalsWrapper = $('[data-modals-wrapper]');
 
             if ($modalsWrapper.length === 0) {
-                $modalsWrapper = $(`<div class="modals-wrapper" data-modal-wrapper></div>`);
+                $modalsWrapper = $(`<div class="modals-wrapper" data-modals-wrapper></div>`);
 
                 $('body').append($modalsWrapper);
             }
@@ -255,3 +262,5 @@ define([
         },
     });
 });
+// @todo: add css loading via require.js to exclude files from style.less - ?
+//      https://github.com/pickware/RequireCSS

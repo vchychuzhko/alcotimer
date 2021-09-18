@@ -1,9 +1,9 @@
 define([
     'jquery',
-    'messenger',
+    'notification',
     'translator',
     'jquery/ui',
-], function ($, messenger, __) {
+], function ($, notification, __) {
     'use strict'
 
     $.widget('awesome.settings', {
@@ -29,7 +29,7 @@ define([
             $(this.element).on('click', '.apply-button', function () {
                 this.applySettings();
                 this.saveSettings();
-                messenger.info(__('Settings were applied'));
+                notification.success(__('Settings were applied'));
 
                 setTimeout(function () {
                     $(document).trigger('menu.close');

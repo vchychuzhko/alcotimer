@@ -232,7 +232,7 @@ class LayoutXmlParser
     {
         $configPath = XmlParsingHelper::getNodeAttribute($element, 'ifConfig');
 
-        if ($configPath && !(bool) $this->config->get($configPath)) {
+        if ($configPath && !$this->config->get($configPath)) {
             return null;
         }
         $parsedElement = [];

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Awesome\Framework\Model\FileManager;
 
+use Awesome\Framework\Exception\FileSystemException;
 use Awesome\Framework\Model\Serializer\Csv;
 
 class CsvFileManager extends \Awesome\Framework\Model\FileManager
@@ -12,7 +13,7 @@ class CsvFileManager extends \Awesome\Framework\Model\FileManager
      * @param string $path
      * @param bool $graceful
      * @return array
-     * @throws \RuntimeException
+     * @throws FileSystemException
      */
     public function parseFile(string $path, bool $graceful = false): array
     {
@@ -20,8 +21,8 @@ class CsvFileManager extends \Awesome\Framework\Model\FileManager
 
         if (!is_file($path)) {
             if (!$graceful) {
-                throw new \RuntimeException(
-                    sprintf('Provided path "%s" does not exist or is not a file and cannot be parsed', $path)
+                throw new FileSystemException(
+                    __('Provided path "%s" does not exist or is not a file and cannot be parsed', $path)
                 );
             }
         } else {

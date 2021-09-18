@@ -1,0 +1,167 @@
+.button {
+    background: none;
+    border: 1px solid #777777;
+    border-radius: 5px;
+    padding: 10px 20px 12px;
+    transition: background-color 0.2s ease-in-out;
+
+    &:hover, &:focus {
+        background-color: #eaeaea;
+    }
+
+    &--primary {
+        background-color: #27ae60;
+        color: #ffffff;
+
+        &:hover, &:focus {
+            background-color: #1e8449;
+        }
+    }
+
+    &--secondary {
+        border-color: #c33b20;
+        color: #c33b20;
+
+        &:hover, &:focus {
+            background-color: #ffecec;
+        }
+    }
+}
+
+.button-play {
+    background: none;
+    border: none;
+    height: var(--button-size, 40px);
+    width: var(--button-size, 40px);
+
+    &__icon {
+        fill: var(--button-color, #333333);
+        height: var(--button-icon-size, 100%);
+        stroke: var(--button-color, #333333);
+        stroke-width: var(--button-stroke-width, 4px);
+        width: var(--button-icon-size, 100%);
+    }
+
+    &--simple &__pause {
+        display: none;
+    }
+
+    &--simple.active &__triangle {
+        display: none;
+    }
+
+    &--simple.active &__pause {
+        display: block;
+    }
+}
+
+.button-hamburger {
+    background: none;
+    border: none;
+    height: var(--button-size, 40px);
+    width: var(--button-size, 40px);
+
+    &__icon {
+        height: var(--button-icon-size, 100%);
+        stroke: var(--button-color, #333333);
+        stroke-width: var(--button-weight, 4px);
+        transition: stroke var(--button-transition-duration, 0.3s) ease-in-out;
+        width: var(--button-icon-size, 100%);
+    }
+
+    &__slice {
+        &-1, &-3 {
+            transition: transform var(--button-transition-duration, 0.3s) ease-in-out;
+        }
+
+        &-2 {
+            transition: stroke-width var(--button-transition-duration, 0.3s) ease-in-out;
+        }
+    }
+
+    &.active &__icon {
+        stroke: var(--button-active-color, var(--button-color, #333333));
+    }
+
+    &.active &__slice {
+        &-1 {
+            transform: translate(12px, -1px) rotate(45deg);
+        }
+
+        &-2 {
+            stroke-width: 0;
+        }
+
+        &-3 {
+            transform: translate(-16px, 13px) rotate(-45deg);
+        }
+    }
+}
+
+.button-fullscreen {
+    background: none;
+    border: none;
+    height: var(--button-size, 20px);
+    width: var(--button-size, 20px);
+
+    &__icon {
+        height: var(--button-icon-size, 100%);
+        stroke: var(--button-color, #333333);
+        stroke-width: var(--button-weight, 2px);
+        width: var(--button-icon-size, 100%);
+    }
+
+    &:hover &__corner {
+        &-1 {
+            animation: button-fullscreen-corner-1 0.1s ease-in-out;
+        }
+
+        &-2 {
+            animation: button-fullscreen-corner-2 0.1s ease-in-out;
+        }
+
+        &-3 {
+            animation: button-fullscreen-corner-3 0.1s ease-in-out;
+        }
+
+        &-4 {
+            animation: button-fullscreen-corner-4 0.1s ease-in-out;
+        }
+    }
+
+    &__icon_group--active {
+        display: none;
+    }
+
+    &.active &__icon_group {
+        display: none;
+
+        &--active {
+            display: block;
+        }
+    }
+
+    @keyframes button-fullscreen-corner-1 {
+        50% {
+            transform: translate(-1px, -1px);
+        }
+    }
+
+    @keyframes button-fullscreen-corner-2 {
+        50% {
+            transform: translate(1px, -1px);
+        }
+    }
+
+    @keyframes button-fullscreen-corner-3 {
+        50% {
+            transform: translate(1px, 1px);
+        }
+    }
+
+    @keyframes button-fullscreen-corner-4 {
+        50% {
+            transform: translate(-1px, 1px);
+        }
+    }
+}

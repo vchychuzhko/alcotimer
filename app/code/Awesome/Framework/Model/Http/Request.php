@@ -27,8 +27,8 @@ class Request extends \Awesome\Framework\Model\DataObject implements \Awesome\Fr
     public const SCHEME_HTTP  = 'http';
     public const SCHEME_HTTPS = 'https';
 
-    public const DEFAULT_ROUTE = 'main';
-    public const ROOT_ACTION_NAME = 'main_index_index';
+    public const DEFAULT_ROUTE = 'index';
+    public const ROOT_ACTION_NAME = 'index_index_index';
 
     public const JSON_ACCEPT_HEADER = 'application/json';
     public const HTML_ACCEPT_HEADER = 'text/html';
