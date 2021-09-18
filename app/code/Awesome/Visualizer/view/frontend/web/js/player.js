@@ -41,6 +41,7 @@ define([
             this.updateCanvasSize();
             this._initBindings();
             this._initPlaylist();
+            this._initPlayerState();
         },
 
         /**
@@ -126,6 +127,28 @@ define([
 
                 if ($('*:focus').length === 0 && this.fileId) {
                     this._handleAudioControls(event);
+                }
+            });
+        },
+
+        /**
+         * Init player state.
+         * @private
+         */
+        _initPlayerState: function () {
+            $(document).ready(() => {
+                if (window.location.hash) {
+                    let matches = window.location.hash.match(/#(.*?)(\?|$)/);
+
+                    if (matches[1] && this.options.playlistConfig[matches[1]]) {
+                        let data = this.playlist.getData(matches[1]);
+
+                        this._initFile(matches[1], data.src, data);
+                        this._updateTrackName(data.title, -1);
+                        this.$playerControl.show();
+
+                        // @TODO: Add timecode query param parsing
+                    }
                 }
             });
         },

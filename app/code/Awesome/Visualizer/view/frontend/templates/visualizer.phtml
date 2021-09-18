@@ -15,7 +15,7 @@
                     <?php foreach ($config as $id => $track): ?>
                         <li class="playlist__item">
                             <a class="playlist__link"
-                               href="javascript:void(0);"
+                               href="#<?= $id ?>"
                                title="<?= $track['title'] ?>"
                                data-playlist-track
                                data-track-id="<?= $id ?>">

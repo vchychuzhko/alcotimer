@@ -39,33 +39,32 @@ define([
 
         /**
          * Show error message.
-         * @param {string} message
+         * @param {string|array} message
          * @param {number} duration
-         * @param {boolean} preprocessed
+         * @param {string} className
          */
-        error: function (message, duration = 3000, preprocessed = false) {
-            this._pushMessage(message, duration, true, preprocessed);
+        error: function (message, duration = 3000, className = '') {
+            this._pushMessage(message, duration, (className + ' ' + TYPES_CLASS_MAP.error).trim());
         },
 
         /**
          * Add message and show it.
-         * @param {string} content
+         * If message is an array, every item is treated as a new line.
+         * @param {string|array} message
          * @param {number} duration
-         * @param {boolean} error
-         * @param {boolean} preprocessed
+         * @param {string} className
          * @private
          */
-        _pushMessage: function (content, duration = 3000, error = false, preprocessed = false) {
+        _pushMessage: function (message, duration = 3000, className = '') {
             let $message = $(`<div class="notification"></div>`);
+            let $content = $(`<div class="notification__content"></div>`);
+            let content = Array.isArray(message) ? message : [message];
 
-            if (preprocessed) {
-                $message.append(content);
-            } else {
-                $message.text(content);
-            }
+            content.forEach((paragraph) => $content.append($(`<p>${paragraph}</p>`)));
+            $message.append($content);
 
-            if (error) {
-                $message.addClass('notification--error');
+            if (className) {
+                $message.addClass(className);
             }
 
             if (this.messages.length >= MAX_MESSAGE_NUMBER) {
