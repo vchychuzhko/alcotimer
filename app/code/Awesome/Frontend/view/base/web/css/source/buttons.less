@@ -41,6 +41,18 @@
         stroke-width: var(--button-stroke-width, 4px);
         width: var(--button-icon-size, 100%);
     }
+
+    &--simple &__pause {
+        display: none;
+    }
+
+    &--simple.active &__triangle {
+        display: none;
+    }
+
+    &--simple.active &__pause {
+        display: block;
+    }
 }
 
 .button-hamburger {

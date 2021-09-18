@@ -100,14 +100,14 @@ define([
             $(this.audio).on('play', () => {
                 this.startVisualization();
 
-                this.$playerControl.removeClass('pause').addClass('play');
+                this.$playerControl.removeClass(['pause', 'active']).addClass('play');
                 this.$playerControl.attr('title', __('Pause') + ' (Space)');
             });
 
             $(this.audio).on('pause', () => {
                 this.stopVisualization();
 
-                this.$playerControl.removeClass('play').addClass('pause');
+                this.$playerControl.removeClass('play').addClass(['pause', 'active']);
                 this.$playerControl.attr('title', __('Play') + ' (Space)');
             });
 

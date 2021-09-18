@@ -44,22 +44,27 @@
         </div>
         <div class="player__scene">
             <canvas class="player__canvas" height="900" width="900" data-player-canvas></canvas>
-            <button class="player__control" type="button" title="<?= __('Play') . ' (Space)' ?>" tabindex="-1" data-player-control></button>
+            <button class="player__control button-play button-play--simple" type="button" title="<?= __('Play') . ' (Space)' ?>" tabindex="-1" data-player-control>
+                <svg class="button-play__icon" viewBox="0 0 40 40" stroke-linejoin="round">
+                    <path class="button-play__triangle" d="M6 6 L20 13 L20 27 L6 34 z M20 13 L34 20 L20 27 z"/>
+                    <path class="button-play__pause" d="M6 6 h8 v28 h-8 z M26 6 h8 v28 h-8 z"/>
+                </svg>
+            </button>
         </div>
         <audio class="player__audio" controls="true" crossorigin="anonymous" data-player-audio></audio>
         <button class="player__fullscreen button-fullscreen" type="button" title="<?= __('Fullscreen') . ' (F)' ?>" data-player-fullscreen>
             <svg class="button-fullscreen__icon" viewBox="0 0 20 20" fill="none">
                 <g class="button-fullscreen__icon_group">
-                    <path class="button-fullscreen__icon_corner button-fullscreen__icon_corner-1" d="M2 7 v-5 h5"/>
-                    <path class="button-fullscreen__icon_corner button-fullscreen__icon_corner-2" d="M18 7 v-5 h-5"/>
-                    <path class="button-fullscreen__icon_corner button-fullscreen__icon_corner-3" d="M18 13 v5 h-5"/>
-                    <path class="button-fullscreen__icon_corner button-fullscreen__icon_corner-4" d="M2 13 v5 h5"/>
+                    <path class="button-fullscreen__corner button-fullscreen__corner-1" d="M2 7 v-5 h5"/>
+                    <path class="button-fullscreen__corner button-fullscreen__corner-2" d="M18 7 v-5 h-5"/>
+                    <path class="button-fullscreen__corner button-fullscreen__corner-3" d="M18 13 v5 h-5"/>
+                    <path class="button-fullscreen__corner button-fullscreen__corner-4" d="M2 13 v5 h5"/>
                 </g>
                 <g class="button-fullscreen__icon_group--active">
-                    <path class="button-fullscreen__icon_corner button-fullscreen__icon_corner-1" d="M13 18 v-5 h5"/>
-                    <path class="button-fullscreen__icon_corner button-fullscreen__icon_corner-2" d="M7 18 v-5 h-5"/>
-                    <path class="button-fullscreen__icon_corner button-fullscreen__icon_corner-3" d="M7 2 v5 h-5"/>
-                    <path class="button-fullscreen__icon_corner button-fullscreen__icon_corner-4" d="M13 2 v5 h5"/>
+                    <path class="button-fullscreen__corner button-fullscreen__corner-1" d="M13 18 v-5 h5"/>
+                    <path class="button-fullscreen__corner button-fullscreen__corner-2" d="M7 18 v-5 h-5"/>
+                    <path class="button-fullscreen__corner button-fullscreen__corner-3" d="M7 2 v5 h-5"/>
+                    <path class="button-fullscreen__corner button-fullscreen__corner-4" d="M13 2 v5 h5"/>
                 </g>
             </svg>
         </button>
