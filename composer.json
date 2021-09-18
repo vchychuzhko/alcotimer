@@ -2,7 +2,7 @@
     "name": "awesome/alcotimer",
     "description": "AlcoTimer web app",
     "type": "project",
-    "version": "0.5.3",
+    "version": "0.5.4",
     "require": {
         "tedivm/jshrink": "^1.4",
         "tubalmartin/cssmin": "^4.1",

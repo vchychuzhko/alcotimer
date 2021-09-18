@@ -13,20 +13,20 @@
             <?php if ($config = $block->getPlaylistConfig()): ?>
                 <ul class="playlist__list">
                     <?php foreach ($config as $id => $track): ?>
-                        <li class="playlist__item">
-                            <a class="playlist__link"
+                        <li>
+                            <a class="playlist__item"
                                href="#<?= $id ?>"
                                title="<?= $track['title'] ?>"
                                data-playlist-track
                                data-track-id="<?= $id ?>">
-                                <img class="playlist__item__thumb"
+                                <img class="playlist__item_thumb"
                                      src="<?= $track['thumbnail'] ?? $block->getPlaylistDefaultThumbnail() ?>"
                                      alt="<?= $track['title'] . ' Logo' ?>"/>
-                                <div class="playlist__item__meta">
-                                    <div class="playlist__item__meta__title"><?= $track['title'] ?></div>
-                                    <div class="playlist__item__meta__artist"><?= $track['artist'] ?></div>
+                                <div class="playlist__item_meta">
+                                    <div class="playlist__item_title"><?= $track['title'] ?></div>
+                                    <div class="playlist__item_artist"><?= $track['artist'] ?></div>
                                 </div>
-                                <div class="playlist__item__duration"><?= $track['duration'] ?></div>
+                                <div class="playlist__item_duration"><?= $track['duration'] ?></div>
                             </a>
                         </li>
                     <?php endforeach; ?>

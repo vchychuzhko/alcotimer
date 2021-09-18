@@ -160,10 +160,13 @@ define([
         _initPlaylist: function () {
             this.playlist = playlist.init($(this.element), this.options.playlistConfig);
 
-            this.playlist.addSelectionCallback((id, data) => {
-                this._initFile(id, data.src, data);
+            this.playlist.addSelectionCallback((id, data, event) => {
+                event.preventDefault();
 
+                this._initFile(id, data.src, data);
                 this.audio.play();
+
+                history.replaceState('', document.title, window.location.pathname + window.location.search + `#${id}`);
             });
         },
 
@@ -180,6 +183,13 @@ define([
 
             let background = data.background || this.playlist.getData(id, 'background');
             this.$player.css('background-image', background ? `url(${background})` : '');
+
+            if (this.options.playlistConfig[id]) {
+                this.playlist.setActive(id);
+            } else {
+                history.replaceState('', document.title, window.location.pathname + window.location.search);
+                this.playlist.clearActive();
+            }
         },
 
         /**
@@ -294,16 +304,9 @@ define([
                     this.toggleFullscreen();
                     // @TODO: Add hiding header/footer functionality, for Esc as well
                     break;
-                case 'Escape':
-                    this.playlist.togglePlaylist(false);
-                    break;
                 case 'l':
                 case 'д':
                     // @TODO: Add layout change
-                    break;
-                case 'p':
-                case 'з':
-                    this.playlist.togglePlaylist();
                     break;
             }
         },

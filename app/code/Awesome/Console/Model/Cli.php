@@ -13,7 +13,7 @@ use Awesome\Framework\Exception\XmlValidationException;
 
 class Cli
 {
-    public const VERSION = '0.5.3';
+    public const VERSION = '0.5.4';
 
     /**
      * @var CommandResolver $commandResolver

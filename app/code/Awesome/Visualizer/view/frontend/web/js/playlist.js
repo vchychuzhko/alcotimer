@@ -7,7 +7,7 @@ define([
         _playlistConfig;
 
         _$playlist;
-        _$playlistToggle;
+        _$playlistControl;
 
         /**
          * Player playlist constructor.
@@ -27,7 +27,7 @@ define([
          * @private
          */
         _initFields ($context) {
-            this._$playlistToggle = $('[data-playlist-control]', $context);
+            this._$playlistControl = $('[data-playlist-control]', $context);
             this._$playlist = $('[data-playlist]', $context);
         }
 
@@ -36,45 +36,74 @@ define([
          * @private
          */
         _initBindings () {
-            this._$playlistToggle.on('click', () => this.togglePlaylist());
+            this._$playlistControl.on('click', () => this.togglePlaylist());
 
             $(document).on('click', (event) => {
                 if (!$(event.target).closest(this._$playlist).length) {
-                    this.togglePlaylist(false);
+                    this.closePlaylist();
                 }
             });
+
+            $(document).on('keyup', (event) => this._handlePlaylistControls(event));
         }
 
         /**
-         * Open/Close playlist menu.
-         * State can be forced.
-         * @param {boolean|null} open
+         * Open/Close playlist menu according to its state.
          */
-        togglePlaylist (open = null) {
-            open = open !== null ? open : !this._$playlist.is('.active');
-
-            if (open) {
-                this._$playlistToggle.addClass('active');
-                this._$playlist.addClass('active');
+        togglePlaylist () {
+            if (this._$playlist.hasClass('opened')) {
+                this.closePlaylist();
             } else {
-                this._$playlistToggle.removeClass('active');
-                this._$playlist.removeClass('active');
+                this.openPlaylist();
             }
         }
 
         /**
+         * Close playlist menu.
+         */
+        closePlaylist () {
+            this._$playlist.removeClass('opened');
+            this._$playlistControl.removeClass('active');
+        }
+
+        /**
+         * Open playlist menu.
+         */
+        openPlaylist () {
+            this._$playlist.addClass('opened');
+            this._$playlistControl.addClass('active');
+        }
+
+        /**
          * Attach a callback on track selection.
-         * Callable can accept two parameters:
-         *      'id' - string containing file code,
-         *      'data' - object with all track data.
+         * Callable can accept these parameters:
+         *      'id' - string containing file code
+         *      'data' - object with all track data
+         *      'event' - click event object
          * @param {function} callback
          */
         addSelectionCallback (callback) {
             $('[data-playlist-track]', this._$playlist).on('click', (event) => {
                 let id = $(event.currentTarget).data('track-id');
 
-                callback(id, this.getData(id));
+                callback(id, this.getData(id), event);
             });
+        }
+
+        /**
+         * Set playlist item as active by id.
+         * @param {string} id
+         */
+        setActive (id) {
+            this.clearActive();
+            $('[data-track-id="' + id + '"]', this._$playlist).addClass('active');
+        }
+
+        /**
+         * Reset playlist active items.
+         */
+        clearActive () {
+            $('[data-playlist-track]', this._$playlist).removeClass('active');
         }
 
         /**
@@ -83,7 +112,6 @@ define([
          * @param {string} id
          * @param {string} key
          * @returns {Object|null}
-         * @private
          */
         getData (id, key = '') {
             let data = this._playlistConfig[id] || null;
@@ -93,6 +121,23 @@ define([
             }
 
             return data;
+        }
+
+        /**
+         * Handle playlist control buttons.
+         * @param {Object} event
+         * @private
+         */
+        _handlePlaylistControls (event) {
+            switch (event.key) {
+                case 'Escape':
+                    this.closePlaylist();
+                    break;
+                case 'p':
+                case 'з':
+                    this.togglePlaylist();
+                    break;
+            }
         }
     }
 
