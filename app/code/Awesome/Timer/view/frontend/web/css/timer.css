@@ -45,53 +45,18 @@
 }
 
 .page-wrapper .content .timer-container .timer-wrapper .timer-button-container .timer-button {
-    background-color: red;
-    border: none;
+    background-color: #ff0000;
     border-radius: 50%;
-    height: 100%;
     outline: none;
-    width: 100%;
+
+    --button-size: 100%;
+    --button-icon-size: 50%;
+    --button-color: #ffffff;
 }
 
 .page-wrapper .content .timer-container .timer-wrapper .timer-button-container .timer-button:hover,
 .page-wrapper .content .timer-container .timer-wrapper .timer-button-container .timer-button:focus {
-    border: 1px solid #fff;
-}
-
-.page-wrapper .content .timer-container .timer-wrapper .timer-button-container .timer-button:before {
-    border: solid transparent;
-    border-left-color: #fff;
-    border-width: 50px 0 50px 100px;
-    box-shadow: 0 0 0 0 #fff;
-    content: "";
-    height: 0;
-    left: 55%;
-    position: absolute;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    transition: 0.3s ease-in-out;
-}
-
-.page-wrapper .content .timer-container .timer-wrapper .timer-button-container .timer-button:after {
-    background: #fff;
-    content: "";
-    height: 100px;
-    position: absolute;
-    right: 22.5%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    transition: 0.3s ease-in-out;
-    width: 0;
-}
-
-.page-wrapper .content .timer-container.in-progress .timer-wrapper .timer-button-container .timer-button:before {
-    border-color: #fff;
-    border-width: 50px 1px 50px 30px;
-    left: 37.5%;
-}
-
-.page-wrapper .content .timer-container.in-progress .timer-wrapper .timer-button-container .timer-button:after{
-    width: 30px;
+    box-shadow: 0 0 1px 2px #fff;
 }
 
 .page-wrapper .content .timer-container button span {

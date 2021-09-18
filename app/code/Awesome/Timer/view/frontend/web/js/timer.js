@@ -17,19 +17,31 @@ define([
             sound: '',
         },
 
+        $timerControl: null,
+
         /**
          * Constructor
          */
         _create: function () {
-            this.initBindings();
-            $(document).ready(this.initTimer.bind(this));
+            this._initFields();
+            this._initBindings();
+            $(document).ready(() => this.initTimer());
         },
 
         /**
-         * Init event listeners
+         * Init widget fields.
+         * @private
          */
-        initBindings: function () {
-            $(this.element).on('click', '.timer-button', this.toggleTimer.bind(this));
+        _initFields: function () {
+            this.$timerControl = $('[data-timer-control]', this.element);
+        },
+
+        /**
+         * Init widget event listeners.
+         * @private
+         */
+        _initBindings: function () {
+            this.$timerControl.on('click', () => this.toggleTimer());
             $(this.element).on('click', '.random-button', this.setRandom.bind(this));
 
             $(this.element).on('timer.updateSettings', function (event, data) {
@@ -129,8 +141,12 @@ define([
         toggleTimer: function () {
             if ($(this.element).is('.in-progress')) {
                 this.pause();
+                this.$timerControl.removeClass('active');
+                this.$timerControl.attr('title', __('Play'));
             } else {
                 this.start();
+                this.$timerControl.addClass('active');
+                this.$timerControl.attr('title', __('Pause'));
             }
 
             this.saveConfigurations()

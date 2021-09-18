@@ -123,8 +123,7 @@ header .toggle-container .toggle:after {
 
 .menu .menu-list .settings .checkbox .show-loader,
 .menu .menu-list .settings .checkbox label {
-    cursor: pointer;
-    font-size: 18px;
+    font-size: 14px;
 }
 
 .menu .menu-list .settings .checkbox {
@@ -141,21 +140,8 @@ header .toggle-container .toggle:after {
     padding: 15px 0 0;
 }
 
-.menu .menu-list .settings .settings-buttons-container button {
-    background: #fff;
-    border: 1px solid;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 24px;
+.menu .menu-list .settings .settings-buttons-container button:last-child {
     margin-left: 10px;
-    padding: 5px 10px;
-}
-
-.menu .menu-list .settings .settings-buttons-container button:hover {
-    background: #fff;
-    -moz-box-shadow: 0 1px 4px 1px rgba(0, 0, 0, 0.25);
-    -webkit-box-shadow: 0 1px 4px 1px rgba(0, 0, 0, 0.25);
-    box-shadow: 0 1px 4px 1px rgba(0, 0, 0, 0.25);
 }
 
 .menu .menu-list .contact-us {

@@ -10,11 +10,11 @@
     }
 
     &--primary {
-        background-color: #27AE60; // @todo: #3ec320
+        background-color: #27AE60;
         color: #ffffff;
 
         &:hover, &:focus {
-            background-color: #1e8449; // @todo: #06b400
+            background-color: #1e8449;
         }
     }
 
@@ -28,21 +28,33 @@
     }
 }
 
-.button-hamburger {
-    align-items: center;
+.button-play {
     background: none;
     border: none;
-    display: flex;
-    justify-content: center;
     height: var(--button-size, 40px);
     width: var(--button-size, 40px);
 
     &__icon {
-        height: var(--button-icon-size, 40px);
-        stroke: var(--button-stroke-color, #dddddd);
+        fill: var(--button-color, #333333);
+        height: var(--button-icon-size, 100%);
+        stroke: var(--button-color, #333333);
         stroke-width: var(--button-stroke-width, 4px);
+        width: var(--button-icon-size, 100%);
+    }
+}
+
+.button-hamburger {
+    background: none;
+    border: none;
+    height: var(--button-size, 40px);
+    width: var(--button-size, 40px);
+
+    &__icon {
+        height: var(--button-icon-size, 100%);
+        stroke: var(--button-color, #333333);
+        stroke-width: var(--button-weight, 4px);
         transition: stroke var(--button-transition-duration, 0.3s) ease-in-out;
-        width: var(--button-icon-size, 40px);
+        width: var(--button-icon-size, 100%);
     }
 
     &__slice {
@@ -56,7 +68,7 @@
     }
 
     &.active &__icon {
-        stroke: var(--button-stroke-active-color, #333333);
+        stroke: var(--button-active-color, var(--button-color, #333333));
     }
 
     &.active &__slice {
@@ -75,22 +87,19 @@
 }
 
 .button-fullscreen {
-    align-items: center;
     background: none;
     border: none;
-    display: flex;
-    justify-content: center;
     height: var(--button-size, 20px);
     width: var(--button-size, 20px);
 
     &__icon {
-        height: var(--button-icon-size, 20px);
-        stroke: var(--button-stroke-color, #dddddd);
-        stroke-width: var(--button-stroke-width, 2px);
-        width: var(--button-icon-size, 20px);
+        height: var(--button-icon-size, 100%);
+        stroke: var(--button-color, #333333);
+        stroke-width: var(--button-weight, 2px);
+        width: var(--button-icon-size, 100%);
     }
 
-    &:hover &__icon_corner {
+    &:hover &__corner {
         &-1 {
             animation: button-fullscreen-corner-1 0.1s ease-in-out;
         }
