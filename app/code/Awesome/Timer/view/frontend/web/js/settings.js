@@ -29,7 +29,7 @@ define([
             $(this.element).on('click', '.apply-button', function () {
                 this.applySettings();
                 this.saveSettings();
-                notification.info(__('Settings were applied'));
+                notification.success(__('Settings were applied'));
 
                 setTimeout(function () {
                     $(document).trigger('menu.close');

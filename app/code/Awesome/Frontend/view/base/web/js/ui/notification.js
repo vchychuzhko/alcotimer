@@ -4,6 +4,10 @@ define([
     'use strict'
 
     const MAX_MESSAGE_NUMBER = 3;
+    const TYPES_CLASS_MAP = {
+        error: 'notification--error',
+        success: 'notification--success',
+    };
 
     return {
         /**
@@ -15,12 +19,22 @@ define([
 
         /**
          * Show informative message.
+         * @param {string|array} message
+         * @param {number} duration
+         * @param {string} className
+         */
+        info: function (message, duration = 3000, className = '') {
+            this._pushMessage(message, duration, className);
+        },
+
+        /**
+         * Show success message.
          * @param {string} message
          * @param {number} duration
-         * @param {boolean} preprocessed
+         * @param {string} className
          */
-        info: function (message, duration = 3000, preprocessed = false) {
-            this._pushMessage(message, duration, false, preprocessed);
+        success: function (message, duration = 3000, className = '') {
+            this._pushMessage(message, duration, (className + ' ' + TYPES_CLASS_MAP.success).trim());
         },
 
         /**

@@ -222,7 +222,7 @@ define([
 
                 sound.play();
             } else {
-                notification.info(__('It time to start!'));
+                notification.success(__('It time to start!'));
             }
         },
 
