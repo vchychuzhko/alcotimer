@@ -22,6 +22,8 @@ define([
         audio: null,
         $canvas: null,
         $playerControl: null,
+        $fullscreenControl: null,
+        $shareControl: null,
         $time: null,
         $name: null,
 
@@ -55,6 +57,7 @@ define([
             this.$canvas = $('[data-player-canvas]', this.element);
             this.$playerControl = $('[data-player-control]', this.element);
             this.$fullscreenControl = $('[data-player-fullscreen]', this.element);
+            this.$shareControl = $('[data-player-share]', this.element);
             this.$time = $('[data-player-tracktime]', this.element);
             this.$name = $('[data-player-trackname]', this.element);
         },
@@ -122,6 +125,13 @@ define([
 
             $(this.$fullscreenControl).on('click', () => this.toggleFullscreen());
 
+            $(this.$shareControl).on('click', () => {
+                this.$shareControl.share('open', {
+                    url: window.location.origin + window.location.pathname + window.location.search + `#${this.fileId}`,
+                    timeCode: this.audio.currentTime,
+                });
+            });
+
             $(document).on('keydown', (event) => {
                 this._handlePlayerControls(event);
 
@@ -138,7 +148,7 @@ define([
         _initPlayerState: function () {
             $(document).ready(() => {
                 if (window.location.hash) {
-                    let matches = window.location.hash.match(/#(.*?)(\?|$)/);
+                    let matches = window.location.hash.match(/#(.*?)(\?|$)(.*?t=(\d+)(&|$))?/);
 
                     if (matches[1] && this.options.playlistConfig[matches[1]]) {
                         let data = this.playlist.getData(matches[1]);
@@ -147,7 +157,9 @@ define([
                         this._updateTrackName(data.title, -1);
                         this.$playerControl.show();
 
-                        // @TODO: Add timecode query param parsing
+                        if (matches[4]) {
+                            this.audio.currentTime = matches[4];
+                        }
                     }
                 }
             });
@@ -186,9 +198,11 @@ define([
 
             if (this.options.playlistConfig[id]) {
                 this.playlist.setActive(id);
+                this.$shareControl.show();
             } else {
                 history.replaceState('', document.title, window.location.pathname + window.location.search);
                 this.playlist.clearActive();
+                this.$shareControl.hide();
             }
         },
 

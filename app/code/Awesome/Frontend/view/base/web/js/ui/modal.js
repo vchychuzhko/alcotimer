@@ -10,12 +10,12 @@ define([
             autoOpen: false,
             autoOpenDelay: 300,
             buttons: [{
-                text: __('Ok'),
-                class: 'button button--primary',
                 attributes: {},
+                class: 'button button--primary',
+                text: __('Ok'),
 
                 /**
-                 * Default action on button click.
+                 * Action on button click.
                  */
                 click: function () {
                     this.close();
@@ -25,6 +25,7 @@ define([
             closeOnOverlay: true,
             id: null,
             lockScroll: true,
+            maxWidth: '640px',
             title: null,
         },
 
@@ -56,7 +57,7 @@ define([
          */
         _create: function () {
             this._initModal();
-            this._initFocusableElements();
+            this._initFields();
             this._initBindings();
             this._initModalState();
         },
@@ -104,7 +105,7 @@ define([
         _initModal: function () {
             let $window = $(`
 <div class="modal__window" role="dialog" aria-modal="true">
-    <button type="button" class="modal__button_close" title="${__('Close')}" data-modal-close></button>
+    <button class="modal__button_close" type="button" title="${__('Close')}" data-modal-close></button>
 </div>
 `);
 
@@ -112,7 +113,7 @@ define([
                 let $toolbar = $(`<div class="modal__toolbar"></div>`);
 
                 $.each(this.options.buttons, (index, button) => {
-                    let $button = $(`<button type="button" class="modal__button">${button.text}</button>`);
+                    let $button = $(`<button class="modal__button" type="button">${button.text}</button>`);
 
                     if (button.class) {
                         $button.addClass(button.class);
@@ -132,16 +133,14 @@ define([
                 $window.prepend($toolbar);
             }
 
-            let $content = $('[data-modal-content]', this.element).length
-                ? $('[data-modal-content]', this.element)
-                : $(this.element);
-
-            $window.prepend($content.clone().addClass('modal__content').show());
+            $window.prepend(this._getContent().clone().addClass('modal__content').show()); // @todo: use clone(true) to keep js bindings
 
             if (this.options.title) {
                 $window.attr('aria-label', this.options.title);
                 $window.prepend(`<h2 class="modal__title">${this.options.title}</h2>`);
             }
+
+            $window.css('max-width', this.options.maxWidth);
 
             this.$modal = $(`<div class="modal__container"></div>`);
 
@@ -152,6 +151,17 @@ define([
             this.$modal.append($window);
 
             this._getModalsWrapper().append(this.$modal);
+        },
+
+        /**
+         * Return modal content element.
+         * @returns {jQuery}
+         * @private
+         */
+        _getContent: function () {
+            return $('[data-modal-content]', this.element).length
+                ? $('[data-modal-content]', this.element)
+                : $(this.element);
         },
 
         /**
@@ -172,10 +182,11 @@ define([
         },
 
         /**
+         * Init widget fields.
          * Find and store first and last focusable elements.
          * @private
          */
-        _initFocusableElements: function () {
+        _initFields: function () {
             let $focusableElements = this.$modal.find('a:not([disabled]), :input:not([disabled]):not([type="hidden"])');
 
             this.focusable.$first = $focusableElements[0];

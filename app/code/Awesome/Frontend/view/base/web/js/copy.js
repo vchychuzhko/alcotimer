@@ -6,6 +6,21 @@ define([
 ], function ($, notification, __) {
     'use strict'
 
+    /**
+     * Copy text to clipboard.
+     * @param {string} text
+     * @param {boolean} showMessage
+     */
+    const copy = function (text, showMessage = true) {
+        navigator.clipboard.writeText(text).then(() => {
+            if (showMessage) {
+                notification.info(__('Copied to the clipboard'));
+            }
+        }, () => {
+            console.error('Caller does not have permission to write to the clipboard.');
+        });
+    }
+
     $.widget('awesome.copy', {
         options: {
             showMessage: true,
@@ -36,6 +51,7 @@ define([
             this.$target = $('[data-copy-target]', this.element).length
                 ? $('[data-copy-target]', this.element)
                 : $(this.element);
+
             this.isInput = this.$target.is('input') || this.$target.is('textarea');
         },
 
@@ -48,7 +64,7 @@ define([
         },
 
         /**
-         * Copy text to the clipboard.
+         * Copy target text to the clipboard.
          */
         copy: function () {
             let text;
@@ -60,13 +76,9 @@ define([
                 text = this.$target.text().trim();
             }
 
-            navigator.clipboard.writeText(text).then(() => {
-                if (this.options.showMessage) {
-                    notification.info(__('Copied to the clipboard'));
-                }
-            }, () => {
-                console.error('Caller does not have permission to write to the clipboard.');
-            });
+            copy(text, this.options.showMessage);
         },
     });
+
+    return copy;
 });

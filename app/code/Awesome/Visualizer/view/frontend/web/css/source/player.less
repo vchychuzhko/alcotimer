@@ -33,24 +33,24 @@
         }
 
         @keyframes appear-slide-in {
-            0% {
+            from {
                 opacity: 0;
                 transform: translateY(-100%);
             }
 
-            100% {
+            to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
 
         @keyframes fade-slide-out {
-            0% {
+            from {
                 opacity: 1;
                 transform: translateY(0);
             }
 
-            100% {
+            to {
                 opacity: 0;
                 transform: translateY(100%);
             }
@@ -141,6 +141,23 @@
         opacity: 0.8;
         position: absolute;
         right: 10px;
+        top: 5px;
+        transition: opacity 0.1s ease-in-out;
+
+        --button-color: #dddddd;
+        --button-icon-size: 30px;
+        --button-size: 40px;
+
+        &:hover, &:focus {
+            opacity: 1;
+        }
+    }
+
+    &__share {
+        display: none;
+        opacity: 0.8;
+        position: absolute;
+        right: 60px;
         top: 5px;
         transition: opacity 0.1s ease-in-out;
 
