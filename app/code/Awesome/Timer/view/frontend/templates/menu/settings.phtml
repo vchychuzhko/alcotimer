@@ -9,22 +9,26 @@
                     <div class="controller max"></div>
                 </div>
                 <div class="range-inputs">
-                    <input type="number" class="value min" name="min-time-input" aria-label="<?= __('Minimum random time input value'); ?>">
+                    <input class="value min input" name="min-time-input" type="number" aria-label="<?= __('Minimum random time input value'); ?>">
                     <span class="input-separator">- to -</span>
-                    <input type="number" class="value max" name="max-time-input" aria-label="<?= __('Maximum random time input value'); ?>">
+                    <input class="value max input" name="max-time-input" type="number" aria-label="<?= __('Maximum random time input value'); ?>">
                 </div>
             </div>
         </li>
         <li>
-            <div class="random-time checkbox">
-                <input type="checkbox" class="hide-random-time" name="hide-random-time" id="hide-random-time">
-                <label for="hide-random-time"><?= __('Hide random time'); ?></label>
+            <div class="random-time">
+                <label class="label">
+                    <input class="hide-random-time checkbox" name="hide-random-time" type="checkbox">
+                    <?= __('Hide random time') ?>
+                </label>
             </div>
         </li>
         <li>
-            <div class="loader-settings checkbox">
-                <input type="checkbox" class="show-loader" name="show-loader" id="show-loader" checked>
-                <label for="show-loader"><?= __('Show loader on run'); ?></label>
+            <div class="loader-settings">
+                <label class="label">
+                    <input class="show-loader checkbox" name="show-loader" type="checkbox" checked>
+                    <?= __('Show loader on run') ?>
+                </label>
             </div>
         </li>
     </ul>
