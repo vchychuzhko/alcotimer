@@ -51,11 +51,18 @@ define([
          * Open/Close playlist menu according to its state.
          */
         togglePlaylist () {
-            if (this._$playlist.hasClass('opened')) {
+            if (this.isOpened()) {
                 this.closePlaylist();
             } else {
                 this.openPlaylist();
             }
+        }
+
+        /**
+         * Check current playlist state.
+         */
+        isOpened () {
+            return this._$playlist.hasClass('opened');
         }
 
         /**

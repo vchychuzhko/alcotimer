@@ -1,7 +1,8 @@
 <?php /** @var \Awesome\Visualizer\Block\Visualizer $block */ ?>
 <div class="visualizer">
     <div class="playlist" data-playlist>
-        <button class="playlist__control button-hamburger" type="button" title="<?= __('Playlist') . ' (P)' ?>" data-playlist-control>
+        <button class="playlist__control button-hamburger hiding"
+                type="button" title="<?= __('Playlist') . ' (P)' ?>" data-playlist-control>
             <svg class="button-hamburger__icon" viewBox="0 0 40 40" fill="none" stroke-linecap="round">
                 <path class="button-hamburger__slice button-hamburger__slice-1" d="M4 10 h32"/>
                 <path class="button-hamburger__slice button-hamburger__slice-2" d="M4 20 h32"/>
@@ -44,15 +45,17 @@
         </div>
         <div class="player__scene">
             <canvas class="player__canvas" height="900" width="900" data-player-canvas></canvas>
-            <button class="player__control button-play button-play--simple" type="button" title="<?= __('Play') . ' (Space)' ?>" tabindex="-1" data-player-control>
+            <button class="player__control button-play button-play--simple"
+                    type="button" title="<?= __('Play') . ' (Space)' ?>" tabindex="-1" data-player-control>
                 <svg class="button-play__icon" viewBox="0 0 40 40" stroke-linejoin="round">
                     <path class="button-play__triangle" d="M6 6 L20 13 L20 27 L6 34 z M20 13 L34 20 L20 27 z"/>
                     <path class="button-play__pause" d="M6 6 h8 v28 h-8 z M26 6 h8 v28 h-8 z"/>
                 </svg>
             </button>
         </div>
-        <audio class="player__audio" controls="true" crossorigin="anonymous" data-player-audio></audio>
-        <button class="player__fullscreen button-fullscreen" type="button" title="<?= __('Fullscreen') . ' (F)' ?>" data-player-fullscreen>
+        <audio class="player__audio hiding" crossorigin="anonymous" controls data-player-audio></audio>
+        <button class="player__fullscreen button-fullscreen hiding"
+                type="button" title="<?= __('Fullscreen') . ' (F)' ?>" data-player-fullscreen>
             <svg class="button-fullscreen__icon" viewBox="0 0 20 20" fill="none">
                 <g class="button-fullscreen__icon_group">
                     <path class="button-fullscreen__corner button-fullscreen__corner-1" d="M2 7 v-5 h5"/>
@@ -68,7 +71,8 @@
                 </g>
             </svg>
         </button>
-        <button class="player__share button-share" type="button" title="<?= __('Share') . ' (S)' ?>" data-player-share data-awesome-init='{"share": {}}'>
+        <button class="player__share button-share hiding"
+                type="button" title="<?= __('Share') . ' (S)' ?>" data-player-share data-awesome-init='{"share": {}}'>
             <svg class="button-share__icon" viewBox="0 0 40 40" fill="none" stroke-width="3">
                 <circle class="button-share__circle" cx="30" cy="10" r="4"/>
                 <circle class="button-share__circle" cx="10" cy="20" r="4"/>

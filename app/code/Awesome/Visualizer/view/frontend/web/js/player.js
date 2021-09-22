@@ -13,6 +13,7 @@ define([
 
     $.widget('awesome.player', {
         options: {
+            hideControls: true,
             playlistConfig: {},
             title: null,
         },
@@ -28,6 +29,7 @@ define([
         $name: null,
 
         fileId: null,
+        mousemoveTimeout: null,
         state: null,
         stopInterval: null,
 
@@ -39,7 +41,6 @@ define([
          */
         _create: function () {
             this._initFields();
-            this.checkTouchScreen();
             this.updateCanvasSize();
             this._initBindings();
             this._initPlaylist();
@@ -63,11 +64,28 @@ define([
         },
 
         /**
-         * Check if screen is touchable and apply respective changes.
+         * Check if screen is touchable and add mousemove event to hide controls.
+         * @private
          */
-        checkTouchScreen: function () {
-            if ('ontouchstart' in document.documentElement) {
-                $(this.audio).addClass('visible');
+        _initControlsHiding: function () {
+            if (this.options.hideControls
+                && !(('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0))
+            ) {
+                const hidings = $('.hiding', this.element);
+
+                $(document).on('mousemove', () => {
+                    clearTimeout(this.mousemoveTimeout);
+
+                    $('body').css('cursor', '');
+                    hidings.removeClass('hide');
+
+                    this.mousemoveTimeout = setTimeout(() => {
+                        if (!this.playlist.isOpened() && !$('.hiding:hover', this.element).length) {
+                            $('body').css('cursor', 'none');
+                            hidings.addClass('hide');
+                        }
+                    }, 2000);
+                });
             }
         },
 
@@ -124,6 +142,12 @@ define([
             });
 
             $(this.$fullscreenControl).on('click', () => this.toggleFullscreen());
+
+            $(document).on('fullscreenchange', () => {
+                if (!document.fullscreenElement) {
+                    this.$fullscreenControl.removeClass('active');
+                }
+            });
 
             $(this.$shareControl).on('click', () => {
                 this.$shareControl.share('open', {
@@ -263,6 +287,8 @@ define([
                 if (!this.visualizer) {
                     this.visualizer = visualizer.init(this.audio, this.$canvas.get(0));
                     this.$playerControl.show();
+
+                    this._initControlsHiding();
                 }
 
                 this.state = RUNNING_STATE;
