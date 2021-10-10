@@ -21,7 +21,7 @@ define([
         $player: null,
 
         audio: null,
-        $canvas: null,
+        canvas: null,
         $playerControl: null,
         $fullscreenControl: null,
         $shareControl: null,
@@ -55,7 +55,7 @@ define([
             this.$player = $('[data-player]', this.element);
 
             this.audio = $('[data-player-audio]', this.element).get(0);
-            this.$canvas = $('[data-player-canvas]', this.element);
+            this.canvas = $('[data-player-canvas]', this.element).get(0);
             this.$playerControl = $('[data-player-control]', this.element);
             this.$fullscreenControl = $('[data-player-fullscreen]', this.element);
             this.$shareControl = $('[data-player-share]', this.element);
@@ -80,7 +80,7 @@ define([
                     hidings.removeClass('hide');
 
                     this.mousemoveTimeout = setTimeout(() => {
-                        if (!this.playlist.isOpened() && !$('.hiding:hover', this.element).length) {
+                        if (!this.playlist.isOpened() && !$('.hiding:hover, .hiding:focus, .hiding:focus-within', this.element).length) {
                             $('body').css('cursor', 'none');
                             hidings.addClass('hide');
                         }
@@ -141,7 +141,7 @@ define([
                 }
             });
 
-            $(this.$fullscreenControl).on('click', () => this.toggleFullscreen());
+            $(this.$fullscreenControl).on('click', () => this._toggleFullscreen());
 
             $(document).on('fullscreenchange', () => {
                 if (!document.fullscreenElement) {
@@ -149,12 +149,7 @@ define([
                 }
             });
 
-            $(this.$shareControl).on('click', () => {
-                this.$shareControl.share('open', {
-                    url: window.location.origin + window.location.pathname + window.location.search + `#${this.fileId}`,
-                    timeCode: this.audio.currentTime,
-                });
-            });
+            $(this.$shareControl).on('click', () => this._openShareModal());
 
             $(document).on('keydown', (event) => {
                 this._handlePlayerControls(event);
@@ -285,7 +280,7 @@ define([
         startVisualization: function () {
             if (this.state !== RUNNING_STATE) {
                 if (!this.visualizer) {
-                    this.visualizer = visualizer.init(this.audio, this.$canvas.get(0));
+                    this.visualizer = visualizer.init(this.audio, this.canvas);
                     this.$playerControl.show();
 
                     this._initControlsHiding();
@@ -328,8 +323,10 @@ define([
          * Update canvas size attributes.
          */
         updateCanvasSize: function () {
-            this.$canvas.attr('height', this.$canvas.height());
-            this.$canvas.attr('width', this.$canvas.width());
+            let size = $(this.canvas).width();
+
+            this.canvas.height = size;
+            this.canvas.width = size;
         },
 
         /**
@@ -341,12 +338,17 @@ define([
             switch (event.key) {
                 case 'f':
                 case 'а':
-                    this.toggleFullscreen();
+                    this._toggleFullscreen();
                     // @TODO: Add hiding header/footer functionality, for Esc as well
                     break;
                 case 'l':
                 case 'д':
                     // @TODO: Add layout change
+                    break;
+                case 's':
+                case 'і':
+                case 'ы':
+                    this._openShareModal();
                     break;
             }
         },
@@ -389,8 +391,9 @@ define([
 
         /**
          * Set or reset fullscreen mode.
+         * @private
          */
-        toggleFullscreen: function () {
+        _toggleFullscreen: function () {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen();
                 this.$fullscreenControl.addClass('active');
@@ -398,6 +401,17 @@ define([
                 document.exitFullscreen();
                 this.$fullscreenControl.removeClass('active');
             }
+        },
+
+        /**
+         * Open share modal window.
+         * @private
+         */
+        _openShareModal: function () {
+            this.$shareControl.share('open', {
+                url: window.location.origin + window.location.pathname + window.location.search + `#${this.fileId}`,
+                timeCode: this.audio.currentTime,
+            });
         },
     });
 });

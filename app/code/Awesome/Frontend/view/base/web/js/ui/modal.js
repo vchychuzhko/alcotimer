@@ -105,7 +105,7 @@ define([
         _initModal: function () {
             let $window = $(`
 <div class="modal__window" role="dialog" aria-modal="true">
-    <button class="modal__button_close" type="button" title="${__('Close')}" data-modal-close></button>
+    <button class="modal__close" type="button" title="${__('Close')}" data-modal-close></button>
 </div>
 `);
 
@@ -145,7 +145,7 @@ define([
             this.$modal = $(`<div class="modal__container"></div>`);
 
             if (this.options.closeOnOverlay) {
-                this.$modal.addClass('modal__container_backdrop');
+                this.$modal.addClass('modal__container--backdrop');
             }
 
             this.$modal.append($window);
@@ -273,5 +273,3 @@ define([
         },
     });
 });
-// @todo: add css loading via require.js to exclude files from style.less - ?
-//      https://github.com/pickware/RequireCSS

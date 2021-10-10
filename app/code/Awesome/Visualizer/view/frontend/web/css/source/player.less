@@ -1,7 +1,6 @@
 .player {
     background-color: #111111;
     background-position: center;
-    background-repeat: no-repeat;
     background-size: cover;
     height: 100%;
     width: 100%;
@@ -56,7 +55,7 @@
         }
     }
 
-    &__tracktime:before {
+    &__tracktime::before {
         background: linear-gradient(to right, #dddddd, transparent);
         content: '';
         display: block;
@@ -131,7 +130,7 @@
         transition: transform 0.3s ease-in-out;
         width: ~'calc(100% - 20px)';
 
-        &.hide:not(:focus-within) {
+        &.hide {
             transform: translateY(~'calc(100% + 10px)');;
         }
     }
@@ -151,7 +150,7 @@
             opacity: 1;
         }
 
-        &.hide:not(:focus) {
+        &.hide {
             transform: translate(100%, -100%);
         }
     }
@@ -172,7 +171,7 @@
             opacity: 1;
         }
 
-        &.hide:not(:focus) {
+        &.hide {
             transform: translate(100%, -100%);
         }
     }
@@ -189,7 +188,7 @@
             width: 100%;
         }
 
-        &__tracktime:before {
+        &__tracktime::before {
             background: linear-gradient(to right, transparent, #dddddd, transparent);
             margin: 10px 0;
             width: 100%;
@@ -198,6 +197,7 @@
         &__scene {
             height: ~'min(90vw, 60vh)';
             left: 50%;
+            top: 60%;
             width: ~'min(90vw, 60vh)';
         }
     }

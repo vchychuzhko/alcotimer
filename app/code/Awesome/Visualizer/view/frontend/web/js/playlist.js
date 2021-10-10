@@ -4,10 +4,10 @@ define([
     'use strict'
 
     class Playlist {
-        _playlistConfig;
+        playlist;
 
-        _$playlist;
-        _$playlistControl;
+        $playlist;
+        $playlistControl;
 
         /**
          * Player playlist constructor.
@@ -15,7 +15,7 @@ define([
          * @param {Object} playlistConfig
          */
         constructor($context, playlistConfig) {
-            this._playlistConfig = playlistConfig;
+            this.playlist = playlistConfig;
 
             this._initFields($context);
             this._initBindings();
@@ -27,8 +27,8 @@ define([
          * @private
          */
         _initFields ($context) {
-            this._$playlistControl = $('[data-playlist-control]', $context);
-            this._$playlist = $('[data-playlist]', $context);
+            this.$playlistControl = $('[data-playlist-control]', $context);
+            this.$playlist = $('[data-playlist]', $context);
         }
 
         /**
@@ -36,10 +36,10 @@ define([
          * @private
          */
         _initBindings () {
-            this._$playlistControl.on('click', () => this.togglePlaylist());
+            this.$playlistControl.on('click', () => this.togglePlaylist());
 
             $(document).on('click', (event) => {
-                if (!$(event.target).closest(this._$playlist).length) {
+                if (!$(event.target).closest(this.$playlist).length) {
                     this.closePlaylist();
                 }
             });
@@ -62,23 +62,23 @@ define([
          * Check current playlist state.
          */
         isOpened () {
-            return this._$playlist.hasClass('opened');
+            return this.$playlist.hasClass('opened');
         }
 
         /**
          * Close playlist menu.
          */
         closePlaylist () {
-            this._$playlist.removeClass('opened');
-            this._$playlistControl.removeClass('active');
+            this.$playlist.removeClass('opened');
+            this.$playlistControl.removeClass('active');
         }
 
         /**
          * Open playlist menu.
          */
         openPlaylist () {
-            this._$playlist.addClass('opened');
-            this._$playlistControl.addClass('active');
+            this.$playlist.addClass('opened');
+            this.$playlistControl.addClass('active');
         }
 
         /**
@@ -90,7 +90,7 @@ define([
          * @param {function} callback
          */
         addSelectionCallback (callback) {
-            $('[data-playlist-track]', this._$playlist).on('click', (event) => {
+            $('[data-playlist-track]', this.$playlist).on('click', (event) => {
                 let id = $(event.currentTarget).data('track-id');
 
                 callback(id, this.getData(id), event);
@@ -103,14 +103,14 @@ define([
          */
         setActive (id) {
             this.clearActive();
-            $('[data-track-id="' + id + '"]', this._$playlist).addClass('active');
+            $('[data-track-id="' + id + '"]', this.$playlist).addClass('active');
         }
 
         /**
          * Reset playlist active items.
          */
         clearActive () {
-            $('[data-playlist-track]', this._$playlist).removeClass('active');
+            $('[data-playlist-track]', this.$playlist).removeClass('active');
         }
 
         /**
@@ -121,7 +121,7 @@ define([
          * @returns {Object|null}
          */
         getData (id, key = '') {
-            let data = this._playlistConfig[id] || null;
+            let data = this.playlist[id] || null;
 
             if (data && key !== '') {
                 data = data[key] || null;

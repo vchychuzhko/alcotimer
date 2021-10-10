@@ -79,7 +79,7 @@ define([
             <input class="checkbox" name="timecode" type="checkbox" value="" data-share-timecode>
             <span data-share-timelabel></span>
         </label>
-    <div>
+    </div>
 </div>
 `);
         },

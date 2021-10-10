@@ -10,6 +10,7 @@ use Awesome\Frontend\Model\Context;
 class Visualizer extends \Awesome\Frontend\Block\Template
 {
     private const TITLE_CONFIG_PATH = 'visualizer/title';
+    private const DEFAULT_THUMBNAIL_CONFIG_PATH = 'visualizer/default_thumbnail';
 
     /**
      * @var Config $config
@@ -66,11 +67,11 @@ class Visualizer extends \Awesome\Frontend\Block\Template
     }
 
     /**
-     * Get default playlist item thumbnail URL.
+     * Get default track thumbnail URL.
      * @return string
      */
     public function getPlaylistDefaultThumbnail(): string
     {
-        return $this->getMediaFileUrl('/pub/media/podcasts/thumbnails/default.png');
+        return $this->getMediaFileUrl((string) $this->config->get(self::DEFAULT_THUMBNAIL_CONFIG_PATH));
     }
 }

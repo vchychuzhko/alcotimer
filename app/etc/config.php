@@ -49,5 +49,6 @@ return [
     ],
     'visualizer' => [
         'title' => 'Audio Spectrum',
+        'default_thumbnail' => 'pub/media/podcasts/thumbnails/default.png',
     ],
 ];
