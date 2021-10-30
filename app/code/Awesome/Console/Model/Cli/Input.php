@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace Awesome\Console\Model\Cli;
 
-use Awesome\Framework\Helper\DataHelper;
-
 class Input
 {
     /**
@@ -47,45 +45,20 @@ class Input
     /**
      * Get input option by name.
      * @param string $optionName
-     * @param bool $typeCast
      * @return mixed
      */
-    public function getOption(string $optionName, bool $typeCast = false)
+    public function getOption(string $optionName)
     {
-        $value = $this->options[$optionName] ?? null;
-
-        return $typeCast ? $this->castInputValue($value) : $value;
+        return $this->options[$optionName] ?? null;
     }
 
     /**
      * Get input argument by name.
      * @param string $argumentName
-     * @param bool $typeCast
      * @return mixed
      */
-    public function getArgument(string $argumentName, bool $typeCast = false)
+    public function getArgument(string $argumentName)
     {
-        $value = $this->arguments[$argumentName] ?? null;
-
-        return $typeCast ? $this->castInputValue($value) : $value;
-    }
-
-    /**
-     * Cast input value to a corresponding type.
-     * In case array option or argument is used, all values will be casted.
-     * @param mixed $value
-     * @return mixed
-     */
-    private function castInputValue($value)
-    {
-        if (is_array($value)) {
-            foreach ($value as &$item) {
-                $item = DataHelper::castValue($item);
-            }
-        } else {
-            $value = DataHelper::castValue($value);
-        }
-
-        return $value;
+        return $this->arguments[$argumentName] ?? null;
     }
 }

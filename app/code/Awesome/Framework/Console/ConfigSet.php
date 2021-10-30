@@ -56,7 +56,7 @@ class ConfigSet extends \Awesome\Console\Model\AbstractCommand
         }
         $path = $input->getArgument('path');
 
-        if (!$this->config->exists($path) && !$input->getOption('create', true)) {
+        if (!$this->config->exists($path) && !$input->getOption('create')) {
             $output->writeln('Use -c/--create option to allow creating new configuration record.');
 
             throw new \InvalidArgumentException('Provided path is not yet registered');

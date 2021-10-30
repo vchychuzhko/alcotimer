@@ -42,12 +42,12 @@ class DataHelper
         foreach ($array as $key => $value) {
             if ($key === $elementKeyToUpdate) {
                 if (is_array($newValue)) {
-                    $array[$key] = array_replace_recursive($array[$key], $newValue);
+                    $array[$key] = array_replace_recursive($value, $newValue);
                 } else {
                     $array[$key] = $newValue;
                 }
             } elseif (is_array($value)) {
-                $array[$key] = self::arrayReplaceByKeyRecursive($array[$key], $elementKeyToUpdate, $newValue);
+                $array[$key] = self::arrayReplaceByKeyRecursive($value, $elementKeyToUpdate, $newValue);
             }
         }
 
@@ -67,7 +67,7 @@ class DataHelper
             if ($key === $elementKeyToRemove) {
                 unset($array[$key]);
             } elseif (is_array($value)) {
-                $array[$key] = self::arrayRemoveByKeyRecursive($array[$key], $elementKeyToRemove);
+                $array[$key] = self::arrayRemoveByKeyRecursive($value, $elementKeyToRemove);
             }
         }
 
@@ -87,30 +87,13 @@ class DataHelper
 
     /**
      * Check if string is a boolean "true", otherwise return false.
-     * Case insensitive.
+     * Case-insensitive.
      * @param string $string
      * @return bool
      */
     public static function isStringBooleanTrue(string $string): bool
     {
         return strtolower($string) === 'true';
-    }
-
-    /**
-     * Cast value to a corresponding type.
-     * String like "true" or "false" are treated as bool type, case insensitive.
-     * @param mixed $value
-     * @return mixed
-     */
-    public static function castValue($value)
-    {
-        if (is_numeric($value)) {
-            $value += 0;
-        } elseif (is_string($value) && in_array(strtolower($value), ['true', 'false'], true)) {
-            $value = self::isStringBooleanTrue($value);
-        }
-
-        return $value;
     }
 
     /**
@@ -142,7 +125,7 @@ class DataHelper
 
     /**
      * Converts snake_case or kebab-case to camelCase, depending on provided separator.
-     * snake_case separator is used by default.
+     * Underscore separator is used by default.
      * @param string $string
      * @param string $separator
      * @return string

@@ -108,7 +108,7 @@ class Cli
      */
     private function isQuiet(): bool
     {
-        return $this->input ? (bool) $this->input->getOption(AbstractCommand::QUIET_OPTION) : false;
+        return $this->input && $this->input->getOption(AbstractCommand::QUIET_OPTION);
     }
 
     /**
@@ -117,7 +117,7 @@ class Cli
      */
     private function isNonInteractive(): bool
     {
-        return $this->input ? (bool) $this->input->getOption(AbstractCommand::NOINTERACTION_OPTION) : false;
+        return $this->input && $this->input->getOption(AbstractCommand::NOINTERACTION_OPTION);
     }
 
     /**
@@ -126,7 +126,7 @@ class Cli
      */
     private function showVersion(): bool
     {
-        return $this->input ? (bool) $this->input->getOption(AbstractCommand::VERSION_OPTION) : false;
+        return $this->input && $this->input->getOption(AbstractCommand::VERSION_OPTION);
     }
 
     /**
@@ -135,7 +135,7 @@ class Cli
      */
     private function showCommandHelp(): bool
     {
-        return $this->input ? (bool) $this->input->getOption(AbstractCommand::HELP_OPTION) : false;
+        return $this->input && $this->input->getOption(AbstractCommand::HELP_OPTION);
     }
 
     /**

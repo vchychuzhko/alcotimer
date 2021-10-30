@@ -52,7 +52,7 @@ class MaintenanceEnable extends \Awesome\Console\Model\AbstractCommand
     {
         $allowedIps = $input->getArgument('ips') ?: [];
 
-        if ($allowedIps && !$input->getOption('force', true)) {
+        if ($allowedIps && !$input->getOption('force')) {
             foreach ($allowedIps as $allowedIp) {
                 if (!$this->ipValidator->valid($allowedIp)) {
                     $output->writeln(
