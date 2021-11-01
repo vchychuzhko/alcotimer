@@ -77,7 +77,7 @@ class Translator implements \Awesome\Framework\Model\SingletonInterface
 
                     foreach ($this->csvFileManager->parseFile($translationFile) as $translation) {
                         if (!isset($translation[0], $translation[1])) {
-                            throw new \RuntimeException(sprintf('Translation CSV file is not valid: %s', $translationFile));
+                            throw new \RuntimeException(__('Translation CSV file is not valid: %1', $translationFile));
                         }
                         $translationData[$translation[0]] = $translation[1];
                     }

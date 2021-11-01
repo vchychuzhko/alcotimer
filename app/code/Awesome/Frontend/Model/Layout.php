@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Awesome\Frontend\Model;
 
 use Awesome\Cache\Model\Cache;
+use Awesome\Framework\Exception\FileSystemException;
 use Awesome\Framework\Helper\DataHelper;
 use Awesome\Framework\Model\Http;
 use Awesome\Frontend\Model\AbstractBlock;
@@ -169,7 +170,7 @@ class Layout
      * Convert template XML path to a valid filesystem path.
      * @param string $template
      * @return string
-     * @throws \LogicException
+     * @throws FileSystemException
      */
     private function getTemplateFile(string $template): string
     {
@@ -187,9 +188,7 @@ class Layout
         }
 
         if (!is_file($path)) {
-            throw new \LogicException(
-                sprintf('Template file "%s" was not found', $template)
-            );
+            throw new FileSystemException(__('Template file "%1" was not found', $template));
         }
 
         return $path;

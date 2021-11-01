@@ -77,7 +77,7 @@ class InputDefinition
      * @param string $description
      * @param mixed $default
      * @return $this
-     * @throws \LogicException
+     * @throws \InvalidArgumentException
      */
     public function addOption(
         string $name,
@@ -89,13 +89,13 @@ class InputDefinition
     {
         if ($shortcut) {
             if ($type === self::OPTION_ARRAY) {
-                throw new \LogicException(sprintf('Array option "%s" cannot have shortcut', $name));
+                throw new \InvalidArgumentException(__('Array option "%1" cannot have shortcut', $name));
             }
             if (strlen($shortcut) !== 1) {
-                throw new \LogicException(sprintf('Option shortcut "%s" must consist of 1 character', $shortcut));
+                throw new \InvalidArgumentException(__('Option shortcut "%1" must consist of 1 character', $shortcut));
             }
             if (isset($this->shortcuts[$shortcut])) {
-                throw new \LogicException(sprintf('An option with shortcut "%s" already exists', $shortcut));
+                throw new \InvalidArgumentException(__('An option with shortcut "%1" already exists', $shortcut));
             }
             $this->shortcuts[$shortcut] = $name;
         }
@@ -134,15 +134,15 @@ class InputDefinition
      * @param int $type
      * @param string $description
      * @return $this
-     * @throws \LogicException
+     * @throws \InvalidArgumentException
      */
     public function addArgument(string $name, int $type = self::ARGUMENT_REQUIRED, string $description = ''): self
     {
         if ($this->hasArrayArgument) {
-            throw new \LogicException('Argument cannot be added after array argument');
+            throw new \InvalidArgumentException('Argument cannot be added after array argument');
         }
         if ($this->lastArgumentOptional) {
-            throw new \LogicException('Argument cannot be added after optional argument');
+            throw new \InvalidArgumentException('Argument cannot be added after optional argument');
         }
         if ($type === self::ARGUMENT_OPTIONAL) {
             $this->lastArgumentOptional = true;

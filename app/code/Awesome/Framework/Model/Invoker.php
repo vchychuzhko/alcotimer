@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Awesome\Framework\Model;
 
+use Awesome\Framework\Exception\DIException;
 use Awesome\Framework\Model\SingletonInterface;
 
 final class Invoker implements \Awesome\Framework\Model\SingletonInterface
@@ -44,9 +45,7 @@ final class Invoker implements \Awesome\Framework\Model\SingletonInterface
                 } elseif ($parameter->isOptional()) {
                     $arguments[] = $parameter->getDefaultValue();
                 } else {
-                    throw new \Exception(
-                        sprintf('Parameter "%s" was not provided for "%s" constructor', $parameterName, $id)
-                    );
+                    throw new DIException(__('Parameter "%1" was not provided for "%2" constructor', $parameterName, $id));
                 }
             }
         }
@@ -75,9 +74,7 @@ final class Invoker implements \Awesome\Framework\Model\SingletonInterface
 
         if (isset(self::$instances[$id])) {
             if (!empty($parameters)) {
-                throw new \Exception(
-                    sprintf('Provided parameters cannot be applied to %s as its instance is already initialized', $id)
-                );
+                throw new DIException(__('Provided parameters cannot be applied to "%1" as its instance is already initialized', $id));
             }
 
             $object = self::$instances[$id];

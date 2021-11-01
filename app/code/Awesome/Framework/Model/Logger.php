@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace Awesome\Framework\Model;
 
-use Awesome\Framework\Model\Phrase;
-
 class Logger extends \Awesome\Framework\Model\AbstractLogger
 {
     private const EXCEPTION_LOG_FILE = 'exception.log';
@@ -12,20 +10,20 @@ class Logger extends \Awesome\Framework\Model\AbstractLogger
 
     /**
      * Write an error to log file.
-     * @param Phrase|string $errorMessage
+     * @param string $errorMessage
      * @return $this
      */
-    public function error($errorMessage): self
+    public function error(string $errorMessage): self
     {
         return $this->write(self::EXCEPTION_LOG_FILE, (string) $errorMessage);
     }
 
     /**
      * Write a system info message to log file.
-     * @param Phrase|string $message
+     * @param string $message
      * @return $this
      */
-    public function info($message): self
+    public function info(string $message): self
     {
         return $this->write(self::SYSTEM_LOG_FILE, (string) $message);
     }
