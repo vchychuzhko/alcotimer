@@ -33,6 +33,6 @@ class Menu extends \Awesome\Frontend\Block\Template
      */
     public function getSupportEmailAddress(): string
     {
-        return $this->config->get(self::SUPPORT_EMAIL_CONFIG);
+        return (string) $this->config->get(self::SUPPORT_EMAIL_CONFIG);
     }
 }

@@ -1,5 +1,6 @@
 {
     "paths": {
-        "player": "Awesome_Visualizer/js/player"
+        "player": "Awesome_Visualizer/js/player",
+        "share": "Awesome_Visualizer/js/ui/share"
     }
 }
