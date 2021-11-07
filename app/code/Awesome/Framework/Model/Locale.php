@@ -67,8 +67,8 @@ class Locale implements \Awesome\Framework\Model\SingletonInterface
     {
         return [
             'en_US',
-            'uk_UA',
             'ru_RU',
+            'uk_UA',
         ];
     }
 

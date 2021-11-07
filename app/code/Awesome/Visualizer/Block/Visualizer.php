@@ -5,7 +5,7 @@ namespace Awesome\Visualizer\Block;
 
 use Awesome\Framework\Model\Config;
 use Awesome\Framework\Model\Serializer\Json;
-use Awesome\Frontend\Model\Context;
+use Awesome\Frontend\Model\DeployedVersion;
 
 class Visualizer extends \Awesome\Frontend\Block\Template
 {
@@ -24,17 +24,18 @@ class Visualizer extends \Awesome\Frontend\Block\Template
 
     /**
      * Visualizer constructor.
-     * @param Context $context
+     * @param Config $config
+     * @param DeployedVersion $deployedVersion
      * @param Json $json
      * @param array $data
      */
     public function __construct(
         Config $config,
-        Context $context,
+        DeployedVersion $deployedVersion,
         Json $json,
         array $data = []
     ) {
-        parent::__construct($context, $data);
+        parent::__construct($deployedVersion, $data);
         $this->config = $config;
         $this->json = $json;
     }

@@ -5,7 +5,7 @@ namespace Awesome\Timer\Block;
 
 use Awesome\Framework\Model\Config;
 use Awesome\Framework\Model\Serializer\Json;
-use Awesome\Frontend\Model\Context;
+use Awesome\Frontend\Model\DeployedVersion;
 
 class Timer extends \Awesome\Frontend\Block\Template
 {
@@ -24,13 +24,17 @@ class Timer extends \Awesome\Frontend\Block\Template
     /**
      * Timer constructor.
      * @param Config $config
-     * @param Context $context
+     * @param DeployedVersion $deployedVersion
      * @param Json $json
      * @param array $data
      */
-    public function __construct(Config $config, Context $context, Json $json, array $data = [])
-    {
-        parent::__construct($context, $data);
+    public function __construct(
+        Config $config,
+        DeployedVersion $deployedVersion,
+        Json $json,
+        array $data = []
+    ) {
+        parent::__construct($deployedVersion, $data);
         $this->config = $config;
         $this->json = $json;
     }

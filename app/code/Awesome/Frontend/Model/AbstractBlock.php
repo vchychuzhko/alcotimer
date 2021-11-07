@@ -26,7 +26,8 @@ abstract class AbstractBlock extends \Awesome\Framework\Model\DataObject impleme
      * AbstractBlock constructor.
      * @param array $data
      */
-    public function __construct(array $data = []) {
+    public function __construct(array $data = [])
+    {
         parent::__construct($data, true);
     }
 
@@ -52,7 +53,7 @@ abstract class AbstractBlock extends \Awesome\Framework\Model\DataObject impleme
         $html = '';
 
         if ($layout = $this->getLayout()) {
-            $html = $this->layout->renderElement($this);
+            $html = $layout->renderElement($this);
         }
 
         return $html;
@@ -73,13 +74,13 @@ abstract class AbstractBlock extends \Awesome\Framework\Model\DataObject impleme
                 $childNames = $layout->getChildNames($this->getNameInLayout(), true);
 
                 if (in_array($childName, $childNames, true)) {
-                    $html = $this->layout->render($childName);
+                    $html = $layout->render($childName);
                 }
             } else {
                 $childNames = $layout->getChildNames($this->getNameInLayout());
 
                 foreach ($childNames as $child) {
-                    $html .= $this->layout->render($child);
+                    $html .= $layout->render($child);
                 }
             }
         }

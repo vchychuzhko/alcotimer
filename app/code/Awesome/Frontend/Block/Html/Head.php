@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Awesome\Frontend\Block\Html;
 
 use Awesome\Frontend\Helper\StaticContentHelper;
-use Awesome\Frontend\Model\Context;
+use Awesome\Frontend\Model\DeployedVersion;
 use Awesome\Frontend\Model\FrontendState;
 
 class Head extends \Awesome\Frontend\Block\Template
@@ -23,13 +23,13 @@ class Head extends \Awesome\Frontend\Block\Template
 
     /**
      * Head constructor.
-     * @param Context $context
+     * @param DeployedVersion $deployedVersion
      * @param FrontendState $frontendState
      * @param array $data
      */
-    public function __construct(Context $context, FrontendState $frontendState, array $data = [])
+    public function __construct(DeployedVersion $deployedVersion, FrontendState $frontendState, array $data = [])
     {
-        parent::__construct($context, $data);
+        parent::__construct($deployedVersion, $data);
         $this->frontendState = $frontendState;
     }
 

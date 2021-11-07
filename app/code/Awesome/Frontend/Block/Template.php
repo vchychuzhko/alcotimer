@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Awesome\Frontend\Block;
 
-use Awesome\Frontend\Model\Context;
 use Awesome\Frontend\Model\DeployedVersion;
 
 class Template extends \Awesome\Frontend\Model\AbstractBlock
@@ -20,15 +19,15 @@ class Template extends \Awesome\Frontend\Model\AbstractBlock
 
     /**
      * Template constructor.
-     * @param Context $context
+     * @param DeployedVersion $deployedVersion
      * @param array $data
      */
     public function __construct(
-        Context $context,
+        DeployedVersion $deployedVersion,
         array $data = []
     ) {
         parent::__construct($data);
-        $this->deployedVersion = $context->getDeployedVersion();
+        $this->deployedVersion = $deployedVersion;
     }
 
     /**
