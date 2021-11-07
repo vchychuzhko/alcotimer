@@ -1,11 +1,11 @@
 define([
     'jquery',
     'notification',
-    'copy',
+    'api/clipboard',
     'translator',
-    'modal',
     'jquery/ui',
-], function ($, notification, copy, __) {
+    'modal',
+], function ($, notification, clipboard, __) {
     'use strict'
 
     $.widget('awesome.share', $.awesome.modal, {
@@ -60,7 +60,7 @@ define([
             });
 
             $('[data-share-copy]', this.$modal).on('click', () => {
-                copy(this.$url.val());
+                clipboard.copy(this.$url.val(), this.options.showMessage);
             });
         },
 

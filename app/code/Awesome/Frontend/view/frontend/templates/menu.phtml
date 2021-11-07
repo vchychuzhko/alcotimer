@@ -12,7 +12,7 @@
                 <p><?= __('Face any bug or have interesting ideas?'); ?></p>
                 <p><?= __('Send us an email:'); ?>
                     <a href="mailto:<?= $supportEmailAddress; ?>?subject = AlcoTimer"
-                       class="mail-address word-break" data-awesome-init='{"copy": {}}'><?= $supportEmailAddress; ?></a>
+                       class="mail-address word-break" data-awesome-init='{"copy": {"prevent": true}}'><?= $supportEmailAddress; ?></a>
                 </p>
             </div>
         <?php endif; ?>

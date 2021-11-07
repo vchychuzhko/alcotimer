@@ -1,5 +1,5 @@
 <?php /** @var \Awesome\Visualizer\Block\Visualizer $block */ ?>
-<div class="visualizer">
+<div class="visualizer" id="visualizer">
     <div class="playlist" data-playlist>
         <button class="playlist__control button-hamburger button-hamburger--cross hiding"
                 type="button" title="<?= __('Playlist') . ' (P)' ?>" data-playlist-control>
@@ -84,7 +84,7 @@
 </div>
 <script type="text/x-awesome-init">
 {
-    ".visualizer": {
+    "#visualizer": {
         "player": {
             "playlistConfig": <?= $block->getPlaylistJsonConfig() ?>,
             "title": "<?= $block->getTitle() ?>"

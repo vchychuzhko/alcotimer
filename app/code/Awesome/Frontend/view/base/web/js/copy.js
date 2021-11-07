@@ -1,35 +1,22 @@
 define([
     'jquery',
+    'api/clipboard',
     'notification',
     'translator',
     'jquery/ui',
-], function ($, notification, __) {
+], function ($, clipboard, notification, __) {
     'use strict'
-
-    /**
-     * Copy text to clipboard.
-     * @param {string} text
-     * @param {boolean} showMessage
-     */
-    const copy = function (text, showMessage = true) {
-        navigator.clipboard.writeText(text).then(() => {
-            if (showMessage) {
-                notification.info(__('Copied to the clipboard'));
-            }
-        }, () => {
-            console.error('Caller does not have permission to write to the clipboard.');
-        });
-    }
 
     $.widget('awesome.copy', {
         options: {
+            preventDefault: false,
             showMessage: true,
         },
 
         $target: null,
         $trigger: null,
 
-        isInput: false,
+        isTextInput: false,
 
         /**
          * Constructor.
@@ -52,7 +39,7 @@ define([
                 ? $('[data-copy-target]', this.element)
                 : $(this.element);
 
-            this.isInput = this.$target.is('input') || this.$target.is('textarea');
+            this.isTextInput = this.$target.is('input') || this.$target.is('textarea');
         },
 
         /**
@@ -60,7 +47,13 @@ define([
          * @private
          */
         _initBindings: function () {
-            this.$trigger.on('click', () => this.copy());
+            this.$trigger.on('click', (event) => {
+                if (this.options.preventDefault) {
+                    event.preventDefault();
+                }
+
+                this.copy();
+            });
         },
 
         /**
@@ -69,16 +62,14 @@ define([
         copy: function () {
             let text;
 
-            if (this.isInput) {
+            if (this.isTextInput) {
                 text = this.$target.val();
                 this.$target.select();
             } else {
                 text = this.$target.text().trim();
             }
 
-            copy(text, this.options.showMessage);
+            clipboard.copy(text, this.options.showMessage);
         },
     });
-
-    return copy;
 });
