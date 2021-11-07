@@ -54,7 +54,7 @@ class XmlFileManager extends \Awesome\Framework\Model\FileManager
                     $errorMessage = trim($error->message);
                     libxml_clear_errors();
 
-                    throw new XmlValidationException(__('%1 In file "%2"', $errorMessage, $path));
+                    throw new XmlValidationException(__('%1 in file "%2"', $errorMessage, $path));
                 }
             }
         }

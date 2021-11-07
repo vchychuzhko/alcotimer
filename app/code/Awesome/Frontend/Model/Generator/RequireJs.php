@@ -3,7 +3,8 @@ declare(strict_types=1);
 
 namespace Awesome\Frontend\Model\Generator;
 
-use Awesome\Framework\Model\FileManager;
+use Awesome\Framework\Model\Config;
+use Awesome\Framework\Model\FileManager\JsonFileManager;
 use Awesome\Framework\Model\Http;
 use Awesome\Framework\Model\Serializer\Json;
 use Awesome\Frontend\Helper\StaticContentHelper;
@@ -17,7 +18,10 @@ class RequireJs extends \Awesome\Frontend\Model\AbstractGenerator
     private const REQUIREJS_CONFIG_PATTERN = '/*/*/view/{%s,%s}/requirejs-config.json';
     public const RESULT_FILENAME = 'requirejs-config.js';
 
-    public const MODULE_LOAD_TIMEOUT = 15;
+    /**
+     * @var Config $config
+     */
+    private $config;
 
     /**
      * @var DeployedVersion $deployedVersion
@@ -36,20 +40,23 @@ class RequireJs extends \Awesome\Frontend\Model\AbstractGenerator
 
     /**
      * RequireJs constructor.
+     * @param Config $config
      * @param DeployedVersion $deployedVersion
-     * @param FileManager $fileManager
+     * @param JsonFileManager $jsonFileManager
      * @param FrontendState $frontendState
      * @param JsMinifier $jsMinifier
      * @param Json $json
      */
     public function __construct(
+        Config $config,
         DeployedVersion $deployedVersion,
-        FileManager $fileManager,
+        JsonFileManager $jsonFileManager,
         FrontendState $frontendState,
         JsMinifier $jsMinifier,
         Json $json
     ) {
-        parent::__construct($fileManager, $frontendState);
+        parent::__construct($jsonFileManager, $frontendState);
+        $this->config = $config;
         $this->deployedVersion = $deployedVersion;
         $this->jsMinifier = $jsMinifier;
         $this->json = $json;
@@ -62,24 +69,37 @@ class RequireJs extends \Awesome\Frontend\Model\AbstractGenerator
     public function generate(string $path, string $view): GeneratorInterface
     {
         $resultFile = self::RESULT_FILENAME;
-        $requirePaths = [];
+        $paths = [];
+        $mixins = [];
 
         foreach (glob(APP_DIR . sprintf(self::REQUIREJS_CONFIG_PATTERN, Http::BASE_VIEW, $view), GLOB_BRACE) as $configFile) {
-            $config = $this->json->decode($this->fileManager->readFile($configFile));
+            $requireConfig = $this->fileManager->parseJsonFile($configFile);
 
-            if (isset($config['paths'])) {
-                $requirePaths = array_replace($requirePaths, $config['paths']);
+            if (isset($requireConfig['paths'])) {
+                $paths = array_replace($paths, $requireConfig['paths']);
+            }
+
+            if (isset($requireConfig['mixins'])) {
+                $mixins = array_merge_recursive($mixins, $requireConfig['mixins']);
             }
         }
+
+        foreach ($mixins as $original => $mixin) {
+            foreach ($mixin as $rewrite => $condition) {
+                if ($condition === true || $this->config->get($condition)) {
+                    $paths[$original] = $rewrite;
+                }
+            }
+        }
+
         $deployedVersion = $this->deployedVersion->getVersion();
 
-        $config = $this->json->prettyEncode([
+        $resultConfig = $this->json->prettyEncode([
             'baseUrl'     => '/static/' . ($deployedVersion ? 'version' . $deployedVersion . '/' : '/') . $view,
-            'paths'       => $requirePaths,
-            'waitSeconds' => self::MODULE_LOAD_TIMEOUT,
+            'paths'       => $paths
         ]);
         $content = <<<JS
-requirejs.config($config);
+requirejs.config($resultConfig);
 
 JS;
 
@@ -114,8 +134,8 @@ JS;
     private function getMinResolver(): string
     {
         return <<<JS
-let context = require.s.contexts._,
-    originalNameToUrl = context.nameToUrl;
+const context = require.s.contexts._;
+const originalNameToUrl = context.nameToUrl;
 
 context.nameToUrl = (...args) => originalNameToUrl.apply(context, args).replace(/(\.min)?\.js$/, '.min.js');
 JS;
