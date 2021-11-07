@@ -26,56 +26,12 @@
 }
 
 header .toggle-container {
-    cursor: pointer;
     height: 40px;
     left: 10px;
     position: absolute;
     top: 5px;
-    width: 50px;
-    z-index: 10;
-}
-
-header .toggle-container .toggle {
-    border: none;
-    cursor: pointer;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-}
-
-header .toggle-container .toggle,
-header .toggle-container .toggle:before,
-header .toggle-container .toggle:after {
-    background: #000;
-    border-radius: 4px;
-    position: absolute;
-    height: 4px;
-    transition-duration: 0.5s;
-    transition-property: transform;
-    transition-timing-function: ease;
     width: 40px;
-}
-
-header .toggle-container .toggle:before,
-header .toggle-container .toggle:after {
-    display: block;
-    content: "";
-}
-
-header .toggle-container .toggle:before {
-    top: -10px;
-}
-
-header .toggle-container .toggle:after {
-    bottom: -10px;
-}
-
-.menu.active + .page-wrapper header .toggle-container .toggle:before {
-    transform: translate3d(-8px,0,0) rotate(-45deg) scaleX(0.7);
-}
-
-.menu.active + .page-wrapper header .toggle-container .toggle:after {
-    transform: translate3d(-8px, 0, 0) rotate(45deg) scaleX(0.7);
+    z-index: 10;
 }
 
 .menu .menu-list {
@@ -108,11 +64,7 @@ header .toggle-container .toggle:after {
 }
 
 .menu .menu-list .settings .random-time .range-inputs .value {
-    border: 1px solid;
-    border-radius: 5px;
-    display: inline-block;
     font-size: 24px;
-    padding: 3px 0;
     text-align: center;
     width: 25%;
 }
@@ -121,27 +73,15 @@ header .toggle-container .toggle:after {
     font-size: 24px;
 }
 
-.menu .menu-list .settings .checkbox .show-loader,
-.menu .menu-list .settings .checkbox label {
+.menu .menu-list .settings label {
     font-size: 14px;
 }
 
-.menu .menu-list .settings .checkbox {
-    position: relative;
-}
-
-.menu .menu-list .settings .checkbox label {
-    margin-left: 30px;
-}
-
 .menu .menu-list .settings .settings-buttons-container {
+    column-gap: 10px;
     display: flex;
     justify-content: flex-end;
     padding: 15px 0 0;
-}
-
-.menu .menu-list .settings .settings-buttons-container button:last-child {
-    margin-left: 10px;
 }
 
 .menu .menu-list .contact-us {
@@ -179,56 +119,12 @@ header .toggle-container .toggle:after {
         position: fixed;
     }
 
-    .menu.active + .page-wrapper header .toggle-container {
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-    }
-
-    .menu.active + .page-wrapper header .toggle-container .toggle {
-        top: 25px;
-        left: 30px;
-    }
-
     .menu.active + .page-wrapper .menu-mobile-overlay {
         display: block;
-    }
-
-    .menu.active .toggle-container {
-        height: 100%;
-        left: 100%;
-        top: 0;
-        width: 120%;
-    }
-
-    .menu.active .toggle-container .toggle {
-        left: 10px;
-        top: 25px;
-        transform: none;
     }
 }
 
 @media (max-width: 375px) {
-    header .toggle-container {
-        width: 40px;
-    }
-
-    header .toggle-container .toggle,
-    header .toggle-container .toggle:before,
-    header .toggle-container .toggle:after {
-        height: 3px;
-        width: 30px;
-    }
-
-    header .toggle-container .toggle:before {
-        top: -7px;
-    }
-
-    header .toggle-container .toggle:after {
-        bottom: -7px;
-    }
-
     .menu.active + .page-wrapper {
         margin-left: calc(100% - 54px);
     }
@@ -247,13 +143,5 @@ header .toggle-container .toggle:after {
 
     .menu .menu-list .settings h3 {
         font-size: 16px;
-    }
-
-    .menu .menu-list .settings .checkbox label {
-        font-size: 13px;
-    }
-
-    .menu .menu-list .settings .settings-buttons-container button {
-        font-size: 20px;
     }
 }

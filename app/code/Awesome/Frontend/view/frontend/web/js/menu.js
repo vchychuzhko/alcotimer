@@ -5,34 +5,76 @@ define([
     'use strict'
 
     $.widget('awesome.menu', {
-        options: {
-            menuSelector: '.menu',
-        },
+        $menu: null,
+        $control: null,
+        $overlay: null,
 
         /**
          * Constructor
          */
         _create: function () {
-            this.initBindings();
+            this._initFields();
+            this._initBindings();
+        },
+
+        /**
+         * Init widget fields.
+         * @private
+         */
+        _initFields: function () {
+            this.$menu = $(this.element);
+
+            this.$control = $('[data-menu-control]'); // @TODO: update selectors on rework
+            this.$overlay = $('[data-menu-overlay]'); // @TODO: update selectors on rework
         },
 
         /**
          * Init event listeners
+         * @private
          */
-        initBindings: function () {
-            let $menu = $(this.options.menuSelector);
+        _initBindings: function () {
+            this.$control.on('click', () => this.toggle());
 
-            $('.toggle-container, .menu-mobile-overlay').on('click', function () {
-                $menu.toggleClass('active');
-            }.bind(this));
+            this.$overlay.on('click', () => this.close());
 
-            $(document).on('menu.open', function () {
-                $menu.addClass('active');
-            }.bind(this));
+            $(document).on('menu.open', () => this.open());
 
-            $(document).on('menu.close', function () {
-                $menu.removeClass('active');
-            }.bind(this));
+            $(document).on('menu.close', () => this.close());
+        },
+
+        /**
+         * Toggle menu state.
+         */
+        toggle: function () {
+            if (this.isOpened()) {
+                this.close();
+            } else {
+                this.open();
+            }
+        },
+
+        /**
+         * Open menu.
+         * @returns {boolean}
+         */
+        isOpened: function () {
+            return this.$menu.hasClass('active');
+        },
+
+        /**
+         * Open menu.
+         */
+        open: function () {
+            this.$menu.addClass('active');
+            this.$control.addClass('active');
+        },
+
+        /**
+         * Open menu.
+         */
+        close: function () {
+            this.$menu.removeClass('active');
+            this.$control.removeClass('active');
         },
     });
 });

@@ -176,7 +176,7 @@ define([
                         this._updateTrackName(data.title, -1);
                         this.$playerControl.show();
 
-                        if (matches[4]) {
+                        if (matches[2]) {
                             this.audio.currentTime = matches[2];
                         }
                     }

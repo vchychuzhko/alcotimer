@@ -7,7 +7,7 @@ define([
         playlist;
 
         $playlist;
-        $playlistControl;
+        $control;
 
         /**
          * Player playlist constructor.
@@ -27,7 +27,7 @@ define([
          * @private
          */
         _initFields ($context) {
-            this.$playlistControl = $('[data-playlist-control]', $context);
+            this.$control = $('[data-playlist-control]', $context);
             this.$playlist = $('[data-playlist]', $context);
         }
 
@@ -36,11 +36,11 @@ define([
          * @private
          */
         _initBindings () {
-            this.$playlistControl.on('click', () => this.togglePlaylist());
+            this.$control.on('click', () => this.togglePlaylist());
 
             $(document).on('click', (event) => {
                 if (!$(event.target).closest(this.$playlist).length) {
-                    this.closePlaylist();
+                    this.close();
                 }
             });
 
@@ -52,33 +52,34 @@ define([
          */
         togglePlaylist () {
             if (this.isOpened()) {
-                this.closePlaylist();
+                this.close();
             } else {
-                this.openPlaylist();
+                this.open();
             }
         }
 
         /**
          * Check current playlist state.
+         * @returns {boolean}
          */
         isOpened () {
             return this.$playlist.hasClass('opened');
         }
 
         /**
-         * Close playlist menu.
+         * Open playlist menu.
          */
-        closePlaylist () {
-            this.$playlist.removeClass('opened');
-            this.$playlistControl.removeClass('active');
+        open () {
+            this.$playlist.addClass('opened');
+            this.$control.addClass('active');
         }
 
         /**
-         * Open playlist menu.
+         * Close playlist menu.
          */
-        openPlaylist () {
-            this.$playlist.addClass('opened');
-            this.$playlistControl.addClass('active');
+        close () {
+            this.$playlist.removeClass('opened');
+            this.$control.removeClass('active');
         }
 
         /**
@@ -138,7 +139,7 @@ define([
         _handlePlaylistControls (event) {
             switch (event.key) {
                 case 'Escape':
-                    this.closePlaylist();
+                    this.close();
                     break;
                 case 'p':
                 case 'з':
