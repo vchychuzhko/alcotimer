@@ -125,7 +125,7 @@ class Http
             /** @var UnauthorizedAction $unauthorizedAction */
             $unauthorizedAction = $this->actionResolver->getUnauthorizedAction();
 
-            $this->logger->info($e->getMessage());
+            $this->logger->info($e->getMessage(), Logger::INFO_WARNING_LEVEL);
 
             $response = $unauthorizedAction->execute($request);
         } catch (\Exception $e) {

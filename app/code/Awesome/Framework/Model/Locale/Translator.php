@@ -6,6 +6,7 @@ namespace Awesome\Framework\Model\Locale;
 use Awesome\Cache\Model\Cache;
 use Awesome\Framework\Model\FileManager\CsvFileManager;
 use Awesome\Framework\Model\Locale;
+use Awesome\Framework\Model\Logger;
 
 class Translator implements \Awesome\Framework\Model\SingletonInterface
 {
@@ -27,21 +28,32 @@ class Translator implements \Awesome\Framework\Model\SingletonInterface
     private $locale;
 
     /**
-     * @var array $translations
+     * @var Logger $logger
      */
-    private $translations;
+    private $logger;
+
+    /**
+     * @var array $dictionary
+     */
+    private $dictionary;
 
     /**
      * Translator constructor.
      * @param Cache $cache
      * @param CsvFileManager $csvFileManager
      * @param Locale $locale
+     * @param Logger $logger
      */
-    public function __construct(Cache $cache, CsvFileManager $csvFileManager, Locale $locale)
-    {
+    public function __construct(
+        Cache $cache,
+        CsvFileManager $csvFileManager,
+        Locale $locale,
+        Logger $logger
+    ) {
         $this->cache = $cache;
         $this->csvFileManager = $csvFileManager;
         $this->locale = $locale;
+        $this->logger = $logger;
     }
 
     /**
@@ -68,17 +80,20 @@ class Translator implements \Awesome\Framework\Model\SingletonInterface
     {
         $locale = $locale ?: $this->locale->getLocale();
 
-        if (!isset($this->translations[$locale])) {
-            $this->translations[$locale] = $this->cache->get(Cache::TRANSLATIONS_CACHE_KEY, $locale, function () use ($locale) {
+        if (!isset($this->dictionary[$locale])) {
+            $this->dictionary[$locale] = $this->cache->get(Cache::TRANSLATIONS_CACHE_KEY, $locale, function () use ($locale) {
                 $translations = [];
 
                 foreach (glob(APP_DIR . sprintf(self::TRANSLATION_FILES_PATTERN, $locale)) as $translationFile) {
                     $translationData = [];
 
-                    foreach ($this->csvFileManager->parseFile($translationFile) as $translation) {
+                    foreach ($this->csvFileManager->parseFile($translationFile) as $line => $translation) {
                         if (!isset($translation[0], $translation[1])) {
-                            throw new \RuntimeException(__('Translation CSV file is not valid: %1', $translationFile));
+                            $this->logger->info(sprintf('Translation CSV file "%s" is not valid on line %s', $translationFile, $line + 1), Logger::INFO_CRITICAL_LEVEL);
+
+                            continue;
                         }
+
                         $translationData[$translation[0]] = $translation[1];
                     }
 
@@ -89,6 +104,6 @@ class Translator implements \Awesome\Framework\Model\SingletonInterface
             });
         }
 
-        return $this->translations[$locale];
+        return $this->dictionary[$locale];
     }
 }
