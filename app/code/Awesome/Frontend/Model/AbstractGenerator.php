@@ -9,7 +9,7 @@ use Awesome\Frontend\Model\StaticContent;
 
 abstract class AbstractGenerator implements \Awesome\Frontend\Model\GeneratorInterface
 {
-    private const STATIC_FILE_PATTERN = '/(.*\/)app\/code\/(\w+)\/(\w+)\/view\/(\w+)\/web\/(.*)$/';
+    private const STATIC_FILE_PATTERN = '/.*\/app\/code\/(\w+)\/(\w+)\/view\/(\w+)\/web\/(.*)$/';
 
     /**
      * File extensions that corresponds to this generator.
@@ -56,7 +56,7 @@ abstract class AbstractGenerator implements \Awesome\Frontend\Model\GeneratorInt
      */
     protected function getStaticPath(string $path, string $view, bool $direct = false): string
     {
-        $staticPart = $direct ? $path : preg_replace(self::STATIC_FILE_PATTERN, '$2_$3/$5', $path);
+        $staticPart = $direct ? $path : preg_replace(self::STATIC_FILE_PATTERN, '$1_$2/$4', $path);
 
         return BP . StaticContent::STATIC_FOLDER_PATH . $view . '/' . $staticPart;
     }

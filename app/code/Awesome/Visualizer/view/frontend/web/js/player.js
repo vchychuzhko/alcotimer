@@ -167,7 +167,7 @@ define([
         _initPlayerState: function () {
             $(document).ready(() => {
                 if (window.location.hash) {
-                    let matches = window.location.hash.match(/#(.*?)(\?|$)(.*?t=(\d+)(&|$))?/);
+                    let matches = window.location.hash.match(/#(.*?)(?:\?|$)(?:.*?t=(\d+)(?:&|$))?/);
 
                     if (matches[1] && this.options.playlistConfig[matches[1]]) {
                         let data = this.playlist.getData(matches[1]);
@@ -177,7 +177,7 @@ define([
                         this.$playerControl.show();
 
                         if (matches[4]) {
-                            this.audio.currentTime = matches[4];
+                            this.audio.currentTime = matches[2];
                         }
                     }
                 }

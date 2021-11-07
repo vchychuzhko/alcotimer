@@ -49,7 +49,7 @@ class Template extends \Awesome\Frontend\Model\AbstractBlock
      */
     public function getMediaFileUrl(string $file): string
     {
-        $mediaRelativePath = preg_replace('/^(\/?(pub)?)?\/?media\//', '', $file);
+        $mediaRelativePath = preg_replace('/^\/?((pub\/)?|)media\//', '', $file);
 
         return $this->getMediaUrl($mediaRelativePath);
     }

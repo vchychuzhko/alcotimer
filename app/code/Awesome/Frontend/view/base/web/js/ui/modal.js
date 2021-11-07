@@ -89,7 +89,7 @@ define([
                 if (this.options.autoOpen) {
                     setTimeout(() => this.open(), this.options.autoOpenDelay);
                 } else if (this.options.id && window.location.hash) {
-                    let matches = window.location.hash.match(/#(.*?)(\?|$)/);
+                    let matches = window.location.hash.match(/#(.*?)(?:\?|$)/);
 
                     if (matches[1] && matches[1] === this.options.id) {
                         setTimeout(() => this.open(), this.options.autoOpenDelay);

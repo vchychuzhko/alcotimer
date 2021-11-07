@@ -24,7 +24,7 @@ define([
 
             text = text.replace(
                 RegExp(`%(${Object.keys(pairs).join('|')})`, 'g'),
-                placeholder => pairs[placeholder.replace(/^%/, '')]
+                (placeholder) => pairs[placeholder.replace(/^%/, '')]
             );
         }
 
