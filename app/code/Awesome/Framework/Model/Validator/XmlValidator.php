@@ -14,26 +14,4 @@ class XmlValidator implements \Awesome\Framework\Model\ValidatorInterface
     {
         return @simplexml_load_string($item) !== false;
     }
-
-    /**
-     * Validate XML string against provided XSD schema.
-     * @param string $item
-     * @param string $schema
-     * @return bool
-     */
-    public function validAgainst(string $item, string $schema): bool
-    {
-        $valid = true;
-        libxml_use_internal_errors(true);
-
-        $xml = new \DOMDocument();
-        $xml->loadXML($item);
-
-        if (!$xml->schemaValidateSource($schema)) {
-            $valid = false;
-            libxml_clear_errors();
-        }
-
-        return $valid;
-    }
 }

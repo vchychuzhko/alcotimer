@@ -3,20 +3,20 @@
     <div class="timer-container" data-awesome-init='{"timer": <?= $block->getTimerConfigJson() ?>}'>
         <div class="timer-wrapper radial-container" data-awesome-init='{"radialSlider": {}}'>
             <div class="timer-button-container">
-                <button class="timer-button button-play" type="button" title="<?= __('Play') ?>" data-timer-control>
+                <button class="timer-button button-play button-play--animated" type="button" title="<?= __('Play') ?>" data-timer-control>
                     <svg class="button-play__icon" viewBox="0 0 40 40" stroke-linejoin="round">
-                        <path class="button-play__triangle" d="M6 6 L20 13 L20 27 L6 34 z M20 13 L34 20 L34 20 L20 27 z">
+                        <path d="M6 6 L20 13 L20 27 L6 34 z M20 13 L34 20 L34 20 L20 27 z">
                             <animate attributeName="d" to="M6 6 L14 6 L14 34 L6 34 z M26 6 L34 6 L34 34 L26 34 z"
-                                     dur="0.3s" fill="freeze" data-pause-animation/>
+                                     begin="-1" dur="0.3s" fill="freeze" data-pause-animation/>
                             <animate attributeName="d" to="M6 6 L20 13 L20 27 L6 34 z M20 13 L34 20 L34 20 L20 27 z"
-                                     dur="0.3s" fill="freeze" data-play-animation/>
+                                     begin="-1" dur="0.3s" fill="freeze" data-play-animation/>
                         </path>
                         <script>
                             (new MutationObserver((event) => {
-                                const contain = event[0].target.classList.contains('active');
+                                const contains = event[0].target.classList.contains('active');
 
-                                if (event[0].oldValue.includes('active') !== contain) {
-                                    event[0].target.querySelector(contain ? '[data-pause-animation]' : '[data-play-animation]').beginElement();
+                                if (event[0].oldValue.includes('active') !== contains) {
+                                    event[0].target.querySelector(contains ? '[data-pause-animation]' : '[data-play-animation]').beginElement();
                                 }
                             })).observe(document.currentScript.parentNode.parentNode, { attributeFilter: ['class'], attributeOldValue: true });
                         </script>

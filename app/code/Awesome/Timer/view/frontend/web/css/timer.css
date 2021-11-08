@@ -26,10 +26,6 @@
     z-index: 2;
 }
 
-.page-wrapper .content .timer-container .timer-wrapper.radial-container .radial-slider {
-    display: block;
-}
-
 .page-wrapper .content .timer-container.in-progress:not(.no-loader) .timer-wrapper.radial-container .radial-slider {
     display: none;
 }
@@ -135,7 +131,7 @@
 }
 
 .page-wrapper .content .timer-container .random-button-container .random-button {
-    background-color: #1b1b70;
+    background-color: #2e2e7c;
     border: none;
     border-radius: 50%;
     height: 100%;
