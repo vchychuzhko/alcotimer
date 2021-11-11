@@ -7,7 +7,7 @@ require([
     const nodeSelector   = '[' + dataAttribute + ']';
     const scriptSelector = 'script[type="text/x-awesome-init"]';
 
-    let virtuals = [];
+    const virtuals = [];
 
     /**
      * Initialize components assigned to a specified element via data-* attribute.
@@ -17,7 +17,7 @@ require([
      * @param {string} component - Components' path.
      */
     function init(element, config, component) {
-        require([component], function (fn) {
+        require([component], (fn) => {
             if (typeof fn === 'object') {
                 fn = fn[component].bind(fn);
             }
@@ -27,10 +27,8 @@ require([
             } else if ($(element)[component]) {
                 $(element)[component](config);
             }
-        }, function (error) {
-            if ('console' in window && typeof window.console.error === 'function') {
-                console.error(error);
-            }
+        }, (error) => {
+            console.error(error);
 
             return true;
         });

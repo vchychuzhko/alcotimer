@@ -67,8 +67,8 @@ class Locale implements \Awesome\Framework\Model\SingletonInterface
     {
         return [
             'en_US',
-            'uk_UA',
             'ru_RU',
+            'uk_UA',
         ];
     }
 
@@ -80,7 +80,7 @@ class Locale implements \Awesome\Framework\Model\SingletonInterface
     public function setLocale(string $locale): self
     {
         if (!in_array($locale, self::getAllLocales(), true)) {
-            throw new \RuntimeException(sprintf('Cannot set unregistered locale: %s', $locale));
+            throw new \InvalidArgumentException(__('Cannot set unregistered locale: %1', $locale));
         }
         $this->locale = $locale;
 

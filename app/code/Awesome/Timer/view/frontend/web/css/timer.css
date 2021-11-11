@@ -26,10 +26,6 @@
     z-index: 2;
 }
 
-.page-wrapper .content .timer-container .timer-wrapper.radial-container .radial-slider {
-    display: block;
-}
-
 .page-wrapper .content .timer-container.in-progress:not(.no-loader) .timer-wrapper.radial-container .radial-slider {
     display: none;
 }
@@ -45,7 +41,7 @@
 }
 
 .page-wrapper .content .timer-container .timer-wrapper .timer-button-container .timer-button {
-    background-color: #ff0000;
+    background-color: #ee0000;
     border-radius: 50%;
     outline: none;
 
@@ -135,7 +131,7 @@
 }
 
 .page-wrapper .content .timer-container .random-button-container .random-button {
-    background-color: blue;
+    background-color: #2e2e7c;
     border: none;
     border-radius: 50%;
     height: 100%;
@@ -145,7 +141,7 @@
 
 .page-wrapper .content .timer-container .random-button-container .random-button:hover,
 .page-wrapper .content .timer-container .random-button-container .random-button:focus {
-    border: 1px solid #fff;
+    box-shadow: 0 0 1px 1px #fff;
 }
 
 @media only screen and (min-width: 768px) {

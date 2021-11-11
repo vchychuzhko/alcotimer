@@ -5,7 +5,7 @@ namespace Awesome\Frontend\Block;
 
 use Awesome\Framework\Model\Config;
 use Awesome\Framework\Model\Http\Request;
-use Awesome\Frontend\Model\Context;
+use Awesome\Frontend\Model\DeployedVersion;
 
 class Header extends \Awesome\Frontend\Block\Template
 {
@@ -19,12 +19,12 @@ class Header extends \Awesome\Frontend\Block\Template
     /**
      * Header constructor.
      * @param Config $config
-     * @param Context $context
+     * @param DeployedVersion $deployedVersion
      * @param array $data
      */
-    public function __construct(Config $config, Context $context, array $data = [])
+    public function __construct(Config $config, DeployedVersion $deployedVersion, array $data = [])
     {
-        parent::__construct($context, $data);
+        parent::__construct($deployedVersion, $data);
         $this->config = $config;
     }
 

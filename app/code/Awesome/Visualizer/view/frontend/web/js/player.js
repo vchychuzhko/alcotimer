@@ -13,6 +13,7 @@ define([
 
     $.widget('awesome.player', {
         options: {
+            hideControls: true,
             playlistConfig: {},
             title: null,
         },
@@ -20,12 +21,15 @@ define([
         $player: null,
 
         audio: null,
-        $canvas: null,
+        canvas: null,
         $playerControl: null,
+        $fullscreenControl: null,
+        $shareControl: null,
         $time: null,
         $name: null,
 
         fileId: null,
+        mousemoveTimeout: null,
         state: null,
         stopInterval: null,
 
@@ -37,7 +41,6 @@ define([
          */
         _create: function () {
             this._initFields();
-            this.checkTouchScreen();
             this.updateCanvasSize();
             this._initBindings();
             this._initPlaylist();
@@ -52,19 +55,37 @@ define([
             this.$player = $('[data-player]', this.element);
 
             this.audio = $('[data-player-audio]', this.element).get(0);
-            this.$canvas = $('[data-player-canvas]', this.element);
+            this.canvas = $('[data-player-canvas]', this.element).get(0);
             this.$playerControl = $('[data-player-control]', this.element);
             this.$fullscreenControl = $('[data-player-fullscreen]', this.element);
+            this.$shareControl = $('[data-player-share]', this.element);
             this.$time = $('[data-player-tracktime]', this.element);
             this.$name = $('[data-player-trackname]', this.element);
         },
 
         /**
-         * Check if screen is touchable and apply respective changes.
+         * Check if screen is touchable and add mousemove event to hide controls.
+         * @private
          */
-        checkTouchScreen: function () {
-            if ('ontouchstart' in document.documentElement) {
-                $(this.audio).addClass('visible');
+        _initControlsHiding: function () {
+            if (this.options.hideControls
+                && !(('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0))
+            ) {
+                const hidings = $('.hiding', this.element);
+
+                $(document).on('mousemove', () => {
+                    clearTimeout(this.mousemoveTimeout);
+
+                    $('body').css('cursor', '');
+                    hidings.removeClass('hide');
+
+                    this.mousemoveTimeout = setTimeout(() => {
+                        if (!this.playlist.isOpened() && !$('.hiding:hover, .hiding:focus, .hiding:focus-within', this.element).length) {
+                            $('body').css('cursor', 'none');
+                            hidings.addClass('hide');
+                        }
+                    }, 2000);
+                });
             }
         },
 
@@ -120,7 +141,15 @@ define([
                 }
             });
 
-            $(this.$fullscreenControl).on('click', () => this.toggleFullscreen());
+            $(this.$fullscreenControl).on('click', () => this._toggleFullscreen());
+
+            $(document).on('fullscreenchange', () => {
+                if (!document.fullscreenElement) {
+                    this.$fullscreenControl.removeClass('active');
+                }
+            });
+
+            $(this.$shareControl).on('click', () => this._openShareModal());
 
             $(document).on('keydown', (event) => {
                 this._handlePlayerControls(event);
@@ -138,7 +167,7 @@ define([
         _initPlayerState: function () {
             $(document).ready(() => {
                 if (window.location.hash) {
-                    let matches = window.location.hash.match(/#(.*?)(\?|$)/);
+                    let matches = window.location.hash.match(/#(.*?)(?:\?|$)(?:.*?t=(\d+)(?:&|$))?/);
 
                     if (matches[1] && this.options.playlistConfig[matches[1]]) {
                         let data = this.playlist.getData(matches[1]);
@@ -147,7 +176,9 @@ define([
                         this._updateTrackName(data.title, -1);
                         this.$playerControl.show();
 
-                        // @TODO: Add timecode query param parsing
+                        if (matches[2]) {
+                            this.audio.currentTime = matches[2];
+                        }
                     }
                 }
             });
@@ -160,10 +191,13 @@ define([
         _initPlaylist: function () {
             this.playlist = playlist.init($(this.element), this.options.playlistConfig);
 
-            this.playlist.addSelectionCallback((id, data) => {
-                this._initFile(id, data.src, data);
+            this.playlist.addSelectionCallback((id, data, event) => {
+                event.preventDefault();
 
+                this._initFile(id, data.src, data);
                 this.audio.play();
+
+                history.replaceState('', document.title, window.location.pathname + window.location.search + `#${id}`);
             });
         },
 
@@ -180,6 +214,15 @@ define([
 
             let background = data.background || this.playlist.getData(id, 'background');
             this.$player.css('background-image', background ? `url(${background})` : '');
+
+            if (this.options.playlistConfig[id]) {
+                this.playlist.setActive(id);
+                this.$shareControl.show();
+            } else {
+                history.replaceState('', document.title, window.location.pathname + window.location.search);
+                this.playlist.clearActive();
+                this.$shareControl.hide();
+            }
         },
 
         /**
@@ -237,8 +280,10 @@ define([
         startVisualization: function () {
             if (this.state !== RUNNING_STATE) {
                 if (!this.visualizer) {
-                    this.visualizer = visualizer.init(this.audio, this.$canvas.get(0));
+                    this.visualizer = visualizer.init(this.audio, this.canvas);
                     this.$playerControl.show();
+
+                    this._initControlsHiding();
                 }
 
                 this.state = RUNNING_STATE;
@@ -278,8 +323,10 @@ define([
          * Update canvas size attributes.
          */
         updateCanvasSize: function () {
-            this.$canvas.attr('height', this.$canvas.height());
-            this.$canvas.attr('width', this.$canvas.width());
+            let size = $(this.canvas).width();
+
+            this.canvas.height = size;
+            this.canvas.width = size;
         },
 
         /**
@@ -291,19 +338,17 @@ define([
             switch (event.key) {
                 case 'f':
                 case 'а':
-                    this.toggleFullscreen();
+                    this._toggleFullscreen();
                     // @TODO: Add hiding header/footer functionality, for Esc as well
-                    break;
-                case 'Escape':
-                    this.playlist.togglePlaylist(false);
                     break;
                 case 'l':
                 case 'д':
                     // @TODO: Add layout change
                     break;
-                case 'p':
-                case 'з':
-                    this.playlist.togglePlaylist();
+                case 's':
+                case 'і':
+                case 'ы':
+                    this._openShareModal();
                     break;
             }
         },
@@ -346,8 +391,9 @@ define([
 
         /**
          * Set or reset fullscreen mode.
+         * @private
          */
-        toggleFullscreen: function () {
+        _toggleFullscreen: function () {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen();
                 this.$fullscreenControl.addClass('active');
@@ -355,6 +401,17 @@ define([
                 document.exitFullscreen();
                 this.$fullscreenControl.removeClass('active');
             }
+        },
+
+        /**
+         * Open share modal window.
+         * @private
+         */
+        _openShareModal: function () {
+            this.$shareControl.share('open', {
+                url: window.location.origin + window.location.pathname + window.location.search + `#${this.fileId}`,
+                timeCode: this.audio.currentTime,
+            });
         },
     });
 });

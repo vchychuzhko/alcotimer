@@ -17,7 +17,7 @@ abstract class AbstractCommand implements \Awesome\Console\Model\CommandInterfac
 
     /**
      * @inheritDoc
-     * @throws \LogicException
+     * @throws \InvalidArgumentException
      */
     public static function configure(): InputDefinition
     {

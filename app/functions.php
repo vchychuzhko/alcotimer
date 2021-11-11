@@ -98,14 +98,14 @@ if (!function_exists('__')) {
      * If second parameter is an array, it will be used as substitution map.
      * @param string $phrase
      * @param mixed ...$args
-     * @return \Awesome\Framework\Model\Phrase
+     * @return string
      */
-    function __(string $phrase, ...$args): \Awesome\Framework\Model\Phrase
+    function __(string $phrase, ...$args): string
     {
         if (!empty($args) && is_array($args[0])) {
             $args = $args[0];
         }
 
-        return new \Awesome\Framework\Model\Phrase($phrase, $args);
+        return (new \Awesome\Framework\Model\Phrase($phrase, $args))->render();
     }
 }

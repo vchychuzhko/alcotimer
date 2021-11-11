@@ -1,11 +1,12 @@
 <?php /** @var \Awesome\Visualizer\Block\Visualizer $block */ ?>
-<div class="visualizer">
+<div class="visualizer" id="visualizer">
     <div class="playlist" data-playlist>
-        <button class="playlist__control button-hamburger" type="button" title="<?= __('Playlist') . ' (P)' ?>" data-playlist-control>
-            <svg class="button-hamburger__icon" viewBox="0 0 40 40" fill="none" stroke-linecap="round">
-                <path class="button-hamburger__slice button-hamburger__slice-1" d="M4 10 h32"/>
-                <path class="button-hamburger__slice button-hamburger__slice-2" d="M4 20 h32"/>
-                <path class="button-hamburger__slice button-hamburger__slice-3" d="M4 30 h32"/>
+        <button class="playlist__control button-hamburger button-hamburger--cross hiding"
+                type="button" title="<?= __('Playlist') . ' (P)' ?>" data-playlist-control>
+            <svg class="button-hamburger__icon" viewBox="0 0 80 80" fill="none" stroke-linecap="round" aria-hidden="true">
+                <path class="button-hamburger__slice button-hamburger__slice-1" d="M8 20 h64"/>
+                <path class="button-hamburger__slice button-hamburger__slice-2" d="M8 40 h64"/>
+                <path class="button-hamburger__slice button-hamburger__slice-3" d="M8 60 h64"/>
             </svg>
         </button>
         <div class="playlist__wrapper">
@@ -13,20 +14,20 @@
             <?php if ($config = $block->getPlaylistConfig()): ?>
                 <ul class="playlist__list">
                     <?php foreach ($config as $id => $track): ?>
-                        <li class="playlist__item">
-                            <a class="playlist__link"
+                        <li>
+                            <a class="playlist__item"
                                href="#<?= $id ?>"
                                title="<?= $track['title'] ?>"
                                data-playlist-track
                                data-track-id="<?= $id ?>">
-                                <img class="playlist__item__thumb"
+                                <img class="playlist__item_thumb"
                                      src="<?= $track['thumbnail'] ?? $block->getPlaylistDefaultThumbnail() ?>"
                                      alt="<?= $track['title'] . ' Logo' ?>"/>
-                                <div class="playlist__item__meta">
-                                    <div class="playlist__item__meta__title"><?= $track['title'] ?></div>
-                                    <div class="playlist__item__meta__artist"><?= $track['artist'] ?></div>
+                                <div class="playlist__item_meta">
+                                    <div class="playlist__item_title"><?= $track['title'] ?></div>
+                                    <div class="playlist__item_artist"><?= $track['artist'] ?></div>
                                 </div>
-                                <div class="playlist__item__duration"><?= $track['duration'] ?></div>
+                                <div class="playlist__item_duration"><?= $track['duration'] ?></div>
                             </a>
                         </li>
                     <?php endforeach; ?>
@@ -44,16 +45,18 @@
         </div>
         <div class="player__scene">
             <canvas class="player__canvas" height="900" width="900" data-player-canvas></canvas>
-            <button class="player__control button-play button-play--simple" type="button" title="<?= __('Play') . ' (Space)' ?>" tabindex="-1" data-player-control>
-                <svg class="button-play__icon" viewBox="0 0 40 40" stroke-linejoin="round">
+            <button class="player__control button-play"
+                    type="button" title="<?= __('Play') . ' (Space)' ?>" tabindex="-1" data-player-control>
+                <svg class="button-play__icon" viewBox="0 0 40 40" stroke-linejoin="round" aria-hidden="true">
                     <path class="button-play__triangle" d="M6 6 L20 13 L20 27 L6 34 z M20 13 L34 20 L20 27 z"/>
                     <path class="button-play__pause" d="M6 6 h8 v28 h-8 z M26 6 h8 v28 h-8 z"/>
                 </svg>
             </button>
         </div>
-        <audio class="player__audio" controls="true" crossorigin="anonymous" data-player-audio></audio>
-        <button class="player__fullscreen button-fullscreen" type="button" title="<?= __('Fullscreen') . ' (F)' ?>" data-player-fullscreen>
-            <svg class="button-fullscreen__icon" viewBox="0 0 20 20" fill="none">
+        <audio class="player__audio hiding" crossorigin="anonymous" controls data-player-audio></audio>
+        <button class="player__fullscreen button-fullscreen hiding"
+                type="button" title="<?= __('Fullscreen') . ' (F)' ?>" data-player-fullscreen>
+            <svg class="button-fullscreen__icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
                 <g class="button-fullscreen__icon_group">
                     <path class="button-fullscreen__corner button-fullscreen__corner-1" d="M2 7 v-5 h5"/>
                     <path class="button-fullscreen__corner button-fullscreen__corner-2" d="M18 7 v-5 h-5"/>
@@ -68,11 +71,20 @@
                 </g>
             </svg>
         </button>
+        <button class="player__share button-share hiding"
+                type="button" title="<?= __('Share') . ' (S)' ?>" data-player-share data-awesome-init='{"share": {}}'>
+            <svg class="button-share__icon" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+                <circle class="button-share__circle" cx="30" cy="10" r="4"/>
+                <circle class="button-share__circle" cx="10" cy="20" r="4"/>
+                <circle class="button-share__circle" cx="30" cy="30" r="4"/>
+                <path class="button-share__connector" d="M26 12 L14 18 M14 22 L26 28"/>
+            </svg>
+        </button>
     </div>
 </div>
 <script type="text/x-awesome-init">
 {
-    ".visualizer": {
+    "#visualizer": {
         "player": {
             "playlistConfig": <?= $block->getPlaylistJsonConfig() ?>,
             "title": "<?= $block->getTitle() ?>"

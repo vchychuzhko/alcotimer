@@ -2,11 +2,15 @@
     "name": "awesome/alcotimer",
     "description": "AlcoTimer web app",
     "type": "project",
-    "version": "0.5.3",
+    "version": "0.5.4",
     "require": {
         "tedivm/jshrink": "^1.4",
         "tubalmartin/cssmin": "^4.1",
-        "wikimedia/less.php": "^2.0"
+        "wikimedia/less.php": "^2.0",
+        "ext-json": "*",
+        "ext-dom": "*",
+        "ext-libxml": "*",
+        "ext-simplexml": "*"
     },
     "autoload": {
         "psr-0": {"": "app/code/"}

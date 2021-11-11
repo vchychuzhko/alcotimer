@@ -5,7 +5,7 @@ define([
 
     const MAX_MESSAGE_NUMBER = 3;
     const TYPES_CLASS_MAP = {
-        error: 'notification--error',
+        error:   'notification--error',
         success: 'notification--success',
     };
 
@@ -29,7 +29,7 @@ define([
 
         /**
          * Show success message.
-         * @param {string} message
+         * @param {string|array} message
          * @param {number} duration
          * @param {string} className
          */
@@ -75,9 +75,9 @@ define([
             this._getNotificationsWrapper().prepend($message);
 
             let messageCloseTimeout = setTimeout(() => {
-                    $message.off('click.notification.close');
-                    this._removeMessage($message);
-                }, duration);
+                $message.off('click.notification.close');
+                this._removeMessage($message);
+            }, duration);
 
             $message.one('click.notification.close', () => {
                 clearTimeout(messageCloseTimeout);

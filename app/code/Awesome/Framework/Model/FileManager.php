@@ -21,10 +21,10 @@ class FileManager implements \Awesome\Framework\Model\SingletonInterface
     {
         if (file_exists($path)) {
             if (!is_file($path)) {
-                throw new FileSystemException(__('Provided path "%s" is not a file and cannot be replaced', $path));
+                throw new FileSystemException(__('Provided path "%1" is not a file and cannot be replaced', $path));
             }
             if (!$replace) {
-                throw new FileSystemException(__('Provided file "%s" already exists and cannot be replaced', $path));
+                throw new FileSystemException(__('Provided file "%1" already exists and cannot be replaced', $path));
             }
         }
         if (!is_dir(dirname($path))) {
@@ -47,7 +47,7 @@ class FileManager implements \Awesome\Framework\Model\SingletonInterface
     {
         if (file_exists($link)) {
             if (!$replace) {
-                throw new FileSystemException(__('Provided link path "%s" already exists and cannot be replaced', $link));
+                throw new FileSystemException(__('Provided link path "%1" already exists and cannot be replaced', $link));
             }
             $this->removeFile($link);
         }
@@ -70,10 +70,10 @@ class FileManager implements \Awesome\Framework\Model\SingletonInterface
     {
         if (file_exists($path)) {
             if (!is_file($path)) {
-                throw new FileSystemException(__('Provided path "%s" is not a file and cannot be read', $path));
+                throw new FileSystemException(__('Provided path "%1" is not a file and cannot be read', $path));
             }
         } elseif (!$graceful) {
-            throw new FileSystemException(__('Provided path "%s" does not exist', $path));
+            throw new FileSystemException(__('Provided path "%1" does not exist', $path));
         }
 
         return @file_get_contents($path);
@@ -92,7 +92,7 @@ class FileManager implements \Awesome\Framework\Model\SingletonInterface
     {
         if (file_exists($path)) {
             if (!is_file($path)) {
-                throw new FileSystemException(__('Provided path "%s" is not a file and cannot be written', $path));
+                throw new FileSystemException(__('Provided path "%1" is not a file and cannot be written', $path));
             }
         } else {
             $this->createFile($path);
@@ -110,7 +110,7 @@ class FileManager implements \Awesome\Framework\Model\SingletonInterface
     public function removeFile(string $path): bool
     {
         if (file_exists($path) && !is_file($path)) {
-            throw new FileSystemException(__('Provided path "%s" is not a file and cannot be removed', $path));
+            throw new FileSystemException(__('Provided path "%1" is not a file and cannot be removed', $path));
         }
 
         return @unlink($path);
@@ -127,16 +127,14 @@ class FileManager implements \Awesome\Framework\Model\SingletonInterface
     public function copyFile(string $source, string $destination, bool $replace = true): bool
     {
         if (!is_file($source)) {
-            throw new FileSystemException(
-                __('Provided source path "%s" does not exist or is not a file and cannot be copied', $source)
-            );
+            throw new FileSystemException(__('Provided source path "%1" does not exist or is not a file and cannot be copied', $source));
         }
         if (!is_dir(dirname($destination))) {
             $this->createDirectory(dirname($destination));
         }
         if (file_exists($destination)) {
             if (!$replace) {
-                throw new FileSystemException(__('Provided destination file "%s" already exists', $destination));
+                throw new FileSystemException(__('Provided destination file "%1" already exists', $destination));
             }
             $this->removeFile($destination);
         }
@@ -154,7 +152,7 @@ class FileManager implements \Awesome\Framework\Model\SingletonInterface
     public function createDirectory(string $path, int $mode = self::DEFAULT_ACCESS_MODE): bool
     {
         if (file_exists($path) && !is_dir($path)) {
-            throw new FileSystemException(__('Provided path "%s" already exists and is not a directory', $path));
+            throw new FileSystemException(__('Provided path "%1" already exists and is not a directory', $path));
         }
 
         return @mkdir($path, $mode, true);
@@ -170,7 +168,7 @@ class FileManager implements \Awesome\Framework\Model\SingletonInterface
     public function removeDirectory(string $path): bool
     {
         if (file_exists($path) && !is_dir($path)) {
-            throw new FileSystemException(__('Provided path "%s" is not a directory', $path));
+            throw new FileSystemException(__('Provided path "%1" is not a directory', $path));
         }
         foreach (@scandir($path) ?: [] as $object) {
             if ($object !== '.' && $object !== '..') {
@@ -197,7 +195,7 @@ class FileManager implements \Awesome\Framework\Model\SingletonInterface
     public function scanDirectory(string $path, bool $recursively = false, $extensions = ''): array
     {
         if (!is_dir($path)) {
-            throw new FileSystemException(__('Provided path "%s" is not a directory and cannot be scanned', $path));
+            throw new FileSystemException(__('Provided path "%1" is not a directory and cannot be scanned', $path));
         }
         $results = [];
         $extensions = is_array($extensions) ? $extensions : [$extensions];

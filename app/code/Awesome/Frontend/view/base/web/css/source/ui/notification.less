@@ -16,26 +16,26 @@
         background-color: #f9edbe;
         border: 1px solid #f0c36d;
         box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.7);
-        box-sizing: border-box;
+        column-gap: 15px;
         cursor: pointer;
         display: flex;
         margin: 5px 0;
         min-width: 200px;
-        padding: 10px 20px;
+        padding: 10px 20px 10px 15px;
 
-        &:before {
-            content: '\00a1';
-            font-weight: 600;
+        &::before {
+            content: 'i';
+            flex-basis: 25px;
             font-size: 30px;
-            vertical-align: middle;
-            margin-right: 20px;
+            font-weight: 600;
+            text-align: center;
         }
 
         &--success {
-            background-color: #a5ffc3;
-            border: 1px solid #45ff58;
+            background-color: #c9ffa5;
+            border: 1px solid #77925e;
 
-            &:before {
+            &::before {
                 content: '\2713';
             }
         }
@@ -44,8 +44,8 @@
             background-color: #ffa5a8;
             border: 1px solid #ff6b45;
 
-            &:before {
-                content: '\0021';
+            &::before {
+                content: '!';
             }
         }
     }

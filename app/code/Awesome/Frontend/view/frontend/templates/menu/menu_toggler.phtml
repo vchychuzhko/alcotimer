@@ -1,5 +1,11 @@
 <?php /** @var \Awesome\Frontend\Block\Template $block */ ?>
 <div class="toggle-container">
-    <button class="toggle" type="button" name="Menu toggler" value="Toggle Menu"></button>
+    <button class="toggle button-hamburger button-hamburger--arrow" type="button" title="<?= __('Menu') ?>" data-menu-control>
+        <svg class="button-hamburger__icon" viewBox="0 0 80 80" fill="none" stroke-linecap="round" aria-hidden="true">
+            <path class="button-hamburger__slice button-hamburger__slice-1" d="M8 20 h64"/>
+            <path class="button-hamburger__slice button-hamburger__slice-2" d="M8 40 h64"/>
+            <path class="button-hamburger__slice button-hamburger__slice-3" d="M8 60 h64"/>
+        </svg>
+    </button>
 </div>
 

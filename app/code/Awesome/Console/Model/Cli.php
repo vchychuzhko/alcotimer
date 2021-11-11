@@ -13,7 +13,7 @@ use Awesome\Framework\Exception\XmlValidationException;
 
 class Cli
 {
-    public const VERSION = '0.5.3';
+    public const VERSION = '0.5.4';
 
     /**
      * @var CommandResolver $commandResolver
@@ -108,7 +108,7 @@ class Cli
      */
     private function isQuiet(): bool
     {
-        return $this->input ? (bool) $this->input->getOption(AbstractCommand::QUIET_OPTION) : false;
+        return $this->input && $this->input->getOption(AbstractCommand::QUIET_OPTION);
     }
 
     /**
@@ -117,7 +117,7 @@ class Cli
      */
     private function isNonInteractive(): bool
     {
-        return $this->input ? (bool) $this->input->getOption(AbstractCommand::NOINTERACTION_OPTION) : false;
+        return $this->input && $this->input->getOption(AbstractCommand::NOINTERACTION_OPTION);
     }
 
     /**
@@ -126,7 +126,7 @@ class Cli
      */
     private function showVersion(): bool
     {
-        return $this->input ? (bool) $this->input->getOption(AbstractCommand::VERSION_OPTION) : false;
+        return $this->input && $this->input->getOption(AbstractCommand::VERSION_OPTION);
     }
 
     /**
@@ -135,7 +135,7 @@ class Cli
      */
     private function showCommandHelp(): bool
     {
-        return $this->input ? (bool) $this->input->getOption(AbstractCommand::HELP_OPTION) : false;
+        return $this->input && $this->input->getOption(AbstractCommand::HELP_OPTION);
     }
 
     /**
@@ -200,7 +200,7 @@ class Cli
                     @list($option, $value) = explode('=', str_replace_first('--', '', $arg));
 
                     if (!isset($commandOptions[$option])) {
-                        throw new \InvalidArgumentException(sprintf('Unknown option "%s"', $option));
+                        throw new \InvalidArgumentException(__('Unknown option "%1"', $option));
                     }
                     $value = $value ?: $commandOptions[$option]['default'];
 
@@ -213,7 +213,7 @@ class Cli
                 } elseif (strpos($arg, '-') === 0) {
                     foreach (str_split(substr($arg, 1)) as $shortcut) {
                         if (!isset($commandShortcuts[$shortcut])) {
-                            throw new \InvalidArgumentException(sprintf('Unknown shortcut "%s"', $shortcut));
+                            throw new \InvalidArgumentException(__('Unknown shortcut "%1"', $shortcut));
                         }
                         $option = $commandShortcuts[$shortcut];
                         $options[$option] = $commandOptions[$option]['default'];
@@ -226,9 +226,7 @@ class Cli
             if (!isset($options[AbstractCommand::HELP_OPTION]) && !isset($options[AbstractCommand::VERSION_OPTION])) {
                 foreach ($commandOptions as $optionName => $optionData) {
                     if ($optionData['type'] === InputDefinition::OPTION_REQUIRED && !isset($options[$optionName])) {
-                        throw new \InvalidArgumentException(
-                            sprintf('Required option "%s" was not provided', $optionName)
-                        );
+                        throw new \InvalidArgumentException(__('Required option "%1" was not provided', $optionName));
                     }
                 }
 
@@ -238,9 +236,7 @@ class Cli
                     if ($argumentData['type'] === InputDefinition::ARGUMENT_REQUIRED
                         && !isset($collectedArguments[$position])
                     ) {
-                        throw new \InvalidArgumentException(
-                            sprintf('Required argument "%s" was not provided', $argumentName)
-                        );
+                        throw new \InvalidArgumentException(__('Required argument "%1" was not provided', $argumentName));
                     }
                     if ($argumentData['type'] === InputDefinition::ARGUMENT_ARRAY) {
                         $arguments[$argumentName] = array_slice($collectedArguments, $position - 1);

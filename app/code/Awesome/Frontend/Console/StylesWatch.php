@@ -77,10 +77,10 @@ class StylesWatch extends \Awesome\Console\Model\AbstractCommand
         $lastUpdate = time();
 
         $watchingLabel = $requestedView
-            ? sprintf('Watching after %s view...', $output->underline($requestedView))
-            : 'Watching...';
+            ? __('Watching after %1 view...', $output->underline($requestedView))
+            : __('Watching...');
 
-        $output->writeln('Use "Ctrl+C" to terminate.');
+        $output->writeln(__('Use "%1" to terminate.', 'Ctrl+C'));
         $output->writeln($watchingLabel);
 
         $sourceFolderPattern = APP_DIR . sprintf(self::SOURCE_FOLDER_PATTERN, '{' . Http::BASE_VIEW . ',' . implode(',', $views) . '}');
@@ -95,7 +95,7 @@ class StylesWatch extends \Awesome\Console\Model\AbstractCommand
 
                 foreach ($files as $file) {
                     if (filemtime($file) > $lastUpdate) {
-                        $output->writeln(sprintf('File has been modified: "%s"', $file));
+                        $output->writeln(__('File has been modified: "%1"', $file));
 
                         preg_match($fileViewPattern, $file, $matches);
                         $modified[] = $matches[2];
@@ -117,7 +117,7 @@ class StylesWatch extends \Awesome\Console\Model\AbstractCommand
                         $this->styles->generate(Styles::RESULT_FILENAME, $view);
 
                         $output->writeln(
-                            $output->colourText(sprintf('Styles were regenerated for %s view', $output->underline($view)))
+                            $output->colourText(__('Styles were regenerated for %1 view', $output->underline($view)))
                         );
                     }
                 } catch (\Exception $e) {

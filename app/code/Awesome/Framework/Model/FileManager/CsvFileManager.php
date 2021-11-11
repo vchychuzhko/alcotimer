@@ -21,12 +21,10 @@ class CsvFileManager extends \Awesome\Framework\Model\FileManager
 
         if (!is_file($path)) {
             if (!$graceful) {
-                throw new FileSystemException(
-                    __('Provided path "%s" does not exist or is not a file and cannot be parsed', $path)
-                );
+                throw new FileSystemException(__('Provided path "%1" does not exist or is not a file and cannot be parsed', $path));
             }
         } else {
-            $file = fopen($path, 'r+');
+            $file = fopen($path, 'rb+');
 
             while (($line = fgetcsv($file, 0, Csv::DELIMITER, Csv::ENCLOSURE, Csv::ESCAPE_CHAR)) !== false) {
                 $data[] = $line;

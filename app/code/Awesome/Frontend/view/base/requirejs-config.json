@@ -1,5 +1,7 @@
 {
     "paths": {
+        "api/clipboard": "Awesome_Frontend/js/api/clipboard",
+        "api/storage": "Awesome_Frontend/js/api/storage",
         "copy": "Awesome_Frontend/js/copy",
         "jquery": "lib/jquery/jquery",
         "jquery/ui": "lib/jquery/widget",
@@ -7,7 +9,6 @@
         "notification": "Awesome_Frontend/js/ui/notification",
         "radialSlider": "Awesome_Frontend/js/radial-slider",
         "rangeSlider": "Awesome_Frontend/js/range-slider",
-        "storage": "Awesome_Frontend/js/storage",
         "translator": "Awesome_Frontend/js/translator"
     }
 }

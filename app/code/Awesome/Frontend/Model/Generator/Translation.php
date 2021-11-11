@@ -95,7 +95,7 @@ class Translation extends \Awesome\Frontend\Model\AbstractGenerator
         $dictionary = $this->json->prettyEncode($dictionary);
 
         $content = <<<JS
-define(() => ($dictionary));
+define($dictionary);
 
 JS;
 

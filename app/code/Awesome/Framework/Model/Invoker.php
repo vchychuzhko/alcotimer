@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Awesome\Framework\Model;
 
+use Awesome\Framework\Exception\DIException;
 use Awesome\Framework\Model\SingletonInterface;
 
 final class Invoker implements \Awesome\Framework\Model\SingletonInterface
@@ -20,7 +21,7 @@ final class Invoker implements \Awesome\Framework\Model\SingletonInterface
     /**
      * Create requested class instance.
      * Non-object and extra parameters can be passed as an array.
-     * Regardless of SingletonInterface new instance will be created.
+     * Regardless of SingletonInterface mark new instance will be created.
      * @param string $id
      * @param array $parameters
      * @return mixed
@@ -44,19 +45,24 @@ final class Invoker implements \Awesome\Framework\Model\SingletonInterface
                 } elseif ($parameter->isOptional()) {
                     $arguments[] = $parameter->getDefaultValue();
                 } else {
-                    throw new \Exception(
-                        sprintf('Parameter "%s" was not provided for "%s" constructor', $parameterName, $id)
-                    );
+                    throw new DIException(__('Parameter "%1" was not provided for "%2" constructor', $parameterName, $id));
                 }
             }
         }
 
-        return new $id(...$arguments);
+        $object = new $id(...$arguments);
+
+        if ($object instanceof SingletonInterface) {
+            self::$instances[$id] = $object;
+        }
+
+        return $object;
     }
 
     /**
      * Get requested class instance.
      * Non-object and extra parameters can be passed as an array.
+     * Creates it if not yet initialized.
      * @param string $id
      * @param array $parameters
      * @return mixed
@@ -67,43 +73,16 @@ final class Invoker implements \Awesome\Framework\Model\SingletonInterface
         $id = ltrim($id, '\\');
 
         if (isset(self::$instances[$id])) {
+            if (!empty($parameters)) {
+                throw new DIException(__('Provided parameters cannot be applied to "%1" as its instance is already initialized', $id));
+            }
+
             $object = self::$instances[$id];
         } else {
             $object = $this->create($id, $parameters);
-
-            if ($object instanceof SingletonInterface) {
-                self::$instances[$id] = $object;
-            }
         }
 
         return $object;
-    }
-
-    /**
-     * Add singletone to registry.
-     * Overriding is not allowed and will throw an exception by default.
-     * @param SingletonInterface $object
-     * @param bool $graceful
-     * @return $this
-     * @throws \Exception
-     */
-    public function register($object, $graceful = false)
-    {
-        $id = get_class($object);
-
-        if (!($object instanceof SingletonInterface)) {
-            throw new \Exception(sprintf('Object "%s" must be an instance of "%s" to be registered', $id, SingletonInterface::class));
-        }
-
-        if (isset(self::$instances[$id])) {
-            if (!$graceful) {
-                throw new \Exception(sprintf('Instance of "%s" is already set', $id));
-            }
-        } else {
-            self::$instances[$id] = $object;
-        }
-
-        return $this;
     }
 
     /**

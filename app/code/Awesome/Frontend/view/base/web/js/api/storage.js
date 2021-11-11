@@ -5,12 +5,12 @@ define([], function () {
         /**
          * Get local storage record by root name.
          * @param {string} root
-         * @returns {Object}
+         * @returns {*}
          */
         get: function (root) {
-            let data = localStorage.getItem(root) || '{}';
+            let data = localStorage.getItem(root);
 
-            return JSON.parse(data);
+            return data !== null ? JSON.parse(data) : null;
         },
 
         /**
@@ -20,6 +20,14 @@ define([], function () {
          */
         set: function (root, data) {
             localStorage.setItem(root, JSON.stringify(data));
+        },
+
+        /**
+         * Remove local storage record by root name.
+         * @param {string} root
+         */
+        remove: function (root) {
+            localStorage.removeItem(root);
         },
     };
 });

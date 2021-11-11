@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Awesome\Framework\Model;
 
+use Awesome\Framework\Exception\DIException;
 use Awesome\Framework\Helper\DataHelper;
 
 class DataObject
@@ -79,7 +80,7 @@ class DataObject
      * @param string $method
      * @param array $args
      * @return mixed
-     * @throws \LogicException
+     * @throws DIException
      */
     public function __call(string $method, array $args)
     {
@@ -95,6 +96,6 @@ class DataObject
                 return $this->setData($key, $value);
         }
 
-        throw new \LogicException(sprintf('Invalid method %s::%s', get_class($this), $method));
+        throw new DIException(__('Invalid method %1::%2', get_class($this), $method));
     }
 }

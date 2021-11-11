@@ -1,5 +1,4 @@
 <?php /** @var \Awesome\Frontend\Block\Menu $block */ ?>
-<?php $supportEmailAddress = $block->getSupportEmailAddress(); ?>
 <div class="menu" data-awesome-init='{"menu": {}}'>
     <div class="menu-list">
         <div class="title">
@@ -8,12 +7,14 @@
             <!-- @TODO: temporary public versing -->
         </div>
         <?= $block->getChildHtml('timer.settings'); ?>
-        <div class="contact-us">
-            <p><?= __('Face any bug or have interesting ideas?'); ?></p>
-            <p><?= __('Send us an email:'); ?>
-                <a href="mailto:<?= $supportEmailAddress; ?>?subject = AlcoTimer"
-                   class="mail-address word-break" data-awesome-init='{"copy": {}}'><?= $supportEmailAddress; ?></a>
-            </p>
-        </div>
+        <?php if ($supportEmailAddress = $block->getSupportEmailAddress()): ?>
+            <div class="contact-us">
+                <p><?= __('Face any bug or have interesting ideas?'); ?></p>
+                <p><?= __('Send us an email:'); ?>
+                    <a href="mailto:<?= $supportEmailAddress; ?>?subject = AlcoTimer"
+                       class="mail-address word-break" data-awesome-init='{"copy": {"prevent": true}}'><?= $supportEmailAddress; ?></a>
+                </p>
+            </div>
+        <?php endif; ?>
     </div>
 </div>

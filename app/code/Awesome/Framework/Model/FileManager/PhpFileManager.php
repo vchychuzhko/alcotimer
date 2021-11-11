@@ -19,18 +19,14 @@ class PhpFileManager extends \Awesome\Framework\Model\FileManager
     {
         if (!is_file($path)) {
             if (!$graceful) {
-                throw new FileSystemException(
-                    __('Provided path "%s" does not exist or is not a file and cannot be parsed', $path)
-                );
+                throw new FileSystemException(__('Provided path "%1" does not exist or is not a file and cannot be parsed', $path));
             }
             $array = [];
         } else {
             $array = include $path;
 
             if (!is_array($array)) {
-                throw new \RuntimeException(
-                    sprintf('Provided path "%s" does not contain valid PHP array', $path)
-                );
+                throw new \RuntimeException(__('Provided path "%1" does not contain valid PHP array', $path));
             }
         }
 
@@ -49,9 +45,7 @@ class PhpFileManager extends \Awesome\Framework\Model\FileManager
     {
         if (!is_file($path)) {
             if (!$graceful) {
-                throw new FileSystemException(
-                    __('Provided path "%s" does not exist or is not a file and cannot be included', $path)
-                );
+                throw new FileSystemException(__('Provided path "%1" does not exist or is not a file and cannot be included', $path));
             }
 
             if ($return) {

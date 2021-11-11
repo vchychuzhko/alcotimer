@@ -48,7 +48,7 @@ class ConfigGet extends \Awesome\Console\Model\AbstractCommand
             $value = $this->config->get($path);
 
             if (is_array($value)) {
-                if ($input->getOption('encode', true)) {
+                if ($input->getOption('encode')) {
                     $output->writeln(array_export($value, true));
                 } else {
                     $output->writeln('Use -e/--encode option to allow displaying children structure as an array.');

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Awesome\Framework\Model\Event;
 
 use Awesome\Cache\Model\Cache;
+use Awesome\Framework\Exception\DIException;
 use Awesome\Framework\Model\Event;
 use Awesome\Framework\Model\Event\ObserverInterface;
 use Awesome\Framework\Model\Invoker;
@@ -63,9 +64,7 @@ class EventManager
                 $observer = $this->invoker->get($observer['class']);
 
                 if (!($observer instanceof ObserverInterface)) {
-                    throw new \LogicException(
-                        sprintf('Observer "%s" does not implement ObserverInterface', get_class($observer))
-                    );
+                    throw new DIException(__('Observer "%1" does not implement ObserverInterface', get_class($observer)));
                 }
                 $observer->execute($event);
             }

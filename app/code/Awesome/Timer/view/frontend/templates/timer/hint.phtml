@@ -1,34 +1,34 @@
 <?php /** @var \Awesome\Frontend\Block\Template $block */ ?>
-<div class="timer-hint">
-    <button type="button" class="timer-hint__button" title="<?= __('Show hint') ?>" data-modal-trigger>?</button>
+<div class="timer-hint" id="timer-hint" data-awesome-init='{"modal": {"id": "timer-hint", "title": "<?= __('Instruction') ?>"}}'>
+    <button class="timer-hint__button" type="button" title="<?= __('Show hint') ?>" data-modal-trigger>?</button>
     <div class="timer-hint__content" style="display: none;" data-modal-content>
         <p><?= __('Rules are simple: when time is over, you have to drink.') ?></p>
         <p><?= __('Big red button in the center will start or stop the timer. Circular slider will help you to set up the time. And "Random" button.. will give you a random time left.') ?></p>
         <p><?= __('Time interval can be configured in the menu, check the left-top corner of the page.') ?></p>
     </div>
 </div>
-<script type="application/javascript">
+<script>
     require([
         'jquery',
-        'storage',
+        'api/storage',
         'modal',
     ], function ($, storage) {
         'use strict'
         // @TODO: Move to timer component initialization
 
-        let timerConfig = storage.get('timer');
-        let shown = !!timerConfig.hintShown;
+        $(document).ready(() => {
+            const timerConfig = storage.get('timer') || {};
+            const shown = !!timerConfig.hintShown;
 
-        $('.timer-hint').modal({
-            autoOpen: !shown,
-            id:       'timer-hint',
-            title:    '<?= __('Instruction') ?>',
+            if (!shown) {
+                $('#timer-hint').modal('open');
+            }
+
+            if (!shown) {
+                timerConfig.hintShown = true;
+
+                storage.set('timer', timerConfig);
+            }
         });
-
-        if (!shown) {
-            timerConfig.hintShown = true;
-
-            storage.set('timer', timerConfig);
-        }
     });
 </script>

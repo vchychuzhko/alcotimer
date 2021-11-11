@@ -47,7 +47,7 @@ class ConfigSet extends \Awesome\Console\Model\AbstractCommand
         // @TODO: Add unset config command/method or add -r/--remove option
         if ($type = $input->getOption('type')) {
             if (!in_array($type, ['int', 'integer', 'float', 'double', 'bool', 'boolean', 'string'], true)) {
-                throw new \InvalidArgumentException(sprintf('Provided value type "%s" is not valid', $type));
+                throw new \InvalidArgumentException(__('Provided value type "%1" is not valid', $type));
             }
             $value = $input->getArgument('value');
             settype($value, $type);
@@ -56,14 +56,14 @@ class ConfigSet extends \Awesome\Console\Model\AbstractCommand
         }
         $path = $input->getArgument('path');
 
-        if (!$this->config->exists($path) && !$input->getOption('create', true)) {
+        if (!$this->config->exists($path) && !$input->getOption('create')) {
             $output->writeln('Use -c/--create option to allow creating new configuration record.');
 
-            throw new \InvalidArgumentException('Provided path is not yet registered');
+            throw new \InvalidArgumentException(__('Provided path is not yet registered'));
         }
 
         if (is_array($this->config->get($path))) {
-            throw new \InvalidArgumentException('Provided path points to configuration section and cannot be updated via CLI');
+            throw new \InvalidArgumentException(__('Provided path points to configuration section and cannot be updated via CLI'));
         }
 
         $this->config->set($path, $value);

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Awesome\Framework\Model\Http;
 
+use Awesome\Framework\Exception\DIException;
 use Awesome\Framework\Model\Action\HttpDefaultAction;
 use Awesome\Framework\Model\Action\MaintenanceAction;
 use Awesome\Framework\Model\Action\UnauthorizedAction;
@@ -39,12 +40,12 @@ class ActionResolver
      * Add action classname to actions list.
      * @param string $actionId
      * @return $this
-     * @throws \LogicException
+     * @throws DIException
      */
     public function addAction(string $actionId): self
     {
         if (!is_a($actionId, ActionInterface::class, true)) {
-            throw new \LogicException(sprintf('Provided action "%s" does not implement ActionInterface', $actionId));
+            throw new DIException(__('Provided action "%1" does not implement ActionInterface', $actionId));
         }
 
         $this->actions[] = $actionId;

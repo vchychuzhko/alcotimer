@@ -4,7 +4,7 @@
         opacity: 0.8;
         position: absolute;
         top: 5px;
-        transition: opacity 0.3s ease-in-out;
+        transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
         z-index: 2;
 
         --button-active-color: #333333;
@@ -13,11 +13,14 @@
         &:hover, &:focus {
             opacity: 1;
         }
+
+        &.hide {
+            transform: translate(-100%, -100%);
+        }
     }
 
     &__wrapper {
         background: rgba(200, 200, 200, 0.9);
-        box-sizing: border-box;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -31,76 +34,84 @@
         z-index: 1;
     }
 
-    &.active &__wrapper {
+    &.opened &__wrapper {
         transform: translateX(0);
         visibility: visible;
     }
 
     &__title {
+        background-color: #c8c8c8;
         box-shadow: -10px 0 10px 0 #000000;
-        line-height: 30px;
+        line-height: 1.875rem;
         padding: 10px;
         text-align: center;
-        z-index: 2;
+        z-index: 1;
     }
 
     &__list {
         flex-grow: 1;
         overflow: auto;
-        z-index: 1;
     }
 
-    &__link {
+    &__item {
         align-items: center;
-        display: flex;
-        justify-content: space-between;
+        column-gap: 10px;
+        display: grid;
+        grid-template-columns: 75px 1fr 75px;
         padding: 5px 10px;
         text-decoration: none;
+
+        &.active {
+            background-color: rgba(140, 140, 140, 0.5);
+        }
 
         &:hover, &:focus {
             background-color: rgba(140, 140, 140, 0.7);
             outline: none;
         }
-    }
 
-    &__item {
-        &__thumb {
-            width: 75px;
+        &.active &_meta::after {
+            border: solid;
+            border-color: transparent transparent transparent #000000;
+            border-width: 5px 0 5px 10px;
+            content: '';
+            left: 100%;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
         }
 
-        &__meta {
-            box-sizing: border-box;
-            flex-grow: 1;
-            padding: 0 10px;
-
-            &__artist {
-                color: #555555;
-            }
+        &_thumb {
+            width: 100%;
         }
 
-        &__duration {
+        &_meta {
+            position: relative;
+        }
+
+        &_artist {
+            color: #555555;
+        }
+
+        &_duration {
             color: #222222;
             text-align: center;
-            width: 75px;
         }
     }
 
     &__message {
-        display: inline-block;
         flex-grow: 1;
         font-style: italic;
         padding: 10px 20px;
     }
 
     &__info {
+        background-color: #c8c8c8;
         box-shadow: -10px 0 10px 0 #000000;
-        box-sizing: border-box;
-        display: inline-block;
-        line-height: 20px;
+        line-height: 1.375rem;
         padding: 10px;
         text-align: center;
-        width: 100%;
-        z-index: 2;
+        z-index: 1;
     }
 }
 

@@ -74,7 +74,7 @@ class StaticDeploy extends \Awesome\Console\Model\AbstractCommand
             $output->writeln('Static files were deployed for view: ' . $view);
         }
 
-        if (!$input->getOption('skip-version', true)) {
+        if (!$input->getOption('skip-version')) {
             $this->deployedVersion->generateVersion();
 
             $output->writeln('Deployed version was regenerated');

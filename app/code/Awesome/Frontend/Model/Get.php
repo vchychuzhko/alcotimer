@@ -124,7 +124,7 @@ class Get extends \Awesome\Framework\Model\Http
                         $response->setHeader('Content-Type', self::MIME_TYPES[$extension]);
                     }
 
-                    $this->logger->info(sprintf('Static file was deployed: "%s"', $path));
+                    $this->logger->info(__('Static file was deployed: %1', $path));
                 } else {
                     $action = $this->actionResolver->getAction();
 

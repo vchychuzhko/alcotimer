@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Awesome\Frontend\Block;
 
 use Awesome\Framework\Model\Locale;
-use Awesome\Frontend\Model\Context;
+use Awesome\Frontend\Model\DeployedVersion;
 
 class Translation extends \Awesome\Frontend\Block\Template
 {
@@ -15,16 +15,16 @@ class Translation extends \Awesome\Frontend\Block\Template
 
     /**
      * Translation constructor.
-     * @param Context $context
+     * @param DeployedVersion $deployedVersion
      * @param Locale $locale
      * @param array $data
      */
     public function __construct(
-        Context $context,
+        DeployedVersion $deployedVersion,
         Locale $locale,
         array $data = []
     ) {
-        parent::__construct($context, $data);
+        parent::__construct($deployedVersion, $data);
         $this->locale = $locale;
     }
 

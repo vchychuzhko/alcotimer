@@ -18,7 +18,7 @@ use Awesome\Framework\Model\Maintenance;
 
 class Http
 {
-    public const VERSION = '0.5.3';
+    public const VERSION = '0.5.4';
 
     public const FRONTEND_VIEW = 'frontend';
     public const BACKEND_VIEW = 'adminhtml';
@@ -125,7 +125,7 @@ class Http
             /** @var UnauthorizedAction $unauthorizedAction */
             $unauthorizedAction = $this->actionResolver->getUnauthorizedAction();
 
-            $this->logger->info($e->getMessage());
+            $this->logger->info($e->getMessage(), Logger::INFO_WARNING_LEVEL);
 
             $response = $unauthorizedAction->execute($request);
         } catch (\Exception $e) {
