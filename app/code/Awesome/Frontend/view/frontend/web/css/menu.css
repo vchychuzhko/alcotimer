@@ -5,9 +5,7 @@
     max-width: 300px;
     position: fixed;
     top: 0;
-    transition-duration: 0.5s;
-    transition-property: left;
-    transition-timing-function: ease;
+    transition: left 0.5s ease-in-out;
     width: calc(100% - 54px);
 }
 
@@ -16,9 +14,7 @@
 }
 
 .page-wrapper {
-    transition-duration: 0.5s;
-    transition-property: margin-left;
-    transition-timing-function: ease;
+    transition: margin-left 0.5s ease;
 }
 
 .menu.active + .page-wrapper {

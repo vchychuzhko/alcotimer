@@ -197,7 +197,7 @@ define([
          * Open modal window.
          */
         open: function () {
-            this.$modal.fadeIn();
+            this.$modal.addClass('opened');
 
             $(document).on('keydown.modal.focusTrap', (event) => {
                 if (event.key === 'Tab') {
@@ -247,7 +247,7 @@ define([
          * Close modal window.
          */
         close: function () {
-            this.$modal.fadeOut();
+            this.$modal.removeClass('opened');
 
             $(document).off('keydown.modal.focusTrap');
             this.$lastActive.focus();
