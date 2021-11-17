@@ -19,7 +19,8 @@
             <block name="translation"
                    class="Awesome\Frontend\Block\Translation"
                    template="Awesome_Frontend::translation.phtml"
-                   sortOrder="1"/>
+                   sortOrder="1"
+            />
         </container>
         <block name="menu" class="Awesome\Frontend\Block\Menu" template="Awesome_Frontend::menu.phtml" sortOrder="1"/>
         <container name="page-wrapper" htmlTag="main" htmlClass="page-wrapper" sortOrder="5">

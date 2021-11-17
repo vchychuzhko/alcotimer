@@ -52,7 +52,7 @@ class ConfigSet extends \Awesome\Console\Model\AbstractCommand
             $value = $input->getArgument('value');
             settype($value, $type);
         } else {
-            $value = $input->getArgument('value', true);
+            $value = $input->getArgument('value');
         }
         $path = $input->getArgument('path');
 

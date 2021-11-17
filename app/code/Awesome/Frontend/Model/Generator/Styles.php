@@ -15,8 +15,6 @@ class Styles extends \Awesome\Frontend\Model\AbstractGenerator
 {
     private const MODULE_LESS_PATTERN = '/*/*/view/{%s,%s}/web/css/source/module.less';
     public const RESULT_FILENAME = 'styles.css';
-    // public const STYLES_DESKTOP_FILENAME = 'styles-d.css'; // @todo: seems to be useless
-    // @todo: check if media queries can be read from parsed less files
 
     /**
      * @var CssMinifier $cssMinifier

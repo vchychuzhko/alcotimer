@@ -189,7 +189,7 @@ define([
          * @private
          */
         _initPlaylist: function () {
-            this.playlist = playlist.init($(this.element), this.options.playlistConfig);
+            this.playlist = playlist($(this.element), this.options.playlistConfig);
 
             this.playlist.addSelectionCallback((id, data, event) => {
                 event.preventDefault();
@@ -280,7 +280,7 @@ define([
         startVisualization: function () {
             if (this.state !== RUNNING_STATE) {
                 if (!this.visualizer) {
-                    this.visualizer = visualizer.init(this.audio, this.canvas);
+                    this.visualizer = visualizer(this.audio, this.canvas);
                     this.$playerControl.show();
 
                     this._initControlsHiding();

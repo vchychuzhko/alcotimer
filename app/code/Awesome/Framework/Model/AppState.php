@@ -24,11 +24,6 @@ class AppState implements \Awesome\Framework\Model\SingletonInterface
     private $isDeveloperMode;
 
     /**
-     * @var string $isPubRoot
-     */
-    private $isPubRoot;
-
-    /**
      * @var bool $showForbidden
      */
     private $showForbidden;

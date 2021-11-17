@@ -72,7 +72,9 @@ class LayoutXmlParser
     {
         $handles = $handles ?: [$handle];
         $pattern = APP_DIR . sprintf(
-            self::LAYOUT_XML_PATH_PATTERN, $view, '{' . self::DEFAULT_HANDLE_NAME . ',' . implode(',', $handles) . '}'
+            self::LAYOUT_XML_PATH_PATTERN,
+            $view,
+            '{' . self::DEFAULT_HANDLE_NAME . ',' . implode(',', $handles) . '}'
         );
         $head = [];
         $body = [];

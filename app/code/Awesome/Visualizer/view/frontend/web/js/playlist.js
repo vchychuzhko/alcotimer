@@ -149,15 +149,13 @@ define([
         }
     }
 
-    return {
-        /**
-         * Initialize player playlist with registered audio tracks.
-         * @param {jQuery} $context
-         * @param {Object} playlistConfig
-         * @returns {Playlist}
-         */
-        init: function ($context, playlistConfig) {
-            return new Playlist($context, playlistConfig);
-        }
-    }
+    /**
+     * Initialize player playlist with registered audio tracks.
+     * @param {jQuery} $context
+     * @param {Object} playlistConfig
+     * @returns {Playlist}
+     */
+    return function ($context, playlistConfig) {
+        return new Playlist($context, playlistConfig);
+    };
 });

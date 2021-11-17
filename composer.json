@@ -1,12 +1,12 @@
 {
-    "name": "awesome/alcotimer",
+    "name": "vchychuzhko/alcotimer",
     "description": "AlcoTimer web app",
     "type": "project",
-    "version": "0.5.4",
+    "version": "0.6.0",
     "require": {
         "tedivm/jshrink": "^1.4",
         "tubalmartin/cssmin": "^4.1",
-        "wikimedia/less.php": "^2.0",
+        "wikimedia/less.php": "^3.1",
         "ext-json": "*",
         "ext-dom": "*",
         "ext-libxml": "*",

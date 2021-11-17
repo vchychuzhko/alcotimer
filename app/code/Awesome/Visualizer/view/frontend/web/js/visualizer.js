@@ -91,15 +91,13 @@ define([
         }
     }
 
-    return {
-        /**
-         * Init audio spectrum visualiser.
-         * @param {HTMLMediaElement} audio
-         * @param {HTMLElement} canvas
-         * @returns {Visualizer}
-         */
-        init: function (audio, canvas) {
-            return new Visualizer(audio, canvas)
-        },
+    /**
+     * Init audio spectrum visualiser.
+     * @param {HTMLMediaElement} audio
+     * @param {HTMLElement} canvas
+     * @returns {Visualizer}
+     */
+    return function (audio, canvas) {
+        return new Visualizer(audio, canvas)
     };
 });

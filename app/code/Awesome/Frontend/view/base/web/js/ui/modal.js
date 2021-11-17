@@ -133,7 +133,7 @@ define([
                 $window.prepend($toolbar);
             }
 
-            $window.prepend(this._getContent().clone().addClass('modal__content').show()); // @todo: use clone(true) to keep js bindings
+            $window.prepend(this._getContent().clone().addClass('modal__content').show());
 
             if (this.options.title) {
                 $window.attr('aria-label', this.options.title);
@@ -142,10 +142,10 @@ define([
 
             $window.css('max-width', this.options.maxWidth);
 
-            this.$modal = $(`<div class="modal__container"></div>`);
+            this.$modal = $(`<div class="modal"></div>`);
 
             if (this.options.closeOnOverlay) {
-                this.$modal.addClass('modal__container--backdrop');
+                this.$modal.addClass('modal--backdrop');
             }
 
             this.$modal.append($window);

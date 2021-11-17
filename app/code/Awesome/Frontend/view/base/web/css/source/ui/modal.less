@@ -1,26 +1,24 @@
 .modal {
-    &__container {
-        background: rgba(0, 0, 0, 0.7);
-        bottom: 0;
-        left: 0;
-        opacity: 0;
-        overflow-y: auto;
-        position: fixed;
-        right: 0;
-        top: -100px;
-        transition: opacity 0.5s ease-in-out, top 0.5s ease-in-out;
-        visibility: hidden;
-        z-index: 98;
+    background: rgba(0, 0, 0, 0.7);
+    bottom: 0;
+    left: 0;
+    opacity: 0;
+    overflow-y: auto;
+    position: fixed;
+    right: 0;
+    top: -100px;
+    transition: opacity 0.4s ease-in-out, top 0.4s ease-in-out, visibility 0.4s ease-in-out;
+    visibility: hidden;
+    z-index: 98;
 
-        &--backdrop {
-            cursor: pointer;
-        }
+    &--backdrop {
+        cursor: pointer;
+    }
 
-        &.opened {
-            opacity: 1;
-            top: 0;
-            visibility: visible;
-        }
+    &.opened {
+        opacity: 1;
+        top: 0;
+        visibility: visible;
     }
 
     &__window {

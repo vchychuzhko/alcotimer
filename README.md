@@ -1,26 +1,31 @@
 # AlcoTimer
-*0.5.4-beta*
 
-Web application for people, who would like to make drinking process become really challenging.  
+*0.6.0-beta*
 
-### Requirements
+---
+
+Web application for people, who would like to make drinking process become really challenging.
+
+## Requirements
+
 * Web server (Apache/Nginx) pointed to `pub` folder
-* PHP 7.1+
+* PHP 7.4+
 * Composer
 
-### Installation
+## Installation
+
 * Install dependencies using composer:
+
 ```bash
 composer install
 ```
 
-* File `nginx.conf.sample` contain needed configurations, including secure connection and redirects.  
-Just replace 'domain.com' for you needed domain.
+* File `nginx.conf.sample` contain needed configurations, including secure connection and redirects. Replace `domain.com` and `user` placeholders with your actual data.
 
-### Usage
-Run below command to see possible console commands:  
+## Usage
+
+Run to see possible console commands:
+
 ```bash
-php bin/console help:show
-``` 
-
-###### Started as a web equivalent of [Android app](https://bitbucket.org/vchychuzhko/alcotimer)
+php bin/console --help
+```
