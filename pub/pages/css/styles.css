@@ -8,6 +8,7 @@ html, body {
 }
 
 body {
+    color: #333333;
     display: flex;
     flex-direction: column;
     font-family: Tahoma, sans-serif;
@@ -43,11 +44,29 @@ header {
 }
 
 main {
+    display: flex;
+    flex-direction: column;
     flex-grow: 1;
+    justify-content: center;
     padding: 20px;
+    position: relative;
+    text-align: center;
+}
+
+main::before {
+    background: url('/media/images/logo.svg') center / cover;
+    content: '';
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    opacity: 0.05;
+    width: 100%;
+    z-index: -1;
 }
 
 h1 {
+    font-size: 7rem;
     padding-bottom: 20px;
 }
 
@@ -55,8 +74,63 @@ p {
     padding: 5px 0;
 }
 
+.error__link {
+    border: 2px solid #ee0000;
+    color: #ee0000;
+    display: inline-block;
+    margin: 10px 20px;
+    padding: 10px 30px;
+    position: relative;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+.error__link::after {
+    border: 2px solid transparent;
+    content: '';
+    height: 100%;
+    inset: 0;
+    margin: auto;
+    pointer-events: none;
+    position: absolute;
+    transition: border-color 0.4s ease, height 0.4s ease, width 0.4s ease;
+    width: 100%;
+}
+
+.error__link:hover::after,
+.error__link:focus::after {
+    border-color: inherit;
+    height: calc(100% + 10px);
+    width: calc(100% - 10px);
+}
+
 footer {
     background: #ffffc2;
     padding: 10px;
     text-align: center;
+}
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background: #333333;
+        color: #e6e6e6;
+    }
+
+    header {
+        border-color: #e6e6e6;
+    }
+
+    img, main::before {
+        filter: invert(90%);
+    }
+
+    .error__link {
+        border: 2px solid #e6e6e6;
+        color: #e6e6e6;
+    }
+
+    footer {
+        background: none;
+        border-top: 1px solid #e6e6e6;
+    }
 }

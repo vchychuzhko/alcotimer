@@ -9,7 +9,7 @@ use Awesome\Framework\Model\Http\Request;
 
 class HttpErrorAction
 {
-    private const INTERNALERROR_PAGE_PATH = '/pub/pages/internal_error.php';
+    private const INTERNALERROR_PAGE_PATH = '/pub/pages/500.php';
 
     /**
      * @var string $errorMessage

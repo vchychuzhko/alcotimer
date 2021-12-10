@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title><?= __('Maintenance') ?></title>
+    <meta charset="UTF-8"/>
+    <title><?= __('Internal error') ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="alternate icon" href="/media/favicon/favicon-fix.png" type="image/png"/>
     <link rel="icon" href="/media/favicon/favicon-fix.svg" type="image/svg+xml"/>
@@ -10,11 +10,12 @@
         <?php include 'css/styles.css' ?>
     </style>
 </head>
-<body class="maintenance-index-index">
+<body class="internal_error-index-index">
     <?php include 'html/header.php' ?>
     <main>
-        <h1><?= __('Service is temporary unavailable') ?></h1>
-        <p><?= __('The site is down due to maintenance servicing and will return to work soon.') ?></p>
+        <h1>500</h1>
+        <p><?= __('An internal error occurred during loading this page') ?></p>
+        <p><?= __('Details are hidden due to security reasons and can be found in log files.') ?></p>
     </main>
     <?php include 'html/footer.php' ?>
 </body>

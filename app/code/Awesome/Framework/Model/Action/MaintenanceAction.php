@@ -10,7 +10,7 @@ use Awesome\Framework\Model\ResponseInterface;
 
 class MaintenanceAction extends \Awesome\Framework\Model\AbstractAction
 {
-    private const MAINTENANCE_PAGE_PATH = '/pub/pages/maintenance.php';
+    private const MAINTENANCE_PAGE_PATH = '/pub/pages/503.php';
 
     /**
      * @var PhpFileManager $phpFileManager

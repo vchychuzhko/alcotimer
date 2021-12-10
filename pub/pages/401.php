@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8"/>
     <title><?= __('Unauthorized') ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="alternate icon" href="/media/favicon/favicon.png" type="image/png"/>
@@ -13,8 +13,8 @@
 <body class="unauthorized-index-index">
     <?php include 'html/header.php' ?>
     <main>
-        <h1>401: <?= __('Unauthorized') ?></h1>
-        <p><?= __('Request\'s authorization was not correct.') ?></p>
+        <h1>401</h1>
+        <p><?= __("Request's authorization was not correct.") ?></p>
         <p><?= __('Please, check it and try to reload the page.') ?></p>
     </main>
     <?php include 'html/footer.php' ?>

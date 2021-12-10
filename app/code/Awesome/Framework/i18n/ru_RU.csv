@@ -7,7 +7,7 @@
 "Forbidden","Доступ запрещен"
 "The page or file you are trying to access is closed for viewing.","Страница, к которой вы пытаетесь получить доступ, закрыта от просмотра."
 "Page Not Found","Страница не найдена"
-"Seems, page you are looking for is not present.","Похоже, страница, которую вы пытаетесь найти, не существует."
+"Seems, page you are looking for is not present","Похоже, страница, которую вы пытаетесь найти, не существует"
 "Please, try to start your journey from the <a href=""/"">Homepage</a>","Пожалуйста, попробуйте начать ваш путь с <a href=""/"">Главной страницы</a>"
 "Unauthorized","Ошибка авторизации"
 "Request's authorization was not correct.","Авторизация запроса прошла некоректно."

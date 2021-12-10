@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8"/>
     <title><?= __('Page Not Found') ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="alternate icon" href="/media/favicon/favicon.png" type="image/png"/>
@@ -13,9 +13,9 @@
 <body class="notfound-index-index">
     <?php include 'html/header.php' ?>
     <main>
-        <h1>404: <?= __('Page Not Found') ?></h1>
-        <p><?= __('Seems, page you are looking for is not present.') ?></p>
-        <p><?= __('Please, try to start your journey from the <a href="/">Homepage</a>') ?></p>
+        <h1>404</h1>
+        <p><?= __('Seems, page you are looking for is not present') ?></p>
+        <p><a class="error__link" href="/"><?= __('Try Homepage') ?></a></p>
     </main>
     <?php include 'html/footer.php' ?>
 </body>

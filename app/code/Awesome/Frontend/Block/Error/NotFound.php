@@ -18,6 +18,6 @@ class NotFound extends \Awesome\Frontend\Block\Template implements \Awesome\Fron
      */
     public function getErrorDescription()
     {
-        return __('Seems, page you are looking for is not present.');
+        return __('Seems, page you are looking for is not present');
     }
 }
