@@ -45,6 +45,8 @@
     border-radius: 50%;
     outline: none;
 
+    -webkit-tap-highlight-color: transparent;
+
     --button-size: 100%;
     --button-icon-size: 50%;
     --button-color: #ffffff;
@@ -137,6 +139,8 @@
     height: 100%;
     outline: none;
     width: 100%;
+
+    -webkit-tap-highlight-color: transparent;
 }
 
 .page-wrapper .content .timer-container .random-button-container .random-button:hover,
