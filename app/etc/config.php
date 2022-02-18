@@ -13,12 +13,10 @@ return [
         'logo' => 'pub/media/images/logo.svg',
         'js' => [
             'minify' => 1,
-            'merge' => 0,
             'symlink' => 1, // Use symbolic link in developer mode
         ],
         'css' => [
             'minify' => 1,
-            'merge' => 0,
             'symlink' => 1, // Use symbolic link in developer mode
         ],
     ],
@@ -45,9 +43,5 @@ return [
             'maxValue' => 15,
             'minValue' => 1,
         ]
-    ],
-    'visualizer' => [
-        'title' => 'Audio Spectrum',
-        'default_thumbnail' => 'pub/media/podcasts/thumbnails/default.png',
     ],
 ];

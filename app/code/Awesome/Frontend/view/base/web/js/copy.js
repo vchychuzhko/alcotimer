@@ -5,7 +5,7 @@ define([
     'translator',
     'jquery/ui',
 ], function ($, clipboard, notification, __) {
-    'use strict'
+    'use strict';
 
     $.widget('awesome.copy', {
         options: {
@@ -69,7 +69,17 @@ define([
                 text = this.$target.text().trim();
             }
 
-            clipboard.copy(text, this.options.showMessage);
+            clipboard.copy(text).then(() => {
+                if (this.options.showMessage) {
+                    notification.info(__('Copied to the clipboard'));
+                }
+            }, () => {
+                console.error('Caller does not have permission to write to the clipboard');
+
+                if (this.options.showMessage) {
+                    notification.error(__('Clipboard is not available, try to copy manually'));
+                }
+            });
         },
     });
 });

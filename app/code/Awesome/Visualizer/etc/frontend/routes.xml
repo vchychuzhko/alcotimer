@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:noNamespaceSchemaLocation="../../../Framework/Schema/routes.xsd">
-    <route name="visualizer" type="standard">
-        <module name="Awesome_Visualizer"/>
-    </route>
-</routes>
