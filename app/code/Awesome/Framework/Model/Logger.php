@@ -25,7 +25,7 @@ class Logger extends \Awesome\Framework\Model\AbstractLogger
      */
     public function error(string $errorMessage): self
     {
-        return $this->write(self::EXCEPTION_LOG_FILE, $errorMessage);
+        return $this->write(self::EXCEPTION_LOG_FILE, $errorMessage . "\n");
     }
 
     /**

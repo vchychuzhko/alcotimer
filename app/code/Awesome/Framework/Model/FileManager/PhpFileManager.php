@@ -38,7 +38,7 @@ class PhpFileManager extends \Awesome\Framework\Model\FileManager
      * @param string $path
      * @param bool $return
      * @param bool $graceful
-     * @return void|string
+     * @return string|void
      * @throws FileSystemException
      */
     public function includeFile(string $path, bool $return = false, bool $graceful = false)

@@ -12,10 +12,10 @@
 </head>
 <body class="unauthorized-index-index">
     <?php include 'html/header.php' ?>
-    <main>
-        <h1>401</h1>
-        <p><?= __("Request's authorization was not correct.") ?></p>
-        <p><?= __('Please, check it and try to reload the page.') ?></p>
+    <main class="page-content error">
+        <h1 class="error__title">401</h1>
+        <p class="error__info"><?= __("Request's authorization was not correct") ?></p>
+        <p class="error__info"><?= __('Please, check it and try to reload the page.') ?></p>
     </main>
     <?php include 'html/footer.php' ?>
 </body>

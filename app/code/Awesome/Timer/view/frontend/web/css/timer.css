@@ -80,7 +80,6 @@
     background-clip: padding-box;
     border: 15px solid rgba(43,51,63,0.7);
     border-radius: 50%;
-    box-sizing: border-box;
     height: 100%;
     opacity: 0.85;
     text-align: left;
@@ -93,7 +92,6 @@
     border: inherit;
     border-radius: inherit;
     border-top-color: #fff;
-    box-sizing: inherit;
     content: "";
     height: inherit;
     margin: -15px;

@@ -216,7 +216,7 @@ define([
             });
 
             this.$lastActive = $(document.activeElement);
-            this.focusable.$first.focus();
+            setTimeout(() => this.focusable.$first.focus(), 400); // 400ms for slide animation to complete
 
             if (this.options.closeOnEsc) {
                 $(document).on('keyup.modal.close', (event) => {

@@ -12,10 +12,10 @@
 </head>
 <body class="internal_error-index-index">
     <?php include 'html/header.php' ?>
-    <main>
-        <h1>500</h1>
-        <p><?= __('An internal error occurred during loading this page') ?></p>
-        <p><?= __('Details are hidden due to security reasons and can be found in log files.') ?></p>
+    <main class="page-content error">
+        <h1 class="error__title">500</h1>
+        <p class="error__info"><?= __('An internal error occurred during loading this page') ?></p>
+        <p class="error__info"><?= __('Details are hidden due to security reasons and can be found in log files.') ?></p>
     </main>
     <?php include 'html/footer.php' ?>
 </body>

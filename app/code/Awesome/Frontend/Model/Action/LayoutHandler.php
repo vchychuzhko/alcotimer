@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Awesome\Frontend\Model\Action;
 
 use Awesome\Cache\Model\Cache;
-use Awesome\Framework\Model\AppState;
 use Awesome\Framework\Model\Config;
 use Awesome\Framework\Model\Http\Request;
 use Awesome\Framework\Model\Http\Router;
@@ -20,13 +19,7 @@ class LayoutHandler extends \Awesome\Framework\Model\AbstractAction
 
     public const HOMEPAGE_HANDLE_CONFIG = 'web/homepage';
 
-    public const FORBIDDEN_PAGE_HANDLE = 'forbidden_index_index';
     public const NOTFOUND_PAGE_HANDLE = 'notfound_index_index';
-
-    /**
-     * @var AppState $appState
-     */
-    private $appState;
 
     /**
      * @var Cache $cache
@@ -65,7 +58,6 @@ class LayoutHandler extends \Awesome\Framework\Model\AbstractAction
 
     /**
      * LayoutHandler constructor.
-     * @param AppState $appState
      * @param Cache $cache
      * @param Config $config
      * @param ResponseFactory $responseFactory
@@ -73,7 +65,6 @@ class LayoutHandler extends \Awesome\Framework\Model\AbstractAction
      * @param Router $router
      */
     public function __construct(
-        AppState $appState,
         Cache $cache,
         Config $config,
         ResponseFactory $responseFactory,
@@ -81,7 +72,6 @@ class LayoutHandler extends \Awesome\Framework\Model\AbstractAction
         Router $router
     ) {
         parent::__construct($responseFactory);
-        $this->appState = $appState;
         $this->cache = $cache;
         $this->config = $config;
         $this->resultPageFactory = $resultPageFactory;
@@ -108,15 +98,8 @@ class LayoutHandler extends \Awesome\Framework\Model\AbstractAction
         }
 
         if (!$this->router->getStandardRoute($route, $view) || !$this->handleExist($handle, $view)) {
-            if ($request->getRedirectStatusCode() === Request::FORBIDDEN_REDIRECT_CODE
-                && $this->appState->showForbidden()
-            ) {
-                $handle = self::FORBIDDEN_PAGE_HANDLE;
-                $status = ResponseInterface::FORBIDDEN_STATUS_CODE;
-            } else {
-                $handle = self::NOTFOUND_PAGE_HANDLE;
-                $status = ResponseInterface::NOTFOUND_STATUS_CODE;
-            }
+            $handle = self::NOTFOUND_PAGE_HANDLE;
+            $status = ResponseInterface::NOTFOUND_STATUS_CODE;
             $handles = [$handle];
         }
 

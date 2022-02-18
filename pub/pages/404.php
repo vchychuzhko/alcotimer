@@ -12,10 +12,10 @@
 </head>
 <body class="notfound-index-index">
     <?php include 'html/header.php' ?>
-    <main>
-        <h1>404</h1>
-        <p><?= __('Seems, page you are looking for is not present') ?></p>
-        <p><a class="error__link" href="/"><?= __('Try Homepage') ?></a></p>
+    <main class="page-content error">
+        <h1 class="error__title">404</h1>
+        <p class="error__info"><?= __('Seems, page you are looking for is not present') ?></p>
+        <a class="error__link" href="/"><?= __('Try Homepage') ?></a>
     </main>
     <?php include 'html/footer.php' ?>
 </body>

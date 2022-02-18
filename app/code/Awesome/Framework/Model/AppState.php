@@ -11,7 +11,6 @@ class AppState implements \Awesome\Framework\Model\SingletonInterface
     public const PRODUCTION_MODE = 'production';
 
     private const DEVELOPER_MODE_CONFIG = 'developer_mode';
-    private const SHOW_FORBIDDEN_CONFIG = 'show_forbidden';
 
     /**
      * @var Config $config
@@ -57,18 +56,5 @@ class AppState implements \Awesome\Framework\Model\SingletonInterface
         }
 
         return $this->isDeveloperMode;
-    }
-
-    /**
-     * Check if it is allowed to show 403 Forbidden response.
-     * @return bool
-     */
-    public function showForbidden(): bool
-    {
-        if ($this->showForbidden === null) {
-            $this->showForbidden = (bool) $this->config->get(self::SHOW_FORBIDDEN_CONFIG);
-        }
-
-        return $this->showForbidden;
     }
 }

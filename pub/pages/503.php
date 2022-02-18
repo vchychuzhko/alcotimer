@@ -12,10 +12,10 @@
 </head>
 <body class="maintenance-index-index">
     <?php include 'html/header.php' ?>
-    <main>
-        <h1>503</h1>
-        <p><?= __('Service is temporary unavailable') ?></p>
-        <p><?= __('The site is down due to maintenance servicing and will return to work soon.') ?></p>
+    <main class="page-content error">
+        <h1 class="error__title">503</h1>
+        <p class="error__info"><?= __('Service is temporary unavailable') ?></p>
+        <p class="error__info"><?= __('The site is down due to maintenance servicing and will return to work soon.') ?></p>
     </main>
     <?php include 'html/footer.php' ?>
 </body>
