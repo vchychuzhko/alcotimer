@@ -45,7 +45,7 @@ define([
             $(this.element).on('click', '.random-button', this.setRandom.bind(this));
 
             $(this.element).on('timer.updateSettings', function (event, data) {
-                this.pause();
+                this.stop();
                 this.applySettings(data.settings);
                 this.setTime(this.enteredTime);
             }.bind(this));
@@ -139,14 +139,10 @@ define([
          * Start/stop the timer
          */
         toggleTimer: function () {
-            if ($(this.element).is('.in-progress')) {
+            if (this.state === RUNNING_STATE) {
                 this.pause();
-                this.$timerControl.removeClass('active');
-                this.$timerControl.attr('title', __('Play'));
             } else {
                 this.start();
-                this.$timerControl.addClass('active');
-                this.$timerControl.attr('title', __('Pause'));
             }
 
             this.saveConfigurations()
@@ -181,6 +177,9 @@ define([
                 }.bind(this), 1000);
 
                 $(this.element).addClass('in-progress');
+                this.$timerControl.addClass('active');
+                this.$timerControl.attr('title', __('Pause'));
+
                 this.state = RUNNING_STATE;
             }
         },
@@ -190,7 +189,11 @@ define([
          */
         pause: function () {
             clearInterval(this.timerInterval);
+
             $(this.element).removeClass('in-progress');
+            this.$timerControl.removeClass('active');
+            this.$timerControl.attr('title', __('Play'));
+
             this.state = STOPPED_STATE;
         },
 
