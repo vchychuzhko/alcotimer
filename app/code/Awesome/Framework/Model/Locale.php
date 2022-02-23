@@ -7,20 +7,16 @@ use Awesome\Framework\Model\Http\Request;
 
 class Locale implements \Awesome\Framework\Model\SingletonInterface
 {
-    public const LOCALE_COOKIE = 'locale_code';
-    public const DEFAULT_LOCALE = 'en_US';
+    public const LOCALE_COOKIE = 'locale';
+
+    public const EN_LOCALE = 'en_US';
+    public const UA_LOCALE = 'uk_UA';
 
     private const DEFAULT_LOCALE_CONFIG = 'default_locale';
 
-    /**
-     * @var Config $config
-     */
-    private $config;
+    private Config $config;
 
-    /**
-     * @var string $locale
-     */
-    private $locale = self::DEFAULT_LOCALE;
+    private string $locale;
 
     /**
      * Locale constructor.
@@ -39,13 +35,13 @@ class Locale implements \Awesome\Framework\Model\SingletonInterface
      */
     public function init(Request $request): self
     {
-        $locale = $request->getCookie(self::LOCALE_COOKIE) ?: $this->config->get(self::DEFAULT_LOCALE_CONFIG);
+        $locale = $request->getCookie(self::LOCALE_COOKIE);
 
-        if ($locale) {
-            try {
-                $this->setLocale($locale);
-            } catch (\RuntimeException $e) {}
+        if (!$locale || !in_array($locale, self::getAllLocales(), true)) {
+            $locale = (string) $this->config->get(self::DEFAULT_LOCALE_CONFIG);
         }
+
+        $this->locale = $locale;
 
         return $this;
     }
@@ -66,24 +62,8 @@ class Locale implements \Awesome\Framework\Model\SingletonInterface
     public static function getAllLocales(): array
     {
         return [
-            'en_US',
-            'ru_RU',
-            'uk_UA',
+            self::EN_LOCALE,
+            self::UA_LOCALE,
         ];
-    }
-
-    /**
-     * Set locale for current session, it must be registered.
-     * @param string $locale
-     * @return $this
-     */
-    public function setLocale(string $locale): self
-    {
-        if (!in_array($locale, self::getAllLocales(), true)) {
-            throw new \InvalidArgumentException(__('Cannot set unregistered locale: %1', $locale));
-        }
-        $this->locale = $locale;
-
-        return $this;
     }
 }

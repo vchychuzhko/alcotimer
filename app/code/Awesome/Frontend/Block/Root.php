@@ -11,7 +11,6 @@ class Root extends \Awesome\Frontend\Block\Template
     private const DEFAULT_LANGUAGE = 'en';
     private const LANGUAGE_MAP = [
         'en_US' => 'en',
-        'ru_RU' => 'ru',
         'uk_UA' => 'uk',
     ];
 
