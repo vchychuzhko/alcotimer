@@ -22,7 +22,7 @@ class StaticFile extends \Awesome\Frontend\Model\AbstractGenerator
     /**
      * @inheritDoc
      */
-    protected static $extensions = [
+    protected static array $extensions = [
         'css',
         'js',
         'eot',
@@ -33,15 +33,9 @@ class StaticFile extends \Awesome\Frontend\Model\AbstractGenerator
         'svg',
     ];
 
-    /**
-     * @var CssMinifier $cssMinifier
-     */
-    private $cssMinifier;
+    private CssMinifier $cssMinifier;
 
-    /**
-     * @var JsMinifier $jsMinifier
-     */
-    private $jsMinifier;
+    private JsMinifier $jsMinifier;
 
     /**
      * StaticFile constructor.
@@ -65,7 +59,7 @@ class StaticFile extends \Awesome\Frontend\Model\AbstractGenerator
      * Deploy static file for specified view.
      * @inheritDoc
      */
-    public function generate(string $path, string $view): GeneratorInterface
+    public function generate(string $path, string $view): string
     {
         switch (pathinfo($path, PATHINFO_EXTENSION)) {
             case 'eot':
@@ -73,67 +67,61 @@ class StaticFile extends \Awesome\Frontend\Model\AbstractGenerator
             case 'otf':
             case 'woff':
             case 'woff2': {
-                $this->generateFontFile($path, $view);
-                break;
+                return $this->generateFontFile($path, $view);
             }
             case 'svg': {
-                $this->generateImageFile($path, $view);
-                break;
+                return $this->generateImageFile($path, $view);
             }
             case 'css': {
-                $this->generateCssFile($path, $view);
-                break;
+                return $this->generateCssFile($path, $view);
             }
             case 'js': {
-                if (preg_match(self::LIB_FILE_PATTERN, $path)) {
-                    $this->generateLibFile($path, $view);
-                } else {
-                    $this->generateJsFile($path, $view);
-                }
-                break;
+                return preg_match(self::LIB_FILE_PATTERN, $path)
+                    ? $this->generateLibFile($path, $view)
+                    : $this->generateJsFile($path, $view);
             }
         }
 
-        return $this;
+        return '';
     }
 
     /**
      * Deploy font file for specified view.
      * @param string $path
      * @param string $view
-     * @return $this
+     * @return string
      */
-    public function generateFontFile(string $path, string $view): self
+    public function generateFontFile(string $path, string $view): string
     {
         $staticPath = $this->getStaticPath($path, $view);
 
         $this->fileManager->copyFile($path, $staticPath);
 
-        return $this;
+        return $this->fileManager->readFile($staticPath);
     }
 
     /**
      * Deploy image file for specified view.
      * @param string $path
      * @param string $view
-     * @return $this
+     * @return string
      */
-    public function generateImageFile(string $path, string $view): self
+    public function generateImageFile(string $path, string $view): string
     {
         $staticPath = $this->getStaticPath($path, $view);
 
         $this->fileManager->copyFile($path, $staticPath);
 
-        return $this;
+        return $this->fileManager->readFile($staticPath);
     }
 
     /**
      * Deploy css static file for specified view.
      * @param string $path
      * @param string $view
-     * @return $this
+     * @return string
      */
-    public function generateCssFile(string $path, string $view): self
+    public function generateCssFile(string $path, string $view): string
     {
         $staticPath = $this->getStaticPath($path, $view);
 
@@ -157,16 +145,16 @@ class StaticFile extends \Awesome\Frontend\Model\AbstractGenerator
             $this->fileManager->createFile($staticPath, $content);
         }
 
-        return $this;
+        return $this->fileManager->readFile($staticPath);
     }
 
     /**
      * Deploy js static file for specified view.
      * @param string $path
      * @param string $view
-     * @return $this
+     * @return string
      */
-    public function generateJsFile(string $path, string $view): self
+    public function generateJsFile(string $path, string $view): string
     {
         $staticPath = $this->getStaticPath($path, $view);
 
@@ -190,16 +178,16 @@ class StaticFile extends \Awesome\Frontend\Model\AbstractGenerator
             $this->fileManager->createFile($staticPath, $content);
         }
 
-        return $this;
+        return $this->fileManager->readFile($staticPath);
     }
 
     /**
      * Deploy js library static file for specified view.
      * @param string $path
      * @param string $view
-     * @return $this
+     * @return string
      */
-    public function generateLibFile(string $path, string $view): self
+    public function generateLibFile(string $path, string $view): string
     {
         $staticPath = $this->getStaticPath(str_replace(BP, '', $path), $view, true);
 
@@ -217,6 +205,6 @@ class StaticFile extends \Awesome\Frontend\Model\AbstractGenerator
             $this->fileManager->copyFile($path, $staticPath);
         }
 
-        return $this;
+        return $this->fileManager->readFile($staticPath);
     }
 }

@@ -10,7 +10,6 @@ use Awesome\Framework\Model\Serializer\Json;
 use Awesome\Frontend\Helper\StaticContentHelper;
 use Awesome\Frontend\Model\DeployedVersion;
 use Awesome\Frontend\Model\FrontendState;
-use Awesome\Frontend\Model\GeneratorInterface;
 use Awesome\Frontend\Model\Js\JsMinifier;
 
 class RequireJs extends \Awesome\Frontend\Model\AbstractGenerator
@@ -18,25 +17,13 @@ class RequireJs extends \Awesome\Frontend\Model\AbstractGenerator
     private const REQUIREJS_CONFIG_PATTERN = '/*/*/view/{%s,%s}/requirejs-config.json';
     public const RESULT_FILENAME = 'requirejs-config.js';
 
-    /**
-     * @var Config $config
-     */
-    private $config;
+    private Config $config;
 
-    /**
-     * @var DeployedVersion $deployedVersion
-     */
-    private $deployedVersion;
+    private DeployedVersion $deployedVersion;
 
-    /**
-     * @var JsMinifier $jsMinifier
-     */
-    private $jsMinifier;
+    private JsMinifier $jsMinifier;
 
-    /**
-     * @var Json $json
-     */
-    private $json;
+    private Json $json;
 
     /**
      * RequireJs constructor.
@@ -66,7 +53,7 @@ class RequireJs extends \Awesome\Frontend\Model\AbstractGenerator
      * Generate requirejs config file.
      * @inheritDoc
      */
-    public function generate(string $path, string $view): GeneratorInterface
+    public function generate(string $path, string $view): string
     {
         $resultFile = self::RESULT_FILENAME;
         $paths = [];
@@ -116,7 +103,7 @@ JS;
             true
         );
 
-        return $this;
+        return $content;
     }
 
     /**

@@ -43,7 +43,7 @@ server {
     }
 
     # PHP entry point for main application
-    location ~ ^/(index|static/get)\.php$ {
+    location ~ ^/index\.php$ {
         try_files    $uri =404;
         fastcgi_pass unix:/var/run/php-fpm/php-fpm.sock; # socket
 
@@ -64,7 +64,7 @@ server {
             expires    +1y;
 
             if (!-f $request_filename) {
-                rewrite ^/static/(version\d*/)?(.*)$ /static/get.php?resource=$2 last;
+                rewrite ^/static/(version\d*/)?(.*)$ /index.php?resource=$2 last;
             }
         }
         location ~* \.(zip|gz|gzip|bz2|csv|xml)$ {
@@ -73,12 +73,12 @@ server {
             expires    off;
 
             if (!-f $request_filename) {
-                rewrite ^/static/(version\d*/)?(.*)$ /static/get.php?resource=$2 last;
+                rewrite ^/static/(version\d*/)?(.*)$ /index.php?resource=$2 last;
             }
         }
 
         if (!-f $request_filename) {
-            rewrite ^/static/(version\d*/)?(.*)$ /static/get.php?resource=$2 last;
+            rewrite ^/static/(version\d*/)?(.*)$ /index.php?resource=$2 last;
         }
         add_header X-Frame-Options "SAMEORIGIN";
     }

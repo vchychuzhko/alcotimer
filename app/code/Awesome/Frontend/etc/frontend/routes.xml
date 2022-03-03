@@ -3,4 +3,5 @@
         xsi:noNamespaceSchemaLocation="../../../Framework/Schema/routes.xsd"
 >
     <route name="notfound" path="*" handler="Awesome\Frontend\Controller\NotFound"/>
+    <route name="static" path="/static/*" handler="Awesome\Frontend\Controller\StaticAction"/>
 </routes>

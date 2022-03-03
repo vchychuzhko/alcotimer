@@ -14,17 +14,11 @@ abstract class AbstractGenerator implements \Awesome\Frontend\Model\GeneratorInt
     /**
      * File extensions that corresponds to this generator.
      */
-    protected static $extensions = [];
+    protected static array $extensions = [];
 
-    /**
-     * @var FileManager $fileManager
-     */
-    protected $fileManager;
+    protected FileManager $fileManager;
 
-    /**
-     * @var FrontendState $frontendState
-     */
-    protected $frontendState;
+    protected FrontendState $frontendState;
 
     /**
      * AbstractGenerator constructor.

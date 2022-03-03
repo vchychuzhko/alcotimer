@@ -4,15 +4,16 @@ declare(strict_types=1);
 namespace Awesome\Framework\Model\Http;
 
 use Awesome\Cache\Model\Cache;
+use Awesome\Framework\Exception\NotFoundException;
+use Awesome\Framework\Model\ActionInterface;
+use Awesome\Framework\Model\Action\MaintenanceAction;
+use Awesome\Framework\Model\Action\NotFoundAction;
+use Awesome\Framework\Model\Action\UnauthorizedAction;
 use Awesome\Framework\Model\AppState;
 use Awesome\Framework\Model\Config;
 use Awesome\Framework\Model\Http;
 use Awesome\Framework\Model\Http\PostControllerInterface;
 use Awesome\Framework\Model\Http\Request;
-use Awesome\Framework\Model\Action\HttpDefaultAction;
-use Awesome\Framework\Model\Action\MaintenanceAction;
-use Awesome\Framework\Model\Action\UnauthorizedAction;
-use Awesome\Framework\Model\ActionInterface;
 use Awesome\Framework\Model\XmlParser\RoutesXmlParser;
 
 class Router
@@ -72,7 +73,9 @@ class Router
         $path = $this->getPath($request);
         $view = $this->isAdminhtml($request) ? Http::BACKEND_VIEW : Http::FRONTEND_VIEW;
 
-        $action = $this->getAction($path, $view);
+        $routes = $this->getRoutes($view);
+
+        $action = $this->getAction($path, $routes);
 
         if ($action
             && is_subclass_of($action, PostControllerInterface::class) === $request->isPost()
@@ -81,24 +84,34 @@ class Router
             return $this->actionFactory->create($action);
         }
 
-        return $this->actionFactory->create(HttpDefaultAction::class);
+        if (!isset($routes[self::FALLBACK_ROUTE])) {
+            throw new NotFoundException();
+        }
+
+        return end($routes[self::FALLBACK_ROUTE]);
     }
 
     /**
      * Check if requested path is a registered one and return its responsible handle.
      * @param string $path
-     * @param string $view
+     * @param array $routes
      * @return string|null
      */
-    private function getAction(string $path, string $view): ?string
+    private function getAction(string $path, array $routes): ?string
     {
-        $routes = $this->getRoutes($view);
-
         if (isset($routes[$path])) {
             return end($routes[$path]);
         }
 
-        return isset($routes[self::FALLBACK_ROUTE]) ? end($routes[self::FALLBACK_ROUTE]) : null;
+        $match = '';
+
+        foreach ($routes as $route => $handles) {
+            if (preg_match('/^' . str_replace(['/', '*'], ['\/', '.*'], $route) . '/', $path) && strcmp($route, $match) > 0) {
+                $match = $route;
+            }
+        }
+
+        return $match ? end($routes[$match]) : null;
     }
 
     /**
@@ -149,6 +162,15 @@ class Router
     public function getMaintenanceAction(): ActionInterface
     {
         return $this->actionFactory->create(MaintenanceAction::class);
+    }
+
+    /**
+     * Get not-found action.
+     * @return ActionInterface
+     */
+    public function getNotFoundAction(): ActionInterface
+    {
+        return $this->actionFactory->create(NotFoundAction::class);
     }
 
     /**

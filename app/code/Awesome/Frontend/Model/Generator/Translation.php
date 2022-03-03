@@ -10,7 +10,6 @@ use Awesome\Framework\Model\Locale\Translator;
 use Awesome\Framework\Model\Serializer\Json;
 use Awesome\Frontend\Helper\StaticContentHelper;
 use Awesome\Frontend\Model\FrontendState;
-use Awesome\Frontend\Model\GeneratorInterface;
 use Awesome\Frontend\Model\Js\JsMinifier;
 
 class Translation extends \Awesome\Frontend\Model\AbstractGenerator
@@ -18,20 +17,11 @@ class Translation extends \Awesome\Frontend\Model\AbstractGenerator
     private const JS_FOLDERS_PATTERN = '/*/*/view/{%s,%s}/web/js';
     private const TRANSLATION_FILE_PATTERN = '/\/?i18n\/([a-z]{2}_[A-Z]{2})(\.min)?\.js$/';
 
-    /**
-     * @var JsMinifier $jsMinifier
-     */
-    private $jsMinifier;
+    private JsMinifier $jsMinifier;
 
-    /**
-     * @var Json $json
-     */
-    private $json;
+    private Json $json;
 
-    /**
-     * @var Translator $translator
-     */
-    private $translator;
+    private Translator $translator;
 
     /**
      * Translation constructor.
@@ -58,7 +48,7 @@ class Translation extends \Awesome\Frontend\Model\AbstractGenerator
      * Generate translations file for specified view and locale.
      * @inheritDoc
      */
-    public function generate(string $path, string $view): GeneratorInterface
+    public function generate(string $path, string $view): string
     {
         $locale = self::getLocaleByPath($path);
         $resultFile = self::getPathByLocale($locale);
@@ -110,15 +100,14 @@ JS;
             true
         );
 
-        return $this;
+        return $content;
     }
 
     /**
      * Generate translations file for all locales.
      * @param string $view
-     * @return void
      */
-    public function generateAll(string $view): void
+    public function generateAll(string $view)
     {
         foreach (Locale::getAllLocales() as $locale) {
             $this->generate(self::getPathByLocale($locale), $view);

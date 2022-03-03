@@ -11,25 +11,13 @@ class FrontendState extends \Awesome\Framework\Model\AppState
     private const CSS_SYMLINK_CONFIG = 'web/css/symlink';
     private const JS_SYMLINK_CONFIG = 'web/js/symlink';
 
-    /**
-     * @var bool $isCssMinificationEnabled
-     */
-    private $isCssMinificationEnabled;
+    private bool $isCssMinificationEnabled;
 
-    /**
-     * @var bool $isJsMinificationEnabled
-     */
-    private $isJsMinificationEnabled;
+    private bool $isJsMinificationEnabled;
 
-    /**
-     * @var bool $useSymlinkForCss
-     */
-    private $useSymlinkForCss;
+    private bool $useSymlinkForCss;
 
-    /**
-     * @var bool $useSymlinkForJs
-     */
-    private $useSymlinkForJs;
+    private bool $useSymlinkForJs;
 
     /**
      * Check if css minification is enabled.
@@ -37,7 +25,7 @@ class FrontendState extends \Awesome\Framework\Model\AppState
      */
     public function isCssMinificationEnabled(): bool
     {
-        if ($this->isCssMinificationEnabled === null) {
+        if (!isset($this->isCssMinificationEnabled)) {
             $this->isCssMinificationEnabled = (bool) $this->config->get(self::CSS_MINIFY_CONFIG);
         }
 
@@ -50,7 +38,7 @@ class FrontendState extends \Awesome\Framework\Model\AppState
      */
     public function isJsMinificationEnabled(): bool
     {
-        if ($this->isJsMinificationEnabled === null) {
+        if (!isset($this->isJsMinificationEnabled)) {
             $this->isJsMinificationEnabled = (bool) $this->config->get(self::JS_MINIFY_CONFIG);
         }
 
@@ -64,7 +52,7 @@ class FrontendState extends \Awesome\Framework\Model\AppState
      */
     public function useSymlinkForCss(): bool
     {
-        if ($this->useSymlinkForCss === null) {
+        if (!isset($this->useSymlinkForCss)) {
             $this->useSymlinkForCss = $this->config->get(self::CSS_SYMLINK_CONFIG)
                 && !$this->isCssMinificationEnabled()
                 && $this->isDeveloperMode();
@@ -80,7 +68,7 @@ class FrontendState extends \Awesome\Framework\Model\AppState
      */
     public function useSymlinkForJs(): bool
     {
-        if ($this->useSymlinkForJs === null) {
+        if (!isset($this->useSymlinkForJs)) {
             $this->useSymlinkForJs = $this->config->get(self::JS_SYMLINK_CONFIG)
                 && !$this->isJsMinificationEnabled()
                 && $this->isDeveloperMode();

@@ -3,9 +3,11 @@ declare(strict_types=1);
 
 namespace Awesome\Framework\Model;
 
+use Awesome\Framework\Exception\NotFoundException;
 use Awesome\Framework\Exception\UnauthorizedException;
 use Awesome\Framework\Model\Action\HttpErrorAction;
 use Awesome\Framework\Model\Action\MaintenanceAction;
+use Awesome\Framework\Model\Action\NotFoundAction;
 use Awesome\Framework\Model\Action\UnauthorizedAction;
 use Awesome\Framework\Model\AppState;
 use Awesome\Framework\Model\Http\Request;
@@ -69,6 +71,11 @@ class Http
 
                 $response = $maintenanceAction->execute($this->request);
             }
+        } catch (NotFoundException $e) {
+            /** @var NotFoundAction $unauthorizedAction */
+            $notFoundAction = $this->router->getNotFoundAction();
+
+            $response = $notFoundAction->execute($this->request);
         } catch (UnauthorizedException $e) {
             /** @var UnauthorizedAction $unauthorizedAction */
             $unauthorizedAction = $this->router->getUnauthorizedAction();

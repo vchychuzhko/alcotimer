@@ -9,22 +9,15 @@ use Awesome\Frontend\Helper\StaticContentHelper;
 use Awesome\Frontend\Model\Css\CssMinifier;
 use Awesome\Frontend\Model\Css\LessParser;
 use Awesome\Frontend\Model\FrontendState;
-use Awesome\Frontend\Model\GeneratorInterface;
 
 class Styles extends \Awesome\Frontend\Model\AbstractGenerator
 {
     private const MODULE_LESS_PATTERN = '/*/*/view/{%s,%s}/web/css/source/module.less';
     public const RESULT_FILENAME = 'styles.css';
 
-    /**
-     * @var CssMinifier $cssMinifier
-     */
-    private $cssMinifier;
+    private CssMinifier $cssMinifier;
 
-    /**
-     * @var LessParser $lessParser
-     */
-    private $lessParser;
+    private LessParser $lessParser;
 
     /**
      * Styles constructor.
@@ -49,7 +42,7 @@ class Styles extends \Awesome\Frontend\Model\AbstractGenerator
      * If developer mode is active, source map will be attached.
      * @inheritDoc
      */
-    public function generate(string $path, string $view): GeneratorInterface
+    public function generate(string $path, string $view): string
     {
         $resultFile = self::RESULT_FILENAME;
         $this->lessParser->reset();
@@ -78,7 +71,7 @@ class Styles extends \Awesome\Frontend\Model\AbstractGenerator
             true
         );
 
-        return $this;
+        return $content;
     }
 
     /**

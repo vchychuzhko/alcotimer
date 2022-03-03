@@ -8,7 +8,7 @@ use Awesome\Framework\Model\Http\Request;
 use Awesome\Framework\Model\Http\ResponseFactory;
 use Awesome\Framework\Model\ResponseInterface;
 
-class HttpDefaultAction extends \Awesome\Framework\Model\AbstractAction
+class NotFoundAction extends \Awesome\Framework\Model\AbstractAction
 {
     private const NOTFOUND_PAGE = '/pub/pages/404.php';
 
