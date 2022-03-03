@@ -8,23 +8,19 @@ use Awesome\Framework\Helper\DataHelper;
 
 class DataObject
 {
-    /**
-     * @var array $data
-     */
-    private $data;
+    private array $data;
 
-    /**
-     * @var bool $readOnly
-     */
-    private $readOnly;
+    private bool $readOnly;
 
     /**
      * DataObject constructor.
      * @param array $data
      * @param bool $readOnly
      */
-    public function __construct(array $data = [], bool $readOnly = false)
-    {
+    public function __construct(
+        array $data = [],
+        bool $readOnly = false
+    ) {
         $this->data = $data;
         $this->readOnly = $readOnly;
     }

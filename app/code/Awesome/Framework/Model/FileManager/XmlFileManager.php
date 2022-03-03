@@ -16,6 +16,7 @@ class XmlFileManager extends \Awesome\Framework\Model\FileManager
      * @return \SimpleXMLElement
      * @throws FileSystemException
      * @throws XmlValidationException
+     * @deprecated see Next version of this method
      */
     public function parseXmlFile(string $path, ?string $schemaFile = null): \SimpleXMLElement
     {
@@ -49,5 +50,34 @@ class XmlFileManager extends \Awesome\Framework\Model\FileManager
         }
 
         return $xmlNode;
+    }
+
+    /**
+     * Read and parse XML file.
+     * If XSD scheme file is provided, XML is checked for validity.
+     * @param string $path
+     * @param string|null $schemaFile
+     * @return array
+     * @throws FileSystemException
+     * @throws XmlValidationException
+     */
+    public function parseXmlFileNext(string $path, ?string $schemaFile = null): array
+    {
+        return $this->parse($this->parseXmlFile($path, $schemaFile));
+    }
+
+    private function parse(\SimpleXMLElement $node): array
+    {
+        $parsedNode = [];
+
+        foreach ($node->attributes() as $attribute => $value) {
+            $parsedNode[$attribute] = (string) $value;
+        }
+
+        foreach ($node->children() as $type => $child) {
+            $parsedNode['_' . $type][] = $this->parse($child);
+        }
+
+        return $parsedNode;
     }
 }

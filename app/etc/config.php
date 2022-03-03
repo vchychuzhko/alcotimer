@@ -9,7 +9,7 @@ return [
     'support_email_address' => '',
     'default_locale' => 'uk_UA',
     'web' => [
-        'homepage' => 'timer/index/index',
+        'homepage' => '/timer',
         'logo' => 'pub/media/images/logo.svg',
         'js' => [
             'minify' => 1,

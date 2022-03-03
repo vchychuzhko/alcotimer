@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Awesome\Controller\Model;
+namespace Awesome\Framework\Model\Http;
 
 /**
  * Interface PostControllerInterface

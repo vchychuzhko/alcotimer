@@ -3,7 +3,7 @@
     <?= $block->getChildHtml() ?>
     <div class="logo">
         <a class="logo__link"<?= $block->isHomepage() ? '' : 'href="/"' ?> title="<?= __('Homepage') ?>">
-            <img class="logo__image" src="<?= $block->getLogo() ?>" alt="<?= __('%1 logo', 'AlcoTimer') ?>"/>
+            <img class="logo__image" src="<?= $block->getLogoUrl() ?>" alt="<?= __('%1 logo', 'AlcoTimer') ?>"/>
         </a>
     </div>
 </header>

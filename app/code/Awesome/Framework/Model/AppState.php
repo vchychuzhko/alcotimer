@@ -7,42 +7,36 @@ use Awesome\Framework\Model\Config;
 
 class AppState implements \Awesome\Framework\Model\SingletonInterface
 {
-    public const DEVELOPER_MODE = 'development';
-    public const PRODUCTION_MODE = 'production';
-
+    private const BACKEND_ENABLED_CONFIG = 'backend/enabled';
     private const DEVELOPER_MODE_CONFIG = 'developer_mode';
 
-    /**
-     * @var Config $config
-     */
-    protected $config;
+    protected Config $config;
 
-    /**
-     * @var bool $isDeveloperMode
-     */
-    private $isDeveloperMode;
+    private bool $isAdminhtmlEnabled;
 
-    /**
-     * @var bool $showForbidden
-     */
-    private $showForbidden;
+    private bool $isDeveloperMode;
 
     /**
      * AppState constructor.
      * @param Config $config
      */
-    public function __construct(Config $config)
-    {
+    public function __construct(
+        Config $config
+    ) {
         $this->config = $config;
     }
 
     /**
-     * Get application mode.
-     * @return string
+     * Check if adminhtml view is enabled.
+     * @return bool
      */
-    public function getAppMode(): string
+    public function isAdminhtmlEnabled(): bool
     {
-        return $this->isDeveloperMode() ? self::DEVELOPER_MODE : self::PRODUCTION_MODE;
+        if (!isset($this->isAdminhtmlEnabled)) {
+            $this->isAdminhtmlEnabled = (bool) $this->config->get(self::BACKEND_ENABLED_CONFIG);
+        }
+
+        return $this->isAdminhtmlEnabled;
     }
 
     /**
@@ -51,7 +45,7 @@ class AppState implements \Awesome\Framework\Model\SingletonInterface
      */
     public function isDeveloperMode(): bool
     {
-        if ($this->isDeveloperMode === null) {
+        if (!isset($this->isDeveloperMode)) {
             $this->isDeveloperMode = (bool) $this->config->get(self::DEVELOPER_MODE_CONFIG);
         }
 

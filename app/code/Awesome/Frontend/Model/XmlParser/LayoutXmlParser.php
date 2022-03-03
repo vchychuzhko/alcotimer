@@ -54,8 +54,10 @@ class LayoutXmlParser
      * @param Config $config
      * @param XmlFileManager $xmlFileManager
      */
-    public function __construct(Config $config, XmlFileManager $xmlFileManager)
-    {
+    public function __construct(
+        Config $config,
+        XmlFileManager $xmlFileManager
+    ) {
         $this->config = $config;
         $this->xmlFileManager = $xmlFileManager;
     }
@@ -64,17 +66,15 @@ class LayoutXmlParser
      * Get layout structure for requested handle for a specified view.
      * @param string $handle
      * @param string $view
-     * @param array $handles
      * @return array
      * @throws \Exception
      */
-    public function getLayoutStructure(string $handle, string $view, array $handles = []): array
+    public function getLayoutStructure(string $handle, string $view): array
     {
-        $handles = $handles ?: [$handle];
         $pattern = APP_DIR . sprintf(
             self::LAYOUT_XML_PATH_PATTERN,
             $view,
-            '{' . self::DEFAULT_HANDLE_NAME . ',' . implode(',', $handles) . '}'
+            '{' . self::DEFAULT_HANDLE_NAME . ',' . $handle . '}'
         );
         $head = [];
         $body = [];

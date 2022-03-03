@@ -12,10 +12,7 @@ class RoutesXmlParser
     private const ROUTES_XML_PATH_PATTERN = '/*/*/etc/%s/routes.xml';
     private const ROUTES_XSD_SCHEMA_PATH = '/Awesome/Framework/Schema/routes.xsd';
 
-    /**
-     * @var XmlFileManager $xmlFileManager
-     */
-    private $xmlFileManager;
+    private XmlFileManager $xmlFileManager;
 
     /**
      * RoutesXmlParser constructor.
@@ -30,7 +27,6 @@ class RoutesXmlParser
      * Get declared routes with their responsive modules.
      * @param string $view
      * @return array
-     * @throws \Exception
      */
     public function getRoutesData(string $view): array
     {
@@ -40,15 +36,13 @@ class RoutesXmlParser
         foreach (glob($routesXmlFilesPattern) as $routesXmlFile) {
             $parsedData = $this->parse($routesXmlFile);
 
-            foreach ($parsedData as $routeType => $routes) {
-                $routesData[$routeType] = $routesData[$routeType] ?? [];
-
-                foreach ($routes as $routeName => $routeData) {
-                    if (isset($routesData[$routeType][$routeName])) {
-                        throw new XmlValidationException(__('Route "%1" is already defined', $routeName));
+            foreach ($parsedData as $path => $handles) {
+                foreach ($handles as $name => $handle) {
+                    if (isset($routesData[$path][$name])) {
+                        throw new XmlValidationException(__('Route "%1" is already defined', $name));
                     }
 
-                    $routesData[$routeType][$routeName] = $routeData;
+                    $routesData[$path][$name] = $handle;
                 }
             }
         }
@@ -60,22 +54,15 @@ class RoutesXmlParser
      * Parse routes XML file.
      * @param string $routesXmlFile
      * @return array
-     * @throws \Exception
      */
     private function parse(string $routesXmlFile): array
     {
         $parsedNode = [];
-        $routesNode = $this->xmlFileManager->parseXmlFile($routesXmlFile, APP_DIR . self::ROUTES_XSD_SCHEMA_PATH);
+        $routesNode = $this->xmlFileManager->parseXmlFileNext($routesXmlFile, APP_DIR . self::ROUTES_XSD_SCHEMA_PATH); // @TODO: Next
 
-        foreach ($routesNode->children() as $route) {
-            if (!XmlParsingHelper::isDisabled($route)) {
-                $routeType = XmlParsingHelper::getNodeAttribute($route, 'type');
-
-                $routeName = XmlParsingHelper::getNodeAttributeName($route);
-
-                $parsedNode[$routeType][$routeName] = XmlParsingHelper::getNodeAttributeName(
-                    XmlParsingHelper::getChildNode($route, 'module')
-                );
+        foreach ($routesNode['_route'] as $route) {
+            if (!isset($route['disabled']) || !XmlParsingHelper::isAttributeBooleanTrue($route['disabled'])) { // @TODO: Move this to AbstractXmlParser
+                $parsedNode[$route['path']][$route['name']] = $route['handler'];
             }
         }
 

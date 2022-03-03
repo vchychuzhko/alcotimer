@@ -11,6 +11,9 @@ use Awesome\Framework\Model\Http\ResponseFactory;
 use Awesome\Framework\Model\ResponseInterface;
 use Awesome\Frontend\Model\Result\ResultPageFactory;
 
+/**
+ * @deprecated
+ */
 class LayoutHandler extends \Awesome\Framework\Model\AbstractAction
 {
     private const PAGE_HANDLES_CACHE_TAG_PREFIX = 'page-handles_';

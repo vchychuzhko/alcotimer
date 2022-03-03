@@ -16,34 +16,21 @@ class Locale implements \Awesome\Framework\Model\SingletonInterface
 
     private Config $config;
 
+    private Request $request;
+
     private string $locale;
 
     /**
      * Locale constructor.
      * @param Config $config
+     * @param Request $request
      */
     public function __construct(
-        Config $config
+        Config $config,
+        Request $request
     ) {
         $this->config = $config;
-    }
-
-    /**
-     * Initialize current locale according to request cookie.
-     * @param Request $request
-     * @return $this
-     */
-    public function init(Request $request): self
-    {
-        $locale = $request->getCookie(self::LOCALE_COOKIE);
-
-        if (!$locale || !in_array($locale, self::getAllLocales(), true)) {
-            $locale = (string) $this->config->get(self::DEFAULT_LOCALE_CONFIG);
-        }
-
-        $this->locale = $locale;
-
-        return $this;
+        $this->request = $request;
     }
 
     /**
@@ -52,6 +39,16 @@ class Locale implements \Awesome\Framework\Model\SingletonInterface
      */
     public function getLocale(): string
     {
+        if (!isset($this->locale)) {
+            $locale = $this->request->getCookie(self::LOCALE_COOKIE);
+
+            if (!$locale || !in_array($locale, self::getAllLocales(), true)) {
+                $locale = (string) $this->config->get(self::DEFAULT_LOCALE_CONFIG);
+            }
+
+            $this->locale = $locale;
+        }
+
         return $this->locale;
     }
 

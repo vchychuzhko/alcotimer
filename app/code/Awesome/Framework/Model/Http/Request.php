@@ -3,100 +3,40 @@ declare(strict_types=1);
 
 namespace Awesome\Framework\Model\Http;
 
-/**
- * Class Request
- * @method string getAcceptType()
- * @method string|null getRoute()
- * @method string|null getEntity()
- * @method string|null getAction()
- * @method string getUserIp()
- * @method string getView()
- */
-class Request extends \Awesome\Framework\Model\DataObject implements \Awesome\Framework\Model\SingletonInterface
-{
-    public const FORBIDDEN_REDIRECT_CODE = 403;
-    public const NOTFOUND_REDIRECT_CODE = 404;
+use Awesome\Framework\Model\Http;
 
-    public const HTTP_METHOD_GET = 'GET';
-    public const HTTP_METHOD_POST = 'POST';
+class Request implements \Awesome\Framework\Model\SingletonInterface
+{
+    public const METHOD_POST = 'POST';
 
     public const SCHEME_HTTP  = 'http';
     public const SCHEME_HTTPS = 'https';
 
-    public const DEFAULT_ROUTE = 'index';
-    public const ROOT_ACTION_NAME = 'index_index_index';
+    public const ACCEPT_HEADER_JSON = 'application/json';
+    public const ACCEPT_HEADER_HTML = 'text/html';
 
-    public const JSON_ACCEPT_HEADER = 'application/json';
-    public const HTML_ACCEPT_HEADER = 'text/html';
+    private string $url;
 
-    /**
-     * @var string $url
-     */
-    private $url;
+    private string $scheme;
 
-    /**
-     * @var string $scheme
-     */
-    private $scheme;
+    private string $path;
 
-    /**
-     * @var string $host
-     */
-    private $host;
+    private string $method;
 
-    /**
-     * @var string $path
-     */
-    private $path;
+    private array $parameters = [];
 
-    /**
-     * @var string $method
-     */
-    private $method;
+    private array $cookies = [];
 
-    /**
-     * @var array $parameters
-     */
-    private $parameters;
+    private ?string $acceptType;
 
-    /**
-     * @var array $cookies
-     */
-    private $cookies;
-
-    /**
-     * @var int|null $redirectStatusCode
-     */
-    private $redirectStatusCode;
-
-    /**
-     * @var string $fullActionName
-     */
-    private $fullActionName;
+    private string $userIp;
 
     /**
      * Request constructor.
-     * @param string $url
-     * @param string $method
-     * @param array $parameters
-     * @param array $cookies
-     * @param int|null $redirectStatusCode
-     * @param array $data
      */
-    public function __construct(
-        string $url,
-        string $method = self::HTTP_METHOD_GET,
-        array $parameters = [],
-        array $cookies = [],
-        ?int $redirectStatusCode = null,
-        array $data = []
-    ) {
-        parent::__construct($data, true);
-        $this->url = $url;
-        $this->method = $method;
-        $this->parameters = $parameters;
-        $this->cookies = $cookies;
-        $this->redirectStatusCode = $redirectStatusCode;
+    public function __construct()
+    {
+        $this->initFromGlobals();
     }
 
     /**
@@ -109,38 +49,12 @@ class Request extends \Awesome\Framework\Model\DataObject implements \Awesome\Fr
     }
 
     /**
-     * Get request scheme protocol.
-     * @return string
-     */
-    private function getScheme(): string
-    {
-        if (!$this->scheme) {
-            $this->scheme = parse_url($this->url, PHP_URL_SCHEME);
-        }
-
-        return $this->scheme;
-    }
-
-    /**
-     * Check if request was performed via secure connection.
+     * Check if request was sent via secure connection.
      * @return bool
      */
     public function isSecure(): bool
     {
-        return $this->getScheme() === self::SCHEME_HTTPS;
-    }
-
-    /**
-     * Get request URL host.
-     * @return string
-     */
-    public function getHost(): string
-    {
-        if (!$this->host) {
-            $this->host = parse_url($this->url, PHP_URL_HOST);
-        }
-
-        return $this->host;
+        return $this->scheme === self::SCHEME_HTTPS;
     }
 
     /**
@@ -149,28 +63,7 @@ class Request extends \Awesome\Framework\Model\DataObject implements \Awesome\Fr
      */
     public function getPath(): string
     {
-        if (!$this->path) {
-            $this->path = rtrim(parse_url($this->url, PHP_URL_PATH), '/') ?: '/';
-        }
-
         return $this->path;
-    }
-
-    /**
-     * Get request full action name.
-     * @return string
-     */
-    public function getFullActionName(): string
-    {
-        if (!$this->fullActionName) {
-            $this->fullActionName = implode('_', [
-                $this->getRoute() ?: self::DEFAULT_ROUTE,
-                $this->getEntity() ?: 'index',
-                $this->getAction() ?: 'index',
-            ]);
-        }
-
-        return $this->fullActionName;
     }
 
     /**
@@ -188,7 +81,7 @@ class Request extends \Awesome\Framework\Model\DataObject implements \Awesome\Fr
      */
     public function isPost(): bool
     {
-        return $this->getMethod() === self::HTTP_METHOD_POST;
+        return $this->getMethod() === self::METHOD_POST;
     }
 
     /**
@@ -209,9 +102,9 @@ class Request extends \Awesome\Framework\Model\DataObject implements \Awesome\Fr
      */
     public function getParamAsArray(string $key): array
     {
-        $valueString = $this->getParam($key);
+        $param = $this->getParam($key);
 
-        return $valueString ? explode(',', $valueString) : [];
+        return $param ? explode(',', $param) : [];
     }
 
     /**
@@ -234,11 +127,39 @@ class Request extends \Awesome\Framework\Model\DataObject implements \Awesome\Fr
     }
 
     /**
-     * Get request redirect status code.
-     * @return int|null
+     * Get request accept type if specified.
+     * @return string|null
      */
-    public function getRedirectStatusCode(): ?int
+    public function getAcceptType(): ?string
     {
-        return $this->redirectStatusCode;
+        return $this->acceptType;
+    }
+
+    /**
+     * Get user IP address.
+     * @return string
+     */
+    public function getUserIp(): string
+    {
+        return $this->userIp;
+    }
+
+    /**
+     * Initialize request fields from global variables.
+     */
+    private function initFromGlobals()
+    {
+        $this->scheme = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? self::SCHEME_HTTPS : self::SCHEME_HTTP;
+        $this->url = $this->scheme . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+        $this->path = rtrim(parse_url($this->url, PHP_URL_PATH), '/') ?: '/';
+
+        $this->method = $_SERVER['REQUEST_METHOD'];
+        $this->parameters = array_merge($_GET, $_POST);
+        $this->cookies = $_COOKIE;
+
+        $this->acceptType = isset($_SERVER['HTTP_ACCEPT']) && $_SERVER['HTTP_ACCEPT'] !== '*/*'
+            ? strtok($_SERVER['HTTP_ACCEPT'], ',')
+            : null;
+        $this->userIp = $_SERVER['REMOTE_ADDR'];
     }
 }

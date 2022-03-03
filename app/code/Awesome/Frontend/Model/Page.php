@@ -3,6 +3,7 @@
 namespace Awesome\Frontend\Model;
 
 use Awesome\Cache\Model\Cache;
+use Awesome\Framework\Model\Http;
 use Awesome\Framework\Model\Locale;
 use Awesome\Frontend\Model\Layout;
 
@@ -54,16 +55,15 @@ class Page extends \Awesome\Framework\Model\DataObject
     {
         $content = '';
         $handle = $this->getHandle();
-        $view = $this->getView();
-        $handles = $this->getHandles() ?: [$handle];
+        $view = Http::FRONTEND_VIEW; // @TODO: $this->getView();
         $locale = $this->getLocale() ?: $this->locale->getLocale();
 
         if ($handle && $view) {
             $content = $this->cache->get(
                 Cache::FULL_PAGE_CACHE_KEY,
-                implode('/', $handles) . '//' . $view . '//' . $locale,
-                function () use ($handle, $view, $handles) {
-                    $this->layout->init($handle, $view, $handles);
+                $handle . '//' . $view . '//' . $locale,
+                function () use ($handle, $view) {
+                    $this->layout->init($handle, $view);
 
                     return $this->layout->render('root');
                 }

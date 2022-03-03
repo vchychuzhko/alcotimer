@@ -12,10 +12,7 @@ class MaintenanceAction extends \Awesome\Framework\Model\AbstractAction
 {
     private const MAINTENANCE_PAGE_PATH = '/pub/pages/503.php';
 
-    /**
-     * @var PhpFileManager $phpFileManager
-     */
-    private $phpFileManager;
+    private PhpFileManager $phpFileManager;
 
     /**
      * MaintenanceAction constructor.
@@ -34,13 +31,12 @@ class MaintenanceAction extends \Awesome\Framework\Model\AbstractAction
      */
     public function execute(Request $request): ResponseInterface
     {
-        if ($request->getAcceptType() === Request::JSON_ACCEPT_HEADER) {
+        if ($request->getAcceptType() === Request::ACCEPT_HEADER_JSON) {
             $response = $this->responseFactory->create(ResponseFactory::TYPE_JSON)
                 ->setData([
-                    'status'  => 'MAINTENANCE',
                     'message' => 'Service is unavailable due to maintenance works.',
                 ]);
-        } elseif ($request->getAcceptType() === Request::HTML_ACCEPT_HEADER && $content = $this->getMaintenancePage()) {
+        } elseif ($request->getAcceptType() === Request::ACCEPT_HEADER_HTML && $content = $this->getMaintenancePage()) {
             $response = $this->responseFactory->create(ResponseFactory::TYPE_HTML)
                 ->setContent($content);
         } else {

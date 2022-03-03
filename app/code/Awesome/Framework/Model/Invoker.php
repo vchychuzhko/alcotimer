@@ -8,10 +8,7 @@ use Awesome\Framework\Model\SingletonInterface;
 
 final class Invoker implements \Awesome\Framework\Model\SingletonInterface
 {
-    /**
-     * @var array $instances
-     */
-    private static $instances = [];
+    private static array $instances = [];
 
     /**
      * Invoker constructor.
@@ -40,13 +37,20 @@ final class Invoker implements \Awesome\Framework\Model\SingletonInterface
 
                 if (isset($parameters[$parameterName])) {
                     $arguments[] = $parameters[$parameterName];
-                } elseif ($class = $parameter->getClass()) {
-                    $arguments[] = $this->get($class->getName());
-                } elseif ($parameter->isOptional()) {
-                    $arguments[] = $parameter->getDefaultValue();
-                } else {
-                    throw new DIException(__('Parameter "%1" was not provided for "%2" constructor', $parameterName, $id));
+                    continue;
                 }
+                if (($type = $parameter->getType())
+                    && get_class($type) === 'ReflectionNamedType' && !$type->isBuiltin()
+                ) {
+                    $arguments[] = $this->get($type->getName());
+                    continue;
+                }
+                if ($parameter->isOptional()) {
+                    $arguments[] = $parameter->getDefaultValue();
+                    continue;
+                }
+
+                throw new DIException(__('Parameter "%1" was not provided for "%2" constructor', $parameterName, $id));
             }
         }
 

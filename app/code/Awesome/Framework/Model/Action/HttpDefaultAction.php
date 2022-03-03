@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Awesome\Framework\Model\Action;
 
-use Awesome\Framework\Model\AppState;
 use Awesome\Framework\Model\FileManager\PhpFileManager;
 use Awesome\Framework\Model\Http\Request;
 use Awesome\Framework\Model\Http\ResponseFactory;
@@ -13,26 +12,18 @@ class HttpDefaultAction extends \Awesome\Framework\Model\AbstractAction
 {
     private const NOTFOUND_PAGE = '/pub/pages/404.php';
 
-    /**
-     * @var AppState $appState
-     */
-    private $appState;
-
-    /**
-     * @var PhpFileManager $phpFileManager
-     */
-    private $phpFileManager;
+    private PhpFileManager $phpFileManager;
 
     /**
      * HttpDefaultAction constructor.
-     * @param AppState $appState
      * @param PhpFileManager $phpFileManager
      * @param ResponseFactory $responseFactory
      */
-    public function __construct(AppState $appState, PhpFileManager $phpFileManager, ResponseFactory $responseFactory)
-    {
+    public function __construct(
+        PhpFileManager $phpFileManager,
+        ResponseFactory $responseFactory
+    ) {
         parent::__construct($responseFactory);
-        $this->appState = $appState;
         $this->phpFileManager = $phpFileManager;
     }
 
@@ -42,10 +33,10 @@ class HttpDefaultAction extends \Awesome\Framework\Model\AbstractAction
      */
     public function execute(Request $request): ResponseInterface
     {
-        if ($request->getAcceptType() === Request::JSON_ACCEPT_HEADER) {
+        if ($request->getAcceptType() === Request::ACCEPT_HEADER_JSON) {
             $response = $this->responseFactory->create(ResponseFactory::TYPE_JSON)
                 ->setData(['message' => 'Requested path was not found']);
-        } elseif ($request->getAcceptType() === Request::HTML_ACCEPT_HEADER && $content = $this->getNotfoundPage()) {
+        } elseif ($request->getAcceptType() === Request::ACCEPT_HEADER_HTML && $content = $this->getNotfoundPage()) {
             $response = $this->responseFactory->create(ResponseFactory::TYPE_HTML)
                 ->setContent($content);
         } else {

@@ -10,6 +10,9 @@ use Awesome\Framework\Model\Event\ObserverInterface;
 use Awesome\Framework\Model\Invoker;
 use Awesome\Framework\Model\XmlParser\EventXmlParser;
 
+/**
+ * @deprecated
+ */
 class EventManager
 {
     private const EVENTS_CACHE_TAG_GLOBAL = 'events';

@@ -22,6 +22,9 @@ use Awesome\Frontend\Model\Generator\Styles;
 use Awesome\Frontend\Model\Generator\Translation;
 use Awesome\Frontend\Model\GeneratorFactory;
 
+/**
+ * @deprecated
+ */
 class Get extends \Awesome\Framework\Model\Http
 {
     private const STATIC_FILE_PATTERN = '/^(%s|%s)\/(lib|\w+_\w+)?\/?(.*)$/';

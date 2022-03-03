@@ -11,30 +11,35 @@ class Header extends \Awesome\Frontend\Block\Template
 {
     private const LOGO_CONFIG_PATH = 'web/logo';
 
-    /**
-     * @var Config $config
-     */
-    private $config;
+    private Config $config;
+
+    private Request $request;
 
     /**
      * Header constructor.
      * @param Config $config
      * @param DeployedVersion $deployedVersion
+     * @param Request $request
      * @param array $data
      */
-    public function __construct(Config $config, DeployedVersion $deployedVersion, array $data = [])
-    {
+    public function __construct(
+        Config $config,
+        DeployedVersion $deployedVersion,
+        Request $request,
+        array $data = []
+    ) {
         parent::__construct($deployedVersion, $data);
         $this->config = $config;
+        $this->request = $request;
     }
 
     /**
-     * Get app logo file path.
+     * Get app logo url path.
      * @return string
      */
-    public function getLogo(): string
+    public function getLogoUrl(): string
     {
-        return $this->getMediaFileUrl($this->config->get(self::LOGO_CONFIG_PATH));
+        return $this->getMediaFileUrl((string) $this->config->get(self::LOGO_CONFIG_PATH));
     }
 
     /**
@@ -43,12 +48,6 @@ class Header extends \Awesome\Frontend\Block\Template
      */
     public function isHomepage(): bool
     {
-        $handles = [];
-
-        if ($layout = $this->getLayout()) {
-            $handles = $layout->getHandles();
-        }
-
-        return in_array(Request::ROOT_ACTION_NAME, $handles, true);
+        return $this->request->getPath() === '/';
     }
 }

@@ -11,20 +11,11 @@ class HttpErrorAction
 {
     private const INTERNALERROR_PAGE_PATH = '/pub/pages/500.php';
 
-    /**
-     * @var string $errorMessage
-     */
-    private $errorMessage;
+    private string $errorMessage;
 
-    /**
-     * @var bool $isDeveloperMode
-     */
-    private $isDeveloperMode;
+    private bool $isDeveloperMode;
 
-    /**
-     * @var string|null $acceptType
-     */
-    private $acceptType;
+    private ?string $acceptType;
 
     /**
      * HttpErrorAction constructor.
@@ -45,28 +36,21 @@ class HttpErrorAction
      */
     public function execute(): Response
     {
-        if ($this->acceptType === Request::JSON_ACCEPT_HEADER) {
-            $response = new Response(
-                json_encode([
-                    'status' => 'ERROR',
-                    'message' => $this->isDeveloperMode
-                        ? $this->errorMessage
-                        : 'An internal error occurred. Details are hidden and can be found in logs files.',
-                ]),
-                ResponseInterface::INTERNALERROR_STATUS_CODE,
-                ['Content-Type' => 'application/json']
-            );
-        } elseif ($this->acceptType === Request::HTML_ACCEPT_HEADER && $content = $this->getInternalErrorPage()) {
-            $response = new Response(
-                $this->isDeveloperMode ? '<pre>' . $this->errorMessage . '</pre>' : $content,
-                ResponseInterface::INTERNALERROR_STATUS_CODE,
-                ['Content-Type' => 'text/html']
-            );
-        } else {
-            $response = new Response('', ResponseInterface::INTERNALERROR_STATUS_CODE);
+        $response = new Response();
+
+        if ($this->acceptType === Request::ACCEPT_HEADER_JSON) {
+            $response->setContent(json_encode([
+                'message' => $this->isDeveloperMode
+                    ? $this->errorMessage
+                    : 'An internal error occurred. Details can be found in logs files.',
+            ]))
+                ->setHeader('Content-Type', 'application/json');
+        } elseif ($this->acceptType === Request::ACCEPT_HEADER_HTML && $content = $this->getInternalErrorPage()) {
+            $response->setContent($this->isDeveloperMode ? '<pre>' . $this->errorMessage . '</pre>' : $content)
+                ->setHeader('Content-Type', 'application/json');
         }
 
-        return $response;
+        return $response->setStatusCode(ResponseInterface::INTERNALERROR_STATUS_CODE);
     }
 
     /**

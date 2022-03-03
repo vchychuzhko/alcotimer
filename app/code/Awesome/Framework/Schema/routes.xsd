@@ -5,36 +5,9 @@
             <xs:sequence>
                 <xs:element name="route" minOccurs="0" maxOccurs="unbounded">
                     <xs:complexType>
-                        <xs:sequence>
-                            <xs:element name="module">
-                                <xs:complexType>
-                                    <xs:attribute name="name" use="required">
-                                        <xs:simpleType>
-                                            <xs:restriction base="xs:string">
-                                                <xs:minLength value="1"/>
-                                                <xs:pattern value="[a-zA-Z_]*"/>
-                                            </xs:restriction>
-                                        </xs:simpleType>
-                                    </xs:attribute>
-                                </xs:complexType>
-                            </xs:element>
-                        </xs:sequence>
-                        <xs:attribute name="name" use="required">
-                            <xs:simpleType>
-                                <xs:restriction base="xs:string">
-                                    <xs:minLength value="1"/>
-                                    <xs:pattern value="[a-zA-Z0-9\-_]*"/>
-                                </xs:restriction>
-                            </xs:simpleType>
-                        </xs:attribute>
-                        <xs:attribute name="type" use="required">
-                            <xs:simpleType>
-                                <xs:restriction base="xs:string">
-                                    <xs:enumeration value="internal"/>
-                                    <xs:enumeration value="standard"/>
-                                </xs:restriction>
-                            </xs:simpleType>
-                        </xs:attribute>
+                        <xs:attribute name="name" type="NameType" use="required"/>
+                        <xs:attribute name="path" type="PathType" use="required"/>
+                        <xs:attribute name="handler" type="ClassNameType" use="required"/>
                         <xs:attribute name="disabled" type="xs:boolean" default="false"/>
                     </xs:complexType>
                 </xs:element>
@@ -45,4 +18,23 @@
             <xs:field xpath="@name"/>
         </xs:unique>
     </xs:element>
+
+    <xs:simpleType name="NameType">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[a-zA-Z0-9\-_.]{3,}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="PathType">
+        <xs:restriction base="xs:string">
+<!--            <xs:pattern value="\*|[a-zA-Z0-9/\-_.]*"/>-->
+            <xs:pattern value="[a-zA-Z0-9/\-_.*]*"/> <!-- @todo -->
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="ClassNameType">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="([A-Z][a-zA-Z0-9]*)(\\[A-Z][a-zA-Z0-9]*)*"/>
+        </xs:restriction>
+    </xs:simpleType>
 </xs:schema>

@@ -5,6 +5,9 @@ namespace Awesome\Framework\Model\Event;
 
 use Awesome\Framework\Model\Event;
 
+/**
+ * @deprecated
+ */
 interface ObserverInterface
 {
     /**

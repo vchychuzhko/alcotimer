@@ -77,20 +77,18 @@ class Layout
      * Initialize page layout.
      * @param string $handle
      * @param string $view
-     * @param array $handles
      * @return $this
      * @throws \Exception
      */
-    public function init(string $handle, string $view, array $handles = []): self
+    public function init(string $handle, string $view): self
     {
         $this->handle = $handle;
         $this->view = $view;
-        $this->handles = $handles ?: [$handle];
         $this->structure = $this->cache->get(
             Cache::LAYOUT_CACHE_KEY,
             $handle . '_' . $view,
-            function () use ($handle, $view, $handles) {
-                return $this->layoutXmlParser->getLayoutStructure($handle, $view, $handles);
+            function () use ($handle, $view) {
+                return $this->layoutXmlParser->getLayoutStructure($handle, $view);
             }
         );
 
