@@ -10,22 +10,17 @@ class Config implements \Awesome\Framework\Model\SingletonInterface
     private const CONFIG_FILE_PATH = '/app/etc/config.php';
     private const CONFIG_ANNOTATION = 'General configuration file';
 
-    /**
-     * @var PhpFileManager $phpFileManager
-     */
-    private $phpFileManager;
+    private PhpFileManager $phpFileManager;
 
-    /**
-     * @var array $config
-     */
-    private $config;
+    private array $config;
 
     /**
      * Config constructor.
      * @param PhpFileManager $phpFileManager
      */
-    public function __construct(PhpFileManager $phpFileManager)
-    {
+    public function __construct(
+        PhpFileManager $phpFileManager
+    ) {
         $this->phpFileManager = $phpFileManager;
     }
 
@@ -60,7 +55,7 @@ class Config implements \Awesome\Framework\Model\SingletonInterface
      * Check if provided config record exists.
      * Method consider the path as chain of keys: a/b/c => ['a']['b']['c']
      * @param string $path
-     * @return mixed
+     * @return bool
      */
     public function exists(string $path): bool
     {
@@ -119,7 +114,7 @@ class Config implements \Awesome\Framework\Model\SingletonInterface
      */
     private function getConfig(): array
     {
-        if ($this->config === null) {
+        if (!isset($this->config)) {
             $this->config = $this->phpFileManager->parseArrayFile(BP . self::CONFIG_FILE_PATH);
         }
 

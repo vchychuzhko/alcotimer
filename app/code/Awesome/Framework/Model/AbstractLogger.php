@@ -10,23 +10,19 @@ abstract class AbstractLogger
 {
     private const LOG_DIRECTORY = '/var/log';
 
-    /**
-     * @var DateTime $date
-     */
-    private $datetime;
+    private DateTime $datetime;
 
-    /**
-     * @var FileManager $fileManager
-     */
-    private $fileManager;
+    private FileManager $fileManager;
 
     /**
      * AbstractLogger constructor.
      * @param DateTime $datetime
      * @param FileManager $fileManager
      */
-    public function __construct(DateTime $datetime, FileManager $fileManager)
-    {
+    public function __construct(
+        DateTime $datetime,
+        FileManager $fileManager
+    ) {
         $this->datetime = $datetime;
         $this->fileManager = $fileManager;
     }

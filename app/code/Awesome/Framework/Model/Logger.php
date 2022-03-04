@@ -7,6 +7,7 @@ class Logger extends \Awesome\Framework\Model\AbstractLogger
 {
     private const EXCEPTION_LOG_FILE = 'exception.log';
     private const SYSTEM_LOG_FILE = 'system.log';
+    private const REQUEST_LOG_FILE = 'request.log';
 
     public const INFO_DEFAULT_LEVEL = 0;
     public const INFO_WARNING_LEVEL = 1;
@@ -38,5 +39,15 @@ class Logger extends \Awesome\Framework\Model\AbstractLogger
     public function info(string $message, int $level = self::INFO_DEFAULT_LEVEL): self
     {
         return $this->write(self::SYSTEM_LOG_FILE, '[' . self::SEVERITY_LEVELS[$level] . ']: ' . $message);
+    }
+
+    /**
+     * Log visitor information.
+     * @param string $requestInfo
+     * @return $this
+     */
+    public function logRequest(string $requestInfo): self
+    {
+        return $this->write(self::REQUEST_LOG_FILE, $requestInfo);
     }
 }

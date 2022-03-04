@@ -9,6 +9,7 @@ class AppState implements \Awesome\Framework\Model\SingletonInterface
 {
     private const BACKEND_ENABLED_CONFIG = 'backend/enabled';
     private const DEVELOPER_MODE_CONFIG = 'developer_mode';
+    private const REQUEST_LOG_CONFIG = 'request_log';
 
     protected Config $config;
 
@@ -50,5 +51,18 @@ class AppState implements \Awesome\Framework\Model\SingletonInterface
         }
 
         return $this->isDeveloperMode;
+    }
+
+    /**
+     * Check if request logging is enabled.
+     * @return bool
+     */
+    public function isRequestLogEnabled(): bool
+    {
+        if (!isset($this->isRequestLogEnabled)) {
+            $this->isRequestLogEnabled = (bool) $this->config->get(self::REQUEST_LOG_CONFIG);
+        }
+
+        return $this->isRequestLogEnabled;
     }
 }

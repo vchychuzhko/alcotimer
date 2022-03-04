@@ -61,6 +61,8 @@ class Http
     public function run()
     {
         try {
+            $this->logRequest();
+
             if (!$this->maintenance->isActive($this->request->getUserIp())) {
                 $action = $this->router->match($this->request);
 
@@ -98,6 +100,16 @@ class Http
         }
 
         $response->proceed();
+    }
+
+    /**
+     * Log information about http request, if enabled.
+     */
+    private function logRequest()
+    {
+        if ($this->appState->isRequestLogEnabled()) {
+            $this->logger->logRequest($this->request->getUserIp() . '/' . $this->request->getMethod() . ' - ' . $this->request->getUrl());
+        }
     }
 
     /**
