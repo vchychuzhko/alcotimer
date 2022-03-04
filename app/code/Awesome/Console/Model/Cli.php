@@ -42,10 +42,9 @@ class Cli
 
     /**
      * Run the CLI application.
-     * @return void
      * @throws \Exception
      */
-    public function run(): void
+    public function run()
     {
         try {
             $input = $this->getInput();
@@ -78,9 +77,8 @@ class Cli
     /**
      * Display formatted exception message.
      * @param \Exception $e
-     * @return void
      */
-    private function displayException(\Exception $e): void
+    private function displayException(\Exception $e)
     {
         $name = get_class_name($e);
         $message = $e->getMessage();
@@ -140,9 +138,8 @@ class Cli
 
     /**
      * Output application CLI title with version.
-     * @return void
      */
-    private function showAppCliTitle(): void
+    private function showAppCliTitle()
     {
         $this->getOutput()->writeln('AlcoTimer CLI ' . $this->getOutput()->colourText(self::VERSION));
     }

@@ -38,7 +38,7 @@ class Disable extends \Awesome\Console\Model\AbstractCommand
      * Disable application cache.
      * @inheritDoc
      */
-    public function execute(Input $input, Output $output): void
+    public function execute(Input $input, Output $output)
     {
         $definedTypes = CacheState::getAllTypes();
         $types = $input->getArgument('types') ?: $definedTypes;

@@ -48,7 +48,7 @@ class MaintenanceEnable extends \Awesome\Console\Model\AbstractCommand
      * @inheritDoc
      * @throws \InvalidArgumentException
      */
-    public function execute(Input $input, Output $output): void
+    public function execute(Input $input, Output $output)
     {
         $allowedIps = $input->getArgument('ips') ?: [];
 

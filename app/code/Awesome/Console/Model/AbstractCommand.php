@@ -30,7 +30,7 @@ abstract class AbstractCommand implements \Awesome\Console\Model\CommandInterfac
     /**
      * @inheritDoc
      */
-    public function help(Input $input, Output $output): void
+    public function help(Input $input, Output $output)
     {
         $commandName = $input->getCommandName();
         $definition = static::configure();

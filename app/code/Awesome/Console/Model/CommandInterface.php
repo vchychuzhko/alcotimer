@@ -19,15 +19,13 @@ interface CommandInterface
      * Run the console command.
      * @param Input $input
      * @param Output $output
-     * @return void
      */
-    public function execute(Input $input, Output $output): void;
+    public function execute(Input $input, Output $output);
 
     /**
      * Display help for the command.
      * @param Input $input
      * @param Output $output
-     * @return void
      */
-    public function help(Input $input, Output $output): void;
+    public function help(Input $input, Output $output);
 }

@@ -42,7 +42,7 @@ class ConfigSet extends \Awesome\Console\Model\AbstractCommand
      * @inheritDoc
      * @throws \Exception
      */
-    public function execute(Input $input, Output $output): void
+    public function execute(Input $input, Output $output)
     {
         // @TODO: Add unset config command/method or add -r/--remove option
         if ($type = $input->getOption('type')) {

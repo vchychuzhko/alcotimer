@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="../../Console/Schema/console_command.xsd">
+        xsi:noNamespaceSchemaLocation="../../Console/Schema/cli.xsd">
     <namespace name="static">
         <command name="deploy" class="Awesome\Frontend\Console\StaticDeploy"/>
         <command name="watch" class="Awesome\Frontend\Console\StylesWatch"/>

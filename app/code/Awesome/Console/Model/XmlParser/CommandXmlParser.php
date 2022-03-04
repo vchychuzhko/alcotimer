@@ -10,19 +10,17 @@ use Awesome\Framework\Model\FileManager\XmlFileManager;
 class CommandXmlParser
 {
     private const CLI_XML_PATH_PATTERN = '/*/*/etc/cli.xml';
-    private const CLI_XSD_SCHEMA_PATH = '/Awesome/Console/Schema/console_command.xsd';
+    private const CLI_XSD_SCHEMA_PATH = '/Awesome/Console/Schema/cli.xsd';
 
-    /**
-     * @var XmlFileManager $xmlFileManager
-     */
-    private $xmlFileManager;
+    private XmlFileManager $xmlFileManager;
 
     /**
      * CommandXmlParser constructor.
      * @param XmlFileManager $xmlFileManager
      */
-    public function __construct(XmlFileManager $xmlFileManager)
-    {
+    public function __construct(
+        XmlFileManager $xmlFileManager
+    ) {
         $this->xmlFileManager = $xmlFileManager;
     }
 
@@ -60,16 +58,14 @@ class CommandXmlParser
     private function parse(string $cliXmlFile): array
     {
         $parsedNode = [];
-        $commandNode = $this->xmlFileManager->parseXmlFile($cliXmlFile, APP_DIR . self::CLI_XSD_SCHEMA_PATH);
+        $commandNode = $this->xmlFileManager->parseXmlFileNext($cliXmlFile, APP_DIR . self::CLI_XSD_SCHEMA_PATH);
 
-        foreach ($commandNode->children() as $namespace) {
-            $namespaceName = XmlParsingHelper::getNodeAttributeName($namespace);
+        foreach ($commandNode['_namespace'] as $namespace) {
+            foreach ($namespace['_command'] as $command) {
+                if (!isset($command['disabled']) || !XmlParsingHelper::isAttributeBooleanTrue($command['disabled'])) { // @TODO: Move this to AbstractXmlParser
+                    $commandName = $namespace['name'] . ':' . $command['name'];
 
-            foreach ($namespace->children() as $command) {
-                if (!XmlParsingHelper::isDisabled($command)) {
-                    $commandName = $namespaceName . ':' . XmlParsingHelper::getNodeAttributeName($command);
-
-                    $parsedNode[$commandName] = '\\' . ltrim(XmlParsingHelper::getNodeAttribute($command, 'class'), '\\');
+                    $parsedNode[$commandName] = '\\' . ltrim($command['class'], '\\');
                 }
             }
         }

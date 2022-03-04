@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="config">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="namespace" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="command" minOccurs="0" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:attribute name="name" type="NameType" use="required"/>
+                                    <xs:attribute name="class" type="ClassNameType" use="required"/>
+                                    <xs:attribute name="disabled" type="xs:boolean" default="false"/>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                        <xs:attribute name="name" type="NameType" use="required"/>
+                    </xs:complexType>
+                    <xs:unique name="commandKey">
+                        <xs:selector xpath=".//command"/>
+                        <xs:field xpath="@name"/>
+                    </xs:unique>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+        <xs:unique name="namespaceKey">
+            <xs:selector xpath=".//namespace"/>
+            <xs:field xpath="@name"/>
+        </xs:unique>
+    </xs:element>
+
+    <xs:simpleType name="NameType">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[a-zA-Z0-9\-_.]{3,}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="ClassNameType">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="([A-Z][a-zA-Z0-9]*)(\\[A-Z][a-zA-Z0-9]*)*"/>
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>

@@ -44,7 +44,7 @@ class Help extends \Awesome\Console\Model\AbstractCommand
      * @inheritDoc
      * @throws \Exception
      */
-    public function execute(Input $input, Output $output): void
+    public function execute(Input $input, Output $output)
     {
         if ($commandName = $input->getArgument('command')) {
             $commandName = $this->commandResolver->parseCommand($commandName);
@@ -97,10 +97,9 @@ class Help extends \Awesome\Console\Model\AbstractCommand
      * Display commands list.
      * @param array $commands
      * @param Output $output
-     * @return void
      * @throws \Exception
      */
-    private function processCommands(array $commands, Output $output): void
+    private function processCommands(array $commands, Output $output)
     {
         $output->writeln($output->colourText('Available commands:', Output::BROWN));
         $padding = DataHelper::getMaxLength($commands, static function ($name) {

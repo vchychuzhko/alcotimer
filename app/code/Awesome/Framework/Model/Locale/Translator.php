@@ -12,30 +12,15 @@ class Translator implements \Awesome\Framework\Model\SingletonInterface
 {
     private const TRANSLATION_FILES_PATTERN = '/*/*/i18n/%s.csv';
 
-    /**
-     * @var Cache $cache
-     */
-    private $cache;
+    private Cache $cache;
 
-    /**
-     * @var CsvFileManager $csvFileManager
-     */
-    private $csvFileManager;
+    private CsvFileManager $csvFileManager;
 
-    /**
-     * @var Locale $locale
-     */
-    private $locale;
+    private Locale $locale;
 
-    /**
-     * @var Logger $logger
-     */
-    private $logger;
+    private Logger $logger;
 
-    /**
-     * @var array $dictionary
-     */
-    private $dictionary;
+    private array $dictionary;
 
     /**
      * Translator constructor.

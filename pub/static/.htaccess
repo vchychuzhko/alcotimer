@@ -10,7 +10,7 @@ Options -MultiViews
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-l
 
-    RewriteRule ^(version\d*/)?(.*)$ /static/get.php?resource=$2 [L]
+    RewriteRule ^(version\d*/)?(.*)$ /index.php?resource=$2 [L]
 </IfModule>
 
 ############################################

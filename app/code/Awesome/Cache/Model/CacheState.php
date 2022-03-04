@@ -8,7 +8,7 @@ use Awesome\Framework\Model\Config;
 
 class CacheState
 {
-    private const CACHE_CONFIG_PATH = 'cache';
+    private const CACHE_CONFIG = 'cache';
 
     /**
      * @var Config $config
@@ -31,7 +31,7 @@ class CacheState
      */
     public function isEnabled(string $type): bool
     {
-        return (bool) $this->config->get(self::CACHE_CONFIG_PATH . '/' . $type);
+        return (bool) $this->config->get(self::CACHE_CONFIG . '/' . $type);
     }
 
     /**
@@ -41,7 +41,7 @@ class CacheState
      */
     public function enable(string $type): bool
     {
-        return $this->config->set(self::CACHE_CONFIG_PATH . '/' . $type, 1);
+        return $this->config->set(self::CACHE_CONFIG . '/' . $type, 1);
     }
 
     /**
@@ -51,7 +51,7 @@ class CacheState
      */
     public function disable(string $type): bool
     {
-        return $this->config->set(self::CACHE_CONFIG_PATH . '/' . $type, 0);
+        return $this->config->set(self::CACHE_CONFIG . '/' . $type, 0);
     }
 
     /**

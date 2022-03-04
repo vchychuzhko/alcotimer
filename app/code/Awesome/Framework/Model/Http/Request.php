@@ -15,21 +15,21 @@ class Request implements \Awesome\Framework\Model\SingletonInterface
     public const ACCEPT_HEADER_JSON = 'application/json';
     public const ACCEPT_HEADER_HTML = 'text/html';
 
-    private string $url;
+    private string $url = '';
 
-    private string $scheme;
+    private string $scheme = '';
 
-    private string $path;
+    private string $path = '/';
 
-    private string $method;
+    private string $method = '';
 
     private array $parameters = [];
 
     private array $cookies = [];
 
-    private ?string $acceptType;
+    private ?string $acceptType = null;
 
-    private string $userIp;
+    private string $userIp = '';
 
     /**
      * Request constructor.
@@ -146,9 +146,12 @@ class Request implements \Awesome\Framework\Model\SingletonInterface
 
     /**
      * Initialize request fields from global variables.
+     * If invoked via CLI, default values will remain.
      */
     private function initFromGlobals()
     {
+        if (PHP_SAPI === 'cli') return;
+
         $this->scheme = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? self::SCHEME_HTTPS : self::SCHEME_HTTP;
         $this->url = $this->scheme . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
         $this->path = rtrim(parse_url($this->url, PHP_URL_PATH), '/') ?: '/';

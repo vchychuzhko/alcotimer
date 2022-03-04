@@ -55,7 +55,7 @@ class StylesWatch extends \Awesome\Console\Model\AbstractCommand
      * Watch for less files changes and update styles.css file.
      * @inheritDoc
      */
-    public function execute(Input $input, Output $output): void
+    public function execute(Input $input, Output $output)
     {
         $views = Http::getAllViews();
         $requestedView = $input->getArgument('view');

@@ -40,7 +40,7 @@ class ConfigGet extends \Awesome\Console\Model\AbstractCommand
      * @inheritDoc
      * @throws \Exception
      */
-    public function execute(Input $input, Output $output): void
+    public function execute(Input $input, Output $output)
     {
         $path = $input->getArgument('path');
 

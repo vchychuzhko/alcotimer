@@ -37,7 +37,7 @@ class MaintenanceStatus extends \Awesome\Console\Model\AbstractCommand
      * Get current state of maintenance.
      * @inheritDoc
      */
-    public function execute(Input $input, Output $output): void
+    public function execute(Input $input, Output $output)
     {
         $output->writeln($this->maintenance->isActive() ? 'Maintenance mode is active.' : 'Maintenance mode is disabled.');
 

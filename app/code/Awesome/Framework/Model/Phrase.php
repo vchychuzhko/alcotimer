@@ -9,28 +9,21 @@ use Awesome\Framework\Model\Invoker;
 
 class Phrase
 {
-    /**
-     * @var string $text
-     */
-    private $text;
+    private string $text;
 
-    /**
-     * @var array $arguments
-     */
-    private $arguments;
+    private array $arguments;
 
-    /**
-     * @var Translator $translator
-     */
-    private static $translator;
+    private static Translator $translator;
 
     /**
      * Phrase construct.
      * @param string $text
      * @param array $arguments
      */
-    public function __construct(string $text, array $arguments = [])
-    {
+    public function __construct(
+        string $text,
+        array $arguments = []
+    ) {
         $this->text = $text;
         $this->arguments = $arguments;
     }
@@ -94,7 +87,7 @@ class Phrase
      */
     private static function getTranslator(): Translator
     {
-        if (self::$translator === null) {
+        if (!isset(self::$translator)) {
             self::$translator = Invoker::getInstance()->get(Translator::class);
         }
 

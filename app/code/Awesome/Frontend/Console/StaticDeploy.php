@@ -50,7 +50,7 @@ class StaticDeploy extends \Awesome\Console\Model\AbstractCommand
      * Generate static files.
      * @inheritDoc
      */
-    public function execute(Input $input, Output $output): void
+    public function execute(Input $input, Output $output)
     {
         $views = Http::getAllViews();
         $requestedView = $input->getArgument('view');

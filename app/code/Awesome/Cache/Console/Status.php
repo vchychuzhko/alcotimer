@@ -39,7 +39,7 @@ class Status extends \Awesome\Console\Model\AbstractCommand
      * Show application cache status.
      * @inheritDoc
      */
-    public function execute(Input $input, Output $output): void
+    public function execute(Input $input, Output $output)
     {
         $definedTypes = CacheState::getAllTypes();
         $types = $input->getArgument('types') ?: $definedTypes;
