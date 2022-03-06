@@ -9,7 +9,7 @@ use Awesome\Frontend\Model\DeployedVersion;
 
 class Header extends \Awesome\Frontend\Block\Template
 {
-    private const LOGO_CONFIG_PATH = 'web/logo';
+    private const LOGO_CONFIG = 'web/logo';
 
     private Config $config;
 
@@ -39,7 +39,7 @@ class Header extends \Awesome\Frontend\Block\Template
      */
     public function getLogoUrl(): string
     {
-        return $this->getMediaFileUrl((string) $this->config->get(self::LOGO_CONFIG_PATH));
+        return $this->getMediaFileUrl((string) $this->config->get(self::LOGO_CONFIG));
     }
 
     /**

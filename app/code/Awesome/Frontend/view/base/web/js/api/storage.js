@@ -1,5 +1,5 @@
 define([], function () {
-    'use strict'
+    'use strict';
 
     return {
         /**
@@ -8,9 +8,13 @@ define([], function () {
          * @returns {*}
          */
         get: function (root) {
-            let data = localStorage.getItem(root);
+            const data = localStorage.getItem(root);
 
-            return data !== null ? JSON.parse(data) : null;
+            try {
+                return JSON.parse(data);
+            } catch (e) {
+                return data || null;
+            }
         },
 
         /**

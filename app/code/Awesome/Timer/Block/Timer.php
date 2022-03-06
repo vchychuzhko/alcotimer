@@ -9,7 +9,7 @@ use Awesome\Frontend\Model\DeployedVersion;
 
 class Timer extends \Awesome\Frontend\Block\Template
 {
-    public const TIMER_CONFIG_PATH = 'timer';
+    public const TIMER_CONFIG = 'timer';
 
     /**
      * @var Config $config
@@ -45,7 +45,7 @@ class Timer extends \Awesome\Frontend\Block\Template
      */
     public function getSliderConfigJson(): string
     {
-        $randomRangeConfig = $this->config->get(self::TIMER_CONFIG_PATH . '/slider_config') ?: [];
+        $randomRangeConfig = $this->config->get(self::TIMER_CONFIG . '/slider_config') ?: [];
 
         return $this->json->encode($randomRangeConfig);
     }
@@ -56,7 +56,7 @@ class Timer extends \Awesome\Frontend\Block\Template
      */
     public function getSettingsJson(): string
     {
-        $settings = $this->config->get(self::TIMER_CONFIG_PATH . '/settings') ?: [];
+        $settings = $this->config->get(self::TIMER_CONFIG . '/settings') ?: [];
 
         return $this->json->encode($settings);
     }
@@ -67,7 +67,7 @@ class Timer extends \Awesome\Frontend\Block\Template
      */
     public function getTimerConfigJson(): string
     {
-        $timerConfig = $this->config->get(self::TIMER_CONFIG_PATH . '/general') ?: [];
+        $timerConfig = $this->config->get(self::TIMER_CONFIG . '/general') ?: [];
 
         if (isset($timerConfig['sound'])) {
             $timerConfig['sound'] = $this->getMediaFileUrl($timerConfig['sound']);
