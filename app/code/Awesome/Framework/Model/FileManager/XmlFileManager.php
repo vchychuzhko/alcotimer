@@ -66,6 +66,11 @@ class XmlFileManager extends \Awesome\Framework\Model\FileManager
         return $this->parse($this->parseXmlFile($path, $schemaFile));
     }
 
+    /**
+     * Parse XML node into array.
+     * @param \SimpleXMLElement $node
+     * @return array
+     */
     private function parse(\SimpleXMLElement $node): array
     {
         $parsedNode = [];

@@ -106,7 +106,7 @@ class Router
         $match = '';
 
         foreach ($routes as $route => $handles) {
-            if (preg_match('/^' . str_replace(['/', '*'], ['\/', '.*'], $route) . '/', $path) && strcmp($route, $match) > 0) {
+            if (preg_match('/^' . str_replace(['/', '*'], ['\/', '.*'], $route) . '$/', $path) && strcmp($route, $match) > 0) {
                 $match = $route;
             }
         }

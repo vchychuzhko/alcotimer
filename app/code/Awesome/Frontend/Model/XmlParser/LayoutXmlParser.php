@@ -13,41 +13,21 @@ use Awesome\Frontend\Block\Html\Body;
 use Awesome\Frontend\Block\Html\Head;
 use Awesome\Frontend\Block\Root;
 
-class LayoutXmlParser
+class LayoutXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
 {
     private const DEFAULT_HANDLE_NAME = 'default';
     private const LAYOUT_XML_PATH_PATTERN = '/*/*/view/%s/layout/%s.xml';
     private const LAYOUT_XSD_SCHEMA_PATH = '/Awesome/Frontend/Schema/page_layout.xsd';
 
-    /**
-     * @var Config $config
-     */
-    private $config;
+    private Config $config;
 
-    /**
-     * @var XmlFileManager $xmlFileManager
-     */
-    private $xmlFileManager;
+    private array $assetsToRemove = [];
 
-    /**
-     * @var array $assetsToRemove
-     */
-    private $assetsToRemove = [];
+    private array $processedElements = [];
 
-    /**
-     * @var array $processedElements
-     */
-    private $processedElements = [];
+    private array $references = [];
 
-    /**
-     * @var array $references
-     */
-    private $references = [];
-
-    /**
-     * @var array $referencesToRemove
-     */
-    private $referencesToRemove = [];
+    private array $referencesToRemove = [];
 
     /**
      * LayoutXmlParser constructor.
@@ -58,8 +38,8 @@ class LayoutXmlParser
         Config $config,
         XmlFileManager $xmlFileManager
     ) {
+        parent::__construct($xmlFileManager);
         $this->config = $config;
-        $this->xmlFileManager = $xmlFileManager;
     }
 
     /**

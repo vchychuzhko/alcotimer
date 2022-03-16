@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace Awesome\Framework\Helper;
 
+/**
+ * @deprecated
+ */
 class XmlParsingHelper
 {
     /**
@@ -86,9 +89,8 @@ class XmlParsingHelper
      * Recursively by default.
      * @param array $nodeElement
      * @param bool $recursive
-     * @return void
      */
-    public static function applySortOrder(array &$nodeElement, bool $recursive = true): void
+    public static function applySortOrder(array &$nodeElement, bool $recursive = true)
     {
         uasort($nodeElement, static function ($a, $b) {
             $compare = 0;

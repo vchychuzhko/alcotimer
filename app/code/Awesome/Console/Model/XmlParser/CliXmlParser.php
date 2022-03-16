@@ -4,25 +4,11 @@ declare(strict_types=1);
 namespace Awesome\Console\Model\XmlParser;
 
 use Awesome\Framework\Exception\XmlValidationException;
-use Awesome\Framework\Helper\XmlParsingHelper;
-use Awesome\Framework\Model\FileManager\XmlFileManager;
 
-class CommandXmlParser
+class CliXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
 {
     private const CLI_XML_PATH_PATTERN = '/*/*/etc/cli.xml';
     private const CLI_XSD_SCHEMA_PATH = '/Awesome/Console/Schema/cli.xsd';
-
-    private XmlFileManager $xmlFileManager;
-
-    /**
-     * CommandXmlParser constructor.
-     * @param XmlFileManager $xmlFileManager
-     */
-    public function __construct(
-        XmlFileManager $xmlFileManager
-    ) {
-        $this->xmlFileManager = $xmlFileManager;
-    }
 
     /**
      * Get available commands with their responsible classes.
@@ -62,7 +48,7 @@ class CommandXmlParser
 
         foreach ($commandNode['_namespace'] as $namespace) {
             foreach ($namespace['_command'] as $command) {
-                if (!isset($command['disabled']) || !XmlParsingHelper::isAttributeBooleanTrue($command['disabled'])) { // @TODO: Move this to AbstractXmlParser
+                if (!$this->isDisabled($command)) {
                     $commandName = $namespace['name'] . ':' . $command['name'];
 
                     $parsedNode[$commandName] = '\\' . ltrim($command['class'], '\\');

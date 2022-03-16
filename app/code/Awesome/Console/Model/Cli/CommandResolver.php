@@ -6,7 +6,7 @@ namespace Awesome\Console\Model\Cli;
 use Awesome\Console\Console\Help;
 use Awesome\Console\Model\Cli\CommandFactory;
 use Awesome\Console\Model\CommandInterface;
-use Awesome\Console\Model\XmlParser\CommandXmlParser;
+use Awesome\Console\Model\XmlParser\CliXmlParser;
 
 class CommandResolver implements \Awesome\Framework\Model\SingletonInterface
 {
@@ -16,9 +16,9 @@ class CommandResolver implements \Awesome\Framework\Model\SingletonInterface
     private $commandFactory;
 
     /**
-     * @var CommandXmlParser $commandXmlParser
+     * @var CliXmlParser $cliXmlParser
      */
-    private $commandXmlParser;
+    private $cliXmlParser;
 
     /**
      * @var array $commandClasses
@@ -28,12 +28,12 @@ class CommandResolver implements \Awesome\Framework\Model\SingletonInterface
     /**
      * CommandResolver constructor.
      * @param CommandFactory $commandFactory
-     * @param CommandXmlParser $commandXmlParser
+     * @param CliXmlParser $cliXmlParser
      */
-    public function __construct(CommandFactory $commandFactory, CommandXmlParser $commandXmlParser)
+    public function __construct(CommandFactory $commandFactory, CliXmlParser $cliXmlParser)
     {
         $this->commandFactory = $commandFactory;
-        $this->commandXmlParser = $commandXmlParser;
+        $this->cliXmlParser = $cliXmlParser;
     }
 
     /**
@@ -122,7 +122,7 @@ class CommandResolver implements \Awesome\Framework\Model\SingletonInterface
     private function getCommandsClasses(): array
     {
         if (!$this->commandClasses) {
-            $this->commandClasses = $this->commandXmlParser->getCommandsClasses();
+            $this->commandClasses = $this->cliXmlParser->getCommandsClasses();
         }
 
         return $this->commandClasses;
