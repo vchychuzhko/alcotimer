@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Awesome\Cache\Console;
 
+use Awesome\Cache\Model\Cache;
 use Awesome\Cache\Model\CacheState;
 use Awesome\Console\Model\Cli\Input;
 use Awesome\Console\Model\Cli\Input\InputDefinition;
@@ -11,17 +12,15 @@ use Awesome\Framework\Helper\DataHelper;
 
 class Status extends \Awesome\Console\Model\AbstractCommand
 {
-    /**
-     * @var CacheState $cacheState
-     */
-    private $cacheState;
+    private CacheState $cacheState;
 
     /**
      * Cache Status constructor.
      * @param CacheState $cacheState
      */
-    public function __construct(CacheState $cacheState)
-    {
+    public function __construct(
+        CacheState $cacheState
+    ) {
         $this->cacheState = $cacheState;
     }
 
@@ -41,7 +40,7 @@ class Status extends \Awesome\Console\Model\AbstractCommand
      */
     public function execute(Input $input, Output $output)
     {
-        $definedTypes = CacheState::getAllTypes();
+        $definedTypes = Cache::getAllTypes();
         $types = $input->getArgument('types') ?: $definedTypes;
         $titleShown = false;
         $padding = DataHelper::getMaxLength($types) + 2;

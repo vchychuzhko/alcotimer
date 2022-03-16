@@ -10,17 +10,15 @@ class CacheState
 {
     private const CACHE_CONFIG = 'cache';
 
-    /**
-     * @var Config $config
-     */
-    private $config;
+    private Config $config;
 
     /**
      * CacheState constructor.
      * @param Config $config
      */
-    public function __construct(Config $config)
-    {
+    public function __construct(
+        Config $config
+    ) {
         $this->config = $config;
     }
 
@@ -52,19 +50,5 @@ class CacheState
     public function disable(string $type): bool
     {
         return $this->config->set(self::CACHE_CONFIG . '/' . $type, 0);
-    }
-
-    /**
-     * Get all defined cache types.
-     * @return array
-     */
-    public static function getAllTypes(): array
-    {
-        return [
-            Cache::ETC_CACHE_KEY,
-            Cache::LAYOUT_CACHE_KEY,
-            Cache::FULL_PAGE_CACHE_KEY,
-            Cache::TRANSLATIONS_CACHE_KEY,
-        ];
     }
 }

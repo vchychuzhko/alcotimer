@@ -10,26 +10,18 @@ use Awesome\Framework\Model\Serializer\Json;
 class Cache implements \Awesome\Framework\Model\SingletonInterface
 {
     private const CACHE_DIR = '/var/cache';
+    private const CACHE_SUFFIX = '-cache';
 
     public const ETC_CACHE_KEY = 'etc';
     public const LAYOUT_CACHE_KEY = 'layout';
     public const FULL_PAGE_CACHE_KEY = 'full_page';
     public const TRANSLATIONS_CACHE_KEY = 'translations';
 
-    /**
-     * @var CacheState $cacheState
-     */
-    private $cacheState;
+    private CacheState $cacheState;
 
-    /**
-     * @var FileManager $fileManager
-     */
-    private $fileManager;
+    private FileManager $fileManager;
 
-    /**
-     * @var Json $json
-     */
-    private $json;
+    private Json $json;
 
     /**
      * Cache constructor.
@@ -37,8 +29,11 @@ class Cache implements \Awesome\Framework\Model\SingletonInterface
      * @param FileManager $fileManager
      * @param Json $json
      */
-    public function __construct(CacheState $cacheState, FileManager $fileManager, Json $json)
-    {
+    public function __construct(
+        CacheState $cacheState,
+        FileManager $fileManager,
+        Json $json
+    ) {
         $this->cacheState = $cacheState;
         $this->fileManager = $fileManager;
         $this->json = $json;
@@ -57,7 +52,7 @@ class Cache implements \Awesome\Framework\Model\SingletonInterface
         $data = null;
 
         if ($this->cacheState->isEnabled($key)) {
-            $cache = $this->readCacheFile($key);
+            $cache = $this->readFromCacheFile($key);
 
             $data = $cache[$tag] ?? null;
         }
@@ -80,10 +75,10 @@ class Cache implements \Awesome\Framework\Model\SingletonInterface
     public function save(string $key, string $tag, $data): self
     {
         if ($this->cacheState->isEnabled($key)) {
-            $cache = $this->readCacheFile($key);
+            $cache = $this->readFromCacheFile($key);
             $cache[$tag] = $data;
 
-            $this->saveCacheFile($key, $cache);
+            $this->saveToCacheFile($key, $cache);
         }
 
         return $this;
@@ -100,7 +95,7 @@ class Cache implements \Awesome\Framework\Model\SingletonInterface
         if ($key === '') {
             $this->fileManager->removeDirectory(BP . self::CACHE_DIR);
         } else {
-            $this->fileManager->removeFile(BP . self::CACHE_DIR . '/' . $key . '-cache');
+            $this->fileManager->removeFile(BP . self::CACHE_DIR . '/' . $key . self::CACHE_SUFFIX);
         }
 
         return $this;
@@ -111,9 +106,9 @@ class Cache implements \Awesome\Framework\Model\SingletonInterface
      * @param string $key
      * @return array
      */
-    private function readCacheFile(string $key): array
+    private function readFromCacheFile(string $key): array
     {
-        $cache = $this->fileManager->readFile(BP . self::CACHE_DIR . '/' . $key . '-cache', true) ?: '{}';
+        $cache = $this->fileManager->readFile(BP . self::CACHE_DIR . '/' . $key . self::CACHE_SUFFIX, true) ?: '{}';
 
         return $this->json->decode($cache);
     }
@@ -122,12 +117,27 @@ class Cache implements \Awesome\Framework\Model\SingletonInterface
      * Save data to cache file.
      * @param string $key
      * @param array $data
-     * @return $this
      */
-    private function saveCacheFile(string $key, array $data): self
+    private function saveToCacheFile(string $key, array $data)
     {
-        $this->fileManager->createFile(BP . self::CACHE_DIR . '/' . $key . '-cache', $this->json->encode($data), true);
+        $this->fileManager->createFile(
+            BP . self::CACHE_DIR . '/' . $key . self::CACHE_SUFFIX,
+            $this->json->encode($data),
+            true
+        );
+    }
 
-        return $this;
+    /**
+     * Get all defined cache types.
+     * @return array
+     */
+    public static function getAllTypes(): array
+    {
+        return [
+            self::ETC_CACHE_KEY,
+            self::LAYOUT_CACHE_KEY,
+            self::FULL_PAGE_CACHE_KEY,
+            self::TRANSLATIONS_CACHE_KEY,
+        ];
     }
 }
