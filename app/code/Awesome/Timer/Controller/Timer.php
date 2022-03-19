@@ -5,30 +5,16 @@ namespace Awesome\Timer\Controller;
 
 use Awesome\Framework\Model\Http\Request;
 use Awesome\Framework\Model\ResponseInterface;
-use Awesome\Frontend\Model\Result\ResultPageFactory;
 
-class Timer implements \Awesome\Framework\Model\ActionInterface
+class Timer extends \Awesome\Frontend\Model\AbstractPageAction
 {
-    private const PAGE_LAYOUT = 'timer_index_index';
-
-    private ResultPageFactory $resultPageFactory;
-
-    /**
-     * Timer constructor.
-     * @param ResultPageFactory $resultPageFactory
-     */
-    public function __construct(
-        ResultPageFactory $resultPageFactory
-    ) {
-        $this->resultPageFactory = $resultPageFactory;
-    }
+    protected const PAGE_LAYOUT = 'timer_index_index';
 
     /**
      * @inheritDoc
      */
     public function execute(Request $request): ResponseInterface
     {
-        // @TODO: Add AbstractPageController
-        return $this->resultPageFactory->create(self::PAGE_LAYOUT);
+        return $this->responseFactory->createPage(self::PAGE_LAYOUT);
     }
 }

@@ -9,7 +9,7 @@ use Awesome\Framework\Model\Http\Request;
 use Awesome\Framework\Model\Http\Router;
 use Awesome\Framework\Model\Http\ResponseFactory;
 use Awesome\Framework\Model\ResponseInterface;
-use Awesome\Frontend\Model\Result\ResultPageFactory;
+use Awesome\Frontend\Model\Http\PageResponseFactory;
 
 /**
  * @deprecated
@@ -35,7 +35,7 @@ class LayoutHandler extends \Awesome\Framework\Model\AbstractAction
     private $config;
 
     /**
-     * @var ResultPageFactory $resultPageFactory
+     * @var PageResponseFactory $resultPageFactory
      */
     private $resultPageFactory;
 
@@ -64,14 +64,14 @@ class LayoutHandler extends \Awesome\Framework\Model\AbstractAction
      * @param Cache $cache
      * @param Config $config
      * @param ResponseFactory $responseFactory
-     * @param ResultPageFactory $resultPageFactory
+     * @param PageResponseFactory $resultPageFactory
      * @param Router $router
      */
     public function __construct(
         Cache $cache,
         Config $config,
         ResponseFactory $responseFactory,
-        ResultPageFactory $resultPageFactory,
+        PageResponseFactory $resultPageFactory,
         Router $router
     ) {
         parent::__construct($responseFactory);

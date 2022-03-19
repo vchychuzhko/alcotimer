@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Awesome\Framework\Model\Action;
 
 use Awesome\Framework\Model\ResponseInterface;
-use Awesome\Framework\Model\Result\Response;
+use Awesome\Framework\Model\Http\Response;
 use Awesome\Framework\Model\Http\Request;
 
 class HttpErrorAction

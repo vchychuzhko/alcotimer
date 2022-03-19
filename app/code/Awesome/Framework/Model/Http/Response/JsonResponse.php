@@ -1,16 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Awesome\Framework\Model\Result;
+namespace Awesome\Framework\Model\Http\Response;
 
 use Awesome\Framework\Model\Serializer\Json;
 
-class JsonResponse extends \Awesome\Framework\Model\Result\Response
+class JsonResponse extends \Awesome\Framework\Model\Http\Response
 {
-    /**
-     * @var Json $json
-     */
-    private $json;
+    private Json $json;
 
     /**
      * JsonResponse constructor.
@@ -30,7 +27,7 @@ class JsonResponse extends \Awesome\Framework\Model\Result\Response
     /**
      * @inheritDoc
      */
-    public function proceed(): void
+    public function proceed()
     {
         $this->setHeader('Content-Type', 'application/json');
 

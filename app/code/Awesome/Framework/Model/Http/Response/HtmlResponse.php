@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace Awesome\Framework\Model\Result;
+namespace Awesome\Framework\Model\Http\Response;
 
-class HtmlResponse extends \Awesome\Framework\Model\Result\Response
+class HtmlResponse extends \Awesome\Framework\Model\Http\Response
 {
     /**
      * @inheritDoc
      */
-    public function proceed(): void
+    public function proceed()
     {
         $this->setHeader('Content-Type', 'text/html');
 

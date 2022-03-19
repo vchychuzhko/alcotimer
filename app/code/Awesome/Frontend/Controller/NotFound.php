@@ -5,23 +5,10 @@ namespace Awesome\Frontend\Controller;
 
 use Awesome\Framework\Model\Http\Request;
 use Awesome\Framework\Model\ResponseInterface;
-use Awesome\Frontend\Model\Result\ResultPageFactory;
 
-class NotFound implements \Awesome\Framework\Model\ActionInterface
+class NotFound extends \Awesome\Frontend\Model\AbstractPageAction
 {
-    private const PAGE_LAYOUT = 'notfound_index_index';
-
-    private ResultPageFactory $resultPageFactory;
-
-    /**
-     * NotFound constructor.
-     * @param ResultPageFactory $resultPageFactory
-     */
-    public function __construct(
-        ResultPageFactory $resultPageFactory
-    ) {
-        $this->resultPageFactory = $resultPageFactory;
-    }
+    protected const PAGE_LAYOUT = 'notfound_index_index';
 
     /**
      * @inheritDoc
@@ -29,8 +16,7 @@ class NotFound implements \Awesome\Framework\Model\ActionInterface
     public function execute(Request $request): ResponseInterface
     {
         // @TODO: Add noindex,nofollow
-        // @TODO: Add AbstractPageController
-        return $this->resultPageFactory->create(self::PAGE_LAYOUT)
+        return $this->responseFactory->createPage(self::PAGE_LAYOUT)
             ->setStatusCode(ResponseInterface::NOTFOUND_STATUS_CODE);
     }
 }

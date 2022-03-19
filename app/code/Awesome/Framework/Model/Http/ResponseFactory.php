@@ -4,10 +4,10 @@ declare(strict_types=1);
 namespace Awesome\Framework\Model\Http;
 
 use Awesome\Framework\Model\ResponseInterface;
-use Awesome\Framework\Model\Result\HtmlResponse;
-use Awesome\Framework\Model\Result\JsonResponse;
-use Awesome\Framework\Model\Result\Redirect;
-use Awesome\Framework\Model\Result\Response;
+use Awesome\Framework\Model\Http\Response\HtmlResponse;
+use Awesome\Framework\Model\Http\Response\JsonResponse;
+use Awesome\Framework\Model\Http\Response\Redirect;
+use Awesome\Framework\Model\Http\Response;
 
 class ResponseFactory extends \Awesome\Framework\Model\AbstractFactory
 {
@@ -19,7 +19,7 @@ class ResponseFactory extends \Awesome\Framework\Model\AbstractFactory
     /**
      * @var array $typeMap
      */
-    private $typeMap = [
+    private array $typeMap = [
         self::TYPE_JSON     => JsonResponse::class,
         self::TYPE_HTML     => HtmlResponse::class,
         self::TYPE_RAW      => Response::class,

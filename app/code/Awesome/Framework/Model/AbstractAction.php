@@ -7,17 +7,15 @@ use Awesome\Framework\Model\Http\ResponseFactory;
 
 abstract class AbstractAction implements \Awesome\Framework\Model\ActionInterface
 {
-    /**
-     * @var ResponseFactory $responseFactory
-     */
-    protected $responseFactory;
+    protected ResponseFactory $responseFactory;
 
     /**
      * AbstractAction constructor.
      * @param ResponseFactory $responseFactory
      */
-    public function __construct(ResponseFactory $responseFactory)
-    {
+    public function __construct(
+        ResponseFactory $responseFactory
+    ) {
         $this->responseFactory = $responseFactory;
     }
 }

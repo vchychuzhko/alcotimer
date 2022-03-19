@@ -17,7 +17,6 @@ interface ResponseInterface
 
     /**
      * Prepare and return response.
-     * @return void
      */
-    public function proceed(): void;
+    public function proceed();
 }

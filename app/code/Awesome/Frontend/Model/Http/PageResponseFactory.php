@@ -1,21 +1,18 @@
 <?php
 declare(strict_types=1);
 
-namespace Awesome\Frontend\Model\Result;
+namespace Awesome\Frontend\Model\Http;
 
 use Awesome\Framework\Model\Invoker;
-use Awesome\Framework\Model\Result\HtmlResponse;
+use Awesome\Framework\Model\Http\Response\HtmlResponse;
 use Awesome\Frontend\Model\PageFactory;
 
-class ResultPageFactory extends \Awesome\Framework\Model\AbstractFactory
+class PageResponseFactory extends \Awesome\Framework\Model\Http\ResponseFactory
 {
-    /**
-     * @var PageFactory $pageFactory
-     */
-    private $pageFactory;
+    private PageFactory $pageFactory;
 
     /**
-     * ResultPageFactory constructor.
+     * PageResponseFactory constructor.
      * @param Invoker $invoker
      * @param PageFactory $pageFactory
      */
@@ -32,11 +29,11 @@ class ResultPageFactory extends \Awesome\Framework\Model\AbstractFactory
      * @param string $handle
      * @return HtmlResponse
      */
-    public function create(string $handle): HtmlResponse
+    public function createPage(string $handle): HtmlResponse
     {
         $page = $this->pageFactory->create($handle);
 
-        return $this->invoker->create(HtmlResponse::class, [
+        return $this->create(self::TYPE_HTML, [
             'content' => $page->render(),
         ]);
     }

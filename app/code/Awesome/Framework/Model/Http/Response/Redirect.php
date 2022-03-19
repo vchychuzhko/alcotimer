@@ -1,18 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace Awesome\Framework\Model\Result;
+namespace Awesome\Framework\Model\Http\Response;
 
-class Redirect extends \Awesome\Framework\Model\Result\Response
+class Redirect extends \Awesome\Framework\Model\Http\Response
 {
     public const MOVED_PERMANENTLY_STATUS_CODE = 301;
     public const FOUND_STATUS_CODE = 302;
     public const TEMPORARY_REDIRECT_STATUS_CODE = 307;
 
-    /**
-     * @var string $redirectUrl
-     */
-    private $redirectUrl;
+    private string $redirectUrl;
 
     /**
      * Redirect constructor.
@@ -29,7 +26,7 @@ class Redirect extends \Awesome\Framework\Model\Result\Response
     /**
      * @inheritDoc
      */
-    public function proceed(): void
+    public function proceed()
     {
         $this->setHeader('Location', $this->redirectUrl);
 

@@ -1,24 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace Awesome\Framework\Model\Result;
+namespace Awesome\Framework\Model\Http;
 
 class Response implements \Awesome\Framework\Model\ResponseInterface
 {
-    /**
-     * @var string $content
-     */
-    protected $content;
+    protected string $content;
 
-    /**
-     * @var int $status
-     */
-    protected $status;
+    protected int $status;
 
-    /**
-     * @var array $headers
-     */
-    protected $headers;
+    protected array $headers;
 
     /**
      * Response constructor.
@@ -36,7 +27,7 @@ class Response implements \Awesome\Framework\Model\ResponseInterface
     /**
      * @inheritDoc
      */
-    public function proceed(): void
+    public function proceed()
     {
         http_response_code($this->status);
 
