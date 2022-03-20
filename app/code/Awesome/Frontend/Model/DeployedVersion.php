@@ -6,7 +6,7 @@ namespace Awesome\Frontend\Model;
 use Awesome\Framework\Model\FileManager;
 use Awesome\Frontend\Model\StaticContent;
 
-class DeployedVersion implements \Awesome\Framework\Model\SingletonInterface
+class DeployedVersion
 {
     private const DEPLOYED_VERSION_FILE = 'deployed_version.txt';
 

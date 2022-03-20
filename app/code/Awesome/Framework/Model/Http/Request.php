@@ -5,7 +5,7 @@ namespace Awesome\Framework\Model\Http;
 
 use Awesome\Framework\Model\Http;
 
-class Request implements \Awesome\Framework\Model\SingletonInterface
+class Request extends \Awesome\Framework\Model\Singleton
 {
     public const METHOD_POST = 'POST';
 
@@ -33,10 +33,22 @@ class Request implements \Awesome\Framework\Model\SingletonInterface
 
     /**
      * Request constructor.
+     * Initialize fields from global variables.
      */
-    public function __construct()
+    protected function __construct()
     {
-        $this->initFromGlobals();
+        $this->scheme = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? self::SCHEME_HTTPS : self::SCHEME_HTTP;
+        $this->url = $this->scheme . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+        $this->path = rtrim(parse_url($this->url, PHP_URL_PATH), '/') ?: '/';
+
+        $this->method = $_SERVER['REQUEST_METHOD'];
+        $this->parameters = array_merge($_GET, $_POST);
+        $this->cookies = $_COOKIE;
+
+        $this->acceptType = isset($_SERVER['HTTP_ACCEPT']) && $_SERVER['HTTP_ACCEPT'] !== '*/*'
+            ? strtok($_SERVER['HTTP_ACCEPT'], ',')
+            : null;
+        $this->userIp = $_SERVER['REMOTE_ADDR'];
     }
 
     /**
@@ -142,27 +154,5 @@ class Request implements \Awesome\Framework\Model\SingletonInterface
     public function getUserIp(): string
     {
         return $this->userIp;
-    }
-
-    /**
-     * Initialize request fields from global variables.
-     * If invoked via CLI, default values will remain.
-     */
-    private function initFromGlobals()
-    {
-        if (PHP_SAPI === 'cli') return;
-
-        $this->scheme = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? self::SCHEME_HTTPS : self::SCHEME_HTTP;
-        $this->url = $this->scheme . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-        $this->path = rtrim(parse_url($this->url, PHP_URL_PATH), '/') ?: '/';
-
-        $this->method = $_SERVER['REQUEST_METHOD'];
-        $this->parameters = array_merge($_GET, $_POST);
-        $this->cookies = $_COOKIE;
-
-        $this->acceptType = isset($_SERVER['HTTP_ACCEPT']) && $_SERVER['HTTP_ACCEPT'] !== '*/*'
-            ? strtok($_SERVER['HTTP_ACCEPT'], ',')
-            : null;
-        $this->userIp = $_SERVER['REMOTE_ADDR'];
     }
 }

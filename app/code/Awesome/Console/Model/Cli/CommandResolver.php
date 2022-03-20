@@ -8,7 +8,7 @@ use Awesome\Console\Model\Cli\CommandFactory;
 use Awesome\Console\Model\CommandInterface;
 use Awesome\Console\Model\XmlParser\CliXmlParser;
 
-class CommandResolver implements \Awesome\Framework\Model\SingletonInterface
+class CommandResolver
 {
     /**
      * @var CommandFactory $commandFactory

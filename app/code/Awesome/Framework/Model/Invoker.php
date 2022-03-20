@@ -4,29 +4,28 @@ declare(strict_types=1);
 namespace Awesome\Framework\Model;
 
 use Awesome\Framework\Exception\DIException;
-use Awesome\Framework\Model\SingletonInterface;
+use Awesome\Framework\Model\Singleton;
 
-final class Invoker implements \Awesome\Framework\Model\SingletonInterface
+final class Invoker extends \Awesome\Framework\Model\Singleton
 {
-    private static array $instances = [];
-
     /**
-     * Invoker constructor.
-     */
-    private function __construct() {}
-
-    /**
-     * Create requested class instance.
-     * Non-object and extra parameters can be passed as an array.
-     * Regardless of SingletonInterface mark new instance will be created.
+     * Create requested object instance.
+     * Parameters can be passed manually as an array.
      * @param string $id
      * @param array $parameters
      * @return mixed
-     * @throws \Exception
      */
     public function create(string $id, array $parameters = [])
     {
         $id = ltrim($id, '\\');
+
+        if (is_subclass_of($id, Singleton::class)) {
+            if (!empty($parameters)) {
+                throw new DIException(__('Parameters cannot be applied to "%1" as it is a Singleton', $id));
+            }
+
+            return $id::getInstance();
+        }
 
         $reflectionClass = new \ReflectionClass($id);
         $arguments = [];
@@ -54,51 +53,37 @@ final class Invoker implements \Awesome\Framework\Model\SingletonInterface
             }
         }
 
-        $object = new $id(...$arguments);
-
-        if ($object instanceof SingletonInterface) {
-            self::$instances[$id] = $object;
-        }
-
-        return $object;
+        return new $id(...$arguments);
     }
 
     /**
-     * Get requested class instance.
-     * Non-object and extra parameters can be passed as an array.
+     * Get requested object instance.
+     * Parameters can be passed manually as an array.
      * Creates it if not yet initialized.
      * @param string $id
      * @param array $parameters
      * @return mixed
-     * @throws \Exception
      */
     public function get(string $id, array $parameters = [])
     {
         $id = ltrim($id, '\\');
 
-        if (isset(self::$instances[$id])) {
+        if (is_subclass_of($id, Singleton::class)) {
             if (!empty($parameters)) {
-                throw new DIException(__('Provided parameters cannot be applied to "%1" as its instance is already initialized', $id));
+                throw new DIException(__('Parameters cannot be applied to "%1" as it is a Singleton', $id));
             }
 
-            $object = self::$instances[$id];
-        } else {
-            $object = $this->create($id, $parameters);
+            return $id::getInstance();
         }
 
-        return $object;
-    }
-
-    /**
-     * Get DIContainer instance.
-     * @return $this
-     */
-    public static function getInstance(): self
-    {
-        if (!isset(self::$instances[self::class])) {
-            self::$instances[self::class] = new self();
+        if (isset(self::$instances[$id]) && !empty($parameters)) {
+            throw new DIException(__('Parameters cannot be applied to "%1" as its instance is already initialized', $id));
         }
 
-        return self::$instances[self::class];
+        if (!isset(self::$instances[$id])) {
+            self::$instances[$id] = $this->create($id, $parameters);
+        }
+
+        return self::$instances[$id];
     }
 }

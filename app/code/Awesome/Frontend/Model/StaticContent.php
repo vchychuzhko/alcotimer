@@ -11,7 +11,7 @@ use Awesome\Frontend\Model\Generator\StaticFile;
 use Awesome\Frontend\Model\Generator\Styles;
 use Awesome\Frontend\Model\Generator\Translation;
 
-class StaticContent implements \Awesome\Framework\Model\SingletonInterface
+class StaticContent
 {
     public const STATIC_FOLDER_PATH = '/pub/static/';
 

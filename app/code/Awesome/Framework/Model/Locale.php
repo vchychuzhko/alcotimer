@@ -5,7 +5,7 @@ namespace Awesome\Framework\Model;
 
 use Awesome\Framework\Model\Http\Request;
 
-class Locale implements \Awesome\Framework\Model\SingletonInterface
+class Locale
 {
     public const LOCALE_COOKIE = 'locale';
 
@@ -16,21 +16,18 @@ class Locale implements \Awesome\Framework\Model\SingletonInterface
 
     private Config $config;
 
-    private Request $request;
+    private ?Request $request;
 
     private string $locale;
 
     /**
      * Locale constructor.
      * @param Config $config
-     * @param Request $request
      */
     public function __construct(
-        Config $config,
-        Request $request
+        Config $config
     ) {
         $this->config = $config;
-        $this->request = $request;
     }
 
     /**
@@ -40,7 +37,7 @@ class Locale implements \Awesome\Framework\Model\SingletonInterface
     public function getLocale(): string
     {
         if (!isset($this->locale)) {
-            $locale = $this->request->getCookie(self::LOCALE_COOKIE);
+            $locale = $this->getRequest() ? $this->getRequest()->getCookie(self::LOCALE_COOKIE) : null;
 
             if (!$locale || !in_array($locale, self::getAllLocales(), true)) {
                 $locale = (string) $this->config->get(self::DEFAULT_LOCALE_CONFIG);
@@ -62,5 +59,18 @@ class Locale implements \Awesome\Framework\Model\SingletonInterface
             self::EN_LOCALE,
             self::UA_LOCALE,
         ];
+    }
+
+    /**
+     * Get Request object if not CLI environment.
+     * @return Request|null
+     */
+    private function getRequest(): ?Request
+    {
+        if (!isset($this->request)) {
+            $this->request = PHP_SAPI !== 'cli' ? Request::getInstance() : null;
+        }
+
+        return $this->request;
     }
 }

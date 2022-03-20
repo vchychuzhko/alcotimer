@@ -5,7 +5,7 @@ namespace Awesome\Framework\Model;
 
 use Awesome\Framework\Model\FileManager\PhpFileManager;
 
-class Config implements \Awesome\Framework\Model\SingletonInterface
+class Config
 {
     private const CONFIG_FILE_PATH = '/app/etc/config.php';
     private const CONFIG_ANNOTATION = 'General configuration file';

@@ -7,7 +7,7 @@ use Awesome\Cache\Model\CacheState;
 use Awesome\Framework\Model\FileManager;
 use Awesome\Framework\Model\Serializer\Json;
 
-class Cache implements \Awesome\Framework\Model\SingletonInterface
+class Cache
 {
     private const CACHE_DIR = '/var/cache';
     private const CACHE_SUFFIX = '-cache';

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Awesome\Framework\Model;
 
-class Maintenance implements \Awesome\Framework\Model\SingletonInterface
+class Maintenance
 {
     private const MAINTENANCE_FILE = '/var/maintenance.flag';
 

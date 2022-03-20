@@ -5,7 +5,7 @@ namespace Awesome\Framework\Model;
 
 use Awesome\Framework\Exception\FileSystemException;
 
-class FileManager implements \Awesome\Framework\Model\SingletonInterface
+class FileManager
 {
     private const DEFAULT_ACCESS_MODE = 0777;
 

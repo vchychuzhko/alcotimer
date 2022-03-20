@@ -8,7 +8,7 @@ use Awesome\Framework\Model\FileManager\CsvFileManager;
 use Awesome\Framework\Model\Locale;
 use Awesome\Framework\Model\Logger;
 
-class Translator implements \Awesome\Framework\Model\SingletonInterface
+class Translator
 {
     private const TRANSLATION_FILES_PATTERN = '/*/*/i18n/%s.csv';
 

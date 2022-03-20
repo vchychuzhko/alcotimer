@@ -5,7 +5,7 @@ namespace Awesome\Framework\Model;
 
 use Awesome\Framework\Model\Config;
 
-class AppState implements \Awesome\Framework\Model\SingletonInterface
+class AppState
 {
     private const BACKEND_ENABLED_CONFIG = 'backend/enabled';
     private const DEVELOPER_MODE_CONFIG = 'developer_mode';

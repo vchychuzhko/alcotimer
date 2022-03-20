@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Awesome\Framework\Model;
 
-class DateTime implements \Awesome\Framework\Model\SingletonInterface
+class DateTime
 {
     private const UTC_TIMEZONE = 'UTC';
 
