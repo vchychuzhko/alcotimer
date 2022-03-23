@@ -9,17 +9,11 @@ use Awesome\Frontend\Model\DeployedVersion;
 
 class Timer extends \Awesome\Frontend\Block\Template
 {
-    public const TIMER_CONFIG = 'timer';
+    private const TIMER_CONFIG = 'timer';
 
-    /**
-     * @var Config $config
-     */
-    private $config;
+    private Config $config;
 
-    /**
-     * @var Json $json
-     */
-    private $json;
+    private Json $json;
 
     /**
      * Timer constructor.

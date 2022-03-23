@@ -3,7 +3,6 @@ define([
     'notification',
     'translator',
     'jquery/ui',
-    'howler',
 ], function ($, notification, __) {
     'use strict'
 
@@ -17,6 +16,7 @@ define([
             sound: '',
         },
 
+        alarmAudio: null,
         $timerControl: null,
 
         /**
@@ -33,6 +33,10 @@ define([
          * @private
          */
         _initFields: function () {
+            if (this.options.sound) {
+                this.alarmAudio = new Audio(this.options.sound);
+            }
+
             this.$timerControl = $('[data-timer-control]', this.element);
         },
 
@@ -218,15 +222,9 @@ define([
             this.setTime(this.currentTime);
             this.stop();
 
-            if (this.options.sound) {
-                let sound = new Howl({
-                    src: [this.options.sound],
-                });
+            notification.success(__("It's time to start!"));
 
-                sound.play();
-            } else {
-                notification.success(__('It time to start!'));
-            }
+            this.alarmAudio && this.alarmAudio.play()
         },
 
         /**
