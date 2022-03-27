@@ -7,27 +7,19 @@ use Awesome\Frontend\Model\Layout;
 
 abstract class AbstractBlock extends \Awesome\Framework\Model\DataObject implements \Awesome\Frontend\Model\BlockInterface
 {
-    /**
-     * @var Layout $layout
-     */
-    protected $layout;
+    protected Layout $layout;
 
-    /**
-     * @var string $nameInLayout
-     */
-    protected $nameInLayout;
+    protected string $nameInLayout;
 
-    /**
-     * @var string $template
-     */
     protected $template;
 
     /**
      * AbstractBlock constructor.
      * @param array $data
      */
-    public function __construct(array $data = [])
-    {
+    public function __construct(
+        array $data = []
+    ) {
         parent::__construct($data, true);
     }
 
@@ -36,10 +28,12 @@ abstract class AbstractBlock extends \Awesome\Framework\Model\DataObject impleme
      * @param Layout $layout
      * @param string $nameInLayout
      * @param string|null $template
-     * @return void
      */
-    public function init(Layout $layout, string $nameInLayout = '', ?string $template = null): void
-    {
+    public function init(
+        Layout $layout,
+        string $nameInLayout = '',
+        ?string $template = null
+    ) {
         $this->layout = $layout;
         $this->nameInLayout = $nameInLayout;
         $this->template = $template ?: $this->template;

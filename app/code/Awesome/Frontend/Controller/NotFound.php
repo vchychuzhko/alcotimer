@@ -5,18 +5,21 @@ namespace Awesome\Frontend\Controller;
 
 use Awesome\Framework\Model\Http\Request;
 use Awesome\Framework\Model\ResponseInterface;
+use Awesome\Frontend\Model\Page\PageConfig;
 
 class NotFound extends \Awesome\Frontend\Model\AbstractPageAction
 {
-    protected const PAGE_LAYOUT = 'notfound_index_index';
+    protected string $pageLayout = 'notfound_index_index';
 
     /**
      * @inheritDoc
      */
     public function execute(Request $request): ResponseInterface
     {
-        // @TODO: Add noindex,nofollow
-        return $this->responseFactory->createPage(self::PAGE_LAYOUT)
+        $this->getPageConfig()->setTitle(__('Page Not Found'))
+            ->setRobots(PageConfig::NOINDEX_NOFOLLOW_ROBOTS);
+
+        return $this->createPageResponse()
             ->setStatusCode(ResponseInterface::NOTFOUND_STATUS_CODE);
     }
 }

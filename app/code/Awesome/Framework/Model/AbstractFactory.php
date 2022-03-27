@@ -7,17 +7,15 @@ use Awesome\Framework\Model\Invoker;
 
 abstract class AbstractFactory
 {
-    /**
-     * @var Invoker $invoker
-     */
-    protected $invoker;
+    protected Invoker $invoker;
 
     /**
      * AbstractFactory constructor.
      * @param Invoker $invoker
      */
-    public function __construct(Invoker $invoker)
-    {
+    public function __construct(
+        Invoker $invoker
+    ) {
         $this->invoker = $invoker;
     }
 }

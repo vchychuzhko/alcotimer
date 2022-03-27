@@ -2,9 +2,6 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="../../../../Frontend/Schema/page_layout.xsd">
     <head>
-        <title><![CDATA[AlcoTimer]]></title>
-        <description><![CDATA[Web App for people, who would like to make drinking process become really challenging.]]></description>
-        <keywords><![CDATA[AlcoTimer,Alco,Timer,Drink]]></keywords>
         <css src="Awesome_Frontend/css/radial-slider.css"/>
         <css src="Awesome_Frontend/css/range-slider.css"/>
         <css src="Awesome_Timer/css/timer.css"/>

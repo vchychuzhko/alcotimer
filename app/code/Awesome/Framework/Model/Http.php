@@ -29,8 +29,6 @@ class Http
 
     private Maintenance $maintenance;
 
-    private Request $request;
-
     private Router $router;
 
     /**
@@ -38,20 +36,17 @@ class Http
      * @param AppState $appState
      * @param Logger $logger
      * @param Maintenance $maintenance
-     * @param Request $request
      * @param Router $router
      */
     public function __construct(
         AppState $appState,
         Logger $logger,
         Maintenance $maintenance,
-        Request $request,
         Router $router
     ) {
         $this->appState = $appState;
         $this->logger = $logger;
         $this->maintenance = $maintenance;
-        $this->request = $request;
         $this->router = $router;
     }
 
@@ -61,28 +56,30 @@ class Http
     public function run()
     {
         try {
-            if (!$this->maintenance->isActive($this->request->getUserIp())) {
-                $action = $this->router->match($this->request);
+            $request = Request::getInstance();
 
-                $response = $action->execute($this->request);
+            if (!$this->maintenance->isActive($request->getUserIp())) {
+                $action = $this->router->match($request);
+
+                $response = $action->execute($request);
             } else {
                 /** @var MaintenanceAction $maintenanceAction */
                 $maintenanceAction = $this->router->getMaintenanceAction();
 
-                $response = $maintenanceAction->execute($this->request);
+                $response = $maintenanceAction->execute($request);
             }
         } catch (NotFoundException $e) {
             /** @var NotFoundAction $unauthorizedAction */
             $notFoundAction = $this->router->getNotFoundAction();
 
-            $response = $notFoundAction->execute($this->request);
+            $response = $notFoundAction->execute($request);
         } catch (UnauthorizedException $e) {
             /** @var UnauthorizedAction $unauthorizedAction */
             $unauthorizedAction = $this->router->getUnauthorizedAction();
 
             $this->logger->info($e->getMessage(), Logger::INFO_WARNING_LEVEL);
 
-            $response = $unauthorizedAction->execute($this->request);
+            $response = $unauthorizedAction->execute($request);
         } catch (\Exception $e) {
             $errorMessage = get_class_name($e) . ': ' . $e->getMessage() . "\n" . $e->getTraceAsString();
 

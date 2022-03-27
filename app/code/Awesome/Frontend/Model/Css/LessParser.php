@@ -12,35 +12,31 @@ use Less_Parser as WikimediaParser;
  */
 class LessParser
 {
-    /**
-     * @var WikimediaParser $parser
-     */
-    private $parser;
+    private WikimediaParser $parser;
 
     /**
      * LessParser constructor.
      * @param WikimediaParser $parser
      */
-    public function __construct(WikimediaParser $parser)
-    {
+    public function __construct(
+        WikimediaParser $parser
+    ) {
         $this->parser = $parser;
     }
 
     /**
      * Wrap Wikimedia ModifyVars method.
      * @param array $variables
-     * @return void
      */
-    public function setVariables(array $variables): void
+    public function setVariables(array $variables)
     {
         $this->parser->ModifyVars($variables);
     }
 
     /**
      * Enable source map for result css.
-     * @return void
      */
-    public function enableSourceMap(): void
+    public function enableSourceMap()
     {
         $this->parser->SetOptions(['sourceMap' => true, 'sourceMapBasepath' => APP_DIR]);
     }
@@ -48,9 +44,8 @@ class LessParser
     /**
      * Wrap Wikimedia parseFile method.
      * @param string $file
-     * @return void
      */
-    public function addFile(string $file): void
+    public function addFile(string $file)
     {
         $this->parser->parseFile($file);
     }
@@ -66,9 +61,8 @@ class LessParser
 
     /**
      * Wrap Wikimedia Reset method.
-     * @return void
      */
-    public function reset(): void
+    public function reset()
     {
         $this->parser->Reset();
     }

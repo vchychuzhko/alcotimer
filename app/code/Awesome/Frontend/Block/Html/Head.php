@@ -6,95 +6,98 @@ namespace Awesome\Frontend\Block\Html;
 use Awesome\Frontend\Helper\StaticContentHelper;
 use Awesome\Frontend\Model\DeployedVersion;
 use Awesome\Frontend\Model\FrontendState;
+use Awesome\Frontend\Model\Page\PageConfig;
 
 class Head extends \Awesome\Frontend\Block\Template
 {
     private const HEAD_ADDITIONAL_BLOCK = 'head.additional';
 
-    /**
-     * @var FrontendState $frontendState
-     */
-    private $frontendState;
-
-    /**
-     * @inheritDoc
-     */
     protected $template = 'Awesome_Frontend::html/head.phtml';
+
+    private FrontendState $frontendState;
+
+    private PageConfig $pageConfig;
 
     /**
      * Head constructor.
      * @param DeployedVersion $deployedVersion
      * @param FrontendState $frontendState
+     * @param PageConfig $pageConfig
      * @param array $data
      */
-    public function __construct(DeployedVersion $deployedVersion, FrontendState $frontendState, array $data = [])
-    {
+    public function __construct(
+        DeployedVersion $deployedVersion,
+        FrontendState $frontendState,
+        PageConfig $pageConfig,
+        array $data = []
+    ) {
         parent::__construct($deployedVersion, $data);
         $this->frontendState = $frontendState;
+        $this->pageConfig = $pageConfig;
     }
 
     /**
-     * Get page title, translating it.
+     * Get page title.
      * @return string
      */
     public function getTitleHtml(): string
     {
-        $titleHtml = '';
-
-        if ($data = $this->getData('title')) {
-            $title = $data['translate'] ? __($data['content']) : $data['content'];
-
-            $titleHtml = <<<HTML
+        if ($title = $this->pageConfig->getTitle()) {
+            return <<<HTML
 <title>$title</title>
 
 HTML;
         }
 
-        return $titleHtml;
+        return '';
     }
 
     /**
-     * Get page description, translating it.
+     * Get page description.
      * @return string
      */
     public function getDescriptionHtml(): string
     {
-        $descriptionHtml = '';
-
-        if ($data = $this->getData('description')) {
-            $description = $data['translate'] ? __($data['content']) : $data['content'];
-
-            $descriptionHtml = <<<HTML
+        if ($description = $this->pageConfig->getDescription()) {
+            return <<<HTML
 <meta name="description" content="$description"/>
 
 HTML;
         }
 
-        return $descriptionHtml;
+        return '';
     }
 
     /**
-     * Get page keywords, translating them one by one.
+     * Get page keywords.
      * @return string
      */
     public function getKeywordsHtml(): string
     {
-        $keywordsHtml = '';
-
-        if ($data = $this->getData('keywords')) {
-            $keywords = implode(', ', array_map(static function ($keyword) use ($data) {
-                $keyword = trim($keyword);
-
-                return $data['translate'] ? __($keyword) : $keyword;
-            }, explode(',', $data['content'])));
-
-            $keywordsHtml = <<<HTML
+        if ($keywords = $this->pageConfig->getKeywords()) {
+            return <<<HTML
 <meta name="keywords" content="$keywords"/>
 
 HTML;
         }
 
-        return $keywordsHtml;
+        return '';
+    }
+
+    /**
+     * Get page robots settings.
+     * @return string
+     */
+    public function getRobotsHtml(): string
+    {
+        if ($robots = $this->pageConfig->getRobots()) {
+            return <<<HTML
+<meta name="robots" content="$robots"/>
+
+HTML;
+        }
+
+        return '';
     }
 
     /**
@@ -156,16 +159,13 @@ HTML;
         $preloadsHtml = '';
 
         if ($preloads = $this->getData('preloads')) {
-            $cssMinified = $this->frontendState->isCssMinificationEnabled();
-            $jsMinified = $this->frontendState->isJsMinificationEnabled();
-
             foreach ($preloads as $preload => $data) {
                 switch ($as = $data['as']) {
                     case 'style':
-                        $minified = $cssMinified;
+                        $minified = $this->frontendState->isCssMinificationEnabled();
                         break;
                     case 'script':
-                        $minified = $jsMinified;
+                        $minified = $this->frontendState->isJsMinificationEnabled();
                         break;
                     default:
                         $minified = false;
@@ -199,7 +199,7 @@ HTML;
                 $media = $data['media'] ? ' media="' . $data['media'] . '"' : '';
 
                 $stylesHtml .= <<<HTML
-<link rel="stylesheet" type="text/css" href="$href"{$media}/>
+<link rel="stylesheet" href="$href"{$media}/>
 
 HTML;
             }

@@ -79,7 +79,7 @@ class Router
 
         if ($action
             && is_subclass_of($action, PostControllerInterface::class) === $request->isPost()
-            && $this->isAdminhtml($request) === (bool) preg_match('/\\\\' . self::ADMINHTML_CONTROLLER_FOLDER . '\\\\/', $action)
+            && $view === $action::getView()
         ) {
             return $this->actionFactory->create($action);
         }

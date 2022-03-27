@@ -14,4 +14,10 @@ interface ActionInterface
      * @return ResponseInterface
      */
     public function execute(Request $request): ResponseInterface;
+
+    /**
+     * Get action view according to its controller folder.
+     * @return string
+     */
+    public static function getView(): string;
 }

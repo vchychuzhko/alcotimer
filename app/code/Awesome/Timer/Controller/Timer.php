@@ -8,13 +8,17 @@ use Awesome\Framework\Model\ResponseInterface;
 
 class Timer extends \Awesome\Frontend\Model\AbstractPageAction
 {
-    protected const PAGE_LAYOUT = 'timer_index_index';
+    protected string $pageLayout = 'timer_index_index';
 
     /**
      * @inheritDoc
      */
     public function execute(Request $request): ResponseInterface
     {
-        return $this->responseFactory->createPage(self::PAGE_LAYOUT);
+        $this->getPageConfig()->setTitle(__('AlcoTimer'))
+            ->setDescription(__('Web App for people, who would like to make drinking process become really challenging.'))
+            ->setKeywords('AlcoTimer,Alco,Timer,Drink'); // @todo: translation?
+
+        return $this->createPageResponse();
     }
 }

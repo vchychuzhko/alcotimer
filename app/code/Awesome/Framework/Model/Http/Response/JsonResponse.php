@@ -16,8 +16,12 @@ class JsonResponse extends \Awesome\Framework\Model\Http\Response
      * @param int $status
      * @param array $headers
      */
-    public function __construct(Json $json, $data = [], int $status = self::SUCCESS_STATUS_CODE, array $headers = [])
-    {
+    public function __construct(
+        Json $json,
+        $data = [],
+        int $status = self::SUCCESS_STATUS_CODE,
+        array $headers = []
+    ) {
         parent::__construct('', $status, $headers);
         $this->json = $json;
         is_array($data) ? $this->setData($data) : $this->setContent($data);

@@ -106,16 +106,7 @@ class LayoutXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
     private function parseHeadNode(\SimpleXMLElement $headNode, array $headData = []): array
     {
         foreach ($headNode->children() as $child) {
-            switch ($childName = $child->getName()) {
-                case 'title':
-                case 'description':
-                case 'keywords':
-                    $headData[$childName] = [
-                        'content'   => XmlParsingHelper::getNodeContent($child),
-                        'translate' => XmlParsingHelper::isAttributeBooleanTrue($child, 'translate', true),
-                    ];
-                    break;
-                    //@TODO: Move above attributes to page-related config, they should not be defined in XML
+            switch ($child->getName()) {
                 case 'favicon':
                     $headData['favicon'] = [];
 
@@ -315,9 +306,8 @@ class LayoutXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
     /**
      * Filter collected assets according to remove references.
      * @param array $headStructure
-     * @return void
      */
-    private function filterRemovedAssets(array &$headStructure): void
+    private function filterRemovedAssets(array &$headStructure)
     {
         foreach ($this->assetsToRemove as $assetToRemove) {
             foreach ($headStructure as $headField => $unused) {
@@ -331,9 +321,8 @@ class LayoutXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
     /**
      * Apply reference updates to a parsed layout.
      * @param array $bodyStructure
-     * @return void
      */
-    private function applyReferences(array &$bodyStructure): void
+    private function applyReferences(array &$bodyStructure)
     {
         foreach ($this->references as $reference) {
             $bodyStructure = DataHelper::arrayReplaceByKeyRecursive($bodyStructure, $reference['name'], $reference['data']);

@@ -12,17 +12,15 @@ use tubalmartin\CssMin\Minifier as TubalMartinMinifier;
  */
 class CssMinifier
 {
-    /**
-     * @var TubalMartinMinifier $minifier
-     */
-    private $minifier;
+    private TubalMartinMinifier $minifier;
 
     /**
      * CssMinifier constructor.
      * @param TubalMartinMinifier $minifier
      */
-    public function __construct(TubalMartinMinifier $minifier)
-    {
+    public function __construct(
+        TubalMartinMinifier $minifier
+    ) {
         $this->minifier = $minifier;
     }
 
@@ -39,9 +37,8 @@ class CssMinifier
     /**
      * Wrap TubalMartin keepSourceMapComment method.
      * @param bool $keepSourceMap
-     * @return void
      */
-    public function keepSourceMap(bool $keepSourceMap = true): void
+    public function keepSourceMap(bool $keepSourceMap = true)
     {
         $this->minifier->keepSourceMapComment($keepSourceMap);
     }

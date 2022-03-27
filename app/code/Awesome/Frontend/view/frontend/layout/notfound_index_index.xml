@@ -1,9 +1,6 @@
 <?xml version="1.0"?>
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="../../../../Frontend/Schema/page_layout.xsd">
-    <head>
-        <title><![CDATA[Page Not Found]]></title>
-    </head>
     <body>
         <referenceContainer name="page-wrapper">
             <block name="notfound.content"

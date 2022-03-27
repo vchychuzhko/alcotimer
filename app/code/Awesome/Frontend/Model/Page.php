@@ -11,25 +11,15 @@ use Awesome\Frontend\Model\Layout;
  * Class Page
  * @method string getHandle()
  * @method string getView()
- * @method array getHandles()
  * @method string|null getLocale()
  */
 class Page extends \Awesome\Framework\Model\DataObject
 {
-    /**
-     * @var Cache $cache
-     */
-    private $cache;
+    private Cache $cache;
 
-    /**
-     * @var Layout $layout
-     */
-    private $layout;
+    private Layout $layout;
 
-    /**
-     * @var Locale $locale
-     */
-    private $locale;
+    private Locale $locale;
 
     /**
      * Page constructor.
@@ -38,8 +28,12 @@ class Page extends \Awesome\Framework\Model\DataObject
      * @param Locale $locale
      * @param array $data
      */
-    public function __construct(Cache $cache, Layout $layout, Locale $locale, $data = [])
-    {
+    public function __construct(
+        Cache $cache,
+        Layout $layout,
+        Locale $locale,
+        array $data = []
+    ) {
         parent::__construct($data, true);
         $this->cache = $cache;
         $this->layout = $layout;
@@ -55,7 +49,7 @@ class Page extends \Awesome\Framework\Model\DataObject
     {
         $content = '';
         $handle = $this->getHandle();
-        $view = Http::FRONTEND_VIEW; // @TODO: $this->getView();
+        $view = $this->getView();
         $locale = $this->getLocale() ?: $this->locale->getLocale();
 
         if ($handle && $view) {

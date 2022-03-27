@@ -202,15 +202,6 @@ class Layout
     }
 
     /**
-     * Get all handles assigned to current page.
-     * @return array
-     */
-    public function getHandles(): array
-    {
-        return $this->handles;
-    }
-
-    /**
      * Get current page view.
      * @return string|null
      */
