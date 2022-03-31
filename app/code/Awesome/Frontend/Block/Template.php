@@ -4,29 +4,30 @@ declare(strict_types=1);
 namespace Awesome\Frontend\Block;
 
 use Awesome\Frontend\Model\DeployedVersion;
+use Awesome\Frontend\Model\Layout;
 
 class Template extends \Awesome\Frontend\Model\AbstractBlock
 {
-    /**
-     * @var DeployedVersion $deployedVersion
-     */
-    private $deployedVersion;
+    private DeployedVersion $deployedVersion;
 
-    /**
-     * @var string $staticUrl
-     */
-    private $staticUrl = '';
+    private string $staticUrl = '';
 
     /**
      * Template constructor.
      * @param DeployedVersion $deployedVersion
+     * @param Layout $layout
+     * @param string $nameInLayout
+     * @param string|null $template
      * @param array $data
      */
     public function __construct(
         DeployedVersion $deployedVersion,
+        Layout $layout,
+        string $nameInLayout,
+        ?string $template = null,
         array $data = []
     ) {
-        parent::__construct($data);
+        parent::__construct($layout, $nameInLayout, $template, $data);
         $this->deployedVersion = $deployedVersion;
     }
 
@@ -63,8 +64,8 @@ class Template extends \Awesome\Frontend\Model\AbstractBlock
     {
         $file = ltrim($file, '/');
 
-        if ($this->staticUrl === '' && $layout = $this->getLayout()) {
-            $view = $layout->getView();
+        if ($this->staticUrl === '') {
+            $view = $this->layout->getView();
 
             if (!$this->deployedVersion->getVersion()) {
                 $this->deployedVersion->generateVersion();

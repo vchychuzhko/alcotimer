@@ -75,7 +75,7 @@ class StaticAction extends \Awesome\Framework\Model\AbstractAction
     {
         $path = (string) $this->request->getParam('resource');
         $file = $this->getFile($path);
-        $view = $this->getView($path);
+        $view = $this->getRequestedView($path);
 
         if (!$file || !$view || !$this->minificationMatch($path) || !$type = $this->staticFileMatch($file)) {
             throw new NotFoundException();
@@ -132,7 +132,7 @@ class StaticAction extends \Awesome\Framework\Model\AbstractAction
      * @param string $path
      * @return string|null
      */
-    private function getView(string $path): ?string
+    private function getRequestedView(string $path): ?string
     {
         preg_match(
             sprintf(self::STATIC_FILE_PATTERN, Http::FRONTEND_VIEW, Http::BACKEND_VIEW),

@@ -79,8 +79,10 @@ define([
 
                 if (this.currentTime) {
                     this.setTime(this.currentTime);
-                } else {
+                } else if (this.enteredTime) {
                     this.setTime(this.enteredTime);
+                } else {
+                    this.setTime(this.options.defaultTime * 60);
                 }
             }
         },

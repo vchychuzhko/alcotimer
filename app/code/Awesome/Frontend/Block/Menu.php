@@ -5,28 +5,32 @@ namespace Awesome\Frontend\Block;
 
 use Awesome\Framework\Model\Config;
 use Awesome\Frontend\Model\DeployedVersion;
+use Awesome\Frontend\Model\Layout;
 
 class Menu extends \Awesome\Frontend\Block\Template
 {
     private const SUPPORT_EMAIL_CONFIG = 'support_email_address';
     //@TODO: move this to future Contact module
-    /**
-     * @var Config $config
-     */
-    private $config;
+    private Config $config;
 
     /**
      * Menu constructor.
      * @param Config $config
      * @param DeployedVersion $deployedVersion
+     * @param Layout $layout
+     * @param string $nameInLayout
+     * @param string|null $template
      * @param array $data
      */
     public function __construct(
         Config $config,
         DeployedVersion $deployedVersion,
+        Layout $layout,
+        string $nameInLayout,
+        ?string $template = null,
         array $data = []
     ) {
-        parent::__construct($deployedVersion, $data);
+        parent::__construct($deployedVersion, $layout, $nameInLayout, $template, $data);
         $this->config = $config;
     }
 

@@ -6,13 +6,14 @@ namespace Awesome\Frontend\Block\Html;
 use Awesome\Frontend\Helper\StaticContentHelper;
 use Awesome\Frontend\Model\DeployedVersion;
 use Awesome\Frontend\Model\FrontendState;
+use Awesome\Frontend\Model\Layout;
 use Awesome\Frontend\Model\Page\PageConfig;
 
 class Head extends \Awesome\Frontend\Block\Template
 {
     private const HEAD_ADDITIONAL_BLOCK = 'head.additional';
 
-    protected $template = 'Awesome_Frontend::html/head.phtml';
+    protected ?string $template = 'Awesome_Frontend::html/head.phtml';
 
     private FrontendState $frontendState;
 
@@ -22,16 +23,22 @@ class Head extends \Awesome\Frontend\Block\Template
      * Head constructor.
      * @param DeployedVersion $deployedVersion
      * @param FrontendState $frontendState
+     * @param Layout $layout
      * @param PageConfig $pageConfig
+     * @param string $nameInLayout
+     * @param string|null $template
      * @param array $data
      */
     public function __construct(
         DeployedVersion $deployedVersion,
         FrontendState $frontendState,
+        Layout $layout,
         PageConfig $pageConfig,
+        string $nameInLayout,
+        ?string $template = null,
         array $data = []
     ) {
-        parent::__construct($deployedVersion, $data);
+        parent::__construct($deployedVersion, $layout, $nameInLayout, $template, $data);
         $this->frontendState = $frontendState;
         $this->pageConfig = $pageConfig;
     }
@@ -240,13 +247,7 @@ HTML;
      */
     public function getHeadAdditional(): string
     {
-        $headAdditionalContent = '';
-
-        if ($layout = $this->getLayout()) {
-            $headAdditionalContent = $layout->render(self::HEAD_ADDITIONAL_BLOCK);
-        }
-
-        return $headAdditionalContent;
+        return $this->layout->render(self::HEAD_ADDITIONAL_BLOCK);
     }
 
     /**

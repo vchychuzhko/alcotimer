@@ -11,29 +11,22 @@ abstract class AbstractBlock extends \Awesome\Framework\Model\DataObject impleme
 
     protected string $nameInLayout;
 
-    protected $template;
+    protected ?string $template = null;
 
     /**
      * AbstractBlock constructor.
-     * @param array $data
-     */
-    public function __construct(
-        array $data = []
-    ) {
-        parent::__construct($data, true);
-    }
-
-    /**
-     * Initialize block fields.
      * @param Layout $layout
      * @param string $nameInLayout
      * @param string|null $template
+     * @param array $data
      */
-    public function init(
+    public function __construct(
         Layout $layout,
-        string $nameInLayout = '',
-        ?string $template = null
+        string $nameInLayout,
+        ?string $template = null,
+        array $data = []
     ) {
+        parent::__construct($data, true);
         $this->layout = $layout;
         $this->nameInLayout = $nameInLayout;
         $this->template = $template ?: $this->template;
@@ -44,13 +37,7 @@ abstract class AbstractBlock extends \Awesome\Framework\Model\DataObject impleme
      */
     public function toHtml(): string
     {
-        $html = '';
-
-        if ($layout = $this->getLayout()) {
-            $html = $layout->renderElement($this);
-        }
-
-        return $html;
+        return $this->layout->renderElement($this);
     }
 
     /**
@@ -63,19 +50,17 @@ abstract class AbstractBlock extends \Awesome\Framework\Model\DataObject impleme
     {
         $html = '';
 
-        if ($layout = $this->getLayout()) {
-            if ($childName) {
-                $childNames = $layout->getChildNames($this->getNameInLayout(), true);
+        if ($childName) {
+            $childNames = $this->layout->getChildNames($this->getNameInLayout(), true);
 
-                if (in_array($childName, $childNames, true)) {
-                    $html = $layout->render($childName);
-                }
-            } else {
-                $childNames = $layout->getChildNames($this->getNameInLayout());
+            if (in_array($childName, $childNames, true)) {
+                $html = $this->layout->render($childName);
+            }
+        } else {
+            $childNames = $this->layout->getChildNames($this->getNameInLayout());
 
-                foreach ($childNames as $child) {
-                    $html .= $layout->render($child);
-                }
+            foreach ($childNames as $child) {
+                $html .= $this->layout->render($child);
             }
         }
 
@@ -84,9 +69,9 @@ abstract class AbstractBlock extends \Awesome\Framework\Model\DataObject impleme
 
     /**
      * Get element name.
-     * @return string|null
+     * @return string
      */
-    public function getNameInLayout(): ?string
+    public function getNameInLayout(): string
     {
         return $this->nameInLayout;
     }
@@ -98,14 +83,5 @@ abstract class AbstractBlock extends \Awesome\Framework\Model\DataObject impleme
     public function getTemplate(): ?string
     {
         return $this->template;
-    }
-
-    /**
-     * Get page layout.
-     * @return Layout|null
-     */
-    protected function getLayout(): ?Layout
-    {
-        return $this->layout;
     }
 }

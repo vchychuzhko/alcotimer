@@ -5,6 +5,7 @@ namespace Awesome\Frontend\Block;
 
 use Awesome\Framework\Model\Locale;
 use Awesome\Frontend\Model\DeployedVersion;
+use Awesome\Frontend\Model\Layout;
 
 class Root extends \Awesome\Frontend\Block\Template
 {
@@ -14,30 +15,30 @@ class Root extends \Awesome\Frontend\Block\Template
         'uk_UA' => 'uk',
     ];
 
-    /**
-     * @var Locale $locale
-     */
-    private $locale;
+    private Locale $locale;
 
-    /**
-     * @inheritDoc
-     */
-    protected $template = 'Awesome_Frontend::root.phtml';
+    protected ?string $template = 'Awesome_Frontend::root.phtml';
 
-    /**
-     * @var string  $language
-     */
-    private $language;
+    private string $language;
 
     /**
      * Root constructor.
      * @param DeployedVersion $deployedVersion
+     * @param Layout $layout
      * @param Locale $locale
+     * @param string $nameInLayout
+     * @param string|null $template
      * @param array $data
      */
-    public function __construct(DeployedVersion $deployedVersion, Locale $locale, array $data = [])
-    {
-        parent::__construct($deployedVersion, $data);
+    public function __construct(
+        DeployedVersion $deployedVersion,
+        Layout $layout,
+        Locale $locale,
+        string $nameInLayout,
+        ?string $template = null,
+        array $data = []
+    ) {
+        parent::__construct($deployedVersion, $layout, $nameInLayout, $template, $data);
         $this->locale = $locale;
     }
 
@@ -47,7 +48,7 @@ class Root extends \Awesome\Frontend\Block\Template
      */
     public function getLanguage(): string
     {
-        if ($this->language === null) {
+        if (!isset($this->language)) {
             $locale = $this->locale->getLocale();
 
             $this->language = self::LANGUAGE_MAP[$locale] ?? self::DEFAULT_LANGUAGE;

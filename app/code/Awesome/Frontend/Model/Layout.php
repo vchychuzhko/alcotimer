@@ -108,17 +108,17 @@ class Layout
 
         if ($element = DataHelper::arrayGetByKeyRecursive($this->structure, $nameInLayout)) {
             $elementId = $element['class'];
-            $params = [];
+            $params = [
+                'layout'       => $this,
+                'nameInLayout' => $nameInLayout,
+                'template'     => $element['template'] ?? null,
+            ];
 
             if (isset($element['data'])) {
                 $params['data'] = $element['data'];
             }
 
             $block = $this->blockFactory->create($elementId, $params);
-
-            if ($block instanceof AbstractBlock) {
-                $block->init($this, $nameInLayout, $element['template'] ?? null);
-            }
 
             $html = $block->toHtml();
         }

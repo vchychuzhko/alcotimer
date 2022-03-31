@@ -20,10 +20,6 @@ class Body extends \Awesome\Frontend\Block\Container
      */
     public function getHtmlClass(): string
     {
-        if ($layout = $this->getLayout()) {
-            return str_replace(['-', '_'], ['', '-'], $layout->getHandle());
-        }
-
-        return '';
+        return str_replace(['-', '_'], ['', '-'], $this->layout->getHandle());
     }
 }
