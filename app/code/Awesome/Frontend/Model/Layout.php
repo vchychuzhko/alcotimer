@@ -108,10 +108,10 @@ class Layout
 
         if ($element = DataHelper::arrayGetByKeyRecursive($this->structure, $nameInLayout)) {
             $elementId = $element['class'];
-            $params = $element['arguments'] ?? [];
+            $params = [];
 
             if (isset($element['data'])) {
-                $params = array_merge($params, ['data' => $element['data']]);
+                $params['data'] = $element['data'];
             }
 
             $block = $this->blockFactory->create($elementId, $params);

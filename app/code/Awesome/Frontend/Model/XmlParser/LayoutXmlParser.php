@@ -222,7 +222,6 @@ class LayoutXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
                     'class'     => XmlParsingHelper::getNodeAttribute($element, 'class'),
                     'template'  => XmlParsingHelper::getNodeAttribute($element, 'template'),
                     'children'  => [],
-                    'arguments' => [],
                     'sortOrder' => XmlParsingHelper::getNodeAttribute($element, 'sortOrder'),
                 ];
 
@@ -231,11 +230,7 @@ class LayoutXmlParser extends \Awesome\Framework\Model\AbstractXmlParser
                 }
 
                 foreach ($element->children() as $child) {
-                    if ($child->getName() === 'arguments') {
-                        foreach ($child->children() as $argument) {
-                            $parsedElement['arguments'][XmlParsingHelper::getNodeAttributeName($argument)] = XmlParsingHelper::getNodeContent($argument);
-                        }
-                    } elseif ($parsedChild = $this->parseElement($child)) {
+                    if ($parsedChild = $this->parseElement($child)) {
                         $parsedElement['children'][XmlParsingHelper::getNodeAttributeName($child)] = $parsedChild;
                     }
                 }
