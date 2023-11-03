@@ -10,10 +10,7 @@ use Awesome\Framework\Model\Config;
 
 class ConfigGet extends \Awesome\Console\Model\AbstractCommand
 {
-    /**
-     * @var Config $config
-     */
-    private $config;
+    private Config $config;
 
     /**
      * ConfigGet constructor.
@@ -31,7 +28,6 @@ class ConfigGet extends \Awesome\Console\Model\AbstractCommand
     {
         return parent::configure()
             ->setDescription('Get configuration value by path')
-            ->addOption('encode', 'e', InputDefinition::OPTION_OPTIONAL, 'Allow encoding children structure if path is pointing to a section')
             ->addArgument('path', InputDefinition::ARGUMENT_REQUIRED, 'Config path to retrieve');
     }
 
@@ -44,19 +40,13 @@ class ConfigGet extends \Awesome\Console\Model\AbstractCommand
     {
         $path = $input->getArgument('path');
 
-        if ($this->config->exists($path)) {
-            $value = $this->config->get($path);
+        $value = $this->config->get($path);
 
+        if ($value !== null) {
             if (is_array($value)) {
-                if ($input->getOption('encode')) {
-                    $output->writeln(array_export($value, true));
-                } else {
-                    $output->writeln('Use -e/--encode option to allow displaying children structure as an array.');
-
-                    throw new \InvalidArgumentException('Provided path points to a configuration section');
-                }
+                $output->writeln(array_export($value, true));
             } else {
-                $output->writeln($value !== null ? (string) $value : $output->colourText('null', Output::BROWN));
+                $output->writeln((string) $value);
             }
         } else {
             $output->writeln($output->colourText('(not set)', Output::RED));

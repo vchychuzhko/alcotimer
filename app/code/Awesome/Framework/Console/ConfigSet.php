@@ -10,10 +10,7 @@ use Awesome\Framework\Model\Config;
 
 class ConfigSet extends \Awesome\Console\Model\AbstractCommand
 {
-    /**
-     * @var Config $config
-     */
-    private $config;
+    private Config $config;
 
     /**
      * ConfigSet constructor.
@@ -34,7 +31,7 @@ class ConfigSet extends \Awesome\Console\Model\AbstractCommand
             ->addOption('create', 'c', InputDefinition::OPTION_OPTIONAL, 'Allow creating new record if configuration is not yet present')
             ->addOption('type', null, InputDefinition::OPTION_OPTIONAL, 'Type for value to be casted to, in lowercase')
             ->addArgument('path', InputDefinition::ARGUMENT_REQUIRED, 'Config path to update')
-            ->addArgument('value', InputDefinition::ARGUMENT_OPTIONAL, 'Config value to set. If omitted, considered as null');
+            ->addArgument('value', InputDefinition::ARGUMENT_REQUIRED, 'Config value to set');
     }
 
     /**
@@ -44,30 +41,32 @@ class ConfigSet extends \Awesome\Console\Model\AbstractCommand
      */
     public function execute(Input $input, Output $output)
     {
-        // @TODO: Add unset config command/method or add -r/--remove option
+        $path = $input->getArgument('path');
+        $value = $input->getArgument('value');
+
         if ($type = $input->getOption('type')) {
-            if (!in_array($type, ['int', 'integer', 'float', 'double', 'bool', 'boolean', 'string'], true)) {
+            if (!in_array($type, ['int', 'float', 'bool', 'string'], true)) {
                 throw new \InvalidArgumentException(__('Provided value type "%1" is not valid', $type));
             }
-            $value = $input->getArgument('value');
             settype($value, $type);
-        } else {
-            $value = $input->getArgument('value');
         }
-        $path = $input->getArgument('path');
 
-        if (!$this->config->exists($path) && !$input->getOption('create')) {
+        $prevValue = $this->config->get($path);
+
+        if ($prevValue === null && !$input->getOption('create')) {
             $output->writeln('Use -c/--create option to allow creating new configuration record.');
 
-            throw new \InvalidArgumentException(__('Provided path is not yet registered'));
+            throw new \InvalidArgumentException(__('Provided configuration path is not yet registered'));
         }
 
-        if (is_array($this->config->get($path))) {
-            throw new \InvalidArgumentException(__('Provided path points to configuration section and cannot be updated via CLI'));
+        if (is_array($prevValue)) {
+            $output->writeln('Section should be updated by each field separately.');
+
+            throw new \InvalidArgumentException(__('Provided configuration path points to a section'));
         }
 
         $this->config->set($path, $value);
 
-        $output->writeln('Configuration was successfully updated.');
+        $output->writeln('Configuration was successfully updated!');
     }
 }

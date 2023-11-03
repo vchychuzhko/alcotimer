@@ -32,51 +32,18 @@ class Config
      */
     public function get(string $path)
     {
-        $config = null;
+        $keys = explode('/', $path);
+        $config = $this->getConfig();
 
-        if ($path) {
-            $keys = explode('/', $path);
-            $config = $this->getConfig();
-
-            foreach ($keys as $key) {
-                if (is_array($config) && isset($config[$key])) {
-                    $config = $config[$key];
-                } else {
-                    $config = null;
-                    break;
-                }
+        foreach ($keys as $key) {
+            if (is_array($config) && isset($config[$key])) {
+                $config = $config[$key];
+            } else {
+                return null;
             }
         }
 
         return $config;
-    }
-
-    /**
-     * Check if provided config record exists.
-     * Method consider the path as chain of keys: a/b/c => ['a']['b']['c']
-     * @param string $path
-     * @return bool
-     */
-    public function exists(string $path): bool
-    {
-        $exists = false;
-
-        if ($path) {
-            $keys = explode('/', $path);
-            $config = $this->getConfig();
-
-            foreach ($keys as $key) {
-                if (is_array($config) && array_key_exists($key, $config)) {
-                    $config = $config[$key];
-                    $exists = true;
-                } else {
-                    $exists = false;
-                    break;
-                }
-            }
-        }
-
-        return $exists;
     }
 
     /**
