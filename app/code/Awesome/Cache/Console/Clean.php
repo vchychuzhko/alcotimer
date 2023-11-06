@@ -8,7 +8,7 @@ use Awesome\Console\Model\Cli\Input;
 use Awesome\Console\Model\Cli\Input\InputDefinition;
 use Awesome\Console\Model\Cli\Output;
 
-class Clean extends \Awesome\Console\Model\AbstractCommand
+class Clean extends \Awesome\Cache\Model\AbstractCacheCommand
 {
     private Cache $cache;
 
@@ -38,27 +38,14 @@ class Clean extends \Awesome\Console\Model\AbstractCommand
      */
     public function execute(Input $input, Output $output)
     {
-        $definedTypes = Cache::getAllTypes();
-        $types = $input->getArgument('types') ?: $definedTypes;
-        $titleShown = false;
+        $types = $this->getTypes($input, $output);
+
+        $output->writeln('Cleared cache types:');
 
         foreach ($types as $type) {
-            if (in_array($type, $definedTypes, true)) {
-                $this->cache->invalidate($type);
+            $this->cache->invalidate($type);
 
-                if (!$titleShown) {
-                    $output->writeln('Cleared cache types:');
-                    $titleShown = true;
-                }
-                $output->writeln($type);
-            } else {
-                $output->writeln('Provided cache type was not recognized.');
-                $output->writeln();
-                $output->writeln('Allowed types:');
-                $output->writeln($output->colourText(implode(', ', $definedTypes)), 2);
-
-                throw new \InvalidArgumentException('Invalid cache type is provided');
-            }
+            $output->writeln($type);
         }
     }
 }
