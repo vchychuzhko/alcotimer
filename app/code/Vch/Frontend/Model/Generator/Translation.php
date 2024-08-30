@@ -82,7 +82,10 @@ class Translation extends \Vch\Frontend\Model\AbstractGenerator
         }
         ksort($dictionary);
 
-        $dictionary = $this->json->prettyEncode($dictionary);
+        $dictionary = $this->json->prettyEncode(
+            $dictionary,
+            JSON_FORCE_OBJECT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT
+        );
 
         $content = <<<JS
 define($dictionary);
