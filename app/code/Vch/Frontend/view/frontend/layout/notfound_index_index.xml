@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="../../../../Frontend/Schema/page_layout.xsd">
+    <body>
+        <referenceContainer name="page-wrapper">
+            <block name="notfound.content"
+                   class="Vch\Frontend\Block\Template"
+                   template="Vch_Frontend::page/notfound.phtml"
+                   sortOrder="5"
+            />
+        </referenceContainer>
+    </body>
+</page>

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../Console/Schema/cli.xsd">
+    <namespace name="maintenance">
+        <command name="enable" class="Vch\Framework\Console\MaintenanceEnable"/>
+        <command name="disable" class="Vch\Framework\Console\MaintenanceDisable"/>
+        <command name="status" class="Vch\Framework\Console\MaintenanceStatus"/>
+    </namespace>
+    <namespace name="config">
+        <command name="get" class="Vch\Framework\Console\ConfigGet"/>
+        <command name="set" class="Vch\Framework\Console\ConfigSet"/>
+    </namespace>
+</config>

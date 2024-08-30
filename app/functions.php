@@ -106,6 +106,6 @@ if (!function_exists('__')) {
             $args = $args[0];
         }
 
-        return (new \Awesome\Framework\Model\Phrase($phrase, $args))->render();
+        return (new \Vch\Framework\Model\Phrase($phrase, $args))->render();
     }
 }

@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="../../../../Frontend/Schema/page_layout.xsd">
+    <head>
+        <css src="Vch_Frontend/css/radial-slider.css"/>
+        <css src="Vch_Frontend/css/range-slider.css"/>
+        <css src="Vch_Timer/css/timer.css"/>
+    </head>
+    <body>
+        <referenceBlock name="menu">
+            <block name="timer.settings" class="Vch\Timer\Block\Timer" template="Vch_Timer::menu/settings.phtml"/>
+        </referenceBlock>
+        <referenceContainer name="page-wrapper">
+            <block name="timer.content"
+                   class="Vch\Timer\Block\Timer"
+                   template="Vch_Timer::timer.phtml"
+                   sortOrder="5"
+            >
+                <block name="timer.hint"
+                       class="Vch\Frontend\Block\Template"
+                       template="Vch_Timer::timer/hint.phtml"
+                       ifConfig="timer/show_hint"/>
+            </block>
+        </referenceContainer>
+    </body>
+</page>

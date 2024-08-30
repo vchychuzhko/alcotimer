@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="../../Console/Schema/cli.xsd">
-    <namespace name="help">
-        <command name="show" class="Awesome\Console\Console\Help"/>
-    </namespace>
-</config>
