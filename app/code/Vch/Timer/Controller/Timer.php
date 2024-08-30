@@ -17,7 +17,7 @@ class Timer extends \Vch\Frontend\Model\AbstractPageAction
     {
         $this->getPageConfig()->setTitle(__('AlcoTimer'))
             ->setDescription(__('Web App for people, who would like to make drinking process become really challenging.'))
-            ->setKeywords('AlcoTimer,Alco,Timer,Drink'); // @todo: translation?
+            ->setKeywords('AlcoTimer,Alcohol,Timer,Drink,Party,Games');
 
         return $this->createPageResponse();
     }

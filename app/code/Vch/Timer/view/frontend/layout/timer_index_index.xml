@@ -4,7 +4,6 @@
     <head>
         <css src="Vch_Frontend/css/radial-slider.css"/>
         <css src="Vch_Frontend/css/range-slider.css"/>
-        <css src="Vch_Timer/css/timer.css"/>
     </head>
     <body>
         <referenceBlock name="menu">

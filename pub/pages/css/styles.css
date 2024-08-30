@@ -33,12 +33,6 @@ body {
     height: 100%;
 }
 
-@media (max-width: 375px) {
-    .logo__container {
-        padding: 8px 0;
-    }
-}
-
 .error {
     align-items: center;
     display: flex;
