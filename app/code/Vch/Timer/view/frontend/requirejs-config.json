@@ -1,0 +1,6 @@
+{
+    "paths": {
+        "settings": "Vch_Timer/js/settings",
+        "timer": "Vch_Timer/js/timer"
+    }
+}

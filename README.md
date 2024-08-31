@@ -1,6 +1,6 @@
 # AlcoTimer
 
-*0.6.0-beta*
+*0.6.2-beta*
 
 ---
 

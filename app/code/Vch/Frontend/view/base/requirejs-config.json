@@ -1,0 +1,14 @@
+{
+    "paths": {
+        "api/clipboard": "Vch_Frontend/js/api/clipboard",
+        "api/storage": "Vch_Frontend/js/api/storage",
+        "copy": "Vch_Frontend/js/copy",
+        "jquery": "lib/jquery/jquery",
+        "jquery/ui": "lib/jquery/widget",
+        "modal": "Vch_Frontend/js/ui/modal",
+        "notification": "Vch_Frontend/js/ui/notification",
+        "radialSlider": "Vch_Frontend/js/radial-slider",
+        "rangeSlider": "Vch_Frontend/js/range-slider",
+        "translator": "Vch_Frontend/js/translator"
+    }
+}

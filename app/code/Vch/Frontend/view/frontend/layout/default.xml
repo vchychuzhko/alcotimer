@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="../../../../Frontend/Schema/page_layout.xsd">
+    <head>
+        <favicon>
+            <icon href="/favicon.ico" sizes="any"/>
+            <icon rel="apple-touch-icon" href="/media/favicon/apple-touch-icon.png" sizes="180x180"/>
+            <icon rel="alternate icon" href="/media/favicon/favicon.png" type="image/png"/>
+            <icon href="/media/favicon/favicon.svg" type="image/svg+xml"/>
+        </favicon>
+        <manifest href="/manifest.json" themeColor="#ffffff"/>
+        <css src="styles.css"/>
+        <css src="Vch_Frontend/css/menu.css"/>
+        <script src="lib/require/require.js"/>
+        <script src="requirejs-config.js"/>
+        <script src="Vch_Frontend/js/main.js"/>
+    </head>
+    <body>
+        <container name="head.additional" disabled="true">
+            <block name="translation"
+                   class="Vch\Frontend\Block\Translation"
+                   template="Vch_Frontend::translation.phtml"
+                   sortOrder="1"
+            />
+        </container>
+        <block name="menu" class="Vch\Frontend\Block\Menu" template="Vch_Frontend::menu.phtml" sortOrder="1"/>
+        <container name="page-wrapper" htmlTag="main" htmlClass="page-wrapper" sortOrder="5">
+            <block name="header"
+                   class="Vch\Frontend\Block\Header"
+                   template="Vch_Frontend::header.phtml"
+                   sortOrder="1"
+            >
+                <block name="menu-toggler"
+                       class="Vch\Frontend\Block\Template"
+                       template="Vch_Frontend::menu/menu_toggler.phtml"/>
+            </block>
+            <block name="menu-overlay"
+                   class="Vch\Frontend\Block\Template"
+                   template="Vch_Frontend::menu/menu_overlay.phtml"
+                   sortOrder="2"/>
+            <block name="footer"
+                   class="Vch\Frontend\Block\Template"
+                   template="Vch_Frontend::footer.phtml"
+                   sortOrder="10"/>
+        </container>
+    </body>
+</page>

@@ -5,9 +5,8 @@ return [
         'front_name' => 'admin',
     ],
     'developer_mode' => 0, // Show all errors and exceptions on the frontend
-    'request_log' => 1, // Log all requests
     'support_email_address' => '',
-    'default_locale' => 'uk_UA',
+    'default_locale' => 'en_US',
     'web' => [
         'homepage' => '/timer',
         'logo' => 'pub/media/images/logo.svg',
@@ -30,7 +29,7 @@ return [
         'show_hint' => 1,
         'general' => [
             'defaultTime' => 8,
-            'sound' => 'pub/media/audio/football_sound.mp3',
+            'sound' => 'pub/media/audio/alert_sound.mp3',
         ],
         'settings' => [
             'hideRandomTime' => 1,
