@@ -13,7 +13,7 @@ use Vch\Framework\Exception\XmlValidationException;
 
 class Cli
 {
-    public const VERSION = '0.6.1';
+    public const VERSION = '0.6.2';
 
     /**
      * @var CommandResolver $commandResolver

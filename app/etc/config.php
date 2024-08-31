@@ -6,7 +6,7 @@ return [
     ],
     'developer_mode' => 0, // Show all errors and exceptions on the frontend
     'support_email_address' => '',
-    'default_locale' => 'uk_UA',
+    'default_locale' => 'en_US',
     'web' => [
         'homepage' => '/timer',
         'logo' => 'pub/media/images/logo.svg',

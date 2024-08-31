@@ -17,7 +17,7 @@ use Vch\Framework\Model\Maintenance;
 
 class Http
 {
-    public const VERSION = '0.6.1';
+    public const VERSION = '0.6.2';
 
     public const FRONTEND_VIEW = 'frontend';
     public const BACKEND_VIEW = 'adminhtml';

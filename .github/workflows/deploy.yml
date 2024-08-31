@@ -1,0 +1,32 @@
+name: deploy
+
+on:
+  [workflow_dispatch]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+    steps:
+      # https://github.com/pepelsbey/playground/blob/main/28/.github/workflows/deploy.yml
+      - name: Setup Key
+        run: |
+          set -eu
+          mkdir "$HOME/.ssh"
+          echo "${{ secrets.key }}" > "$HOME/.ssh/key"
+          chmod 600 "$HOME/.ssh/key"
+
+      # https://github.com/actions/checkout
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Upload files
+        run: |
+          rsync -e "ssh -p ${{ secrets.port }} -i $HOME/.ssh/key -o StrictHostKeyChecking=no" --archive --compress --delete . ${{ secrets.user }}@${{ secrets.host }}:${{ secrets.path }}/web
+
+      - name: Setup Composer
+        run: |
+          ssh -p ${{ secrets.port }} -i $HOME/.ssh/key -o StrictHostKeyChecking=no ${{ secrets.user }}@${{ secrets.host }} '${{ secrets.path }}/.deploy/composer.sh'
+
+      - name: Post Deploy
+        run: |
+          ssh -p ${{ secrets.port }} -i $HOME/.ssh/key -o StrictHostKeyChecking=no ${{ secrets.user }}@${{ secrets.host }} '${{ secrets.path }}/.deploy/post.sh'
