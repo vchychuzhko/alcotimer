@@ -1,3 +1,3 @@
 <footer class="page-footer">
-    <span>&copy; VchTeam. <?= __('All rights reserved') ?></span>
+    <span>&copy; Vch. <?= __('All rights reserved') ?></span>
 </footer>
