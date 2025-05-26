@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import Button from 'primevue/button'
+import audioSrc from '@/assets/audio/alert.mp3'
 import TimerButton from '@/components/Timer/TimerButton.vue'
 import { useTimerStore } from '@/stores/timer.ts'
-import { computed, onMounted, ref } from 'vue'
-import audioSrc from '@/assets/audio/alert.mp3'
+import Button from 'primevue/button'
+import { computed, onMounted, ref, watch } from 'vue'
 
 const timerStore = useTimerStore()
 
 let interval: number | undefined
-const time = ref<number>(60) // @TODO: Implement time selection
+const time = ref<number>(0)
 const audio = ref<HTMLAudioElement>()
 
 const checkIfStop = () => {
@@ -43,8 +43,11 @@ const stopTimer = () => {
   }
 }
 const resetTimer = () => {
-  time.value = 60 // @TODO: Implement time selection
+  const mode = timerStore.mode
 
+  time.value = Math.floor(Math.random() * (mode.to - mode.from + 1)) + mode.from
+
+  stopTimer()
   timerStore.setRemaining(null)
 }
 
@@ -68,20 +71,30 @@ onMounted(() => {
 
   if (timerStore.state.remaining) {
     time.value = timerStore.state.remaining
-  }
-  if (timerStore.state.active) {
-    startTimer()
+
+    if (timerStore.state.active) {
+      startTimer()
+    }
+  } else {
+    resetTimer()
   }
 })
+
+watch(
+  () => timerStore.state.mode_id,
+  () => {
+    resetTimer()
+  },
+)
 </script>
 
 <template>
   <section class="timer">
-    <p class="timer__time">{{ timeFormatted }}</p>
+    <p class="timer__time" v-show="timerStore.state.show_time">{{ timeFormatted }}</p>
     <div class="timer__controls">
       <Button
         class="timer__reset"
-        :class="{ show: !timerStore.state.active && timerStore.state.remaining }"
+        :class="{ show: !timerStore.state.active }"
         icon="pi pi-sync"
         severity="secondary"
         rounded

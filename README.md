@@ -1,8 +1,6 @@
 # AlcoTimer
 
-![version](https://img.shields.io/badge/version-0.0.1-orange)
-
-Web application to add some random into drinking process.
+Web application to add some random into the drinking process.
 
 ## Type Support for `.vue` Imports in TS
 

@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
 import TimerButtonLoader from '@/components/Timer/Button/TimerButtonLoader.vue'
+import Button from 'primevue/button'
+import { ref, watch } from 'vue'
 
 const props = defineProps<{
   active: boolean
@@ -27,7 +28,14 @@ watch(
 <template>
   <div class="timer-button-container">
     <TimerButtonLoader class="timer-button__loader" :class="{ show: active }" />
-    <button class="timer-button" :title="active ? 'Pause' : 'Play'" @click="emit('click')">
+    <Button
+      class="timer-button"
+      icon="pi pi-sync"
+      severity="secondary"
+      rounded
+      :title="active ? 'Pause' : 'Play'"
+      @click="emit('click')"
+    >
       <svg
         class="timer-button__icon"
         viewBox="0 0 40 40"
@@ -54,7 +62,7 @@ watch(
           />
         </path>
       </svg>
-    </button>
+    </Button>
   </div>
 </template>
 
@@ -78,18 +86,12 @@ watch(
 }
 
 .timer-button {
-  background-color: #e60000;
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  height: var(--button-size);
-  outline: none;
-  padding: 0;
   position: relative;
-  width: var(--button-size);
+  transition: none;
   z-index: 1;
 
-  -webkit-tap-highlight-color: transparent;
+  --p-button-icon-only-height: var(--button-size);
+  --p-button-icon-only-width: var(--button-size);
 }
 .timer-button__icon {
   fill: var(--vt-c-white-soft);
@@ -98,9 +100,14 @@ watch(
   width: 50%;
 }
 
-@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: light) {
   .timer-button {
-    background-color: var(--vt-c-black-mute);
+    --p-button-secondary-background: #e60000;
+    --p-button-secondary-hover-background: #cc0000;
+    --p-button-secondary-active-background: #cc0000;
+    --p-button-secondary-border-color: #e60000;
+    --p-button-secondary-hover-border-color: #cc0000;
+    --p-button-secondary-active-bord-colorer: #cc0000;
   }
 }
 </style>

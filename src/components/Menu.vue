@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import Drawer from 'primevue/drawer'
 import MenuButton from '@/components/Menu/MenuButton.vue'
 import MenuCopyright from '@/components/Menu/MenuCopyright.vue'
+import MenuSettings from '@/components/Menu/MenuSettings.vue'
+import Drawer from 'primevue/drawer'
+import { ref } from 'vue'
 
 const visible = ref<boolean>(false)
 </script>
@@ -15,6 +16,8 @@ const visible = ref<boolean>(false)
       header="Settings"
       :show-close-icon="false"
     >
+      <MenuSettings />
+
       <template #footer>
         <MenuCopyright />
       </template>
@@ -26,6 +29,7 @@ const visible = ref<boolean>(false)
 <style>
 .menu-drawer {
   --p-drawer-header-padding: 0.5rem 1.25rem;
+  --p-drawer-content-padding: 1.25rem;
   --p-drawer-footer-padding: 0;
 }
 </style>
