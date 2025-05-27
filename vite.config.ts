@@ -1,7 +1,7 @@
 import { fileURLToPath, URL } from 'node:url'
 
-import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import { defineConfig } from 'vite'
 import vueDevTools from 'vite-plugin-vue-devtools'
 
 import { VitePWA } from 'vite-plugin-pwa'
@@ -68,6 +68,17 @@ export default defineConfig(() => {
                 expiration: {
                   maxEntries: 100,
                   maxAgeSeconds: 60 * 24 * 60 * 60, // 60 days
+                },
+              },
+            },
+            {
+              urlPattern: ({ request }) => request.destination === 'audio',
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'audio',
+                expiration: {
+                  maxEntries: 50,
+                  maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
                 },
               },
             },
