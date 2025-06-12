@@ -2,6 +2,8 @@
 
 Web application to add some random into the drinking process.
 
+> This is a reworked version of the [original app](https://github.com/vchychuzhko/alcotimer-php)
+
 ## Type Support for `.vue` Imports in TS
 
 TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
