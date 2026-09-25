@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import Toolbar from 'primevue/toolbar'
 import Menu from '@/components/Menu.vue'
+import Toolbar from 'primevue/toolbar'
 </script>
 
 <template>

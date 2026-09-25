@@ -12,6 +12,14 @@ TypeScript cannot handle type information for `.vue` imports by default, so we r
 
 See [Vite Configuration Reference](https://vite.dev/config/).
 
+## Set env variables
+
+```sh
+cp .env.sample .env
+```
+
+Get Prime UI license key [here](https://primeui.store/primeui).
+
 ## Project Setup
 
 ```sh

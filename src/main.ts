@@ -14,6 +14,7 @@ app.use(PrimeVue, {
   theme: {
     preset: Aura,
   },
+  license: import.meta.env.VITE_PRIMEUI_LICENSE_KEY,
 })
 
 app.mount('#app')
