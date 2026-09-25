@@ -78,7 +78,18 @@ export default defineConfig(() => {
                 cacheName: 'audio',
                 expiration: {
                   maxEntries: 50,
-                  maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
+                  maxAgeSeconds: 30 * 24 * 60 * 60, // 60 days
+                },
+              },
+            },
+            {
+              urlPattern: ({ request }) => request.destination === 'font',
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'fonts',
+                expiration: {
+                  maxEntries: 30,
+                  maxAgeSeconds: 60 * 24 * 60 * 60, // 60 days
                 },
               },
             },
