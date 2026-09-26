@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import TimerButtonLoader from '@/components/Timer/Button/TimerButtonLoader.vue'
 import Button from 'primevue/button'
-import { ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 
 const props = defineProps<{
   active: boolean
@@ -12,6 +12,12 @@ const emit = defineEmits(['click'])
 const playAnimation = ref<SVGAnimationElement>()
 const pauseAnimation = ref<SVGAnimationElement>()
 
+onMounted(() => {
+  if (props.active) {
+    pauseAnimation.value?.beginElement()
+  }
+})
+
 watch(
   () => props.active,
   (active) => {
@@ -21,7 +27,6 @@ watch(
       playAnimation.value?.beginElement()
     }
   },
-  { immediate: true },
 )
 </script>
 

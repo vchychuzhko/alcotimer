@@ -55,6 +55,9 @@ const toggleTimer = () => {
   if (timerStore.state.active) {
     stopTimer()
   } else {
+    if (time.value === 0) {
+      resetTimer()
+    }
     startTimer()
   }
 }
@@ -67,8 +70,6 @@ const timeFormatted = computed(() => {
 })
 
 onMounted(() => {
-  timerStore.loadState()
-
   if (timerStore.state.remaining) {
     time.value = timerStore.state.remaining
 
