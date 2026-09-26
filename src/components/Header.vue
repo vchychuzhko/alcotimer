@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Menu from '@/components/Menu.vue'
+import Menu from '@/components/Header/Menu.vue'
 import Toolbar from 'primevue/toolbar'
 </script>
 

@@ -2,8 +2,8 @@
 
 <template>
   <p class="copyright">
-    <a href="https://github.com/vchychuzhko/alcotimer-vue" target="_blank">View on GitHub</a>
-    &copy; Vladyslav Chychuzhko
+    <a href="https://github.com/vchychuzhko/alcotimer-vue" target="_blank">GitHub</a>
+    &copy; vchychuzhko
   </p>
 </template>
 

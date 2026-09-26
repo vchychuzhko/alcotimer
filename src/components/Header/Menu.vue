@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import MenuButton from '@/components/Menu/MenuButton.vue'
-import MenuCopyright from '@/components/Menu/MenuCopyright.vue'
-import MenuSettings from '@/components/Menu/MenuSettings.vue'
+import MenuButton from '@/components/Header/Menu/MenuButton.vue'
+import MenuCopyright from '@/components/Header/Menu/MenuCopyright.vue'
+import MenuSettings from '@/components/Header/Menu/MenuSettings.vue'
 import Drawer from 'primevue/drawer'
 import { ref } from 'vue'
 
