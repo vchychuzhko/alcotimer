@@ -11,7 +11,13 @@ import Toolbar from 'primevue/toolbar'
       </template>
 
       <template #center>
-        <img class="header__logo" src="@/assets/logo.svg" alt="AlcoTimer" width="138" height="30" />
+        <img
+          class="header__logo"
+          src="@/assets/images/logo.svg"
+          alt="AlcoTimer"
+          width="138"
+          height="30"
+        />
       </template>
     </Toolbar>
   </header>
